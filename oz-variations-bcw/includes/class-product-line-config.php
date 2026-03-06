@@ -107,8 +107,8 @@ class OZ_Product_Line_Config {
      * Product line definitions.
      *
      * Structure per line:
-     *   cats          => category IDs for detection (empty = use product_id)
-     *   product_id    => direct product ID match (single-product lines only)
+     *   cats          => category IDs for detection
+     *   product_ids   => extra product IDs outside line categories (loose emmers, single-product lines)
      *   base_id       => base product ID for redirect (null = no variants)
      *   unit          => display label for package size
      *   unitM2        => m² per unit (0 = not m²-based)
@@ -231,7 +231,7 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), primer 6.00, RAL/NCS
         'betonlook-verf' => [
             'cats'           => [],
-            'product_id'     => 11135,  // single product, detect by ID
+            'product_ids'    => [11135],  // single product, detect by ID
             'base_id'        => null,
             'unit'           => 'per stuk',
             'unitM2'         => 0,
@@ -316,7 +316,7 @@ class OZ_Product_Line_Config {
 
     /**
      * Detect product line from a WooCommerce product.
-     * Tries category match first, then product_ids array, then single product_id.
+     * Shell wrapper — fetches category IDs then delegates to pure detect_from_data().
      *
      * @param WC_Product $product
      * @return string|false  Line key or false
@@ -324,18 +324,25 @@ class OZ_Product_Line_Config {
     public static function detect($product) {
         $product_id   = $product->get_id();
         $category_ids = self::get_category_ids($product_id);
+        return self::detect_from_data($product_id, $category_ids);
+    }
 
+    /**
+     * Pure detection: match product to a line using pre-fetched data.
+     * No I/O — testable with plain arrays.
+     *
+     * @param int   $product_id    WooCommerce product ID
+     * @param array $category_ids  Product's category term IDs
+     * @return string|false  Line key or false
+     */
+    public static function detect_from_data($product_id, array $category_ids) {
         foreach (self::$lines as $key => $line) {
             // Category match (main detection path)
             if (!empty($line['cats']) && array_intersect($category_ids, $line['cats'])) {
                 return $key;
             }
-            // product_ids array — loose emmers in "Losse Materialen" (cat 17)
+            // product_ids array — loose emmers, single-product lines
             if (!empty($line['product_ids']) && in_array($product_id, $line['product_ids'], false)) {
-                return $key;
-            }
-            // Direct product_id match (single-product lines like Betonlook Verf)
-            if (isset($line['product_id']) && $line['product_id'] == $product_id) {
                 return $key;
             }
         }

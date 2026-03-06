@@ -379,6 +379,43 @@ foreach ($order_tests as [$line, $expected]) {
 echo "\n";
 
 
+/* ─── 13. PURE DETECTION (detect_from_data) ──────────────── */
+echo "--- 13. Pure Detection (no DB) ---\n";
+
+// Category-based detection
+test('detect_from_data: cat 290 => original',
+    OZ_Product_Line_Config::detect_from_data(99999, [290]) === 'original');
+test('detect_from_data: cat 289 => all-in-one',
+    OZ_Product_Line_Config::detect_from_data(99999, [289]) === 'all-in-one');
+test('detect_from_data: cat 314 => easyline',
+    OZ_Product_Line_Config::detect_from_data(99999, [314]) === 'easyline');
+test('detect_from_data: cat 455 => microcement',
+    OZ_Product_Line_Config::detect_from_data(99999, [455]) === 'microcement');
+test('detect_from_data: cat 456 => pu-color',
+    OZ_Product_Line_Config::detect_from_data(99999, [456]) === 'pu-color');
+
+// product_ids detection (loose emmers + single-product lines)
+test('detect_from_data: ID 11191 => all-in-one',
+    OZ_Product_Line_Config::detect_from_data(11191, [17]) === 'all-in-one');
+test('detect_from_data: ID 11001 => easyline',
+    OZ_Product_Line_Config::detect_from_data(11001, [17]) === 'easyline');
+test('detect_from_data: ID 11002 => easyline',
+    OZ_Product_Line_Config::detect_from_data(11002, []) === 'easyline');
+test('detect_from_data: ID 11135 => betonlook-verf',
+    OZ_Product_Line_Config::detect_from_data(11135, []) === 'betonlook-verf');
+
+// Category takes priority over product_ids
+test('detect_from_data: cat 289 wins over product_ids',
+    OZ_Product_Line_Config::detect_from_data(11191, [289]) === 'all-in-one');
+
+// Unknown product returns false
+test('detect_from_data: unknown => false',
+    OZ_Product_Line_Config::detect_from_data(99999, []) === false);
+test('detect_from_data: unknown cat => false',
+    OZ_Product_Line_Config::detect_from_data(99999, [9999]) === false);
+echo "\n";
+
+
 /* ─── SUMMARY ────────────────────────────────────────────── */
 $total = $pass + $fail;
 echo "=== RESULTS: $pass/$total passed";

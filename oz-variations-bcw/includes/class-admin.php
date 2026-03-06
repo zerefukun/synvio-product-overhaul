@@ -160,11 +160,17 @@ class OZ_BCW_Admin {
                 }
             }
 
-            // Single-product lines (e.g. betonlook-verf)
-            if (isset($config['product_id'])) {
-                $product = wc_get_product($config['product_id']);
-                if ($product && $product->get_status() === 'publish') {
-                    $total = 1;
+            // Extra products detected by ID (loose emmers, single-product lines)
+            if (!empty($config['product_ids'])) {
+                foreach ($config['product_ids'] as $pid) {
+                    $product = wc_get_product($pid);
+                    if ($product && $product->get_status() === 'publish') {
+                        $total++;
+                        $variants = get_post_meta($pid, '_oz_variants', true);
+                        if (!empty($variants) && is_array($variants)) {
+                            $with_variants++;
+                        }
+                    }
                 }
             }
 
