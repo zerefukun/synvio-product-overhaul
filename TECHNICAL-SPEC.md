@@ -1,5 +1,5 @@
 # Beton Cire Webshop -- Technical Specification
-**Version 2.1 -- 6 maart 2026** (oz-variations foundation; v2.1 fixes: WAPO inventory completeness, m2 flag scope, upsell hierarchy, Metallic block IDs, room page count)
+**Version 2.2 -- 6 maart 2026** (v2.2: RAL/NCS color modes, set-first tool UX, event delegation, REFS consolidation, buildToolRow DRY)
 
 ---
 
@@ -469,16 +469,49 @@ No duplicate pricing logic -- drawer reads what OZ_Cart_Manager already calculat
 
 ```javascript
 var S = {
-    color: "cement-1",
-    pu: 0,              // 0=geen, 1-3=lagen
-    primer: 0,           // 0=geen, 1=zuigend, 2=niet-zuigend
-    toolMode: 0,         // 0=geen, 1=individueel
-    tools: {},           // per-tool: { on: false, qty: 0 }
+    color: "Cement 3",
+    colorMode: "standard",   // "standard" | "ral" | "ncs"
+    customColorCode: "",     // typed RAL/NCS code (e.g. "RAL 7016")
+    pu: 0,                   // 0=geen, 1-3=lagen
+    primer: 0,               // 0=geen, 1=yes
+    toolMode: "none",        // "none" | "set" | "individual"
+    tools: {},               // per-tool: { on: false, qty: 0 } — for "individual" mode
+    extras: {},              // per-extra: { on: false, qty: 0 } — add-ons on top of "set" mode
     qty: 1,
     upsellOpen: false,
     upsellChoice: "none"
 };
 ```
+
+### 6.1b Color Modes (RAL/NCS — All-In-One + Easyline lines)
+
+Three color modes above the swatch grid, using `oz-option-label-btn` styling:
+- **Standaard kleur** (default): shows color swatches, clicking navigates to color product URL
+- **RAL kleur**: hides swatches, shows text input with live validation (`/^RAL\s?\d{4}$/i`)
+- **NCS kleur**: hides swatches, shows text input with live validation (`/^NCS\s+S\s+\d{4}-[A-Z]\d{2}[A-Z]$/i`)
+
+Both custom modes show partial validation hints as the user types (format guide appears below input).
+Info text: "Wij mengen uw kleur op maat. Levertijd +2 werkdagen."
+
+Color mode widget is built once by `buildColorMode()` and stored in `REFS.colorMode`.
+It lives inside `#optionsWidget` and moves with it between desktop and sheet.
+
+### 6.1c Tool Modes (Set-First UX)
+
+Three tool modes, using `oz-tool-mode-btn` styling:
+- **Geen** (default): no tools
+- **Kant & Klaar** (+€89,99): complete set (Gereedschapset K&K, WC ID 11177).
+  Shows set contents + extras section (consumables like PU Roller, Verfbak, Tape).
+  Smart nudge appears when qty >= threshold and no extra PU rollers added.
+- **Zelf samenstellen**: individual tool checklist for professionals.
+  Each tool has checkbox + qty controls.
+
+Tool section is built once by `buildToolSectionV2()` using shared `buildToolRow()` function.
+`buildToolRow(item, dataAttr, onToggle, onQtyDec, onQtyInc, onQtyEdit)` eliminates
+duplication between extras list and individual tools list.
+
+**Upsell modal**: When user clicks "In winkelmand" with toolMode="none", a modal offers
+the Kant & Klaar set. "Zelf samenstellen" with 0 tools scrolls to the tool section instead.
 
 ### 6.2 oz-variations Frontend Strategy
 
@@ -502,6 +535,47 @@ wp_localize_script("oz-product-page", "ozProduct", array(
     "variants"    => get_post_meta($product->get_id(), '_oz_variants', true)
 ));
 ```
+
+### 6.3 DOM Architecture — Single DOM, Event Delegation
+
+**Single DOM pattern**: One `#optionsWidget` div contains all options (color mode, swatches,
+PU, primer, tools, m2 advice). It physically moves between `#optionsSlotDesktop` (main page)
+and `#optionsSlotSheet` (bottom sheet) via `openSheet()`/`closeSheet()`. Zero duplication.
+
+**REFS object**: All DOM references collected once at init in a centralized object:
+
+```javascript
+var REFS = {
+    main:           breakdownRefs('price'),     // price breakdown lines
+    sheet:          breakdownRefs('sheetPrice'), // sheet price breakdown
+    upsell:         { overlay, modal, addBtn, skipBtn },
+    sticky:         { bar, price, unit, colorName, btn },
+    sheet2:         { overlay, panel, slot, ctaBtn, colorName },
+    color:          { selectedValue, label },
+    gallery:        { mainImg },
+    qty:            { input, m2Note },
+    addToCartBtn, readMoreBtn, optionsWidget, desktopSlot,
+    colorMode: null  // set by buildColorMode()
+};
+```
+
+**Event delegation**: Zero inline `onclick` handlers. All events bound via `addEventListener`
+in a centralized `bindEvents()` IIFE at init. Uses data attributes for delegation:
+
+| Data Attribute | Element | Handler |
+|---|---|---|
+| `data-thumb-src` | Gallery thumbnails | `switchImage()` |
+| `data-color` | Color swatches | `selectColor()` |
+| `data-pu` | PU option buttons | `selectPu()` |
+| `data-primer` | Primer buttons | `selectPrimer()` |
+| `data-info-target` | Info tooltip buttons | `toggleInfo()` |
+| `data-qty-delta` | Qty +/- buttons | `changeQty()` |
+| `data-mode` | Tool mode buttons | `setToolMode()` |
+| `data-colormode` | Color mode buttons | `setColorMode()` |
+
+**Extracted renderers** (keeping handlers thin):
+- `renderColorValidationError()` — focus + mark invalid on custom color input
+- `buildToolRow()` — shared tool row builder for extras and individual lists
 
 ---
 
@@ -649,7 +723,7 @@ Four steps, in strict order:
 ### Local (backups)
 - Mockup: C:\Users\zeref\OneDrive\OzIS\betoncire\productpagina-voorbeeld.html
 - Cart drawer mockup: C:\Users\zeref\OneDrive\OzIS\betoncire\demo-site\cart-drawer.html
-- Project docs: C:\Users\zeref\OneDrive\OzIS\betoncire\oz-product-overhaul\
+- Project docs: C:\Users\zeref\OneDrive\OzIS\betoncire\oz-product-overhaul\ (repo: synvio-product-overhaul)
 
 ### Live demos
 - https://demo.compliantcookies.com/ (product page)
@@ -660,9 +734,9 @@ Four steps, in strict order:
 ## 12. Open Questions
 
 1. **oz-variations: fork or multi-site?** -- Separate BCW copy, or make plugin site-aware?
-2. **Gereedschapset vs individual tools?** -- Mockup shows individual tools. Patricks preference?
+2. ~~**Gereedschapset vs individual tools?**~~ -- **RESOLVED**: Set-first UX. Three modes: Geen / Kant & Klaar (set) / Zelf samenstellen (individual). Sets are the default recommendation, individual is for pros. Extras (consumable add-ons) available on top of sets. See section 6.1c.
 3. **Colorfresh addon** -- Original line only. Keep as separate toggle or fold into options UI?
-4. **RAL/NCS custom colors** -- All-In-One + Easyline have text input fields. How in new template?
+4. ~~**RAL/NCS custom colors**~~ -- **RESOLVED**: Color mode selector above swatch grid. Three modes: Standaard kleur / RAL kleur / NCS kleur. Live validation with partial hints. See section 6.1b.
 5. **Missing cross-sell IDs** -- 3 older Lavasteen products + Agave missing Lavasteen Gereedschapset
 6. **Orphaned WAPO blocks** -- Safe to delete blocks 7, 47 (orphaned) and 46 (disabled)?
 7. **Cart drawer: separate plugin or oz-variations module?** -- Affects deployment and updates
