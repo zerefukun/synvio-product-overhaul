@@ -45,11 +45,10 @@ class OZ_Frontend_Display {
             return;
         }
 
-        global $product;
-        if (!$product) {
-            $product = wc_get_product(get_the_ID());
-        }
-        if (!$product) {
+        // On template_redirect, global $product may be a string (slug), not a WC_Product.
+        // Always resolve from post ID to get a real WC_Product object.
+        $product = wc_get_product(get_the_ID());
+        if (!$product instanceof WC_Product) {
             return;
         }
 
@@ -111,11 +110,9 @@ class OZ_Frontend_Display {
             return;
         }
 
-        global $product;
-        if (!$product) {
-            $product = wc_get_product(get_the_ID());
-        }
-        if (!$product) {
+        // Same as redirect: global $product may not be a WC_Product yet
+        $product = wc_get_product(get_the_ID());
+        if (!$product instanceof WC_Product) {
             return;
         }
 
