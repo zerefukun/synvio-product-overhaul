@@ -88,8 +88,9 @@ class OZ_Ajax_Handlers {
         $quantity = max(1, min(99, $quantity));
 
         // Validate addon data using shared pure function (single source of truth)
+        $line_key = OZ_Product_Line_Config::detect($product);
         $post_data = OZ_Cart_Manager::extract_post_data();
-        $error = OZ_Cart_Manager::validate_addon_array($post_data);
+        $error = OZ_Cart_Manager::validate_addon_array($post_data, $line_key ?: null);
         if ($error) {
             wp_send_json_error($error);
         }

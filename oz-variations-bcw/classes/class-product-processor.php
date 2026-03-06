@@ -247,10 +247,26 @@ class OZ_Product_Processor {
             }
         }
 
-        // Save variant IDs for this product
+        // Get old variant list before update (for stale backlink pruning)
+        $old_variants = get_post_meta($product_id, '_oz_variants', true);
+        if (!is_array($old_variants)) {
+            $old_variants = [];
+        }
+
+        // Save new variant IDs for this product
         update_post_meta($product_id, '_oz_variants', $filtered);
 
-        // Bidirectional: add this product to each variant's list
+        // Prune stale backlinks: siblings we used to link to but no longer do
+        $stale_ids = array_diff($old_variants, $filtered);
+        foreach ($stale_ids as $stale_id) {
+            $their_list = get_post_meta($stale_id, '_oz_variants', true);
+            if (is_array($their_list)) {
+                $their_list = array_values(array_diff($their_list, [$product_id]));
+                update_post_meta($stale_id, '_oz_variants', $their_list);
+            }
+        }
+
+        // Bidirectional: add this product to each current variant's list
         foreach ($filtered as $vid) {
             $existing = get_post_meta($vid, '_oz_variants', true);
             if (!is_array($existing)) {

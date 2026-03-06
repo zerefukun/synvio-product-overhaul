@@ -83,8 +83,12 @@ class OZ_Cart_Manager {
             return false;
         }
 
+        // Detect line for line-specific validation (ral_ncs_only, etc.)
+        $product = wc_get_product($product_id);
+        $line_key = $product ? OZ_Product_Line_Config::detect($product) : null;
+
         $post_data = self::extract_post_data();
-        $error = self::validate_addon_array($post_data);
+        $error = self::validate_addon_array($post_data, $line_key ?: null);
         if ($error) {
             wc_add_notice($error, 'error');
             return false;
@@ -117,6 +121,17 @@ class OZ_Cart_Manager {
         foreach ($post_data as $key => $value) {
             if ($value !== '' && $value !== null) {
                 $cart_item_data[$key] = $value;
+            }
+        }
+
+        // Apply configured defaults for any addon keys omitted from POST.
+        // E.g. Lavasteen defaults to 1 PU layer (€40) even if not posted.
+        if ($line) {
+            $defaults = OZ_Product_Line_Config::get_defaults($line);
+            foreach ($defaults as $key => $value) {
+                if (!isset($cart_item_data[$key]) || $cart_item_data[$key] === '') {
+                    $cart_item_data[$key] = $value;
+                }
             }
         }
 
@@ -163,12 +178,22 @@ class OZ_Cart_Manager {
      * Validate addon data array. Pure function — no side effects.
      * Returns error message string on failure, null on success.
      *
-     * @param array $data  Sanitized addon data from extract_post_data()
+     * @param array       $data      Sanitized addon data from extract_post_data()
+     * @param string|null $line_key  Product line key (optional, enables line-specific checks)
      * @return string|null  Error message or null
      */
-    public static function validate_addon_array($data) {
-        // RAL/NCS mode requires a custom color code
+    public static function validate_addon_array($data, $line_key = null) {
         $color_mode = isset($data['oz_color_mode']) ? $data['oz_color_mode'] : '';
+
+        // ral_ncs_only lines (PU Color) must use ral_ncs mode
+        if ($line_key) {
+            $config = OZ_Product_Line_Config::get_config($line_key);
+            if ($config && $config['ral_ncs_only'] && $color_mode !== 'ral_ncs') {
+                return 'Dit product vereist een RAL of NCS kleurcode.';
+            }
+        }
+
+        // RAL/NCS mode requires a custom color code
         if ($color_mode === 'ral_ncs') {
             $custom_color = isset($data['oz_custom_color']) ? trim($data['oz_custom_color']) : '';
             if ($custom_color === '') {

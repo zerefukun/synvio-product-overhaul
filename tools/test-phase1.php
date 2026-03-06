@@ -273,11 +273,89 @@ test('Standard mode => pass', $err === null, $err ?: '');
 
 $err = OZ_Cart_Manager::validate_addon_array([]);
 test('Empty data => pass', $err === null, $err ?: '');
+
+// P1 fix: ral_ncs_only lines reject standard color mode
+$err = OZ_Cart_Manager::validate_addon_array(['oz_color_mode' => 'standard'], 'pu-color');
+test('PU Color standard mode => error', $err !== null, $err ?: 'no error');
+
+$err = OZ_Cart_Manager::validate_addon_array(['oz_color_mode' => 'ral_ncs', 'oz_custom_color' => 'RAL 9010'], 'pu-color');
+test('PU Color ral_ncs with code => pass', $err === null, $err ?: '');
+
+$err = OZ_Cart_Manager::validate_addon_array([], 'pu-color');
+test('PU Color empty mode => error', $err !== null, $err ?: 'no error');
+
+// Non-ral_ncs_only lines still accept standard
+$err = OZ_Cart_Manager::validate_addon_array(['oz_color_mode' => 'standard'], 'all-in-one');
+test('All-In-One standard mode => pass', $err === null, $err ?: '');
 echo "\n";
 
 
-/* ─── 10. OPTION ORDER ───────────────────────────────────── */
-echo "--- 10. Option Order ---\n";
+/* ─── 10. LOOSE-EMMER DETECTION ──────────────────────────── */
+echo "--- 10. Loose-Emmer Detection ---\n";
+
+$loose_tests = [
+    [11191, 'all-in-one'],
+    [11001, 'easyline'],
+    [11002, 'easyline'],
+];
+
+foreach ($loose_tests as [$pid, $expected]) {
+    $product = wc_get_product($pid);
+    if (!$product) {
+        test("Detect loose $pid => $expected", false, "product not found");
+        continue;
+    }
+    $line = OZ_Product_Line_Config::detect($product);
+    test(
+        "Detect loose {$product->get_name()} ($pid) => $expected",
+        $line === $expected,
+        "got: " . ($line ?: 'false')
+    );
+}
+echo "\n";
+
+
+/* ─── 11. DEFAULTS ───────────────────────────────────────── */
+echo "--- 11. Config Defaults ---\n";
+
+// Lavasteen defaults to 1 PU layer
+$lav_defaults = OZ_Product_Line_Config::get_defaults('lavasteen');
+test('Lavasteen default PU = 1 layer', isset($lav_defaults['oz_pu_layers']) && $lav_defaults['oz_pu_layers'] === 1,
+    'got: ' . ($lav_defaults['oz_pu_layers'] ?? 'unset'));
+
+// Metallic defaults to 0 PU layers (Geen PU)
+$met_defaults = OZ_Product_Line_Config::get_defaults('metallic');
+test('Metallic default PU = 0 layers', isset($met_defaults['oz_pu_layers']) && $met_defaults['oz_pu_layers'] === 0,
+    'got: ' . ($met_defaults['oz_pu_layers'] ?? 'unset'));
+
+// Metallic default primer = Geen
+test('Metallic default primer = Geen', isset($met_defaults['oz_primer']) && $met_defaults['oz_primer'] === 'Geen',
+    'got: ' . ($met_defaults['oz_primer'] ?? 'unset'));
+
+// PU Color defaults to ral_ncs color mode
+$pu_defaults = OZ_Product_Line_Config::get_defaults('pu-color');
+test('PU Color default color_mode = ral_ncs', isset($pu_defaults['oz_color_mode']) && $pu_defaults['oz_color_mode'] === 'ral_ncs',
+    'got: ' . ($pu_defaults['oz_color_mode'] ?? 'unset'));
+
+// Original has colorfresh default
+$orig_defaults = OZ_Product_Line_Config::get_defaults('original');
+test('Original default colorfresh = Zonder Colorfresh',
+    isset($orig_defaults['oz_colorfresh']) && $orig_defaults['oz_colorfresh'] === 'Zonder Colorfresh',
+    'got: ' . ($orig_defaults['oz_colorfresh'] ?? 'unset'));
+
+// Lines without PU have no oz_pu_layers default
+$bv_defaults = OZ_Product_Line_Config::get_defaults('betonlook-verf');
+test('Betonlook Verf has no PU default', !isset($bv_defaults['oz_pu_layers']));
+
+// Betonlook Verf primer default = Geen Primer
+test('Betonlook Verf default primer = Geen Primer',
+    isset($bv_defaults['oz_primer']) && $bv_defaults['oz_primer'] === 'Geen Primer',
+    'got: ' . ($bv_defaults['oz_primer'] ?? 'unset'));
+echo "\n";
+
+
+/* ─── 12. OPTION ORDER ──────────────────────────────────── */
+echo "--- 12. Option Order ---\n";
 
 $order_tests = [
     ['original',       ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu']],

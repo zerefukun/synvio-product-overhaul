@@ -144,6 +144,7 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), PU 8/16/24/0, RAL/NCS
         'all-in-one' => [
             'cats'           => [289],
+            'product_ids'    => [11191],  // loose emmer (cat 17 "Losse Materialen")
             'base_id'        => 11165,
             'unit'           => '1m² emmer',
             'unitM2'         => 1,
@@ -161,6 +162,7 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), PU 0/40/80 (no "Geen"), RAL/NCS, pakket
         'easyline' => [
             'cats'           => [314],
+            'product_ids'    => [11001, 11002],  // loose emmers (cat 17 "Losse Materialen")
             'base_id'        => 11160,
             'unit'           => '5m² pakket',  // corrected from 4m²
             'unitM2'         => 5,
@@ -314,7 +316,7 @@ class OZ_Product_Line_Config {
 
     /**
      * Detect product line from a WooCommerce product.
-     * Tries category match first, then direct product_id.
+     * Tries category match first, then product_ids array, then single product_id.
      *
      * @param WC_Product $product
      * @return string|false  Line key or false
@@ -324,11 +326,15 @@ class OZ_Product_Line_Config {
         $category_ids = self::get_category_ids($product_id);
 
         foreach (self::$lines as $key => $line) {
-            // Category match
+            // Category match (main detection path)
             if (!empty($line['cats']) && array_intersect($category_ids, $line['cats'])) {
                 return $key;
             }
-            // Direct product_id match (single-product lines)
+            // product_ids array — loose emmers in "Losse Materialen" (cat 17)
+            if (!empty($line['product_ids']) && in_array($product_id, $line['product_ids'], false)) {
+                return $key;
+            }
+            // Direct product_id match (single-product lines like Betonlook Verf)
             if (isset($line['product_id']) && $line['product_id'] == $product_id) {
                 return $key;
             }
@@ -573,6 +579,64 @@ class OZ_Product_Line_Config {
     /** @return array  All line keys */
     public static function get_all_lines() {
         return array_keys(self::$lines);
+    }
+
+
+    /* ══════════════════════════════════════════════════════════════════
+     * DEFAULTS — server-side fallback for omitted POST fields
+     *
+     * Returns the default addon values for a product line, derived from
+     * the 'default' flags in PU/primer/colorfresh option tables.
+     * Used by OZ_Cart_Manager::capture_addon_data() when POST omits keys.
+     * ══════════════════════════════════════════════════════════════════ */
+
+    /**
+     * Get default addon values for a product line.
+     * Reads the 'default' flag from each option table.
+     *
+     * @param string $line_key
+     * @return array  Keys: oz_pu_layers, oz_primer, oz_colorfresh (only set if line has them)
+     */
+    public static function get_defaults($line_key) {
+        $defaults = [];
+
+        // PU default layers
+        if (isset(self::$pu_options[$line_key])) {
+            foreach (self::$pu_options[$line_key] as list($layers, $label, $is_default)) {
+                if ($is_default) {
+                    $defaults['oz_pu_layers'] = $layers;
+                    break;
+                }
+            }
+        }
+
+        // Primer default
+        if (isset(self::$primer_options[$line_key])) {
+            foreach (self::$primer_options[$line_key] as list($label, $price, $is_default)) {
+                if ($is_default) {
+                    $defaults['oz_primer'] = $label;
+                    break;
+                }
+            }
+        }
+
+        // Colorfresh default (Original only)
+        $config = self::get_config($line_key);
+        if ($config && $config['has_colorfresh']) {
+            foreach (self::$colorfresh_options as list($label, $price, $is_default)) {
+                if ($is_default) {
+                    $defaults['oz_colorfresh'] = $label;
+                    break;
+                }
+            }
+        }
+
+        // ral_ncs_only lines force ral_ncs color mode
+        if ($config && $config['ral_ncs_only']) {
+            $defaults['oz_color_mode'] = 'ral_ncs';
+        }
+
+        return $defaults;
     }
 
 
