@@ -1,0 +1,303 @@
+<?php
+/**
+ * Product Processor for BCW
+ *
+ * Handles color extraction from product slugs, variant relationship
+ * management via _oz_variants meta, and base product detection/redirect.
+ *
+ * Pattern taken from oz-variations (epoxystone), adapted for BCW's
+ * 9 product lines with different slug patterns.
+ *
+ * @package OZ_Variations_BCW
+ * @since 1.0.0
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class OZ_Product_Processor {
+
+    /**
+     * BCW slug prefixes per product line.
+     * Used to extract the color portion from product slugs.
+     * Example: "microcement-cement-3" → prefix "microcement" → color "Cement 3"
+     *
+     * Multi-word prefixes listed first (longest match wins).
+     */
+    private static $slug_prefixes = [
+        // Multi-word prefixes first
+        'metallic-velvet-4m2-pakket',
+        'metallic-stuc-velvet',
+        'lavasteen-gietvloeren',
+        'lavasteen-gietvloer',
+        'all-in-one-kant-klaar',
+        'easyline-kant-klaar',
+        'beton-cire-original',
+        // Single-word prefixes
+        'microcement',
+    ];
+
+    /**
+     * Process a product: extract color + update variant links.
+     * Called on product save or via bulk reprocess.
+     *
+     * @param int $product_id
+     */
+    public static function process_product($product_id) {
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            return;
+        }
+
+        // Only process lines that have variants
+        $line_info = OZ_Product_Line_Config::for_product($product);
+        if (!$line_info['line']) {
+            return;
+        }
+
+        // Single-product lines don't have color variants
+        $config = $line_info['config'];
+        if ($config['base_id'] === null) {
+            return;
+        }
+
+        // Extract color from slug
+        $color = self::extract_color($product->get_slug());
+
+        if (!empty($color)) {
+            update_post_meta($product_id, '_oz_color', sanitize_text_field($color));
+        } else {
+            delete_post_meta($product_id, '_oz_color');
+        }
+
+        // Update bidirectional variant links
+        self::update_variants($product_id, $config['cats']);
+    }
+
+    /**
+     * Extract color name from product slug.
+     *
+     * Tries each known prefix. If slug starts with a prefix followed by a dash,
+     * the remainder is the color. Example: "microcement-cement-3" → "Cement 3"
+     *
+     * @param string $slug
+     * @return string  Color name (title-cased) or empty string
+     */
+    public static function extract_color($slug) {
+        $slug = strtolower($slug);
+
+        foreach (self::$slug_prefixes as $prefix) {
+            if (strpos($slug, $prefix . '-') === 0) {
+                $color_part = substr($slug, strlen($prefix) + 1);
+                return self::format_color($color_part);
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Format raw color slug into display name.
+     * "cement-3" → "Cement 3", "warm-grey-1" → "Warm Grey 1"
+     *
+     * @param string $raw
+     * @return string
+     */
+    private static function format_color($raw) {
+        return ucwords(trim(str_replace('-', ' ', $raw)));
+    }
+
+    /**
+     * Check if a product is a base/generic product (landing page, not purchasable).
+     * Base products have their slug exactly matching a prefix with no color suffix.
+     *
+     * @param WC_Product $product
+     * @return bool
+     */
+    public static function is_base_product($product) {
+        $product_id = $product->get_id();
+
+        // Check if this product's ID matches a known base_id
+        foreach (OZ_Product_Line_Config::get_all_lines() as $line_key) {
+            $base_id = OZ_Product_Line_Config::get_base_product_id($line_key);
+            if ($base_id && $base_id == $product_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Find the most popular variant for a base product (by total_sales).
+     * Used for redirect: base product → most-sold color variant.
+     *
+     * @param int $product_id  The base product ID
+     * @return int|false  Most popular variant ID or false
+     */
+    public static function find_most_popular_variant($product_id) {
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            return false;
+        }
+
+        $line_info = OZ_Product_Line_Config::for_product($product);
+        if (!$line_info['config'] || empty($line_info['config']['cats'])) {
+            return false;
+        }
+
+        $base_slug = $product->get_slug();
+
+        // Find color variants in the same category.
+        // Try sales-ordered first, then fall back to any matching variant
+        // (handles products with no total_sales meta yet).
+        $base_args = [
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'posts_per_page' => 50,
+            'post__not_in'   => [$product_id],
+            'fields'         => 'ids',
+            'tax_query'      => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => $line_info['config']['cats'],
+            ]],
+            'no_found_rows'  => true,
+        ];
+
+        // First attempt: ordered by total_sales (best seller first)
+        $args = $base_args;
+        $args['meta_key'] = 'total_sales';
+        $args['orderby']  = 'meta_value_num';
+        $args['order']    = 'DESC';
+
+        $query    = new WP_Query($args);
+        $variants = $query->posts;
+
+        // Find first variant whose slug starts with the base slug
+        foreach ($variants as $variant_id) {
+            $variant = wc_get_product($variant_id);
+            if ($variant && strpos($variant->get_slug(), $base_slug . '-') === 0) {
+                return $variant_id;
+            }
+        }
+
+        // Fallback: query without meta_key requirement so products
+        // without total_sales meta are still found (new/imported products)
+        $args = $base_args;
+        $args['orderby'] = 'date';
+        $args['order']   = 'DESC';
+
+        $query    = new WP_Query($args);
+        $variants = $query->posts;
+
+        foreach ($variants as $variant_id) {
+            $variant = wc_get_product($variant_id);
+            if ($variant && strpos($variant->get_slug(), $base_slug . '-') === 0) {
+                return $variant_id;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Update bidirectional variant links for a product.
+     * Finds all products in the same categories and creates _oz_variants meta.
+     *
+     * @param int   $product_id
+     * @param array $category_ids
+     */
+    private static function update_variants($product_id, $category_ids) {
+        if (empty($category_ids)) {
+            delete_post_meta($product_id, '_oz_variants');
+            return;
+        }
+
+        $product_color = get_post_meta($product_id, '_oz_color', true);
+
+        // Find all sibling products in the same category
+        $args = [
+            'post_type'              => 'product',
+            'post_status'            => 'publish',
+            'posts_per_page'         => -1,
+            'post__not_in'           => [$product_id],
+            'fields'                 => 'ids',
+            'tax_query'              => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => $category_ids,
+            ]],
+            'no_found_rows'          => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+        ];
+
+        $query       = new WP_Query($args);
+        $variant_ids = $query->posts;
+
+        // Filter: exclude products without a real color (base products, tools, etc.)
+        $filtered = [];
+        foreach ($variant_ids as $vid) {
+            $v_color = get_post_meta($vid, '_oz_color', true);
+            // Must have a color and it must differ from ours
+            if (!empty($v_color) && $v_color !== $product_color) {
+                $filtered[] = $vid;
+            }
+        }
+
+        // Save variant IDs for this product
+        update_post_meta($product_id, '_oz_variants', $filtered);
+
+        // Bidirectional: add this product to each variant's list
+        foreach ($filtered as $vid) {
+            $existing = get_post_meta($vid, '_oz_variants', true);
+            if (!is_array($existing)) {
+                $existing = [];
+            }
+            if (!in_array($product_id, $existing)) {
+                $existing[] = $product_id;
+                update_post_meta($vid, '_oz_variants', array_unique($existing));
+            }
+        }
+    }
+
+    /**
+     * Get variant data for frontend display (color swatches).
+     * Returns array of [ product_id => [ 'color' => ..., 'url' => ..., 'image' => ... ] ]
+     *
+     * @param int $product_id
+     * @return array
+     */
+    public static function get_variant_display_data($product_id) {
+        $variant_ids = get_post_meta($product_id, '_oz_variants', true);
+        if (empty($variant_ids) || !is_array($variant_ids)) {
+            return [];
+        }
+
+        $variants = [];
+        foreach ($variant_ids as $vid) {
+            $variant = wc_get_product($vid);
+            if (!$variant || $variant->get_status() !== 'publish') {
+                continue;
+            }
+
+            $color = get_post_meta($vid, '_oz_color', true);
+            if (empty($color)) {
+                continue;
+            }
+
+            $image_id  = get_post_thumbnail_id($vid);
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $variants[$vid] = [
+                'color' => $color,
+                'url'   => get_permalink($vid),
+                'image' => $image_url,
+            ];
+        }
+
+        return $variants;
+    }
+}
