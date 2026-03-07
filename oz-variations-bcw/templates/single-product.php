@@ -212,16 +212,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       <?php endif; ?>
 
-      <!-- Short description — rendered as regular text, not as USPs -->
-      <?php
-      $short_desc = $product->get_short_description();
-      if (!empty($short_desc)) :
-      ?>
-        <div class="oz-product-short-desc">
-          <?php echo wp_kses_post($short_desc); ?>
-        </div>
-      <?php endif; ?>
-
       <!-- ═══ OPTIONS WIDGET (moves between page and sheet) ═══ -->
       <div id="optionsDesktopHome">
       <div id="optionsWidget">
@@ -618,7 +608,15 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                 </div>
       </div>
 
-
+      <!-- Short description — rendered as regular text at bottom of sidebar -->
+      <?php
+      $short_desc = $product->get_short_description();
+      if (!empty($short_desc)) :
+      ?>
+        <div class="oz-product-short-desc">
+          <?php echo wp_kses_post($short_desc); ?>
+        </div>
+      <?php endif; ?>
 
     </div><!-- .oz-product-summary -->
 
