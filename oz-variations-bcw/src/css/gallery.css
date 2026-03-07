@@ -1,0 +1,67 @@
+/**
+ * Gallery — Main image + thumbnail strip
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+.oz-gallery-main {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+  margin-bottom: 12px;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.oz-gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s var(--oz-ease), transform 0.8s var(--oz-ease);
+}
+
+.oz-gallery-main:hover img {
+  transform: scale(1.02);
+}
+
+.oz-gallery-main img.oz-fade {
+  opacity: 0;
+}
+
+.oz-gallery-thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.oz-gallery-thumb {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: var(--oz-bg-warm);
+  transition: border-color 0.3s var(--oz-ease), box-shadow 0.3s var(--oz-ease);
+}
+
+.oz-gallery-thumb:hover {
+  border-color: var(--oz-text-muted);
+}
+
+.oz-gallery-thumb.selected {
+  border-color: var(--oz-accent);
+}
+
+.oz-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

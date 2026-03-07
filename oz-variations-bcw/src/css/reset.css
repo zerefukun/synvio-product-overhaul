@@ -1,0 +1,223 @@
+/**
+ * Flatsome Theme Isolation — Resets
+ *
+ * Flatsome applies aggressive global styles to buttons, inputs, headings, etc.
+ * We neutralize them inside .oz-product-page and for fixed elements
+ * (sticky bar, bottom sheet) that live outside it.
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+
+/* ═══ .oz-product-page scope resets ═══════════════════════════ */
+
+/* Universal box-sizing */
+.oz-product-page *,
+.oz-product-page *::before,
+.oz-product-page *::after {
+  box-sizing: border-box;
+}
+
+/* Neutralize Flatsome global form/button resets */
+.oz-product-page button,
+.oz-product-page fieldset,
+.oz-product-page input,
+.oz-product-page select,
+.oz-product-page textarea {
+  margin-bottom: 0;
+  box-shadow: none;
+  border-radius: 0;
+  height: auto;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  width: auto;
+  max-width: none;
+  vertical-align: baseline;
+  transition: none;
+}
+
+/* Flatsome label resets — prevent bold/block/margin from theme */
+.oz-product-page label {
+  display: inline;
+  font-size: inherit;
+  font-weight: inherit;
+  margin-bottom: 0;
+  color: inherit;
+}
+
+/* Flatsome a tag — prevent theme link color override */
+.oz-product-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Flatsome img — prevent inline-block and transitions */
+.oz-product-page img {
+  display: block;
+  transition: none;
+}
+
+/* Flatsome small — prevent inline-block */
+.oz-product-page small {
+  display: inline;
+  font-size: inherit;
+}
+
+/* Flatsome headings — prevent color/margin/width overrides */
+.oz-product-page h1,
+.oz-product-page h2,
+.oz-product-page h3,
+.oz-product-page h4,
+.oz-product-page h5,
+.oz-product-page h6 {
+  color: inherit;
+  width: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-rendering: auto;
+}
+
+/* Flatsome ul/li — prevent list margin/padding/style */
+.oz-product-page ul,
+.oz-product-page ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.oz-product-page li {
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+/* Flatsome p — prevent bottom margin */
+.oz-product-page p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Flatsome table — prevent bottom margin */
+.oz-product-page table {
+  margin-bottom: 0;
+}
+
+/* Flatsome .button class — prevent theme button styling */
+.oz-product-page .button,
+.oz-product-page button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: inherit;
+  letter-spacing: normal;
+  line-height: inherit;
+  margin: 0;
+  min-height: auto;
+  min-width: auto;
+  padding: 0;
+  text-align: inherit;
+  text-shadow: none;
+  text-transform: none;
+  transition: none;
+  vertical-align: baseline;
+}
+
+/* Flatsome form — prevent bottom margin */
+.oz-product-page form {
+  margin-bottom: 0;
+}
+
+/* Restore specific input styling where needed */
+.oz-product-page input[type="number"] {
+  border: 1px solid var(--oz-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  height: 38px;
+  width: 80px;
+  background: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+
+/* ═══ Fixed-element resets (sticky bar + bottom sheet) ════════ */
+/* These elements live OUTSIDE .oz-product-page (they're position:fixed).
+   Flatsome's global button/input rules still apply. Reset them here. */
+
+.oz-sticky-bar button,
+.oz-sticky-bar input,
+.oz-sticky-bar select,
+.oz-sticky-bar textarea,
+.oz-sticky-bar label,
+.oz-sticky-bar fieldset,
+.oz-bottom-sheet button,
+.oz-bottom-sheet input,
+.oz-bottom-sheet select,
+.oz-bottom-sheet textarea,
+.oz-bottom-sheet label,
+.oz-bottom-sheet fieldset {
+  /* Kill Flatsome's global margin-bottom: 1em on form elements */
+  margin-bottom: 0;
+  margin-right: 0;
+  /* Kill Flatsome's letter-spacing, text-transform, line-height on buttons */
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  text-decoration: none;
+  /* Kill Flatsome's min-height: 2.5em on buttons */
+  min-height: auto;
+  min-width: auto;
+  /* Kill Flatsome's box-shadow: inset on inputs */
+  box-shadow: none;
+}
+
+.oz-sticky-bar button,
+.oz-sticky-bar input,
+.oz-bottom-sheet button,
+.oz-bottom-sheet input {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  display: inline-block;
+  max-width: none;
+  width: auto;
+  height: auto;
+  transition: none;
+}
+
+/* Mirror .oz-product-page button resets for .oz-bottom-sheet
+   (optionsWidget moves into sheet on mobile, losing .oz-product-page scope) */
+.oz-bottom-sheet button,
+.oz-bottom-sheet input,
+.oz-bottom-sheet select {
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: normal !important;
+  line-height: inherit !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+}

@@ -9,3 +9,4 @@ oz-variations-bcw/node_modules/
 
 # esbuild source maps — dev only, not deployed
 oz-variations-bcw/assets/js/*.map
+oz-variations-bcw/assets/css/*.map

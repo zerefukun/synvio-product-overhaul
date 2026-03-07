@@ -1,0 +1,39 @@
+/**
+ * OZ Variations BCW — Product Page Styles (Entry Point)
+ *
+ * esbuild bundles all @imports into a single output file.
+ * Order matters: tokens first, then reset, then components.
+ *
+ * Brand: Teal (#135350) accent, Orange (#E67C00) CTA
+ * Fonts: DM Serif Display (headings), Raleway (body)
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+/* 1. Design tokens — CSS custom properties (:root + .oz-product-page) */
+@import './tokens.css';
+
+/* 2. Flatsome isolation — neutralize theme interference */
+@import './reset.css';
+
+/* 3. Page structure */
+@import './layout.css';
+@import './gallery.css';
+@import './product-info.css';
+@import './summary.css';
+
+/* 4. Interactive components */
+@import './options.css';
+@import './color.css';
+@import './cart.css';
+@import './tools.css';
+
+/* 5. Mobile overlays */
+@import './sheet.css';
+
+/* 6. Utilities & overrides */
+@import './utilities.css';
+
+/* 7. Responsive — must be last to override above */
+@import './responsive.css';

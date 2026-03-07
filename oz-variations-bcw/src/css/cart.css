@@ -1,0 +1,272 @@
+/**
+ * Cart — Quantity stepper, add-to-cart button, price breakdown,
+ *         trust badges, payment methods
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+
+/* ═══ QUANTITY + ADD TO CART ═══════════════════════════════════ */
+
+.oz-product-page .oz-cart-row,
+.oz-bottom-sheet .oz-cart-row {
+  display: inline-flex !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.oz-product-page .oz-quantity-wrapper,
+.oz-bottom-sheet .oz-quantity-wrapper {
+  display: inline-flex !important;
+  align-items: center;
+  border: 1.5px solid var(--oz-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+  margin: 0;
+  padding: 0;
+  background: white;
+}
+
+.oz-quantity-wrapper:hover {
+  border-color: var(--oz-text-muted);
+}
+
+.oz-product-page button.oz-qty-btn {
+  width: 32px !important;
+  height: 48px !important;
+  background: var(--oz-bg-subtle) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--oz-text-primary);
+  transition: background-color 0.15s var(--oz-ease);
+  font-family: 'Raleway', sans-serif;
+  user-select: none;
+  padding: 0 !important;
+  margin: 0;
+  min-height: auto !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.oz-product-page .oz-qty-btn:hover {
+  background: var(--oz-border);
+}
+
+.oz-product-page .oz-qty-btn:active {
+  background: var(--oz-text-muted);
+}
+
+.oz-product-page input.oz-qty-input,
+.oz-product-page input.oz-qty-input[type="number"] {
+  width: 32px !important;
+  height: 48px !important;
+  text-align: center;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Raleway', sans-serif;
+  color: var(--oz-text-primary);
+  background: white !important;
+  padding: 0 !important;
+  margin: 0;
+  max-width: 32px;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+  vertical-align: middle;
+}
+
+.oz-product-page input.oz-qty-input:focus,
+.oz-product-page input.oz-qty-input[type="number"]:focus {
+  outline: none;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  border: none !important;
+  background: white !important;
+}
+
+.oz-product-page .oz-qty-input::-webkit-inner-spin-button,
+.oz-product-page .oz-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Per-unit note next to quantity */
+.oz-qty-unit {
+  font-size: 13px;
+  color: var(--oz-text-muted);
+  white-space: nowrap;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.oz-product-page button.oz-add-to-cart {
+  flex: 1 !important;
+  height: 50px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text) !important;
+  font-size: 15px !important;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s var(--oz-ease);
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 20px !important;
+  margin: 0;
+  min-height: auto !important;
+  line-height: 50px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.oz-product-page button.oz-add-to-cart:hover {
+  background: var(--oz-cta-hover) !important;
+}
+
+.oz-product-page button.oz-add-to-cart:active {
+  background: #b86200 !important;
+}
+
+.oz-product-page button.oz-add-to-cart:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed;
+}
+
+
+/* ═══ PRICE BREAKDOWN ═════════════════════════════════════════ */
+
+.oz-price-summary {
+  background: var(--oz-bg-warm);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+  border: 1px solid var(--oz-border-light);
+  font-size: 13px;
+}
+
+.oz-price-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  color: var(--oz-text-body);
+  transition: opacity 0.2s;
+}
+
+.oz-price-line.oz-price-total {
+  border-top: 2px solid var(--oz-accent);
+  margin-top: 10px;
+  padding-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  letter-spacing: -0.3px;
+}
+
+/* Price line m2 note */
+.oz-price-line .oz-m2-note {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+}
+
+
+/* ═══ TRUST BADGES ════════════════════════════════════════════ */
+
+.oz-trust-badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.oz-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--oz-bg-subtle);
+  border: 1px solid var(--oz-border-light);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--oz-text-body);
+  transition: background-color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
+}
+
+.oz-trust-badge:hover {
+  border-color: var(--oz-accent-light);
+  background: var(--oz-accent-light);
+}
+
+/* Trust badge SVG sizing */
+.oz-trust-badge svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--oz-accent);
+}
+
+
+/* ═══ PAYMENT METHODS ═════════════════════════════════════════ */
+
+.oz-payment-section {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.oz-payment-label {
+  font-size: 11px;
+  color: var(--oz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.oz-payment-methods {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.oz-payment-icon {
+  width: 38px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--oz-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: border-color 0.2s;
+  padding: 3px;
+}
+
+.oz-payment-icon:hover {
+  border-color: var(--oz-accent);
+}
+
+.oz-payment-icon img,
+.oz-payment-icon svg {
+  max-width: 100%;
+  max-height: 100%;
+}

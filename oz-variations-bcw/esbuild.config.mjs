@@ -1,11 +1,16 @@
 /**
  * esbuild Configuration — OZ Variations BCW
  *
- * Two entry points:
+ * Builds both JS and CSS from src/ modules into assets/ bundles.
+ *
+ * JS entry points:
  * 1. product-page.js → assets/js/oz-product-page.js  (main product page bundle)
  * 2. cookie-banner.js → assets/js/oz-cookie-banner.js (standalone, no imports)
  *
- * Output: IIFE format (no module loader needed), ES5-compatible.
+ * CSS entry point:
+ * 1. product-page.css → assets/css/oz-product-page.css (all @imports bundled)
+ *
+ * Output: IIFE for JS, single bundled file for CSS.
  * Runs in ~50ms. No node_modules shipped to server.
  *
  * Usage:
@@ -18,8 +23,8 @@ import * as esbuild from 'esbuild';
 const isWatch = process.argv.includes('--watch');
 
 /** @type {import('esbuild').BuildOptions} */
-const config = {
-  // Two independent entry points → two separate bundles
+const jsConfig = {
+  // Two independent JS entry points → two separate bundles
   entryPoints: {
     'oz-product-page': 'src/js/product-page.js',
     'oz-cookie-banner': 'src/js/cookie-banner.js',
@@ -53,12 +58,43 @@ const config = {
   logLevel: 'info',
 };
 
+/** @type {import('esbuild').BuildOptions} */
+const cssConfig = {
+  // CSS entry point — @imports get bundled into single file
+  entryPoints: {
+    'oz-product-page': 'src/css/product-page.css',
+  },
+
+  // Output to assets/css/ — PHP enqueues from here
+  outdir: 'assets/css',
+
+  // Bundle @import statements into single output
+  bundle: true,
+
+  // Source maps for debugging
+  sourcemap: true,
+
+  // Banner comment so devs know not to edit the output
+  banner: {
+    css: '/* OZ Variations BCW — Built by esbuild. Do not edit. Source: src/css/ */',
+  },
+
+  // Log build results
+  logLevel: 'info',
+};
+
 if (isWatch) {
-  // Watch mode — rebuilds on file changes
-  const ctx = await esbuild.context(config);
-  await ctx.watch();
+  // Watch mode — rebuilds on file changes (both JS and CSS)
+  const [jsCtx, cssCtx] = await Promise.all([
+    esbuild.context(jsConfig),
+    esbuild.context(cssConfig),
+  ]);
+  await Promise.all([jsCtx.watch(), cssCtx.watch()]);
   console.log('Watching for changes...');
 } else {
-  // One-shot build
-  await esbuild.build(config);
+  // One-shot build (JS and CSS in parallel)
+  await Promise.all([
+    esbuild.build(jsConfig),
+    esbuild.build(cssConfig),
+  ]);
 }

@@ -1,0 +1,85 @@
+/**
+ * Design Tokens — CSS Custom Properties
+ *
+ * Defined in TWO places:
+ * 1. :root — for position:fixed elements (sticky bar, bottom sheet)
+ *    that live OUTSIDE .oz-product-page and can't inherit from it.
+ * 2. .oz-product-page — scoped tokens for everything inside the layout.
+ *
+ * Single source of truth: edit values here, both scopes stay in sync.
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+:root {
+  /* ═══ Global tokens — for elements outside .oz-product-page ═══ */
+  /* Sticky bar and bottom sheet are position:fixed OUTSIDE .oz-product-page,
+     so they can't inherit CSS variables from it. :root makes them global. */
+  --oz-accent: #135350;
+  --oz-accent-hover: #0E3E3C;
+  --oz-accent-light: #E8F0F0;
+  --oz-accent-text: #FFFFFF;
+  --oz-cta: #E67C00;
+  --oz-cta-hover: #D06E00;
+  --oz-cta-text: #FFFFFF;
+  --oz-label-bg: #F7F7F5;
+  --oz-label-text: #3D3D3D;
+  --oz-label-border: #E0DFDD;
+  --oz-label-hover-bg: #E8F0F0;
+  --oz-label-hover-border: #135350;
+  --oz-text-primary: #1A1A1A;
+  --oz-text-body: #555555;
+  --oz-text-muted: #999999;
+  --oz-bg-page: #FFFFFF;
+  --oz-bg-subtle: #FAFAF9;
+  --oz-bg-warm: #F5F4F0;
+  --oz-border: #E5E5E3;
+  --oz-border-light: #F0EFED;
+  --oz-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --oz-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --oz-shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --oz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══ Scoped tokens — identical values, scoped to .oz-product-page ═══ */
+
+.oz-product-page {
+  /* Brand */
+  --oz-accent: #135350;
+  --oz-accent-hover: #0E3E3C;
+  --oz-accent-light: #E8F0F0;
+  --oz-accent-text: #FFFFFF;
+  --oz-cta: #E67C00;
+  --oz-cta-hover: #D06E00;
+  --oz-cta-text: #FFFFFF;
+
+  /* Labels / option buttons */
+  --oz-label-bg: #F7F7F5;
+  --oz-label-text: #3D3D3D;
+  --oz-label-border: #E0DFDD;
+  --oz-label-hover-bg: #E8F0F0;
+  --oz-label-hover-border: #135350;
+
+  /* Text */
+  --oz-text-primary: #1A1A1A;
+  --oz-text-body: #555555;
+  --oz-text-muted: #999999;
+
+  /* Backgrounds */
+  --oz-bg-page: #FFFFFF;
+  --oz-bg-subtle: #FAFAF9;
+  --oz-bg-warm: #F5F4F0;
+
+  /* Borders */
+  --oz-border: #E5E5E3;
+  --oz-border-light: #F0EFED;
+
+  /* Shadows */
+  --oz-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --oz-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --oz-shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+
+  /* Transitions */
+  --oz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}

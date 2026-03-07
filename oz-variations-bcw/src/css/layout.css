@@ -1,0 +1,60 @@
+/**
+ * Page Layout — Grid, breadcrumb, base typography
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+.oz-product-page {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 8px 40px 80px;
+  font-family: 'Raleway', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--oz-text-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.oz-breadcrumb {
+  padding: 14px 0;
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  letter-spacing: 0.2px;
+}
+
+.oz-breadcrumb a {
+  color: var(--oz-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.oz-breadcrumb a:hover {
+  color: var(--oz-accent);
+}
+
+.oz-product-grid {
+  display: grid;
+  grid-template-columns: 56% 44%;
+  gap: 56px;
+  align-items: start;
+}
+
+/* Page-load animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.oz-product-gallery {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s both;
+}
+
+.oz-product-summary {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
+}
+
+.oz-product-info-section {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}

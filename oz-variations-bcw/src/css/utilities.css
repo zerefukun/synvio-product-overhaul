@@ -1,0 +1,50 @@
+/**
+ * Utilities — Shake animation, recaptcha/cookie hiding
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+
+/* ═══ SHAKE ANIMATION (cart validation) ═══════════════════════ */
+
+@keyframes oz-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+
+/* ═══ RECAPTCHA BADGE — always hidden on product pages ════════ */
+/* These overlap with sticky bar and bottom sheet on mobile */
+
+.oz-product-page ~ .grecaptcha-badge,
+.grecaptcha-badge,
+body.single-product .grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+
+/* ═══ COOKIEBOT + PRIVACY BANNERS — hidden for 30s ═══════════ */
+/* JS will remove this class after 30 seconds of no interaction */
+
+body.oz-hide-banners #CookiebotWidget,
+body.oz-hide-banners #CookieConsent,
+body.oz-hide-banners #cookiebanner,
+body.oz-hide-banners .cookieconsent,
+body.oz-hide-banners [id*="cookiebot"],
+body.oz-hide-banners [class*="cookie-banner"],
+body.oz-hide-banners [class*="privacy-banner"],
+body.oz-hide-banners .cc-window,
+body.oz-hide-banners #uc-corner-modal,
+body.oz-hide-banners #CybotCookiebotDialog,
+body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

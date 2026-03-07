@@ -1,0 +1,365 @@
+/**
+ * Tool Selection — Mode toggle, tool items, extras, nudge, upsell
+ *
+ * "Gereedschap" section: Geen / Kant & Klaar / Zelf samenstellen
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+
+/* ═══ TOOL SECTION ════════════════════════════════════════════ */
+
+/* Mode toggle: Geen / Kant & Klaar / Zelf samenstellen */
+.oz-tool-mode {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.oz-tool-mode-btn {
+  flex: 1;
+  padding: 10px 10px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--oz-label-text);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s var(--oz-ease);
+  font-family: "Raleway", sans-serif;
+  line-height: 1.3;
+}
+
+.oz-tool-mode-btn:hover {
+  border-color: var(--oz-label-hover-border);
+  background: var(--oz-label-hover-bg);
+}
+
+.oz-tool-mode-btn.selected {
+  border-color: var(--oz-accent);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text);
+}
+
+.oz-tool-mode-btn .oz-price-add {
+  font-size: 10px;
+  display: block;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.oz-tool-mode-btn.selected .oz-price-add {
+  opacity: 0.9;
+}
+
+
+/* ═══ TOOL ITEMS LIST ═════════════════════════════════════════ */
+
+.oz-tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oz-tool-list[data-list-type="individual"] {
+  margin-top: 8px;
+}
+
+.oz-tool-list[data-list-type="individual"].hidden {
+  display: none;
+}
+
+.oz-tool-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.oz-tool-item:hover {
+  background: var(--oz-bg-subtle);
+}
+
+.oz-tool-item.selected {
+  background: var(--oz-accent-light);
+}
+
+/* Checkmark circle */
+.oz-tool-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--oz-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.oz-tool-check svg {
+  width: 12px;
+  height: 12px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.oz-tool-item.selected .oz-tool-check {
+  background: var(--oz-accent);
+  border-color: var(--oz-accent);
+}
+.oz-tool-item.selected .oz-tool-check svg { opacity: 1; }
+
+.oz-tool-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-text-primary);
+}
+.oz-tool-price {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  white-space: nowrap;
+}
+.oz-tool-item.selected .oz-tool-price { color: var(--oz-accent); font-weight: 600; }
+
+
+/* ═══ QTY STEPPER — slides in when selected ═══════════════════ */
+
+.oz-tool-qty {
+  display: flex;
+  align-items: center;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 0.25s, opacity 0.2s;
+}
+.oz-tool-qty.visible {
+  max-width: 100px;
+  opacity: 1;
+}
+.oz-tool-qty-wrap {
+  display: inline-flex;
+  border: 1px solid var(--oz-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.oz-tool-qty-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--oz-bg-subtle);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--oz-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Raleway", sans-serif;
+  transition: background 0.1s;
+}
+.oz-tool-qty-btn:hover { background: var(--oz-border-light); }
+.oz-tool-qty-btn:active { background: var(--oz-border); }
+.oz-tool-qty-input {
+  width: 30px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid var(--oz-border);
+  border-right: 1px solid var(--oz-border);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Raleway", sans-serif;
+  color: var(--oz-text-primary);
+  background: white;
+  -moz-appearance: textfield;
+}
+.oz-tool-qty-input::-webkit-inner-spin-button,
+.oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+
+/* ═══ SIZE SELECTOR — segmented pills for sized tools ═════════ */
+
+.oz-tool-sizes {
+  display: none;
+  gap: 4px;
+  margin-top: -4px;
+  padding-left: 28px; /* align with tool name past checkmark */
+  flex-basis: 100%;
+}
+.oz-tool-sizes.visible {
+  display: flex;
+}
+.oz-tool-size-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--oz-border);
+  border-radius: 5px;
+  background: var(--oz-bg-subtle);
+  font-size: 11px;
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
+  color: var(--oz-text-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.oz-tool-size-btn:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+}
+.oz-tool-size-btn.selected {
+  background: var(--oz-accent-light);
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+
+/* ═══ SET CONTENTS — what is in the box ═══════════════════════ */
+
+.oz-set-contents {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  line-height: 1.5;
+  padding: 0 2px;
+  margin-top: -2px;
+  margin-bottom: 6px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s, opacity 0.25s, margin 0.3s;
+}
+.oz-set-contents.visible {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+
+/* ═══ EXTRAS — consumables on top of set ══════════════════════ */
+
+.oz-tool-extras-wrap {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s, opacity 0.25s;
+}
+.oz-tool-extras-wrap.visible {
+  max-height: 800px;
+  opacity: 1;
+  overflow: visible;
+}
+.oz-extras-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  margin-bottom: 6px;
+  margin-top: 8px;
+}
+
+
+/* ═══ SMART NUDGE — PU roller recommendation ══════════════════ */
+
+.oz-smart-nudge {
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #92400e;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.oz-smart-nudge.visible {
+  display: flex;
+}
+.oz-smart-nudge svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #f59e0b;
+}
+
+
+/* ═══ UPSELL MODAL ════════════════════════════════════════════ */
+
+.oz-upsell-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.oz-upsell-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.oz-upsell-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: var(--oz-shadow-lg);
+}
+
+.oz-upsell-title {
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 22px;
+  color: var(--oz-text-primary);
+  margin-bottom: 8px;
+}
+
+.oz-upsell-text {
+  font-size: 14px;
+  color: var(--oz-text-body);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.oz-upsell-add {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--oz-cta);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 10px;
+}
+
+.oz-upsell-add:hover {
+  background: var(--oz-cta-hover);
+}
+
+.oz-upsell-skip {
+  font-size: 13px;
+  color: var(--oz-text-muted);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.oz-upsell-skip:hover {
+  color: var(--oz-text-primary);
+}

@@ -1,0 +1,103 @@
+/**
+ * Product Summary — Right column: title, price, short description
+ *
+ * @package OZ_Variations_BCW
+ * @since 2.0.0
+ */
+
+.oz-product-summary {
+  padding-left: 8px;
+}
+
+/* Color label badge above title */
+.oz-color-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--oz-accent-text);
+  background: var(--oz-accent);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.oz-product-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--oz-text-primary);
+  margin: 0 0 2px;
+}
+
+.oz-product-base-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  margin-bottom: 16px;
+}
+
+.oz-product-base-price del {
+  color: var(--oz-text-muted);
+  font-weight: 400;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+/* "Vanaf" price prefix */
+.oz-product-base-price .oz-vanaf {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-text-muted);
+}
+
+.oz-per-unit {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  margin-left: 4px;
+}
+
+/* Short description — teal accent chips */
+.oz-short-desc {
+  margin-bottom: 28px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--oz-text-body);
+}
+
+.oz-short-desc ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-short-desc li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--oz-accent-light);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-accent);
+  margin-bottom: 0;
+  position: static;
+}
+
+/* Override any ::before from theme */
+.oz-short-desc li::before {
+  content: '\2713';
+  position: static;
+  color: var(--oz-accent);
+  font-weight: 700;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
