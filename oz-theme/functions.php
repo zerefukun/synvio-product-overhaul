@@ -383,6 +383,37 @@ function oz_apply_attribution_fallback($order) {
  * Our JS intercepts .header-cart-link clicks to open our drawer instead. */
 add_filter('flatsome_disable_mini_cart', '__return_true');
 
+/**
+ * Get the WooCommerce free shipping minimum amount.
+ * Scans all shipping zones for a free_shipping method with a min_amount.
+ * Returns the lowest threshold found, or 0 if none configured.
+ *
+ * @return float  Threshold amount (0 = no free shipping offer)
+ */
+function oz_get_free_shipping_threshold() {
+    if (!class_exists('WC_Shipping_Zones')) return 0;
+
+    $threshold = 0;
+
+    // Check all shipping zones (including zone 0 = "Rest of the World")
+    $zones = WC_Shipping_Zones::get_zones();
+    $zones[0] = ['shipping_methods' => (new WC_Shipping_Zone(0))->get_shipping_methods()];
+
+    foreach ($zones as $zone) {
+        $methods = isset($zone['shipping_methods']) ? $zone['shipping_methods'] : [];
+        foreach ($methods as $method) {
+            if ($method->id !== 'free_shipping' || $method->enabled !== 'yes') continue;
+
+            $min = floatval($method->get_option('min_amount', 0));
+            if ($min > 0 && ($threshold === 0 || $min < $threshold)) {
+                $threshold = $min;
+            }
+        }
+    }
+
+    return $threshold;
+}
+
 /* ══════════════════════════════════════════════════════════════════
  * CART DRAWER — slide-in cart panel (replaces Flatsome cart sidebar)
  *
@@ -423,12 +454,12 @@ function oz_cart_drawer_enqueue() {
         true
     );
 
-    // Pass AJAX URL, nonce, and page context to JS
-    // isCartOrCheckout tells the drawer to stay disabled on cart/checkout pages
+    // Pass AJAX URL, nonce, page context, and free shipping threshold to JS
     wp_localize_script('oz-cart-drawer', 'ozCartDrawer', [
-        'ajaxUrl'          => admin_url('admin-ajax.php'),
-        'nonce'            => wp_create_nonce('oz_cart_drawer'),
-        'isCartOrCheckout' => (is_cart() || is_checkout()) ? '1' : '0',
+        'ajaxUrl'           => admin_url('admin-ajax.php'),
+        'nonce'             => wp_create_nonce('oz_cart_drawer'),
+        'isCartOrCheckout'  => (is_cart() || is_checkout()) ? '1' : '0',
+        'freeShipThreshold' => oz_get_free_shipping_threshold(),
     ]);
 }
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');

@@ -13,9 +13,9 @@
     'use strict';
 
     /* ============================================
-       CONFIG
+       CONFIG — threshold from WC free shipping settings (0 = not configured)
        ============================================ */
-    var FREE_SHIP_THRESHOLD = 150;
+    var FREE_SHIP_THRESHOLD = parseFloat(ozCartDrawer.freeShipThreshold) || 0;
 
     /* ============================================
        DOM REFS — collected once on DOMContentLoaded
@@ -32,14 +32,18 @@
         subtotal: 0,
         count: 0,
         loading: false,  /* true during AJAX calls */
-        updatingKey: null /* cart_item_key being updated */
+        updatingKey: null, /* cart_item_key being updated */
+        initialFetch: true /* true until first fetch completes */
     };
+
+    /* Element that triggered the drawer open — for focus restore on close */
+    var _triggerEl = null;
 
     /* ============================================
        PURE FUNCTIONS
        ============================================ */
 
-    /* Format price as euro string: 12.50 → "€12,50" */
+    /* Format price as euro string: 12.50 -> "EUR12,50" */
     function fmt(n) {
         return '\u20ac' + parseFloat(n).toFixed(2).replace('.', ',');
     }
@@ -63,11 +67,40 @@
         return c;
     }
 
-    /* Escape HTML */
+    /* Escape HTML — cached element to avoid creating one per call */
+    var _escEl = document.createElement('div');
     function esc(str) {
-        var d = document.createElement('div');
-        d.textContent = str;
-        return d.innerHTML;
+        _escEl.textContent = str;
+        return _escEl.innerHTML;
+    }
+
+    /* ============================================
+       FOCUS TRAP — keeps Tab/Shift+Tab inside drawer
+       ============================================ */
+    var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    function handleFocusTrap(e) {
+        if (e.key !== 'Tab' || !S.open) return;
+
+        var focusable = R.drawer.querySelectorAll(FOCUSABLE);
+        if (focusable.length === 0) return;
+
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+            /* Shift+Tab: if on first element, jump to last */
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            }
+        } else {
+            /* Tab: if on last element, jump to first */
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
     }
 
     /* ============================================
@@ -99,6 +132,7 @@
             }
             S.loading = false;
             S.updatingKey = null;
+            S.initialFetch = false;
             if (callback) callback();
         };
         xhr.send('action=oz_cart_drawer_get&nonce=' + encodeURIComponent(ozCartDrawer.nonce));
@@ -213,6 +247,12 @@
         R.shippingFill.classList.toggle('full', progress.qualified);
     }
 
+    /** Render loading skeleton */
+    function renderSkeleton(show) {
+        if (!R.skeleton) return;
+        R.skeleton.style.display = show ? '' : 'none';
+    }
+
     /** Render cart items */
     function renderItems(items, updatingKey) {
         var container = R.cartItems;
@@ -271,13 +311,13 @@
                     '<div class="oz-cart-qty">' +
                         '<button class="oz-cart-qty-btn dec" aria-label="Minder">\u2212</button>' +
                         '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
-                        '<button class="oz-cart-qty-btn inc" aria-label="Meer">+</button>' +
+                        '<button class="oz-cart-qty-btn inc" aria-label="Meer">\u002B</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +
                 '</div>' +
             '</div>' +
             '<button class="oz-cart-item-remove" aria-label="Verwijderen">' +
-                '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 1l12 12M13 1L1 13"/></svg>' +
+                '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13"/></svg>' +
             '</button>';
 
         /* Bind events */
@@ -381,7 +421,10 @@
         R.cartEmpty.style.display = isEmpty ? '' : 'none';
         R.cartItems.style.display = isEmpty ? 'none' : '';
         R.drawerFooter.style.display = isEmpty ? 'none' : '';
-        R.shippingBar.style.display = isEmpty ? 'none' : '';
+        /* Hide shipping bar when cart is empty OR no free shipping threshold configured */
+        R.shippingBar.style.display = (isEmpty || FREE_SHIP_THRESHOLD <= 0) ? 'none' : '';
+        /* Explicitly hide upsells when cart is empty */
+        R.upsellSection.style.display = isEmpty ? 'none' : R.upsellSection.style.display;
     }
 
     /** Render footer subtotal */
@@ -399,11 +442,18 @@
 
         renderDrawerState(S.open);
         renderCount(S.count);
-        renderEmptyState(isEmpty);
-        renderShipping(shipping);
-        renderItems(items, S.updatingKey);
-        renderUpsells(S.upsells);
-        renderFooter(S.subtotal);
+
+        /* Show skeleton during initial fetch, hide once loaded */
+        var showSkeleton = S.open && S.initialFetch;
+        renderSkeleton(showSkeleton);
+
+        if (!S.initialFetch) {
+            renderEmptyState(isEmpty);
+            renderShipping(shipping);
+            renderItems(items, S.updatingKey);
+            renderUpsells(S.upsells);
+            renderFooter(S.subtotal);
+        }
     }
 
     /* ============================================
@@ -413,11 +463,16 @@
         /* Don't open drawer on cart or checkout pages — let WC handle it */
         if (ozCartDrawer.isCartOrCheckout === '1') return;
 
+        /* Store trigger element for focus restore on close */
+        _triggerEl = document.activeElement;
+
         S.open = true;
         /* Always refresh cart when opening */
         S.loading = true;
         fetchCart(function () {
             syncUI();
+            /* Move focus into drawer after content loads */
+            if (R.drawerClose) R.drawerClose.focus();
         });
         syncUI();
     }
@@ -425,6 +480,12 @@
     function closeDrawer() {
         S.open = false;
         syncUI();
+
+        /* Restore focus to the element that opened the drawer */
+        if (_triggerEl && typeof _triggerEl.focus === 'function') {
+            _triggerEl.focus();
+            _triggerEl = null;
+        }
     }
 
     /* ============================================
@@ -437,6 +498,9 @@
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && S.open) closeDrawer();
         });
+
+        /* Focus trap — keep Tab cycling inside the drawer */
+        document.addEventListener('keydown', handleFocusTrap);
 
         /* Empty state shop button */
         R.emptyShopBtn.addEventListener('click', closeDrawer);
@@ -484,6 +548,7 @@
         R.shippingText = document.getElementById('ozShippingText');
         R.shippingFill = document.getElementById('ozShippingFill');
         R.cartItems = document.getElementById('ozCartItems');
+        R.skeleton = document.getElementById('ozCartSkeleton');
         R.upsellSection = document.getElementById('ozUpsellSection');
         R.upsellList = document.getElementById('ozUpsellList');
         R.cartEmpty = document.getElementById('ozCartEmpty');
