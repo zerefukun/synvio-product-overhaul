@@ -623,14 +623,20 @@ class OZ_Cart_Manager {
             $details[] = $label;
         }
 
-        // Primer
+        // Primer — skip "Geen" variants (no value to display)
         if (!empty($data['oz_primer'])) {
-            $details[] = 'Primer: ' . $data['oz_primer'];
+            $primer = $data['oz_primer'];
+            if (stripos($primer, 'geen') === false) {
+                $details[] = 'Primer: ' . $primer;
+            }
         }
 
-        // Colorfresh
+        // Colorfresh — skip "Zonder" variants
         if (!empty($data['oz_colorfresh'])) {
-            $details[] = $data['oz_colorfresh'];
+            $cf = $data['oz_colorfresh'];
+            if (stripos($cf, 'zonder') === false) {
+                $details[] = $cf;
+            }
         }
 
         // Toepassing
