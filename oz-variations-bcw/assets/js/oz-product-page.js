@@ -1213,16 +1213,19 @@
       var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
       var startY = window.pageYOffset;
       var diff = targetY - startY;
-      var duration = 600;
+      var overshoot = 60;
+      var duration = 700;
       var start = null;
-      function easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      function easeOutBack(t) {
+        var c1 = 1.4;
+        var c3 = c1 + 1;
+        return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
       }
       function step(timestamp) {
         if (!start) start = timestamp;
         var elapsed = timestamp - start;
         var progress = Math.min(elapsed / duration, 1);
-        window.scrollTo(0, startY + diff * easeInOutCubic(progress));
+        window.scrollTo(0, startY + diff * easeOutBack(progress));
         if (progress < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);

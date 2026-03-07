@@ -1047,27 +1047,31 @@ function removeCartMsg() {
 /* ═══ SMOOTH SCROLL HELPER ═════════════════════════════════ */
 
 /**
- * Smooth scroll to an element with manual eased animation.
+ * Smooth scroll to an element with overshoot bounce effect.
+ * Scrolls ~60px past the target, then settles back.
  * Offsets for sticky bar height + 20px padding.
- * Duration ~600ms with easeInOutCubic for a natural feel.
  */
 function smoothScrollTo(el) {
   var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
   var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
   var startY = window.pageYOffset;
   var diff = targetY - startY;
-  var duration = 600;
+  var overshoot = 60; // px past target before bouncing back
+  var duration = 700;
   var start = null;
 
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  // Custom easing: overshoots then settles back (like a soft bounce)
+  function easeOutBack(t) {
+    var c1 = 1.4; // overshoot intensity
+    var c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
 
   function step(timestamp) {
     if (!start) start = timestamp;
     var elapsed = timestamp - start;
     var progress = Math.min(elapsed / duration, 1);
-    window.scrollTo(0, startY + diff * easeInOutCubic(progress));
+    window.scrollTo(0, startY + diff * easeOutBack(progress));
     if (progress < 1) requestAnimationFrame(step);
   }
 
