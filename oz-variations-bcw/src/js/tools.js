@@ -67,13 +67,18 @@ function buildToolRow(item, dataAttr, onToggle, onQtyDec, onQtyInc, onQtyEdit, o
     sizesDiv.className = 'oz-tool-sizes';
     item.sizes.forEach(function(sz, idx) {
       var btn = document.createElement('button');
-      btn.className = 'oz-tool-size-btn' + (idx === 0 ? ' selected' : '');
+      var isOos = sz.inStock === false; // explicit false = out of stock
+      btn.className = 'oz-tool-size-btn' + (idx === 0 && !isOos ? ' selected' : '') + (isOos ? ' oos' : '');
       btn.dataset.sizeIdx = idx;
-      btn.textContent = sz.label + ' ' + fmt(sz.price);
-      btn.addEventListener('click', function(ev) {
-        ev.stopPropagation();
-        if (onSizeChange) onSizeChange(item.id, idx);
-      });
+      btn.textContent = sz.label + ' ' + fmt(sz.price) + (isOos ? ' (uitverkocht)' : '');
+      if (isOos) {
+        btn.disabled = true;
+      } else {
+        btn.addEventListener('click', function(ev) {
+          ev.stopPropagation();
+          if (onSizeChange) onSizeChange(item.id, idx);
+        });
+      }
       sizesDiv.appendChild(btn);
     });
     row.appendChild(sizesDiv);
@@ -209,13 +214,14 @@ function syncItemRows(section, items, stateMap, attrName, isOnFn) {
     if (qtyDiv) qtyDiv.classList.toggle('visible', isOn);
     if (qtyInput && isOn) qtyInput.value = st.qty;
 
-    // Size selector sync
+    // Size selector sync — skip OOS buttons when syncing selection
     var sizesDiv = row.querySelector('.oz-tool-sizes');
     if (sizesDiv) {
       sizesDiv.classList.toggle('visible', isOn);
       if (isOn) {
         sizesDiv.querySelectorAll('.oz-tool-size-btn').forEach(function(btn) {
-          btn.classList.toggle('selected', parseInt(btn.dataset.sizeIdx) === (st.size || 0));
+          var idx = parseInt(btn.dataset.sizeIdx);
+          btn.classList.toggle('selected', idx === (st.size || 0) && !btn.classList.contains('oos'));
         });
       }
     }
@@ -280,12 +286,32 @@ function setToolMode(mode) {
   _onSync();
 }
 
-/** Toggle an individual tool on/off — preserves size selection */
+/**
+ * Find the first in-stock size index for a tool/extra item.
+ * Falls back to 0 if no sizes or all sizes lack stock data.
+ */
+function firstInStockSize(configItem) {
+  if (!configItem.sizes) return 0;
+  for (var i = 0; i < configItem.sizes.length; i++) {
+    if (configItem.sizes[i].inStock !== false) return i;
+  }
+  return 0; // all OOS — fallback to first
+}
+
+/** Toggle an individual tool on/off — auto-selects first in-stock size */
 function toggleTool(id) {
   if (S.toolMode !== 'individual') return;
   var prev = S.tools[id];
   var nowOn = !prev.on;
-  S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: prev.size };
+  // When turning on, select first in-stock size if current is OOS
+  var size = prev.size;
+  if (nowOn) {
+    var config = P.toolConfig.tools.find(function(t) { return t.id === id; });
+    if (config && config.sizes && config.sizes[size] && config.sizes[size].inStock === false) {
+      size = firstInStockSize(config);
+    }
+  }
+  S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: size };
   _onSync();
 }
 
@@ -310,11 +336,18 @@ function changeToolSize(id, sizeIdx) {
   _onSync();
 }
 
-/** Toggle an extra item on/off (on top of set) */
+/** Toggle an extra item on/off (on top of set) — auto-selects first in-stock size */
 function toggleExtra(id) {
   var prev = S.extras[id];
   var nowOn = !prev.on;
-  S.extras[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: prev.size };
+  var size = prev.size;
+  if (nowOn) {
+    var config = P.toolConfig.extras.find(function(e) { return e.id === id; });
+    if (config && config.sizes && config.sizes[size] && config.sizes[size].inStock === false) {
+      size = firstInStockSize(config);
+    }
+  }
+  S.extras[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: size };
   _onSync();
 }
 

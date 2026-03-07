@@ -1320,6 +1320,11 @@
   color: var(--oz-accent);
   font-weight: 600;
 }
+.oz-product-page .oz-tool-size-btn.oos {
+  opacity: 0.45;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
 .oz-set-contents {
   font-size: 12px;
   color: var(--oz-text-muted);
@@ -1731,6 +1736,11 @@ button.oz-sticky-btn:active {
   border-color: var(--oz-accent) !important;
   color: var(--oz-accent) !important;
   font-weight: 600 !important;
+}
+.oz-bottom-sheet .oz-tool-size-btn.oos {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through !important;
 }
 .oz-bottom-sheet button.oz-qty-btn {
   width: 32px !important;

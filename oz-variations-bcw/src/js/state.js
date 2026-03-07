@@ -302,6 +302,29 @@ export function validateCartState(config, state) {
   if (config.hasTools && state.toolMode === 'individual' && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
     return 'Kies minimaal 1 gereedschap of kies een andere optie.';
   }
+
+  // Stock validation — check selected tool/extra sizes are in stock
+  if (config.hasTools && config.toolConfig) {
+    var TC = config.toolConfig;
+    if (state.toolMode === 'set') {
+      for (var i = 0; i < TC.extras.length; i++) {
+        var ext = TC.extras[i];
+        var est = state.extras[ext.id];
+        if (est && est.on && ext.sizes && ext.sizes[est.size || 0] && ext.sizes[est.size || 0].inStock === false) {
+          return ext.name + ' in deze maat is uitverkocht. Kies een andere maat.';
+        }
+      }
+    } else if (state.toolMode === 'individual') {
+      for (var i = 0; i < TC.tools.length; i++) {
+        var tool = TC.tools[i];
+        var tst = state.tools[tool.id];
+        if (tst && tst.on && tool.sizes && tool.sizes[tst.size || 0] && tool.sizes[tst.size || 0].inStock === false) {
+          return tool.name + ' in deze maat is uitverkocht. Kies een andere maat.';
+        }
+      }
+    }
+  }
+
   return null;
 }
 

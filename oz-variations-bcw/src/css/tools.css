@@ -228,6 +228,13 @@
   font-weight: 600;
 }
 
+/* Out-of-stock size buttons — greyed out, non-interactive */
+.oz-product-page .oz-tool-size-btn.oos {
+  opacity: 0.45;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
 
 /* ═══ SET CONTENTS — what is in the box ═══════════════════════ */
 

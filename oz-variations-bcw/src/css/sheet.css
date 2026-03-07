@@ -345,6 +345,12 @@ button.oz-sticky-btn:active {
   font-weight: 600 !important;
 }
 
+.oz-bottom-sheet .oz-tool-size-btn.oos {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  text-decoration: line-through !important;
+}
+
 
 .oz-bottom-sheet button.oz-qty-btn {
   width: 32px !important;

@@ -175,6 +175,26 @@
     if (config.hasTools && state.toolMode === "individual" && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
       return "Kies minimaal 1 gereedschap of kies een andere optie.";
     }
+    if (config.hasTools && config.toolConfig) {
+      var TC = config.toolConfig;
+      if (state.toolMode === "set") {
+        for (var i = 0; i < TC.extras.length; i++) {
+          var ext = TC.extras[i];
+          var est = state.extras[ext.id];
+          if (est && est.on && ext.sizes && ext.sizes[est.size || 0] && ext.sizes[est.size || 0].inStock === false) {
+            return ext.name + " in deze maat is uitverkocht. Kies een andere maat.";
+          }
+        }
+      } else if (state.toolMode === "individual") {
+        for (var i = 0; i < TC.tools.length; i++) {
+          var tool = TC.tools[i];
+          var tst = state.tools[tool.id];
+          if (tst && tst.on && tool.sizes && tool.sizes[tst.size || 0] && tool.sizes[tst.size || 0].inStock === false) {
+            return tool.name + " in deze maat is uitverkocht. Kies een andere maat.";
+          }
+        }
+      }
+    }
     return null;
   }
   function buildCartPayload(config, state) {
@@ -302,13 +322,18 @@
       sizesDiv.className = "oz-tool-sizes";
       item.sizes.forEach(function(sz, idx) {
         var btn = document.createElement("button");
-        btn.className = "oz-tool-size-btn" + (idx === 0 ? " selected" : "");
+        var isOos = sz.inStock === false;
+        btn.className = "oz-tool-size-btn" + (idx === 0 && !isOos ? " selected" : "") + (isOos ? " oos" : "");
         btn.dataset.sizeIdx = idx;
-        btn.textContent = sz.label + " " + fmt(sz.price);
-        btn.addEventListener("click", function(ev) {
-          ev.stopPropagation();
-          if (onSizeChange) onSizeChange(item.id, idx);
-        });
+        btn.textContent = sz.label + " " + fmt(sz.price) + (isOos ? " (uitverkocht)" : "");
+        if (isOos) {
+          btn.disabled = true;
+        } else {
+          btn.addEventListener("click", function(ev) {
+            ev.stopPropagation();
+            if (onSizeChange) onSizeChange(item.id, idx);
+          });
+        }
         sizesDiv.appendChild(btn);
       });
       row.appendChild(sizesDiv);
@@ -436,7 +461,8 @@
         sizesDiv.classList.toggle("visible", isOn);
         if (isOn) {
           sizesDiv.querySelectorAll(".oz-tool-size-btn").forEach(function(btn) {
-            btn.classList.toggle("selected", parseInt(btn.dataset.sizeIdx) === (st.size || 0));
+            var idx = parseInt(btn.dataset.sizeIdx);
+            btn.classList.toggle("selected", idx === (st.size || 0) && !btn.classList.contains("oos"));
           });
         }
       }
@@ -475,11 +501,27 @@
     updateState({ toolMode: mode });
     _onSync();
   }
+  function firstInStockSize(configItem) {
+    if (!configItem.sizes) return 0;
+    for (var i = 0; i < configItem.sizes.length; i++) {
+      if (configItem.sizes[i].inStock !== false) return i;
+    }
+    return 0;
+  }
   function toggleTool(id) {
     if (S.toolMode !== "individual") return;
     var prev = S.tools[id];
     var nowOn = !prev.on;
-    S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: prev.size };
+    var size = prev.size;
+    if (nowOn) {
+      var config = P.toolConfig.tools.find(function(t) {
+        return t.id === id;
+      });
+      if (config && config.sizes && config.sizes[size] && config.sizes[size].inStock === false) {
+        size = firstInStockSize(config);
+      }
+    }
+    S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size };
     _onSync();
   }
   function changeToolQty(id, delta) {
@@ -500,7 +542,16 @@
   function toggleExtra(id) {
     var prev = S.extras[id];
     var nowOn = !prev.on;
-    S.extras[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: prev.size };
+    var size = prev.size;
+    if (nowOn) {
+      var config = P.toolConfig.extras.find(function(e) {
+        return e.id === id;
+      });
+      if (config && config.sizes && config.sizes[size] && config.sizes[size].inStock === false) {
+        size = firstInStockSize(config);
+      }
+    }
+    S.extras[id] = { on: nowOn, qty: nowOn ? 1 : 0, size };
     _onSync();
   }
   function changeExtraQty(id, delta) {
