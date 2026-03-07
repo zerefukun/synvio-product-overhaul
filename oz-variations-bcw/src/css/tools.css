@@ -17,7 +17,8 @@
   margin-bottom: 10px;
 }
 
-.oz-tool-mode-btn {
+/* Scoped under .oz-product-page to beat the Flatsome button reset */
+.oz-product-page .oz-tool-mode-btn {
   flex: 1;
   padding: 10px 10px;
   border: 1.5px solid var(--oz-label-border);
@@ -33,25 +34,25 @@
   line-height: 1.3;
 }
 
-.oz-tool-mode-btn:hover {
+.oz-product-page .oz-tool-mode-btn:hover {
   border-color: var(--oz-label-hover-border);
   background: var(--oz-label-hover-bg);
 }
 
-.oz-tool-mode-btn.selected {
+.oz-product-page .oz-tool-mode-btn.selected {
   border-color: var(--oz-accent);
   background: var(--oz-accent);
   color: var(--oz-accent-text);
 }
 
-.oz-tool-mode-btn .oz-price-add {
+.oz-product-page .oz-tool-mode-btn .oz-price-add {
   font-size: 10px;
   display: block;
   margin-top: 2px;
   opacity: 0.7;
 }
 
-.oz-tool-mode-btn.selected .oz-price-add {
+.oz-product-page .oz-tool-mode-btn.selected .oz-price-add {
   opacity: 0.9;
 }
 
@@ -152,7 +153,8 @@
   border-radius: 6px;
   overflow: hidden;
 }
-.oz-tool-qty-btn {
+/* Scoped to beat .oz-product-page button reset */
+.oz-product-page .oz-tool-qty-btn {
   width: 28px;
   height: 28px;
   border: none;
@@ -166,9 +168,9 @@
   font-family: "Raleway", sans-serif;
   transition: background 0.1s;
 }
-.oz-tool-qty-btn:hover { background: var(--oz-border-light); }
-.oz-tool-qty-btn:active { background: var(--oz-border); }
-.oz-tool-qty-input {
+.oz-product-page .oz-tool-qty-btn:hover { background: var(--oz-border-light); }
+.oz-product-page .oz-tool-qty-btn:active { background: var(--oz-border); }
+.oz-product-page .oz-tool-qty-input {
   width: 30px;
   text-align: center;
   border: none;
@@ -181,8 +183,8 @@
   background: white;
   -moz-appearance: textfield;
 }
-.oz-tool-qty-input::-webkit-inner-spin-button,
-.oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.oz-product-page .oz-tool-qty-input::-webkit-inner-spin-button,
+.oz-product-page .oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
 
 /* ═══ SIZE SELECTOR — segmented pills for sized tools ═════════ */
@@ -197,7 +199,8 @@
 .oz-tool-sizes.visible {
   display: flex;
 }
-.oz-tool-size-btn {
+/* Scoped to beat .oz-product-page button reset */
+.oz-product-page .oz-tool-size-btn {
   padding: 3px 10px;
   border: 1px solid var(--oz-border);
   border-radius: 5px;
@@ -210,11 +213,11 @@
   transition: all 0.15s;
   white-space: nowrap;
 }
-.oz-tool-size-btn:hover {
+.oz-product-page .oz-tool-size-btn:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
 }
-.oz-tool-size-btn.selected {
+.oz-product-page .oz-tool-size-btn.selected {
   background: var(--oz-accent-light);
   border-color: var(--oz-accent);
   color: var(--oz-accent);

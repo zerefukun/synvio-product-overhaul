@@ -233,6 +233,109 @@ button.oz-sticky-btn:active {
   color: var(--oz-accent-text) !important;
 }
 
+
+/* ─── Tool mode buttons inside bottom sheet ─── */
+/* Needs !important to beat the blanket .oz-bottom-sheet button reset */
+
+.oz-bottom-sheet .oz-tool-mode-btn {
+  flex: 1 !important;
+  padding: 10px 10px !important;
+  border: 1.5px solid var(--oz-label-border) !important;
+  border-radius: 8px !important;
+  background: var(--oz-label-bg) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--oz-label-text) !important;
+  cursor: pointer;
+  text-align: center !important;
+  transition: all 0.2s var(--oz-ease) !important;
+  font-family: "Raleway", sans-serif;
+  line-height: 1.3 !important;
+}
+
+.oz-bottom-sheet .oz-tool-mode-btn:hover {
+  border-color: var(--oz-label-hover-border) !important;
+  background: var(--oz-label-hover-bg) !important;
+}
+
+.oz-bottom-sheet .oz-tool-mode-btn.selected {
+  border-color: var(--oz-accent) !important;
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+}
+
+.oz-bottom-sheet .oz-tool-mode-btn .oz-price-add {
+  font-size: 10px !important;
+  display: block !important;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.oz-bottom-sheet .oz-tool-mode-btn.selected .oz-price-add {
+  opacity: 0.9;
+}
+
+/* Tool qty stepper inside bottom sheet */
+.oz-bottom-sheet .oz-tool-qty-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border: none !important;
+  background: var(--oz-bg-subtle) !important;
+  font-size: 13px !important;
+  color: var(--oz-text-primary) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  font-family: "Raleway", sans-serif;
+  padding: 0 !important;
+  transition: background 0.1s !important;
+}
+
+.oz-bottom-sheet .oz-tool-qty-btn:hover {
+  background: var(--oz-border-light) !important;
+}
+
+.oz-bottom-sheet .oz-tool-qty-input {
+  width: 30px !important;
+  text-align: center !important;
+  border: none !important;
+  border-left: 1px solid var(--oz-border) !important;
+  border-right: 1px solid var(--oz-border) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--oz-text-primary) !important;
+  background: white !important;
+  padding: 0 !important;
+  -moz-appearance: textfield;
+}
+
+/* Tool size pills inside bottom sheet */
+.oz-bottom-sheet .oz-tool-size-btn {
+  padding: 3px 10px !important;
+  border: 1px solid var(--oz-border) !important;
+  border-radius: 5px !important;
+  background: var(--oz-bg-subtle) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: var(--oz-text-body) !important;
+  cursor: pointer;
+  transition: all 0.15s !important;
+  white-space: nowrap;
+}
+
+.oz-bottom-sheet .oz-tool-size-btn:hover {
+  border-color: var(--oz-accent) !important;
+  color: var(--oz-accent) !important;
+}
+
+.oz-bottom-sheet .oz-tool-size-btn.selected {
+  background: var(--oz-accent-light) !important;
+  border-color: var(--oz-accent) !important;
+  color: var(--oz-accent) !important;
+  font-weight: 600 !important;
+}
+
+
 .oz-bottom-sheet button.oz-qty-btn {
   width: 32px !important;
   height: 48px !important;
