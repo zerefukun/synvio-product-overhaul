@@ -1690,8 +1690,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-sticky-d-mid {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex: 1 1 0;
+    gap: 20px;
     min-width: 0;
     overflow: hidden;
   }
