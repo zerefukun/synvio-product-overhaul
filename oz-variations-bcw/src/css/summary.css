@@ -105,10 +105,24 @@
 
 /* WC short description — rendered as regular text block (not USP pills) */
 .oz-product-short-desc {
+  margin-top: 28px;
   margin-bottom: 20px;
   font-size: 14px;
-  line-height: 1.6;
-  color: var(--oz-text-secondary);
+  line-height: 1.8;
+  color: var(--oz-text-body);
+}
+
+/* Paragraphs within short description — ensure spacing between blocks */
+.oz-product-short-desc p {
+  margin-bottom: 12px;
+}
+
+.oz-product-short-desc h3,
+.oz-product-short-desc h4 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  margin: 20px 0 8px;
+  color: var(--oz-text-primary);
 }
 
 /* Reset list styling from WC short description */

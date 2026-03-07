@@ -141,7 +141,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <h2 class="oz-section-title">Productinformatie</h2>
         <div class="oz-description-wrapper">
           <div class="oz-description-content" id="descContent">
-            <?php echo wp_kses_post($description); ?>
+            <?php echo apply_filters('the_content', $description); ?>
           </div>
           <button class="oz-read-more" id="readMoreBtn">Lees meer</button>
         </div>
@@ -625,7 +625,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       if (!empty($short_desc)) :
       ?>
         <div class="oz-product-short-desc">
-          <?php echo wp_kses_post($short_desc); ?>
+          <?php echo apply_filters('the_content', $short_desc); ?>
         </div>
       <?php endif; ?>
 
