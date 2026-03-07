@@ -50,8 +50,9 @@ if ($current_color && $product_name === $product_name_full) {
     $product_name = preg_replace('/\s+' . preg_quote($current_color, '/') . '\s*$/i', '', $product_name_full);
 }
 $product_name = trim($product_name);
-$price         = floatval($product->get_price());
-$regular_price = floatval($product->get_regular_price());
+// Always use incl-tax prices for display (WC stores prices ex-tax)
+$price         = floatval(wc_get_price_including_tax($product));
+$regular_price = floatval(wc_get_price_including_tax($product, ['price' => $product->get_regular_price()]));
 $on_sale       = $product->is_on_sale();
 
 // Gallery images
