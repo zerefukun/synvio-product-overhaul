@@ -187,6 +187,45 @@ export function buildToolSectionV2(sectionId) {
 }
 
 /**
+ * Sync a list of tool/extra item rows to match current state.
+ * Generic — works for both extras and individual tools.
+ *
+ * @param {Element}  section   Parent section element
+ * @param {Array}    items     Config items (TC.extras or TC.tools)
+ * @param {Object}   stateMap  State map (S.extras or S.tools)
+ * @param {string}   attrName  Data attribute name: 'extra' or 'tool'
+ * @param {Function} isOnFn    Returns boolean: fn(stateItem) — whether item is active
+ */
+function syncItemRows(section, items, stateMap, attrName, isOnFn) {
+  items.forEach(function(item) {
+    var row = section.querySelector('[data-' + attrName + '="' + item.id + '"]');
+    if (!row) return;
+    var st = stateMap[item.id];
+    var isOn = isOnFn(st);
+    row.classList.toggle('selected', isOn);
+
+    var qtyDiv = row.querySelector('.oz-tool-qty');
+    var qtyInput = row.querySelector('.oz-tool-qty-input');
+    if (qtyDiv) qtyDiv.classList.toggle('visible', isOn);
+    if (qtyInput && isOn) qtyInput.value = st.qty;
+
+    // Size selector sync
+    var sizesDiv = row.querySelector('.oz-tool-sizes');
+    if (sizesDiv) {
+      sizesDiv.classList.toggle('visible', isOn);
+      if (isOn) {
+        sizesDiv.querySelectorAll('.oz-tool-size-btn').forEach(function(btn) {
+          btn.classList.toggle('selected', parseInt(btn.dataset.sizeIdx) === (st.size || 0));
+        });
+      }
+    }
+
+    var priceSpan = row.querySelector('.oz-tool-price');
+    if (priceSpan) priceSpan.textContent = fmt(getItemPrice(item, st));
+  });
+}
+
+/**
  * Sync tool section state to DOM — handles set contents, extras, individual, nudge.
  * Called from syncUI() on every state change.
  */
@@ -209,30 +248,9 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
   var extrasWrap = section.querySelector('.oz-tool-extras-wrap');
   if (extrasWrap) extrasWrap.classList.toggle('visible', toolMode === 'set');
 
-  // Sync extra item states
-  TC.extras.forEach(function(e) {
-    var row = section.querySelector('[data-extra="' + e.id + '"]');
-    if (!row) return;
-    var st = extras[e.id];
-    var isOn = st && st.on;
-    row.classList.toggle('selected', isOn);
-    var qtyDiv = row.querySelector('.oz-tool-qty');
-    var qtyInput = row.querySelector('.oz-tool-qty-input');
-    if (qtyDiv) qtyDiv.classList.toggle('visible', isOn);
-    if (qtyInput && isOn) qtyInput.value = st.qty;
-
-    // Size selector sync
-    var sizesDiv = row.querySelector('.oz-tool-sizes');
-    if (sizesDiv) {
-      sizesDiv.classList.toggle('visible', isOn);
-      if (isOn) {
-        sizesDiv.querySelectorAll('.oz-tool-size-btn').forEach(function(btn) {
-          btn.classList.toggle('selected', parseInt(btn.dataset.sizeIdx) === (st.size || 0));
-        });
-      }
-    }
-    var priceSpan = row.querySelector('.oz-tool-price');
-    if (priceSpan) priceSpan.textContent = fmt(getItemPrice(e, st));
+  // Sync extra item rows — active when toggled on
+  syncItemRows(section, TC.extras, extras, 'extra', function(st) {
+    return st && st.on;
   });
 
   // Smart nudge: show when qty >= threshold AND no extra PU rollers added
@@ -247,30 +265,9 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
   var indList = section.querySelector('[data-list-type="individual"]');
   if (indList) indList.classList.toggle('hidden', toolMode !== 'individual');
 
-  // Sync individual item states
-  TC.tools.forEach(function(t) {
-    var row = section.querySelector('[data-tool="' + t.id + '"]');
-    if (!row) return;
-    var st = tools[t.id];
-    var isOn = toolMode === 'individual' && st && st.on;
-    row.classList.toggle('selected', isOn);
-    var qtyDiv = row.querySelector('.oz-tool-qty');
-    var qtyInput = row.querySelector('.oz-tool-qty-input');
-    if (qtyDiv) qtyDiv.classList.toggle('visible', isOn);
-    if (qtyInput && isOn) qtyInput.value = st.qty;
-
-    // Size selector sync
-    var sizesDiv = row.querySelector('.oz-tool-sizes');
-    if (sizesDiv) {
-      sizesDiv.classList.toggle('visible', isOn);
-      if (isOn) {
-        sizesDiv.querySelectorAll('.oz-tool-size-btn').forEach(function(btn) {
-          btn.classList.toggle('selected', parseInt(btn.dataset.sizeIdx) === (st.size || 0));
-        });
-      }
-    }
-    var priceSpan = row.querySelector('.oz-tool-price');
-    if (priceSpan) priceSpan.textContent = fmt(getItemPrice(t, st));
+  // Sync individual tool rows — active when in individual mode AND toggled on
+  syncItemRows(section, TC.tools, tools, 'tool', function(st) {
+    return toolMode === 'individual' && st && st.on;
   });
 }
 

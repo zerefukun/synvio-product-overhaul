@@ -21,7 +21,7 @@
  * @since 2.0.0
  */
 
-import { P, S, DOM, cacheDom, show, hide, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool } from './state.js';
+import { P, S, DOM, cacheDom, show, hide, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool, validateCartState, buildCartPayload, payloadToFormData } from './state.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
 
 // Guard: only run on pages with ozProduct data
@@ -37,7 +37,7 @@ if (!P) {
  * Called after every state change.
  */
 function syncUI() {
-  var prices = calculatePrices();
+  var prices = calculatePrices(P, S);
 
   // Update price breakdown
   renderBreakdown(prices);
@@ -65,65 +65,35 @@ function syncUI() {
 
 /**
  * Render the price breakdown panel.
- * Shows/hides addon price lines based on current selection.
+ * Data-driven: each price line is described as { line, value, el, labelEl?, label? }.
+ * One generic loop replaces 6 repetitions of show/hide + setText.
  */
 function renderBreakdown(prices) {
   if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
 
-  // PU line — show if PU options exist and price > 0
-  if (DOM.pricePuLine) {
-    if (prices.puPrice > 0) {
-      show(DOM.pricePuLine);
-      DOM.pricePu.textContent = fmt(prices.puPrice);
+  // Each line: row element, value to check, price element, optional label element + text
+  var lines = [
+    { line: DOM.pricePuLine,            value: prices.puPrice,         el: DOM.pricePu },
+    { line: DOM.pricePrimerLine,        value: prices.primerPrice,     el: DOM.pricePrimer,        labelEl: DOM.pricePrimerLabel,        label: 'Primer: ' + S.primer },
+    { line: DOM.priceColorfreshLine,    value: prices.colorfreshPrice, el: DOM.priceColorfresh },
+    { line: DOM.priceToolsLine,         value: prices.toolsTotal,      el: DOM.priceTools,          labelEl: DOM.priceToolsLabel,         label: prices.toolsLabel },
+    { line: DOM.sheetPriceToolsLine,    value: prices.toolsTotal,      el: DOM.sheetPriceTools,     labelEl: DOM.sheetPriceToolsLabel,    label: prices.toolsLabel },
+  ];
+
+  // Generic render: show line if value > 0, update price + optional label
+  for (var i = 0; i < lines.length; i++) {
+    var item = lines[i];
+    if (!item.line) continue;
+    if (item.value > 0) {
+      show(item.line);
+      if (item.el) item.el.textContent = fmt(item.value);
+      if (item.labelEl && item.label) item.labelEl.textContent = item.label;
     } else {
-      hide(DOM.pricePuLine);
+      hide(item.line);
     }
   }
 
-  // Primer line — show if price > 0
-  if (DOM.pricePrimerLine) {
-    if (prices.primerPrice > 0) {
-      show(DOM.pricePrimerLine);
-      DOM.pricePrimer.textContent = fmt(prices.primerPrice);
-      DOM.pricePrimerLabel.textContent = 'Primer: ' + S.primer;
-    } else {
-      hide(DOM.pricePrimerLine);
-    }
-  }
-
-  // Colorfresh line — show if price > 0
-  if (DOM.priceColorfreshLine) {
-    if (prices.colorfreshPrice > 0) {
-      show(DOM.priceColorfreshLine);
-      DOM.priceColorfresh.textContent = fmt(prices.colorfreshPrice);
-    } else {
-      hide(DOM.priceColorfreshLine);
-    }
-  }
-
-  // Tools line — show if tool cost > 0
-  if (DOM.priceToolsLine) {
-    if (prices.toolsTotal > 0) {
-      show(DOM.priceToolsLine);
-      if (DOM.priceToolsLabel) DOM.priceToolsLabel.textContent = prices.toolsLabel;
-      if (DOM.priceTools) DOM.priceTools.textContent = fmt(prices.toolsTotal);
-    } else {
-      hide(DOM.priceToolsLine);
-    }
-  }
-
-  // Sheet tools line
-  if (DOM.sheetPriceToolsLine) {
-    if (prices.toolsTotal > 0) {
-      show(DOM.sheetPriceToolsLine);
-      if (DOM.sheetPriceToolsLabel) DOM.sheetPriceToolsLabel.textContent = prices.toolsLabel;
-      if (DOM.sheetPriceTools) DOM.sheetPriceTools.textContent = fmt(prices.toolsTotal);
-    } else {
-      hide(DOM.sheetPriceToolsLine);
-    }
-  }
-
-  // Quantity line — show if qty > 1
+  // Quantity line — special: shows when qty > 1, displays "qty × unitPrice"
   if (DOM.priceQtyLine) {
     if (S.qty > 1) {
       show(DOM.priceQtyLine);
@@ -140,38 +110,25 @@ function renderBreakdown(prices) {
 
 /**
  * Highlight the selected button in each option group.
- * Uses data- attributes to match state values.
+ * Data-driven: each option type is described as { attr, value, parse? }.
+ * One generic loop replaces 5 repetitions.
  */
 function renderOptionHighlights() {
-  // PU buttons
-  var puBtns = document.querySelectorAll('[data-pu]');
-  for (var i = 0; i < puBtns.length; i++) {
-    var layers = parseInt(puBtns[i].getAttribute('data-pu'), 10);
-    puBtns[i].classList.toggle('selected', layers === S.puLayers);
-  }
+  var highlights = [
+    { attr: 'data-pu',         value: S.puLayers,    parse: function(v) { return parseInt(v, 10); } },
+    { attr: 'data-primer',     value: S.primer },
+    { attr: 'data-colorfresh', value: S.colorfresh },
+    { attr: 'data-toepassing', value: S.toepassing },
+    { attr: 'data-pakket',     value: S.pakket },
+  ];
 
-  // Primer buttons
-  var primerBtns = document.querySelectorAll('[data-primer]');
-  for (var i = 0; i < primerBtns.length; i++) {
-    primerBtns[i].classList.toggle('selected', primerBtns[i].getAttribute('data-primer') === S.primer);
-  }
-
-  // Colorfresh buttons
-  var cfBtns = document.querySelectorAll('[data-colorfresh]');
-  for (var i = 0; i < cfBtns.length; i++) {
-    cfBtns[i].classList.toggle('selected', cfBtns[i].getAttribute('data-colorfresh') === S.colorfresh);
-  }
-
-  // Toepassing buttons
-  var tpBtns = document.querySelectorAll('[data-toepassing]');
-  for (var i = 0; i < tpBtns.length; i++) {
-    tpBtns[i].classList.toggle('selected', tpBtns[i].getAttribute('data-toepassing') === S.toepassing);
-  }
-
-  // Pakket buttons
-  var pkBtns = document.querySelectorAll('[data-pakket]');
-  for (var i = 0; i < pkBtns.length; i++) {
-    pkBtns[i].classList.toggle('selected', pkBtns[i].getAttribute('data-pakket') === S.pakket);
+  for (var h = 0; h < highlights.length; h++) {
+    var spec = highlights[h];
+    var btns = document.querySelectorAll('[' + spec.attr + ']');
+    for (var i = 0; i < btns.length; i++) {
+      var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
+      btns[i].classList.toggle('selected', val === spec.value);
+    }
   }
 }
 
@@ -568,29 +525,19 @@ function closeSheet() {
 
 /**
  * Submit add-to-cart via AJAX.
- * Sends product + addon data to oz_bcw_add_to_cart action.
+ * Validates state (pure), then delegates to submitCart for I/O.
  */
 function addToCart() {
-  // Validate RAL/NCS if in that mode
-  if (S.colorMode === 'ral_ncs') {
-    if (!S.customColor) {
-      shakeButton();
-      showCartError('Vul een RAL of NCS kleurcode in.');
-      return;
+  // Pure validation — returns error string or null
+  var error = validateCartState(P, S);
+  if (error) {
+    // Scroll to tool section if it's a tool error
+    if (error.indexOf('gereedschap') !== -1) {
+      var toolGroup = document.querySelector('[data-option="tools"]');
+      if (toolGroup) toolGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    if (!validateRal(S.customColor) && !validateNcs(S.customColor)) {
-      shakeButton();
-      showCartError('Ongeldige RAL of NCS kleurcode.');
-      return;
-    }
-  }
-
-  // Tool validation — individual mode must have at least 1 tool selected
-  if (P.hasTools && S.toolMode === 'individual' && !hasAnyTool(S.toolMode, S.tools)) {
-    var toolGroup = document.querySelector('[data-option="tools"]');
-    if (toolGroup) toolGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
     shakeButton();
-    showCartError('Kies minimaal 1 gereedschap of kies een andere optie.');
+    showCartError(error);
     return;
   }
 
@@ -605,60 +552,15 @@ function addToCart() {
 }
 
 /**
- * Actually submit the cart — called after validation and upsell checks pass.
+ * Actually submit the cart — thin I/O shell.
+ * Pure payload building is in buildCartPayload(), I/O is here.
  */
 function submitCart() {
-  // Build form data
-  var data = new FormData();
-  data.append('action', 'oz_bcw_add_to_cart');
-  data.append('nonce', P.nonce);
-  data.append('product_id', P.productId);
-  data.append('quantity', S.qty);
+  // Pure: build payload object from state
+  var payload = buildCartPayload(P, S);
 
-  // Addon fields — same keys as OZ_Cart_Manager::extract_post_data()
-  if (S.puLayers !== null)  data.append('oz_pu_layers', S.puLayers);
-  if (S.primer)             data.append('oz_primer', S.primer);
-  if (S.colorfresh)         data.append('oz_colorfresh', S.colorfresh);
-  if (S.toepassing)         data.append('oz_toepassing', S.toepassing);
-  if (S.pakket)             data.append('oz_pakket', S.pakket);
-
-  // Color mode
-  data.append('oz_color_mode', S.colorMode);
-  if (S.colorMode === 'ral_ncs') {
-    data.append('oz_custom_color', S.customColor);
-  }
-
-  // Tool data
-  if (P.hasTools) {
-    data.append('oz_tool_mode', S.toolMode);
-    if (S.toolMode === 'set') {
-      data.append('oz_tool_set_id', P.toolConfig.toolSet.id);
-      // Extras on top of set
-      P.toolConfig.extras.forEach(function(e) {
-        var st = S.extras[e.id];
-        if (st && st.on && st.qty > 0) {
-          var sizeData = e.sizes ? e.sizes[st.size || 0] : e;
-          data.append('oz_extras[' + e.id + '][qty]', st.qty);
-          data.append('oz_extras[' + e.id + '][wcId]', sizeData.wcId);
-          if (sizeData.wapoAddon) {
-            data.append('oz_extras[' + e.id + '][wapoAddon]', sizeData.wapoAddon);
-          }
-        }
-      });
-    } else if (S.toolMode === 'individual') {
-      P.toolConfig.tools.forEach(function(t) {
-        var st = S.tools[t.id];
-        if (st && st.on && st.qty > 0) {
-          var sizeData = t.sizes ? t.sizes[st.size || 0] : t;
-          data.append('oz_tools[' + t.id + '][qty]', st.qty);
-          data.append('oz_tools[' + t.id + '][wcId]', sizeData.wcId);
-          if (sizeData.wapoAddon) {
-            data.append('oz_tools[' + t.id + '][wapoAddon]', sizeData.wapoAddon);
-          }
-        }
-      });
-    }
-  }
+  // Convert to FormData (handles nested tool/extra keys)
+  var data = payloadToFormData(payload);
 
   // Disable button + show loading state
   setCartLoading(true);

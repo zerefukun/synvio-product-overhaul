@@ -116,22 +116,24 @@ export function getItemPrice(configItem, stateItem) {
 }
 
 /**
- * Calculate all prices based on current state.
- * Pure function — reads S and P, returns price object.
+ * Calculate all prices based on product config and current state.
+ * Truly pure — all data passed as arguments, testable with plain objects.
  *
+ * @param {Object} config  Product config (ozProduct)
+ * @param {Object} state   Current UI state
  * @return {Object}  { base, puPrice, primerPrice, colorfreshPrice, toolsTotal, toolsLabel, unitTotal, total }
  */
-export function calculatePrices() {
+export function calculatePrices(config, state) {
   // wp_localize_script sends all values as strings — parse to float
-  var base = parseFloat(P.basePrice) || 0;
+  var base = parseFloat(config.basePrice) || 0;
 
   // PU price — look up from puOptions by matching layers
   // Use == (loose) because wp_localize_script sends layers as string "1" etc.
   var puPrice = 0;
-  if (P.puOptions && S.puLayers !== null) {
-    for (var i = 0; i < P.puOptions.length; i++) {
-      if (P.puOptions[i].layers == S.puLayers) {
-        puPrice = parseFloat(P.puOptions[i].price) || 0;
+  if (config.puOptions && state.puLayers !== null) {
+    for (var i = 0; i < config.puOptions.length; i++) {
+      if (config.puOptions[i].layers == state.puLayers) {
+        puPrice = parseFloat(config.puOptions[i].price) || 0;
         break;
       }
     }
@@ -139,10 +141,10 @@ export function calculatePrices() {
 
   // Primer price — look up by label
   var primerPrice = 0;
-  if (P.primerOptions && S.primer) {
-    for (var i = 0; i < P.primerOptions.length; i++) {
-      if (P.primerOptions[i].label === S.primer) {
-        primerPrice = parseFloat(P.primerOptions[i].price) || 0;
+  if (config.primerOptions && state.primer) {
+    for (var i = 0; i < config.primerOptions.length; i++) {
+      if (config.primerOptions[i].label === state.primer) {
+        primerPrice = parseFloat(config.primerOptions[i].price) || 0;
         break;
       }
     }
@@ -150,10 +152,10 @@ export function calculatePrices() {
 
   // Colorfresh price — look up by label
   var colorfreshPrice = 0;
-  if (P.colorfresh && S.colorfresh) {
-    for (var i = 0; i < P.colorfresh.length; i++) {
-      if (P.colorfresh[i].label === S.colorfresh) {
-        colorfreshPrice = parseFloat(P.colorfresh[i].price) || 0;
+  if (config.colorfresh && state.colorfresh) {
+    for (var i = 0; i < config.colorfresh.length; i++) {
+      if (config.colorfresh[i].label === state.colorfresh) {
+        colorfreshPrice = parseFloat(config.colorfresh[i].price) || 0;
         break;
       }
     }
@@ -162,16 +164,16 @@ export function calculatePrices() {
   // Tool costs — calculated separately (not per-unit)
   var toolsTotal = 0;
   var toolsLabel = '';
-  if (P.hasTools && P.toolConfig) {
-    var TC = P.toolConfig;
-    if (S.toolMode === 'set') {
+  if (config.hasTools && config.toolConfig) {
+    var TC = config.toolConfig;
+    if (state.toolMode === 'set') {
       toolsTotal = parseFloat(TC.toolSet.price) || 0;
       toolsLabel = TC.toolSet.name;
       // Add extras on top of set
       var extrasTotal = 0;
       var extrasCount = 0;
       TC.extras.forEach(function(e) {
-        var st = S.extras[e.id];
+        var st = state.extras[e.id];
         if (st && st.on && st.qty > 0) {
           extrasTotal += getItemPrice(e, st) * st.qty;
           extrasCount += st.qty;
@@ -181,10 +183,10 @@ export function calculatePrices() {
         toolsTotal += extrasTotal;
         toolsLabel += ' + ' + extrasCount + ' extra';
       }
-    } else if (S.toolMode === 'individual') {
+    } else if (state.toolMode === 'individual') {
       var toolLines = [];
       TC.tools.forEach(function(t) {
-        var st = S.tools[t.id];
+        var st = state.tools[t.id];
         if (st && st.on && st.qty > 0) {
           var lineTotal = getItemPrice(t, st) * st.qty;
           toolsTotal += lineTotal;
@@ -204,7 +206,7 @@ export function calculatePrices() {
   var unitTotal = base + puPrice + primerPrice + colorfreshPrice;
 
   // Grand total (unit * quantity) + tools (not per-unit)
-  var total = (unitTotal * S.qty) + toolsTotal;
+  var total = (unitTotal * state.qty) + toolsTotal;
 
   return {
     base: base,
@@ -239,13 +241,19 @@ export function validateNcs(code) {
 
 /**
  * Check if any tools are selected.
- * Returns true for 'set' mode, checks individual selections for 'individual' mode.
+ * Pure — toolConfig passed explicitly. Returns true for 'set' mode,
+ * checks individual selections for 'individual' mode.
+ *
+ * @param {string}      toolMode    'none', 'set', or 'individual'
+ * @param {Object}      tools       Tool state map { id: { on, qty, size } }
+ * @param {Object|null} toolConfig  Tool config from product (P.toolConfig)
+ * @return {boolean}
  */
-export function hasAnyTool(toolMode, tools) {
-  if (!P.hasTools || !P.toolConfig) return false;
+export function hasAnyTool(toolMode, tools, toolConfig) {
+  if (!toolConfig) return false;
   if (toolMode === 'set') return true;
   if (toolMode === 'individual') {
-    return P.toolConfig.tools.some(function(t) { return tools[t.id] && tools[t.id].on; });
+    return toolConfig.tools.some(function(t) { return tools[t.id] && tools[t.id].on; });
   }
   return false;
 }
@@ -255,6 +263,130 @@ export function hasAnyTool(toolMode, tools) {
  */
 export function clampToolQty(current, delta) {
   return Math.max(1, Math.min(99, current + delta));
+}
+
+/**
+ * Validate cart state before submission.
+ * Pure — returns error message string or null if valid.
+ *
+ * @param {Object} config  Product config (ozProduct)
+ * @param {Object} state   Current UI state
+ * @return {string|null}  Error message, or null if valid
+ */
+export function validateCartState(config, state) {
+  // RAL/NCS validation
+  if (state.colorMode === 'ral_ncs') {
+    if (!state.customColor) return 'Vul een RAL of NCS kleurcode in.';
+    if (!validateRal(state.customColor) && !validateNcs(state.customColor)) {
+      return 'Ongeldige RAL of NCS kleurcode.';
+    }
+  }
+  // Tool validation — individual mode must have at least 1 tool selected
+  if (config.hasTools && state.toolMode === 'individual' && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
+    return 'Kies minimaal 1 gereedschap of kies een andere optie.';
+  }
+  return null;
+}
+
+/**
+ * Build cart payload as a plain object from product config and state.
+ * Pure — no I/O, no DOM, no FormData. Testable with plain objects.
+ *
+ * @param {Object} config  Product config (ozProduct)
+ * @param {Object} state   Current UI state
+ * @return {Object}  Key-value pairs for the cart form data
+ */
+export function buildCartPayload(config, state) {
+  var payload = {
+    action: 'oz_bcw_add_to_cart',
+    nonce: config.nonce,
+    product_id: config.productId,
+    quantity: state.qty,
+  };
+
+  // Addon fields — same keys as OZ_Cart_Manager::extract_post_data()
+  if (state.puLayers !== null)  payload.oz_pu_layers = state.puLayers;
+  if (state.primer)             payload.oz_primer = state.primer;
+  if (state.colorfresh)         payload.oz_colorfresh = state.colorfresh;
+  if (state.toepassing)         payload.oz_toepassing = state.toepassing;
+  if (state.pakket)             payload.oz_pakket = state.pakket;
+
+  // Color mode
+  payload.oz_color_mode = state.colorMode;
+  if (state.colorMode === 'ral_ncs') {
+    payload.oz_custom_color = state.customColor;
+  }
+
+  // Tool data — nested keys need special handling when converting to FormData
+  if (config.hasTools) {
+    payload.oz_tool_mode = state.toolMode;
+    if (state.toolMode === 'set') {
+      payload.oz_tool_set_id = config.toolConfig.toolSet.id;
+      // Extras on top of set — stored as nested object for FormData expansion
+      var extras = {};
+      config.toolConfig.extras.forEach(function(e) {
+        var st = state.extras[e.id];
+        if (st && st.on && st.qty > 0) {
+          var sizeData = e.sizes ? e.sizes[st.size || 0] : e;
+          extras[e.id] = { qty: st.qty, wcId: sizeData.wcId };
+          if (sizeData.wapoAddon) extras[e.id].wapoAddon = sizeData.wapoAddon;
+        }
+      });
+      payload._extras = extras;
+    } else if (state.toolMode === 'individual') {
+      var tools = {};
+      config.toolConfig.tools.forEach(function(t) {
+        var st = state.tools[t.id];
+        if (st && st.on && st.qty > 0) {
+          var sizeData = t.sizes ? t.sizes[st.size || 0] : t;
+          tools[t.id] = { qty: st.qty, wcId: sizeData.wcId };
+          if (sizeData.wapoAddon) tools[t.id].wapoAddon = sizeData.wapoAddon;
+        }
+      });
+      payload._tools = tools;
+    }
+  }
+
+  return payload;
+}
+
+/**
+ * Convert a cart payload object to FormData.
+ * Handles the nested _extras and _tools objects as bracketed keys.
+ *
+ * @param {Object} payload  From buildCartPayload()
+ * @return {FormData}
+ */
+export function payloadToFormData(payload) {
+  var data = new FormData();
+
+  Object.keys(payload).forEach(function(key) {
+    // Skip internal nested objects — expanded separately below
+    if (key === '_extras' || key === '_tools') return;
+    data.append(key, payload[key]);
+  });
+
+  // Expand nested extras: oz_extras[id][field]
+  if (payload._extras) {
+    Object.keys(payload._extras).forEach(function(id) {
+      var item = payload._extras[id];
+      Object.keys(item).forEach(function(field) {
+        data.append('oz_extras[' + id + '][' + field + ']', item[field]);
+      });
+    });
+  }
+
+  // Expand nested tools: oz_tools[id][field]
+  if (payload._tools) {
+    Object.keys(payload._tools).forEach(function(id) {
+      var item = payload._tools[id];
+      Object.keys(item).forEach(function(field) {
+        data.append('oz_tools[' + id + '][' + field + ']', item[field]);
+      });
+    });
+  }
+
+  return data;
 }
 
 /* Checkmark SVG for tool custom checkbox */

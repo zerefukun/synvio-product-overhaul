@@ -58,46 +58,46 @@
     if (configItem.sizes && stateItem) return parseFloat(configItem.sizes[stateItem.size || 0].price) || 0;
     return parseFloat(configItem.price) || 0;
   }
-  function calculatePrices() {
-    var base = parseFloat(P.basePrice) || 0;
+  function calculatePrices(config, state) {
+    var base = parseFloat(config.basePrice) || 0;
     var puPrice = 0;
-    if (P.puOptions && S.puLayers !== null) {
-      for (var i = 0; i < P.puOptions.length; i++) {
-        if (P.puOptions[i].layers == S.puLayers) {
-          puPrice = parseFloat(P.puOptions[i].price) || 0;
+    if (config.puOptions && state.puLayers !== null) {
+      for (var i = 0; i < config.puOptions.length; i++) {
+        if (config.puOptions[i].layers == state.puLayers) {
+          puPrice = parseFloat(config.puOptions[i].price) || 0;
           break;
         }
       }
     }
     var primerPrice = 0;
-    if (P.primerOptions && S.primer) {
-      for (var i = 0; i < P.primerOptions.length; i++) {
-        if (P.primerOptions[i].label === S.primer) {
-          primerPrice = parseFloat(P.primerOptions[i].price) || 0;
+    if (config.primerOptions && state.primer) {
+      for (var i = 0; i < config.primerOptions.length; i++) {
+        if (config.primerOptions[i].label === state.primer) {
+          primerPrice = parseFloat(config.primerOptions[i].price) || 0;
           break;
         }
       }
     }
     var colorfreshPrice = 0;
-    if (P.colorfresh && S.colorfresh) {
-      for (var i = 0; i < P.colorfresh.length; i++) {
-        if (P.colorfresh[i].label === S.colorfresh) {
-          colorfreshPrice = parseFloat(P.colorfresh[i].price) || 0;
+    if (config.colorfresh && state.colorfresh) {
+      for (var i = 0; i < config.colorfresh.length; i++) {
+        if (config.colorfresh[i].label === state.colorfresh) {
+          colorfreshPrice = parseFloat(config.colorfresh[i].price) || 0;
           break;
         }
       }
     }
     var toolsTotal = 0;
     var toolsLabel = "";
-    if (P.hasTools && P.toolConfig) {
-      var TC = P.toolConfig;
-      if (S.toolMode === "set") {
+    if (config.hasTools && config.toolConfig) {
+      var TC = config.toolConfig;
+      if (state.toolMode === "set") {
         toolsTotal = parseFloat(TC.toolSet.price) || 0;
         toolsLabel = TC.toolSet.name;
         var extrasTotal = 0;
         var extrasCount = 0;
         TC.extras.forEach(function(e) {
-          var st = S.extras[e.id];
+          var st = state.extras[e.id];
           if (st && st.on && st.qty > 0) {
             extrasTotal += getItemPrice(e, st) * st.qty;
             extrasCount += st.qty;
@@ -107,10 +107,10 @@
           toolsTotal += extrasTotal;
           toolsLabel += " + " + extrasCount + " extra";
         }
-      } else if (S.toolMode === "individual") {
+      } else if (state.toolMode === "individual") {
         var toolLines = [];
         TC.tools.forEach(function(t) {
-          var st = S.tools[t.id];
+          var st = state.tools[t.id];
           if (st && st.on && st.qty > 0) {
             var lineTotal = getItemPrice(t, st) * st.qty;
             toolsTotal += lineTotal;
@@ -128,7 +128,7 @@
       }
     }
     var unitTotal = base + puPrice + primerPrice + colorfreshPrice;
-    var total = unitTotal * S.qty + toolsTotal;
+    var total = unitTotal * state.qty + toolsTotal;
     return {
       base,
       puPrice,
@@ -146,11 +146,11 @@
   function validateNcs(code) {
     return /^S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
   }
-  function hasAnyTool(toolMode, tools) {
-    if (!P.hasTools || !P.toolConfig) return false;
+  function hasAnyTool(toolMode, tools, toolConfig) {
+    if (!toolConfig) return false;
     if (toolMode === "set") return true;
     if (toolMode === "individual") {
-      return P.toolConfig.tools.some(function(t) {
+      return toolConfig.tools.some(function(t) {
         return tools[t.id] && tools[t.id].on;
       });
     }
@@ -158,6 +158,87 @@
   }
   function clampToolQty(current, delta) {
     return Math.max(1, Math.min(99, current + delta));
+  }
+  function validateCartState(config, state) {
+    if (state.colorMode === "ral_ncs") {
+      if (!state.customColor) return "Vul een RAL of NCS kleurcode in.";
+      if (!validateRal(state.customColor) && !validateNcs(state.customColor)) {
+        return "Ongeldige RAL of NCS kleurcode.";
+      }
+    }
+    if (config.hasTools && state.toolMode === "individual" && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
+      return "Kies minimaal 1 gereedschap of kies een andere optie.";
+    }
+    return null;
+  }
+  function buildCartPayload(config, state) {
+    var payload = {
+      action: "oz_bcw_add_to_cart",
+      nonce: config.nonce,
+      product_id: config.productId,
+      quantity: state.qty
+    };
+    if (state.puLayers !== null) payload.oz_pu_layers = state.puLayers;
+    if (state.primer) payload.oz_primer = state.primer;
+    if (state.colorfresh) payload.oz_colorfresh = state.colorfresh;
+    if (state.toepassing) payload.oz_toepassing = state.toepassing;
+    if (state.pakket) payload.oz_pakket = state.pakket;
+    payload.oz_color_mode = state.colorMode;
+    if (state.colorMode === "ral_ncs") {
+      payload.oz_custom_color = state.customColor;
+    }
+    if (config.hasTools) {
+      payload.oz_tool_mode = state.toolMode;
+      if (state.toolMode === "set") {
+        payload.oz_tool_set_id = config.toolConfig.toolSet.id;
+        var extras = {};
+        config.toolConfig.extras.forEach(function(e) {
+          var st = state.extras[e.id];
+          if (st && st.on && st.qty > 0) {
+            var sizeData = e.sizes ? e.sizes[st.size || 0] : e;
+            extras[e.id] = { qty: st.qty, wcId: sizeData.wcId };
+            if (sizeData.wapoAddon) extras[e.id].wapoAddon = sizeData.wapoAddon;
+          }
+        });
+        payload._extras = extras;
+      } else if (state.toolMode === "individual") {
+        var tools = {};
+        config.toolConfig.tools.forEach(function(t) {
+          var st = state.tools[t.id];
+          if (st && st.on && st.qty > 0) {
+            var sizeData = t.sizes ? t.sizes[st.size || 0] : t;
+            tools[t.id] = { qty: st.qty, wcId: sizeData.wcId };
+            if (sizeData.wapoAddon) tools[t.id].wapoAddon = sizeData.wapoAddon;
+          }
+        });
+        payload._tools = tools;
+      }
+    }
+    return payload;
+  }
+  function payloadToFormData(payload) {
+    var data = new FormData();
+    Object.keys(payload).forEach(function(key) {
+      if (key === "_extras" || key === "_tools") return;
+      data.append(key, payload[key]);
+    });
+    if (payload._extras) {
+      Object.keys(payload._extras).forEach(function(id) {
+        var item = payload._extras[id];
+        Object.keys(item).forEach(function(field) {
+          data.append("oz_extras[" + id + "][" + field + "]", item[field]);
+        });
+      });
+    }
+    if (payload._tools) {
+      Object.keys(payload._tools).forEach(function(id) {
+        var item = payload._tools[id];
+        Object.keys(item).forEach(function(field) {
+          data.append("oz_tools[" + id + "][" + field + "]", item[field]);
+        });
+      });
+    }
+    return data;
   }
   var CHECKMARK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var NUDGE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
@@ -347,6 +428,30 @@
     });
     section.appendChild(indList);
   }
+  function syncItemRows(section, items, stateMap, attrName, isOnFn) {
+    items.forEach(function(item) {
+      var row = section.querySelector("[data-" + attrName + '="' + item.id + '"]');
+      if (!row) return;
+      var st = stateMap[item.id];
+      var isOn = isOnFn(st);
+      row.classList.toggle("selected", isOn);
+      var qtyDiv = row.querySelector(".oz-tool-qty");
+      var qtyInput = row.querySelector(".oz-tool-qty-input");
+      if (qtyDiv) qtyDiv.classList.toggle("visible", isOn);
+      if (qtyInput && isOn) qtyInput.value = st.qty;
+      var sizesDiv = row.querySelector(".oz-tool-sizes");
+      if (sizesDiv) {
+        sizesDiv.classList.toggle("visible", isOn);
+        if (isOn) {
+          sizesDiv.querySelectorAll(".oz-tool-size-btn").forEach(function(btn) {
+            btn.classList.toggle("selected", parseInt(btn.dataset.sizeIdx) === (st.size || 0));
+          });
+        }
+      }
+      var priceSpan = row.querySelector(".oz-tool-price");
+      if (priceSpan) priceSpan.textContent = fmt(getItemPrice(item, st));
+    });
+  }
   function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
     if (!P.hasTools || !P.toolConfig) return;
     var TC = P.toolConfig;
@@ -359,27 +464,8 @@
     if (contentsEl) contentsEl.classList.toggle("visible", toolMode === "set");
     var extrasWrap = section.querySelector(".oz-tool-extras-wrap");
     if (extrasWrap) extrasWrap.classList.toggle("visible", toolMode === "set");
-    TC.extras.forEach(function(e) {
-      var row = section.querySelector('[data-extra="' + e.id + '"]');
-      if (!row) return;
-      var st = extras[e.id];
-      var isOn = st && st.on;
-      row.classList.toggle("selected", isOn);
-      var qtyDiv = row.querySelector(".oz-tool-qty");
-      var qtyInput = row.querySelector(".oz-tool-qty-input");
-      if (qtyDiv) qtyDiv.classList.toggle("visible", isOn);
-      if (qtyInput && isOn) qtyInput.value = st.qty;
-      var sizesDiv = row.querySelector(".oz-tool-sizes");
-      if (sizesDiv) {
-        sizesDiv.classList.toggle("visible", isOn);
-        if (isOn) {
-          sizesDiv.querySelectorAll(".oz-tool-size-btn").forEach(function(btn) {
-            btn.classList.toggle("selected", parseInt(btn.dataset.sizeIdx) === (st.size || 0));
-          });
-        }
-      }
-      var priceSpan = row.querySelector(".oz-tool-price");
-      if (priceSpan) priceSpan.textContent = fmt(getItemPrice(e, st));
+    syncItemRows(section, TC.extras, extras, "extra", function(st) {
+      return st && st.on;
     });
     var nudgeEl = section.querySelector(".oz-smart-nudge");
     if (nudgeEl) {
@@ -389,27 +475,8 @@
     }
     var indList = section.querySelector('[data-list-type="individual"]');
     if (indList) indList.classList.toggle("hidden", toolMode !== "individual");
-    TC.tools.forEach(function(t) {
-      var row = section.querySelector('[data-tool="' + t.id + '"]');
-      if (!row) return;
-      var st = tools[t.id];
-      var isOn = toolMode === "individual" && st && st.on;
-      row.classList.toggle("selected", isOn);
-      var qtyDiv = row.querySelector(".oz-tool-qty");
-      var qtyInput = row.querySelector(".oz-tool-qty-input");
-      if (qtyDiv) qtyDiv.classList.toggle("visible", isOn);
-      if (qtyInput && isOn) qtyInput.value = st.qty;
-      var sizesDiv = row.querySelector(".oz-tool-sizes");
-      if (sizesDiv) {
-        sizesDiv.classList.toggle("visible", isOn);
-        if (isOn) {
-          sizesDiv.querySelectorAll(".oz-tool-size-btn").forEach(function(btn) {
-            btn.classList.toggle("selected", parseInt(btn.dataset.sizeIdx) === (st.size || 0));
-          });
-        }
-      }
-      var priceSpan = row.querySelector(".oz-tool-price");
-      if (priceSpan) priceSpan.textContent = fmt(getItemPrice(t, st));
+    syncItemRows(section, TC.tools, tools, "tool", function(st) {
+      return toolMode === "individual" && st && st.on;
     });
   }
   function setToolMode(mode) {
@@ -464,7 +531,7 @@
   if (!P) {
   } else {
     let syncUI = function() {
-      var prices = calculatePrices();
+      var prices = calculatePrices(P, S);
       renderBreakdown(prices);
       if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
       if (DOM.sheetTotal) DOM.sheetTotal.textContent = fmt(prices.total);
@@ -476,47 +543,22 @@
       }
     }, renderBreakdown = function(prices) {
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
-      if (DOM.pricePuLine) {
-        if (prices.puPrice > 0) {
-          show(DOM.pricePuLine);
-          DOM.pricePu.textContent = fmt(prices.puPrice);
+      var lines = [
+        { line: DOM.pricePuLine, value: prices.puPrice, el: DOM.pricePu },
+        { line: DOM.pricePrimerLine, value: prices.primerPrice, el: DOM.pricePrimer, labelEl: DOM.pricePrimerLabel, label: "Primer: " + S.primer },
+        { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh },
+        { line: DOM.priceToolsLine, value: prices.toolsTotal, el: DOM.priceTools, labelEl: DOM.priceToolsLabel, label: prices.toolsLabel },
+        { line: DOM.sheetPriceToolsLine, value: prices.toolsTotal, el: DOM.sheetPriceTools, labelEl: DOM.sheetPriceToolsLabel, label: prices.toolsLabel }
+      ];
+      for (var i = 0; i < lines.length; i++) {
+        var item = lines[i];
+        if (!item.line) continue;
+        if (item.value > 0) {
+          show(item.line);
+          if (item.el) item.el.textContent = fmt(item.value);
+          if (item.labelEl && item.label) item.labelEl.textContent = item.label;
         } else {
-          hide(DOM.pricePuLine);
-        }
-      }
-      if (DOM.pricePrimerLine) {
-        if (prices.primerPrice > 0) {
-          show(DOM.pricePrimerLine);
-          DOM.pricePrimer.textContent = fmt(prices.primerPrice);
-          DOM.pricePrimerLabel.textContent = "Primer: " + S.primer;
-        } else {
-          hide(DOM.pricePrimerLine);
-        }
-      }
-      if (DOM.priceColorfreshLine) {
-        if (prices.colorfreshPrice > 0) {
-          show(DOM.priceColorfreshLine);
-          DOM.priceColorfresh.textContent = fmt(prices.colorfreshPrice);
-        } else {
-          hide(DOM.priceColorfreshLine);
-        }
-      }
-      if (DOM.priceToolsLine) {
-        if (prices.toolsTotal > 0) {
-          show(DOM.priceToolsLine);
-          if (DOM.priceToolsLabel) DOM.priceToolsLabel.textContent = prices.toolsLabel;
-          if (DOM.priceTools) DOM.priceTools.textContent = fmt(prices.toolsTotal);
-        } else {
-          hide(DOM.priceToolsLine);
-        }
-      }
-      if (DOM.sheetPriceToolsLine) {
-        if (prices.toolsTotal > 0) {
-          show(DOM.sheetPriceToolsLine);
-          if (DOM.sheetPriceToolsLabel) DOM.sheetPriceToolsLabel.textContent = prices.toolsLabel;
-          if (DOM.sheetPriceTools) DOM.sheetPriceTools.textContent = fmt(prices.toolsTotal);
-        } else {
-          hide(DOM.sheetPriceToolsLine);
+          hide(item.line);
         }
       }
       if (DOM.priceQtyLine) {
@@ -530,26 +572,22 @@
       }
       if (DOM.priceTotal) DOM.priceTotal.textContent = fmt(prices.total);
     }, renderOptionHighlights = function() {
-      var puBtns = document.querySelectorAll("[data-pu]");
-      for (var i = 0; i < puBtns.length; i++) {
-        var layers = parseInt(puBtns[i].getAttribute("data-pu"), 10);
-        puBtns[i].classList.toggle("selected", layers === S.puLayers);
-      }
-      var primerBtns = document.querySelectorAll("[data-primer]");
-      for (var i = 0; i < primerBtns.length; i++) {
-        primerBtns[i].classList.toggle("selected", primerBtns[i].getAttribute("data-primer") === S.primer);
-      }
-      var cfBtns = document.querySelectorAll("[data-colorfresh]");
-      for (var i = 0; i < cfBtns.length; i++) {
-        cfBtns[i].classList.toggle("selected", cfBtns[i].getAttribute("data-colorfresh") === S.colorfresh);
-      }
-      var tpBtns = document.querySelectorAll("[data-toepassing]");
-      for (var i = 0; i < tpBtns.length; i++) {
-        tpBtns[i].classList.toggle("selected", tpBtns[i].getAttribute("data-toepassing") === S.toepassing);
-      }
-      var pkBtns = document.querySelectorAll("[data-pakket]");
-      for (var i = 0; i < pkBtns.length; i++) {
-        pkBtns[i].classList.toggle("selected", pkBtns[i].getAttribute("data-pakket") === S.pakket);
+      var highlights = [
+        { attr: "data-pu", value: S.puLayers, parse: function(v) {
+          return parseInt(v, 10);
+        } },
+        { attr: "data-primer", value: S.primer },
+        { attr: "data-colorfresh", value: S.colorfresh },
+        { attr: "data-toepassing", value: S.toepassing },
+        { attr: "data-pakket", value: S.pakket }
+      ];
+      for (var h = 0; h < highlights.length; h++) {
+        var spec = highlights[h];
+        var btns = document.querySelectorAll("[" + spec.attr + "]");
+        for (var i = 0; i < btns.length; i++) {
+          var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
+          btns[i].classList.toggle("selected", val === spec.value);
+        }
       }
     }, renderSelectedLabels = function() {
       var tpLabel = document.getElementById("selectedToepassingLabel");
@@ -789,23 +827,14 @@
       if (DOM.desktopHome) DOM.desktopHome.appendChild(DOM.optionsWidget);
       if (S.scrollY !== void 0) window.scrollTo(0, S.scrollY);
     }, addToCart = function() {
-      if (S.colorMode === "ral_ncs") {
-        if (!S.customColor) {
-          shakeButton();
-          showCartError("Vul een RAL of NCS kleurcode in.");
-          return;
+      var error = validateCartState(P, S);
+      if (error) {
+        if (error.indexOf("gereedschap") !== -1) {
+          var toolGroup = document.querySelector('[data-option="tools"]');
+          if (toolGroup) toolGroup.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-        if (!validateRal(S.customColor) && !validateNcs(S.customColor)) {
-          shakeButton();
-          showCartError("Ongeldige RAL of NCS kleurcode.");
-          return;
-        }
-      }
-      if (P.hasTools && S.toolMode === "individual" && !hasAnyTool(S.toolMode, S.tools)) {
-        var toolGroup = document.querySelector('[data-option="tools"]');
-        if (toolGroup) toolGroup.scrollIntoView({ behavior: "smooth", block: "center" });
         shakeButton();
-        showCartError("Kies minimaal 1 gereedschap of kies een andere optie.");
+        showCartError(error);
         return;
       }
       if (P.hasTools && S.toolMode === "none") {
@@ -814,49 +843,8 @@
       }
       submitCart();
     }, submitCart = function() {
-      var data = new FormData();
-      data.append("action", "oz_bcw_add_to_cart");
-      data.append("nonce", P.nonce);
-      data.append("product_id", P.productId);
-      data.append("quantity", S.qty);
-      if (S.puLayers !== null) data.append("oz_pu_layers", S.puLayers);
-      if (S.primer) data.append("oz_primer", S.primer);
-      if (S.colorfresh) data.append("oz_colorfresh", S.colorfresh);
-      if (S.toepassing) data.append("oz_toepassing", S.toepassing);
-      if (S.pakket) data.append("oz_pakket", S.pakket);
-      data.append("oz_color_mode", S.colorMode);
-      if (S.colorMode === "ral_ncs") {
-        data.append("oz_custom_color", S.customColor);
-      }
-      if (P.hasTools) {
-        data.append("oz_tool_mode", S.toolMode);
-        if (S.toolMode === "set") {
-          data.append("oz_tool_set_id", P.toolConfig.toolSet.id);
-          P.toolConfig.extras.forEach(function(e) {
-            var st = S.extras[e.id];
-            if (st && st.on && st.qty > 0) {
-              var sizeData = e.sizes ? e.sizes[st.size || 0] : e;
-              data.append("oz_extras[" + e.id + "][qty]", st.qty);
-              data.append("oz_extras[" + e.id + "][wcId]", sizeData.wcId);
-              if (sizeData.wapoAddon) {
-                data.append("oz_extras[" + e.id + "][wapoAddon]", sizeData.wapoAddon);
-              }
-            }
-          });
-        } else if (S.toolMode === "individual") {
-          P.toolConfig.tools.forEach(function(t) {
-            var st = S.tools[t.id];
-            if (st && st.on && st.qty > 0) {
-              var sizeData = t.sizes ? t.sizes[st.size || 0] : t;
-              data.append("oz_tools[" + t.id + "][qty]", st.qty);
-              data.append("oz_tools[" + t.id + "][wcId]", sizeData.wcId);
-              if (sizeData.wapoAddon) {
-                data.append("oz_tools[" + t.id + "][wapoAddon]", sizeData.wapoAddon);
-              }
-            }
-          });
-        }
-      }
+      var payload = buildCartPayload(P, S);
+      var data = payloadToFormData(payload);
       setCartLoading(true);
       fetch(P.ajaxUrl, {
         method: "POST",
