@@ -378,6 +378,11 @@ function oz_apply_attribution_fallback($order) {
 }
 
 
+/* Disable Flatsome's built-in mini-cart dropdown entirely.
+ * When true, Flatsome renders the cart icon as a plain <a> link.
+ * Our JS intercepts .header-cart-link clicks to open our drawer instead. */
+add_filter('flatsome_disable_mini_cart', '__return_true');
+
 /* ══════════════════════════════════════════════════════════════════
  * CART DRAWER — slide-in cart panel (replaces Flatsome cart sidebar)
  *
@@ -582,52 +587,131 @@ add_action('wp_ajax_nopriv_oz_cart_drawer_add', 'oz_cart_drawer_add');
 
 /**
  * Get upsell/cross-sell product suggestions for the cart drawer.
- * Uses WooCommerce cross-sells from products in cart, limited to 3.
+ *
+ * 3-step priority model:
+ * 1. Scan cart — detect product lines via OZ_Product_Line_Config::detect()
+ * 2. Cross-sells first — use WC cross-sell IDs from cart products
+ * 3. Fill with fallback defaults — per-line fallback map if cross-sells < 3
+ *
+ * Rules: max 3, never suggest products already in cart, only in-stock + purchasable.
  *
  * @param WC_Cart $cart
  * @return array
  */
 function oz_cart_drawer_get_upsells($cart) {
+    // Per-line fallback product IDs (tools, spaan, PU roller, etc.)
+    $fallback_map = [
+        'original'       => [11177, 11025, 11175],  // Gereedschapset K&K, Flexibele spaan, PU roller
+        'all-in-one'     => [11177, 11025, 11175],
+        'easyline'       => [11177, 11025, 11175],
+        'microcement'    => [11177, 11025, 11175],
+        'metallic'       => [11177, 11025, 11175],
+        'lavasteen'      => [25550, 11025, 11175],  // Gereedschapset Lavasteen, Flexibele spaan, PU roller
+        'betonlook-verf' => [11175, 11025],          // PU roller, Flexibele spaan
+        'stuco-paste'    => [11025, 11175],           // Flexibele spaan, PU roller
+        'pu-color'       => [11175],                  // PU roller
+    ];
+
     $cart_product_ids = [];
     $cross_sell_ids   = [];
+    $detected_lines   = [];
 
-    // Collect product IDs in cart and their cross-sells
+    // Step 1+2: Scan cart, collect product IDs, cross-sells, and detected lines
+    $can_detect = class_exists('OZ_Product_Line_Config');
+
     foreach ($cart->get_cart() as $cart_item) {
         $pid = $cart_item['product_id'];
         $cart_product_ids[$pid] = true;
 
         $product = wc_get_product($pid);
-        if ($product) {
-            $cs = $product->get_cross_sell_ids();
-            foreach ($cs as $cs_id) {
-                if (!isset($cart_product_ids[$cs_id])) {
-                    $cross_sell_ids[$cs_id] = true;
-                }
+        if (!$product) continue;
+
+        // Detect product line (if plugin is active)
+        if ($can_detect) {
+            $line = OZ_Product_Line_Config::detect($product);
+            if ($line) {
+                $detected_lines[$line] = true;
+            }
+        }
+
+        // Collect cross-sell IDs
+        $cs = $product->get_cross_sell_ids();
+        foreach ($cs as $cs_id) {
+            if (!isset($cart_product_ids[$cs_id])) {
+                $cross_sell_ids[$cs_id] = true;
             }
         }
     }
 
-    // Filter out products already in cart, limit to 3
     $upsells = [];
+
+    // Step 2: Add cross-sell products first (manual WC config takes priority)
     foreach (array_keys($cross_sell_ids) as $cs_id) {
         if (isset($cart_product_ids[$cs_id])) continue;
 
-        $product = wc_get_product($cs_id);
-        if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) continue;
-
-        $image_id  = $product->get_image_id();
-        $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
-
-        $upsells[] = [
-            'id'        => $cs_id,
-            'name'      => $product->get_name(),
-            'price'     => floatval($product->get_price()),
-            'image'     => $image_url,
-            'permalink' => $product->get_permalink(),
-        ];
+        $formatted = oz_cart_drawer_format_upsell($cs_id);
+        if ($formatted) {
+            $upsells[] = $formatted;
+        }
 
         if (count($upsells) >= 3) break;
     }
 
+    // Step 3: Fill remaining slots with per-line fallback defaults
+    if (count($upsells) < 3 && !empty($detected_lines)) {
+        // Collect all fallback IDs from detected lines, preserving order
+        $fallback_ids = [];
+        foreach (array_keys($detected_lines) as $line_key) {
+            if (isset($fallback_map[$line_key])) {
+                foreach ($fallback_map[$line_key] as $fid) {
+                    $fallback_ids[$fid] = true;
+                }
+            }
+        }
+
+        // Track IDs already added as upsells
+        $already_added = [];
+        foreach ($upsells as $u) {
+            $already_added[$u['id']] = true;
+        }
+
+        foreach (array_keys($fallback_ids) as $fid) {
+            if (count($upsells) >= 3) break;
+            if (isset($cart_product_ids[$fid])) continue;
+            if (isset($already_added[$fid])) continue;
+
+            $formatted = oz_cart_drawer_format_upsell($fid);
+            if ($formatted) {
+                $upsells[] = $formatted;
+                $already_added[$fid] = true;
+            }
+        }
+    }
+
     return $upsells;
+}
+
+/**
+ * Format a single product ID into an upsell card data array.
+ * Returns false if product is not purchasable or out of stock.
+ *
+ * @param int $product_id
+ * @return array|false
+ */
+function oz_cart_drawer_format_upsell($product_id) {
+    $product = wc_get_product($product_id);
+    if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) {
+        return false;
+    }
+
+    $image_id  = $product->get_image_id();
+    $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+    return [
+        'id'        => $product_id,
+        'name'      => $product->get_name(),
+        'price'     => floatval($product->get_price()),
+        'image'     => $image_url,
+        'permalink' => $product->get_permalink(),
+    ];
 }
