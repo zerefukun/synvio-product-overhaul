@@ -89,12 +89,18 @@ class OZ_Cart_Manager {
             return false;
         }
 
-        // Detect line for line-specific validation (ral_ncs_only, etc.)
+        // Only validate addon data for products that belong to a configured line.
+        // Tool products (no line) share the same AJAX request and would read
+        // stale $_POST data from the main product — skip validation for them.
         $product = wc_get_product($product_id);
         $line_key = $product ? OZ_Product_Line_Config::detect($product) : null;
 
+        if (!$line_key) {
+            return $passed;
+        }
+
         $post_data = self::extract_post_data();
-        $error = self::validate_addon_array($post_data, $line_key ?: null);
+        $error = self::validate_addon_array($post_data, $line_key);
         if ($error) {
             wc_add_notice($error, 'error');
             return false;
@@ -118,21 +124,23 @@ class OZ_Cart_Manager {
 
         // Detect product line
         $line = OZ_Product_Line_Config::detect($product);
+
+        // Only attach configured-line addon data for products that belong to a line.
+        // This prevents tool products (added in the same AJAX request) from
+        // inheriting the main product's addon selections via stale $_POST data.
         if ($line) {
             $cart_item_data['oz_line'] = $line;
-        }
 
-        // Extract and merge sanitized POST data into cart item
-        $post_data = self::extract_post_data();
-        foreach ($post_data as $key => $value) {
-            if ($value !== '' && $value !== null) {
-                $cart_item_data[$key] = $value;
+            // Extract and merge sanitized POST data into cart item
+            $post_data = self::extract_post_data();
+            foreach ($post_data as $key => $value) {
+                if ($value !== '' && $value !== null) {
+                    $cart_item_data[$key] = $value;
+                }
             }
-        }
 
-        // Apply configured defaults for any addon keys omitted from POST.
-        // E.g. Lavasteen defaults to 1 PU layer (€40) even if not posted.
-        if ($line) {
+            // Apply configured defaults for any addon keys omitted from POST.
+            // E.g. Lavasteen defaults to 1 PU layer (€40) even if not posted.
             $defaults = OZ_Product_Line_Config::get_defaults($line);
             foreach ($defaults as $key => $value) {
                 if (!isset($cart_item_data[$key]) || $cart_item_data[$key] === '') {
