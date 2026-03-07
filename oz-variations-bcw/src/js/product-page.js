@@ -1047,8 +1047,8 @@ function removeCartMsg() {
 /* ═══ SMOOTH SCROLL HELPER ═════════════════════════════════ */
 
 /**
- * Smooth scroll to an element with overshoot bounce effect.
- * Scrolls ~60px past the target, then settles back.
+ * Smooth scroll to an element with a gentle overshoot.
+ * Slow start, glides past target slightly, then eases back.
  * Offsets for sticky bar height + 20px padding.
  */
 function smoothScrollTo(el) {
@@ -1056,22 +1056,27 @@ function smoothScrollTo(el) {
   var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
   var startY = window.pageYOffset;
   var diff = targetY - startY;
-  var overshoot = 60; // px past target before bouncing back
-  var duration = 700;
+  var duration = 900;
   var start = null;
 
-  // Custom easing: overshoots then settles back (like a soft bounce)
-  function easeOutBack(t) {
-    var c1 = 1.4; // overshoot intensity
-    var c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  // Gentle overshoot easing — soft decel with subtle bounce back
+  function ease(t) {
+    // Two-phase: ease out with tiny overshoot, then settle
+    if (t < 0.82) {
+      // Main phase — smooth cubic ease-out
+      var p = t / 0.82;
+      return 1.04 * (1 - Math.pow(1 - p, 3));
+    }
+    // Settle phase — ease back from 1.04 to 1.0
+    var p2 = (t - 0.82) / 0.18;
+    return 1.04 - 0.04 * (p2 * p2 * (3 - 2 * p2));
   }
 
   function step(timestamp) {
     if (!start) start = timestamp;
     var elapsed = timestamp - start;
     var progress = Math.min(elapsed / duration, 1);
-    window.scrollTo(0, startY + diff * easeOutBack(progress));
+    window.scrollTo(0, startY + diff * ease(progress));
     if (progress < 1) requestAnimationFrame(step);
   }
 
