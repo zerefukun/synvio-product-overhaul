@@ -29,6 +29,62 @@ class OZ_BCW_Admin {
         // Product editor metabox for USPs + Specs overrides
         add_action('add_meta_boxes', [__CLASS__, 'add_product_metabox']);
         add_action('woocommerce_process_product_meta', [__CLASS__, 'save_product_metabox']);
+
+        // One-time FAQ seeder — seeds default line FAQs into product meta
+        add_action('admin_init', [__CLASS__, 'seed_default_faqs']);
+    }
+
+    /**
+     * One-time seeder: writes default FAQs from product line config into _oz_faq
+     * post meta for every configured product that doesn't already have custom FAQs.
+     * Sets an option flag so it only runs once.
+     */
+    public static function seed_default_faqs() {
+        // Already seeded? Skip.
+        if (get_option('oz_faq_seeded')) return;
+
+        $line_keys = OZ_Product_Line_Config::get_all_lines();
+        $count = 0;
+
+        foreach ($line_keys as $line_key) {
+            $config = OZ_Product_Line_Config::get_config($line_key);
+            if (!$config) continue;
+
+            // Skip lines without default FAQs
+            if (empty($config['faq'])) continue;
+
+            // Get category IDs for this line
+            $cat_ids = isset($config['cats']) ? $config['cats'] : [];
+            if (empty($cat_ids)) continue;
+
+            // Find all products in this line's categories
+            $product_ids = get_posts([
+                'post_type'      => 'product',
+                'posts_per_page' => -1,
+                'fields'         => 'ids',
+                'tax_query'      => [[
+                    'taxonomy' => 'product_cat',
+                    'field'    => 'term_id',
+                    'terms'    => $cat_ids,
+                ]],
+            ]);
+
+            foreach ($product_ids as $pid) {
+                // Only seed if product has no custom FAQ yet
+                $existing = get_post_meta($pid, '_oz_faq', true);
+                if (!empty($existing) && is_array($existing)) continue;
+
+                update_post_meta($pid, '_oz_faq', $config['faq']);
+                $count++;
+            }
+        }
+
+        // Mark as done so this never runs again
+        update_option('oz_faq_seeded', true);
+
+        if ($count > 0) {
+            error_log("[OZ-BCW] Seeded default FAQs for {$count} products.");
+        }
     }
 
     /**
