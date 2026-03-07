@@ -606,7 +606,21 @@ function oz_cart_drawer_add() {
         return;
     }
 
-    $result = WC()->cart->add_to_cart($product_id, $qty);
+    $cart = WC()->cart;
+
+    // Check if this product is already in the cart (any line item with same product_id).
+    // If found, bump its qty instead of creating a duplicate.
+    foreach ($cart->get_cart() as $cart_key => $cart_item) {
+        if ($cart_item['product_id'] === $product_id && empty($cart_item['variation_id'])) {
+            $new_qty = $cart_item['quantity'] + $qty;
+            $cart->set_quantity($cart_key, $new_qty);
+            wp_send_json_success(['cart_key' => $cart_key, 'merged' => true]);
+            return;
+        }
+    }
+
+    // Product not in cart yet — add fresh
+    $result = $cart->add_to_cart($product_id, $qty);
     if ($result) {
         wp_send_json_success(['cart_key' => $result]);
     } else {
