@@ -137,7 +137,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       $description = $product->get_description();
       if (!empty($description)) :
       ?>
-      <div class="oz-product-info-section">
+      <div class="oz-product-info-section" id="sectionInfo">
         <h2 class="oz-section-title">Productinformatie</h2>
         <div class="oz-description-wrapper">
           <div class="oz-description-content" id="descContent">
@@ -158,7 +158,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       }
       ?>
       <?php if (!empty($oz_specs)) : ?>
-      <div class="oz-product-info-section">
+      <div class="oz-product-info-section" id="sectionSpecs">
         <h2 class="oz-section-title">Specificaties</h2>
         <table class="oz-specs-table">
           <tbody>
@@ -177,7 +177,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php
       $oz_faq = get_post_meta($product_id, '_oz_faq', true);
       if (!empty($oz_faq) && is_array($oz_faq)) : ?>
-      <div class="oz-product-info-section">
+      <div class="oz-product-info-section" id="sectionFaq">
         <h2 class="oz-section-title">Veelgestelde vragen</h2>
         <div class="oz-faq-list">
           <?php foreach ($oz_faq as $faq) : ?>
@@ -665,11 +665,30 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <button class="oz-sticky-btn" id="stickyBtn">In winkelmand</button>
   </div>
 
-  <!-- ── Desktop layout ── -->
+  <!-- ── Desktop layout: [Nav links] [Name · Options] [Price+Qty+CTA] ── -->
   <div class="oz-sticky-desktop">
-    <div class="oz-sticky-d-title"><?php echo esc_html($product_name); ?></div>
-    <div class="oz-sticky-d-color" id="stickyDColor"><?php echo esc_html($current_color ?: ''); ?></div>
-    <div class="oz-sticky-d-options" id="stickyDOptions"></div>
+
+    <!-- Left: page section nav links -->
+    <div class="oz-sticky-d-nav">
+      <?php if (!empty($description)) : ?>
+        <a href="#sectionInfo" class="oz-sticky-d-link" data-scroll="sectionInfo">Productinfo</a>
+      <?php endif; ?>
+      <?php if (!empty($oz_specs)) : ?>
+        <a href="#sectionSpecs" class="oz-sticky-d-link" data-scroll="sectionSpecs">Specificaties</a>
+      <?php endif; ?>
+      <?php if (!empty($oz_faq) && is_array($oz_faq)) : ?>
+        <a href="#sectionFaq" class="oz-sticky-d-link" data-scroll="sectionFaq">FAQ</a>
+      <?php endif; ?>
+    </div>
+
+    <!-- Middle: product name + selected options (clickable → scrolls to options) -->
+    <div class="oz-sticky-d-mid">
+      <span class="oz-sticky-d-title"><?php echo esc_html($product_name); ?></span>
+      <span class="oz-sticky-d-color" id="stickyDColor"><?php echo esc_html($current_color ?: ''); ?></span>
+      <span class="oz-sticky-d-options" id="stickyDOptions" role="button" tabindex="0" title="Ga naar opties"></span>
+    </div>
+
+    <!-- Right: price + qty + CTA -->
     <div class="oz-sticky-d-right">
       <span class="oz-sticky-d-price">
         <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span><?php if (!empty($config['unitM2'])) : ?><sup class="oz-sticky-d-unit"><?php echo esc_html($config['unitM2']); ?>m²</sup><?php endif; ?>
@@ -677,6 +696,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <span class="oz-sticky-d-qty" id="stickyDQty">1×</span>
       <button class="oz-sticky-d-btn" id="stickyDBtn">In winkelmand</button>
     </div>
+
   </div>
 
 </div>

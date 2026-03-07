@@ -65,7 +65,41 @@
     box-sizing: border-box;
   }
 
-  /* Title — left side, bold, can truncate on very narrow screens */
+  /* ── Left group: page section navigation links ── */
+  .oz-sticky-d-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .oz-sticky-d-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--oz-text-muted);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .oz-sticky-d-link:hover {
+    color: var(--oz-text-primary);
+    background: var(--oz-bg-subtle, rgba(0,0,0,0.04));
+  }
+
+  /* ── Middle group: product name + color + options ── */
+  .oz-sticky-d-mid {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Title — bold, truncates on narrow screens */
   .oz-sticky-d-title {
     font-size: 14px;
     font-weight: 700;
@@ -74,10 +108,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     flex-shrink: 1;
-    min-width: 80px;
+    min-width: 60px;
   }
 
-  /* Color — right of title, accent */
+  /* Color — accent colored, next to title */
   .oz-sticky-d-color {
     font-size: 13px;
     font-weight: 600;
@@ -88,15 +122,20 @@
 
   .oz-sticky-d-color:empty { display: none; }
 
-  /* Options summary — middle, takes remaining space, truncates */
+  /* Options summary — clickable, scrolls to options widget */
   .oz-sticky-d-options {
-    flex: 1 1 0;
-    min-width: 0;
     font-size: 12px;
     color: var(--oz-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .oz-sticky-d-options:hover {
+    color: var(--oz-text-primary);
   }
 
   .oz-sticky-d-options .oz-sep {
@@ -104,7 +143,7 @@
     opacity: 0.35;
   }
 
-  /* Right group: price + qty + CTA — stay together */
+  /* ── Right group: price + qty + CTA — stay together ── */
   .oz-sticky-d-right {
     display: flex;
     align-items: center;

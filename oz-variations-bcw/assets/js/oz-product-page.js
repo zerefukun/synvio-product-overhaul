@@ -957,6 +957,24 @@
         addToCart();
         return;
       }
+      var navLink = target.closest(".oz-sticky-d-link");
+      if (navLink) {
+        e.preventDefault();
+        var sectionId = navLink.getAttribute("data-scroll");
+        var section = sectionId ? document.getElementById(sectionId) : null;
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
+      if (target === DOM.stickyDOptions || target.closest("#stickyDOptions")) {
+        e.preventDefault();
+        var optionsEl = DOM.optionsWidget || DOM.addToCartBtn;
+        if (optionsEl) {
+          optionsEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
       if (target === DOM.sheetOverlay) {
         closeSheet();
         return;

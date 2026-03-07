@@ -590,6 +590,28 @@ function handleClick(e) {
     return;
   }
 
+  // Desktop sticky nav links — smooth scroll to page sections
+  var navLink = target.closest('.oz-sticky-d-link');
+  if (navLink) {
+    e.preventDefault();
+    var sectionId = navLink.getAttribute('data-scroll');
+    var section = sectionId ? document.getElementById(sectionId) : null;
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return;
+  }
+
+  // Desktop sticky options — smooth scroll to options widget
+  if (target === DOM.stickyDOptions || target.closest('#stickyDOptions')) {
+    e.preventDefault();
+    var optionsEl = DOM.optionsWidget || DOM.addToCartBtn;
+    if (optionsEl) {
+      optionsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    return;
+  }
+
   // Sheet overlay click — close sheet
   if (target === DOM.sheetOverlay) {
     closeSheet();
