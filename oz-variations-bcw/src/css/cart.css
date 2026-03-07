@@ -173,13 +173,24 @@
 }
 
 .oz-price-line.oz-price-total {
-  border-top: 2px solid var(--oz-accent);
+  border-top: 1px solid var(--oz-border);
   margin-top: 10px;
   padding-top: 12px;
   font-size: 20px;
   font-weight: 700;
   color: var(--oz-text-primary);
   letter-spacing: -0.3px;
+}
+
+/* Subtotal separator — light border-bottom under the m² subtotal line,
+   plus extra margin below to visually separate from tools section */
+.oz-price-line.oz-price-subtotal,
+.oz-sheet-price-line.oz-price-subtotal {
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  border-bottom: 1px solid var(--oz-border-light);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 /* Price line m2 note */

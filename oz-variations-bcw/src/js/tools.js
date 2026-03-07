@@ -259,12 +259,15 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
     return st && st.on;
   });
 
-  // Smart nudge: show when qty >= threshold AND no extra PU rollers added
+  // Smart nudge: show when total m² >= 15 AND no extra PU rollers added.
+  // Uses unitM2 to calculate actual coverage. Non-m² products (unitM2=0) never show nudge.
   var nudgeEl = section.querySelector('.oz-smart-nudge');
   if (nudgeEl) {
     var hasExtraRollers = extras['pu-roller'] && extras['pu-roller'].on;
-    var threshold = TC.nudgeQtyThreshold || 3;
-    nudgeEl.classList.toggle('visible', toolMode === 'set' && qty >= threshold && !hasExtraRollers);
+    var m2PerUnit = parseFloat(P.unitM2) || 0;
+    var totalM2 = qty * m2PerUnit;
+    var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5); // default 15m²
+    nudgeEl.classList.toggle('visible', toolMode === 'set' && totalM2 >= m2Threshold && !hasExtraRollers);
   }
 
   // Show/hide individual list — only in 'individual' mode

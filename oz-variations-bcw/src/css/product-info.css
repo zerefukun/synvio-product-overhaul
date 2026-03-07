@@ -119,12 +119,14 @@
   background: var(--oz-bg-subtle);
 }
 
+.oz-specs-table th,
 .oz-specs-table td {
   padding: 13px 0;
   vertical-align: top;
+  text-align: left;
 }
 
-.oz-specs-table td:first-child {
+.oz-specs-table th {
   font-weight: 600;
   color: var(--oz-text-primary);
   width: 42%;
@@ -134,6 +136,6 @@
   letter-spacing: 0.5px;
 }
 
-.oz-specs-table td:last-child {
+.oz-specs-table td {
   color: var(--oz-text-body);
 }

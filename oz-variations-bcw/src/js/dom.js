@@ -43,6 +43,7 @@ export function cacheDom() {
   DOM.colorLabel     = document.getElementById('colorLabel');
 
   // Price breakdown elements
+  DOM.priceBaseLabel     = document.getElementById('priceBaseLabel');
   DOM.priceBase          = document.getElementById('priceBase');
   DOM.pricePuLine        = document.getElementById('pricePuLine');
   DOM.pricePu            = document.getElementById('pricePu');

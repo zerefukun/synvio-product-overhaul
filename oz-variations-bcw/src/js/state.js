@@ -179,42 +179,48 @@ export function calculatePrices(config, state) {
   }
 
   // Tool costs — calculated separately (not per-unit)
+  // Tool costs — calculated separately (not per-m²)
+  // toolsDetails: array of { name, qty, total } for each selected item
   var toolsTotal = 0;
   var toolsLabel = '';
+  var toolsDetails = [];
   if (config.hasTools && config.toolConfig) {
     var TC = config.toolConfig;
     if (state.toolMode === 'set') {
       toolsTotal = parseFloat(TC.toolSet.price) || 0;
       toolsLabel = TC.toolSet.name;
+      toolsDetails.push({ name: TC.toolSet.name, qty: 1, total: toolsTotal });
       // Add extras on top of set
-      var extrasTotal = 0;
-      var extrasCount = 0;
       TC.extras.forEach(function(e) {
         var st = state.extras[e.id];
         if (st && st.on && st.qty > 0) {
-          extrasTotal += getItemPrice(e, st) * st.qty;
-          extrasCount += st.qty;
+          var lineTotal = getItemPrice(e, st) * st.qty;
+          toolsTotal += lineTotal;
+          // Build name with size if applicable
+          var sizeName = (e.sizes && e.sizes[st.size || 0]) ? e.sizes[st.size || 0].label : '';
+          var itemName = e.name + (sizeName ? ' ' + sizeName : '');
+          toolsDetails.push({ name: itemName, qty: st.qty, total: lineTotal });
         }
       });
-      if (extrasTotal > 0) {
-        toolsTotal += extrasTotal;
-        toolsLabel += ' + ' + extrasCount + ' extra';
+      // Summary label: just "Gereedschap" — details are listed separately
+      if (toolsDetails.length > 1) {
+        toolsLabel = 'Gereedschap';
       }
     } else if (state.toolMode === 'individual') {
-      var toolLines = [];
       TC.tools.forEach(function(t) {
         var st = state.tools[t.id];
         if (st && st.on && st.qty > 0) {
           var lineTotal = getItemPrice(t, st) * st.qty;
           toolsTotal += lineTotal;
-          toolLines.push({ name: t.name, qty: st.qty, total: lineTotal });
+          var sizeName = (t.sizes && t.sizes[st.size || 0]) ? t.sizes[st.size || 0].label : '';
+          var itemName = t.name + (sizeName ? ' ' + sizeName : '');
+          toolsDetails.push({ name: itemName, qty: st.qty, total: lineTotal });
         }
       });
-      if (toolLines.length === 1) {
-        toolsLabel = toolLines[0].name + (toolLines[0].qty > 1 ? ' \u00d7' + toolLines[0].qty : '');
-      } else if (toolLines.length > 1) {
-        var totalItems = toolLines.reduce(function(sum, l) { return sum + l.qty; }, 0);
-        toolsLabel = 'Gereedschap (' + totalItems + (totalItems === 1 ? ' item' : ' items') + ')';
+      if (toolsDetails.length === 1) {
+        toolsLabel = toolsDetails[0].name + (toolsDetails[0].qty > 1 ? ' \u00d7' + toolsDetails[0].qty : '');
+      } else if (toolsDetails.length > 1) {
+        toolsLabel = 'Gereedschap';
       }
     }
   }
@@ -232,6 +238,7 @@ export function calculatePrices(config, state) {
     colorfreshPrice: colorfreshPrice,
     toolsTotal: toolsTotal,
     toolsLabel: toolsLabel,
+    toolsDetails: toolsDetails,
     unitTotal: unitTotal,
     total: total,
   };

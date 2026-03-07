@@ -125,6 +125,29 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       </div>
 
+      <!-- Specifications table — from product line config, with per-product override -->
+      <?php
+      $oz_specs = get_post_meta($product_id, '_oz_specs', true);
+      if (empty($oz_specs) || !is_array($oz_specs)) {
+          $oz_specs = isset($config['specs']) ? $config['specs'] : [];
+      }
+      ?>
+      <?php if (!empty($oz_specs)) : ?>
+      <div class="oz-product-info-section">
+        <h2 class="oz-section-title">Specificaties</h2>
+        <table class="oz-specs-table">
+          <tbody>
+            <?php foreach ($oz_specs as $spec_key => $spec_val) : ?>
+              <tr>
+                <th><?php echo esc_html($spec_key); ?></th>
+                <td><?php echo esc_html($spec_val); ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+      <?php endif; ?>
+
     </div><!-- .oz-left-column -->
 
 
@@ -145,10 +168,24 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <span class="oz-per-unit">per <?php echo esc_html($config['unit']); ?></span>
       </div>
 
-      <!-- Short description / features -->
-      <?php $short = $product->get_short_description(); ?>
-      <?php if ($short) : ?>
-        <div class="oz-short-desc"><?php echo wp_kses_post($short); ?></div>
+      <!-- USP chips — from product line config, with per-product override -->
+      <?php
+      $oz_usps = get_post_meta($product_id, '_oz_usps', true);
+      if (empty($oz_usps) || !array_filter($oz_usps)) {
+          $oz_usps = isset($config['usps']) ? $config['usps'] : [];
+      }
+      ?>
+      <?php if (!empty($oz_usps) && array_filter($oz_usps)) : ?>
+        <div class="oz-short-desc">
+          <ul>
+            <?php foreach ($oz_usps as $usp) : if (empty($usp)) continue; ?>
+              <li>
+                <svg class="oz-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"></path></svg>
+                <?php echo esc_html($usp); ?>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
       <?php endif; ?>
 
       <!-- ═══ OPTIONS WIDGET (moves between page and sheet) ═══ -->
@@ -322,6 +359,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         endforeach;
         ?>
 
+        <!-- M² advice tip — only for m²-based products -->
+        <?php if ($config['unitM2'] > 0) : ?>
+        <div class="oz-m2-advice">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>
+          </svg>
+          <span>Tip van onze specialist: bestel altijd extra materiaal. Oneffenheden in de ondergrond, reparaties en verwerking vragen meer product dan de berekende vierkante meters. Tekort komen is geen optie!</span>
+        </div>
+        <?php endif; ?>
+
         <!-- Quantity + Add to Cart -->
         <div class="oz-option-group">
           <div class="oz-option-header">
@@ -361,13 +408,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span id="priceColorfreshLabel">Colorfresh</span>
           <span id="priceColorfresh"></span>
         </div>
+        <div class="oz-price-line oz-price-subtotal" id="priceQtyLine" style="display:none;">
+          <span id="priceQtyLabel"></span>
+          <span id="priceQty"></span>
+        </div>
         <div class="oz-price-line" id="priceToolsLine" style="display:none;">
           <span id="priceToolsLabel">Gereedschapsset</span>
           <span id="priceTools"></span>
-        </div>
-        <div class="oz-price-line" id="priceQtyLine" style="display:none;">
-          <span id="priceQtyLabel"></span>
-          <span id="priceQty"></span>
         </div>
         <div class="oz-price-line oz-price-total">
           <span>Totaal</span>
@@ -448,13 +495,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <span>Primer</span>
         <span id="sheetPricePrimer"></span>
       </div>
+      <div class="oz-sheet-price-line oz-price-subtotal" id="sheetPriceQtyLine" style="display:none">
+        <span id="sheetPriceQtyLabel"></span>
+        <span class="oz-sheet-m2-small" id="sheetPriceQtyNote"></span>
+      </div>
       <div class="oz-sheet-price-line" id="sheetPriceToolsLine" style="display:none">
         <span id="sheetPriceToolsLabel">Gereedschapsset</span>
         <span id="sheetPriceTools"></span>
-      </div>
-      <div class="oz-sheet-price-line" id="sheetPriceQtyLine" style="display:none">
-        <span id="sheetPriceQtyLabel"></span>
-        <span class="oz-sheet-m2-small" id="sheetPriceQtyNote"></span>
       </div>
     </div>
     <div class="oz-sheet-total">

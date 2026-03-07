@@ -127,6 +127,20 @@ class OZ_Product_Line_Config {
         // 48 colors (1000-series), PU 0/40/80/120, primer, colorfresh, toepassing
         'original' => [
             'cats'           => [290],
+            'usps'           => [
+                'Naadloze betonlook voor wanden, vloeren en meubels',
+                'Zelf mengen voor maximale controle over kleur en textuur',
+                'Waterdicht bij gebruik van PU toplaag',
+            ],
+            'specs'          => [
+                'Dekking'         => '5 m² per pakket',
+                'Type'            => 'Zelf te mengen mortel + pigment',
+                'Lagen'           => '2 lagen (RAW + FINE)',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, vloer, meubel, keuken, badkamer, trap',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+                'Verbruik'        => '~1 kg per m² (2 lagen)',
+            ],
             'base_id'        => 11161,
             'unit'           => '5m² pakket',
             'unitM2'         => 5,
@@ -145,6 +159,21 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), PU 8/16/24/0, RAL/NCS
         'all-in-one' => [
             'cats'           => [289],
+            'usps'           => [
+                'Op kleur gemengde pasta, direct klaar voor gebruik',
+                'Inclusief primer, per 1 m² bestellen',
+                'Geschikt voor robuust én rustig betoneffect',
+            ],
+            'specs'          => [
+                'Dekking'         => '1 m² per emmer (2 lagen)',
+                'Type'            => 'Voorgemengde pasta op kleur',
+                'Lagen'           => '2 lagen',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, vloer, meubel, badkamer',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+                'Verbruik'        => '1 kg per m² (500 gr per laag)',
+                'Inclusief'       => 'Primer + Pre-seal',
+            ],
             'product_ids'    => [11191],  // loose emmer (cat 17 "Losse Materialen")
             'base_id'        => 11165,
             'unit'           => '1m² emmer',
@@ -164,6 +193,21 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), PU 0/40/80 (no "Geen"), RAL/NCS, pakket
         'easyline' => [
             'cats'           => [314],
+            'usps'           => [
+                'Kant-en-klare pasta, direct klaar voor gebruik',
+                'Compleet pakket inclusief primer en 1 laag PU',
+                'Over bestaande tegels aan te brengen',
+            ],
+            'specs'          => [
+                'Dekking'         => '5 m² per pakket',
+                'Type'            => 'Voorgemengde kant-en-klare pasta',
+                'Lagen'           => '2 lagen (RAW + FINE)',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, vloer, meubel, keuken, badkamer, trap',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+                'Verbruik'        => '~1 kg per m² (2 lagen)',
+                'Inclusief'       => 'Primer + 1 laag PU',
+            ],
             'product_ids'    => [11001, 11002],  // loose emmers (cat 17 "Losse Materialen")
             'base_id'        => 11160,
             'unit'           => '5m² pakket',  // corrected from 4m²
@@ -183,6 +227,21 @@ class OZ_Product_Line_Config {
         // 36 colors (own palette), PU 8/16/24/0, RAL/NCS
         'microcement' => [
             'cats'           => [455, 463],
+            'usps'           => [
+                'Het beste van Beton Ciré Original en EasyLine',
+                'Ultradunne laag (1-2mm), over bestaand oppervlak',
+                'Beschikbaar per 1 m² voor exacte hoeveelheid',
+            ],
+            'specs'          => [
+                'Dekking'         => '1 m² per stuk (2 lagen)',
+                'Type'            => 'Microcement pasta op kleur',
+                'Laagdikte'       => '1-2 mm',
+                'Lagen'           => '2 lagen',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, vloer, meubel, badkamer',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+                'Verbruik'        => '~1 kg per m²',
+            ],
             'base_id'        => 22760,
             'unit'           => 'stuk (1m²)',
             'unitM2'         => 1,
@@ -201,6 +260,20 @@ class OZ_Product_Line_Config {
         // 12 colors (own palette), PU 0/39.99/79.99/119.99, primer 5.99
         'metallic' => [
             'cats'           => [18],
+            'usps'           => [
+                'Luxe parelmoer/velvet effect op wanden',
+                'Fluweelzacht gevoel, unieke lichtreflecties',
+                'Geschikt voor wanden, meubels en objecten',
+            ],
+            'specs'          => [
+                'Dekking'         => '4 m² per pakket',
+                'Type'            => 'Metallic stuc velvet',
+                'Effect'          => 'Parelmoer / velvet',
+                'Lagen'           => '2 lagen',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, meubel, objecten',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+            ],
             'base_id'        => 11162,
             'unit'           => '4m² pakket',
             'unitM2'         => 4,
@@ -219,6 +292,21 @@ class OZ_Product_Line_Config {
         // 20 colors (own palette), PU 40/80/120/0, default = 1 layer
         'lavasteen' => [
             'cats'           => [464],
+            'usps'           => [
+                'Minerale gietvloer met vulkanisch gesteente',
+                'Extreem hard, slijtvast en UV-bestendig',
+                'Waterdicht tot in de kern',
+            ],
+            'specs'          => [
+                'Dekking'         => '5 m² per pakket',
+                'Type'            => 'Mineraal gebonden lavasteen',
+                'Bindmiddel'      => '2-componenten epoxy',
+                'Lagen'           => '2 lagen',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Vloer, wand',
+                'Waterdicht'      => 'Ja, tot in de kern',
+                'UV-bestendig'    => 'Ja',
+            ],
             'base_id'        => 27736,
             'unit'           => '5m² pakket',
             'unitM2'         => 5,
@@ -237,6 +325,16 @@ class OZ_Product_Line_Config {
         // 38 colors (K&K palette), primer 6.00, RAL/NCS
         'betonlook-verf' => [
             'cats'           => [],
+            'usps'           => [
+                'Eenvoudig betonlook effect met verf',
+                'Snel aan te brengen, geen speciale kennis nodig',
+                'Beschikbaar in RAL/NCS kleuren',
+            ],
+            'specs'          => [
+                'Type'            => 'Betonlook verf',
+                'Aanbrengen'      => 'Met roller of kwast',
+                'Geschikt voor'   => 'Wand',
+            ],
             'product_ids'    => [11135],  // single product, detect by ID
             'base_id'        => null,
             'unit'           => 'stuk',
@@ -255,6 +353,15 @@ class OZ_Product_Line_Config {
         // No colors, primer 16.00
         'stuco-paste' => [
             'cats'           => [457],
+            'usps'           => [
+                'Decoratieve stucpasta voor wanden',
+                'Creëer diverse texturen en effecten',
+                'Eenvoudig aan te brengen',
+            ],
+            'specs'          => [
+                'Type'            => 'Decoratieve stucpasta',
+                'Geschikt voor'   => 'Wand',
+            ],
             'base_id'        => null,
             'unit'           => 'stuk',
             'unitM2'         => 0,
@@ -272,6 +379,16 @@ class OZ_Product_Line_Config {
         // RAL/NCS ONLY — standard colors disabled in WAPO
         'pu-color' => [
             'cats'           => [456],
+            'usps'           => [
+                'Gekleurde PU toplaag op maat',
+                'Beschermt en kleurt in één laag',
+                'Elke RAL/NCS kleur mogelijk',
+            ],
+            'specs'          => [
+                'Type'            => 'Gekleurde polyurethaan toplaag',
+                'Kleursysteem'    => 'RAL / NCS',
+                'Waterdicht'      => 'Ja',
+            ],
             'base_id'        => null,
             'unit'           => 'stuk',
             'unitM2'         => 0,

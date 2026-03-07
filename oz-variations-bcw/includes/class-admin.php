@@ -25,6 +25,10 @@ class OZ_BCW_Admin {
 
         // Enqueue admin scripts on our settings page only
         add_action('admin_enqueue_scripts', [__CLASS__, 'enqueue_admin_scripts']);
+
+        // Product editor metabox for USPs + Specs overrides
+        add_action('add_meta_boxes', [__CLASS__, 'add_product_metabox']);
+        add_action('woocommerce_process_product_meta', [__CLASS__, 'save_product_metabox']);
     }
 
     /**
@@ -116,6 +120,178 @@ class OZ_BCW_Admin {
         </div>
         <?php
     }
+
+    /**
+     * Register the BCW product metabox on the WC product editor.
+     * Shows USPs and Specs fields that override the product line defaults.
+     */
+    public static function add_product_metabox() {
+        add_meta_box(
+            'oz-bcw-product-meta',
+            'BCW: USPs & Specificaties',
+            [__CLASS__, 'render_product_metabox'],
+            'product',
+            'normal',
+            'default'
+        );
+    }
+
+    /**
+     * Render the metabox content.
+     * Shows current product line defaults + editable override fields.
+     *
+     * @param WP_Post $post
+     */
+    public static function render_product_metabox($post) {
+        wp_nonce_field('oz_bcw_product_meta', 'oz_bcw_meta_nonce');
+
+        $product_id = $post->ID;
+
+        // Get product line config defaults
+        // Detect product line — use category IDs for matching
+        $cat_ids = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
+        $line_key = OZ_Product_Line_Config::detect_from_data($product_id, $cat_ids ?: []);
+        $config = $line_key ? OZ_Product_Line_Config::get_config($line_key) : null;
+        $default_usps = ($config && isset($config['usps'])) ? $config['usps'] : [];
+        $default_specs = ($config && isset($config['specs'])) ? $config['specs'] : [];
+
+        // Get per-product overrides (if any)
+        $override_usps = get_post_meta($product_id, '_oz_usps', true);
+        $override_specs = get_post_meta($product_id, '_oz_specs', true);
+
+        // Current values: override wins, fallback to defaults
+        $usps = !empty($override_usps) ? $override_usps : $default_usps;
+        $specs = !empty($override_specs) ? $override_specs : $default_specs;
+
+        ?>
+        <style>
+            .oz-meta-section { margin-bottom: 20px; }
+            .oz-meta-section h4 { margin: 0 0 8px; }
+            .oz-meta-section .description { color: #666; font-style: italic; margin-bottom: 8px; }
+            .oz-meta-table { width: 100%; }
+            .oz-meta-table input { width: 100%; }
+            .oz-meta-table td { padding: 4px 8px 4px 0; vertical-align: top; }
+            .oz-meta-table .oz-spec-key { width: 150px; }
+            .oz-meta-default { color: #999; font-size: 12px; }
+        </style>
+
+        <p>
+            Productlijn: <strong><?php echo esc_html($line_key ?: 'Niet herkend'); ?></strong>
+            <?php if ($line_key) : ?>
+                — Standaard waarden worden uit de productlijn geladen. Vul hieronder in om per product te overschrijven.
+            <?php endif; ?>
+        </p>
+
+        <!-- USPs -->
+        <div class="oz-meta-section">
+            <h4>USPs (3 verkooppunten)</h4>
+            <p class="description">Laat leeg om de standaard productlijn USPs te gebruiken. Vul alle 3 in om te overschrijven.</p>
+
+            <?php for ($i = 0; $i < 3; $i++) : ?>
+                <p>
+                    <input type="text"
+                           name="oz_usps[<?php echo $i; ?>]"
+                           value="<?php echo esc_attr(isset($override_usps[$i]) ? $override_usps[$i] : ''); ?>"
+                           placeholder="<?php echo esc_attr(isset($default_usps[$i]) ? $default_usps[$i] : 'USP ' . ($i + 1)); ?>"
+                           style="width:100%;">
+                </p>
+            <?php endfor; ?>
+        </div>
+
+        <!-- Specs -->
+        <div class="oz-meta-section">
+            <h4>Specificaties (tabel)</h4>
+            <p class="description">Laat leeg om de standaard productlijn specs te gebruiken. Key + waarde paren, max 10 rijen.</p>
+
+            <table class="oz-meta-table" id="oz-specs-table">
+                <thead>
+                    <tr>
+                        <th class="oz-spec-key">Kenmerk</th>
+                        <th>Waarde</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Show existing overrides or empty rows
+                    $rows = !empty($override_specs) ? $override_specs : [];
+                    // Always show at least as many rows as defaults, + 2 empty
+                    $min_rows = max(count($default_specs) + 2, count($rows) + 2);
+                    $min_rows = min($min_rows, 10);
+
+                    $spec_keys = array_keys($rows);
+                    $default_keys = array_keys($default_specs);
+
+                    for ($i = 0; $i < $min_rows; $i++) :
+                        $key = isset($spec_keys[$i]) ? $spec_keys[$i] : '';
+                        $val = $key ? ($rows[$key] ?? '') : '';
+                        $placeholder_key = isset($default_keys[$i]) ? $default_keys[$i] : '';
+                        $placeholder_val = $placeholder_key ? ($default_specs[$placeholder_key] ?? '') : '';
+                    ?>
+                    <tr>
+                        <td class="oz-spec-key">
+                            <input type="text"
+                                   name="oz_spec_keys[]"
+                                   value="<?php echo esc_attr($key); ?>"
+                                   placeholder="<?php echo esc_attr($placeholder_key); ?>">
+                        </td>
+                        <td>
+                            <input type="text"
+                                   name="oz_spec_vals[]"
+                                   value="<?php echo esc_attr($val); ?>"
+                                   placeholder="<?php echo esc_attr($placeholder_val); ?>">
+                        </td>
+                    </tr>
+                    <?php endfor; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+    }
+
+    /**
+     * Save the metabox data when product is saved.
+     *
+     * @param int $product_id
+     */
+    public static function save_product_metabox($product_id) {
+        if (!isset($_POST['oz_bcw_meta_nonce']) ||
+            !wp_verify_nonce($_POST['oz_bcw_meta_nonce'], 'oz_bcw_product_meta')) {
+            return;
+        }
+
+        // Save USPs — only if at least one is filled
+        $usps = [];
+        if (isset($_POST['oz_usps']) && is_array($_POST['oz_usps'])) {
+            foreach ($_POST['oz_usps'] as $usp) {
+                $usps[] = sanitize_text_field($usp);
+            }
+        }
+        // Only save if at least one non-empty USP
+        $has_usps = array_filter($usps, function($v) { return $v !== ''; });
+        if (!empty($has_usps)) {
+            update_post_meta($product_id, '_oz_usps', $usps);
+        } else {
+            delete_post_meta($product_id, '_oz_usps');
+        }
+
+        // Save Specs — key/value pairs, only if at least one pair is filled
+        $specs = [];
+        $keys = isset($_POST['oz_spec_keys']) ? $_POST['oz_spec_keys'] : [];
+        $vals = isset($_POST['oz_spec_vals']) ? $_POST['oz_spec_vals'] : [];
+        for ($i = 0; $i < count($keys); $i++) {
+            $k = sanitize_text_field($keys[$i]);
+            $v = sanitize_text_field($vals[$i]);
+            if ($k !== '' && $v !== '') {
+                $specs[$k] = $v;
+            }
+        }
+        if (!empty($specs)) {
+            update_post_meta($product_id, '_oz_specs', $specs);
+        } else {
+            delete_post_meta($product_id, '_oz_specs');
+        }
+    }
+
 
     /**
      * Get product counts per product line.

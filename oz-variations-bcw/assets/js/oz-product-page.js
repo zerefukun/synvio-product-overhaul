@@ -95,41 +95,41 @@
     }
     var toolsTotal = 0;
     var toolsLabel = "";
+    var toolsDetails = [];
     if (config.hasTools && config.toolConfig) {
       var TC = config.toolConfig;
       if (state.toolMode === "set") {
         toolsTotal = parseFloat(TC.toolSet.price) || 0;
         toolsLabel = TC.toolSet.name;
-        var extrasTotal = 0;
-        var extrasCount = 0;
+        toolsDetails.push({ name: TC.toolSet.name, qty: 1, total: toolsTotal });
         TC.extras.forEach(function(e) {
           var st = state.extras[e.id];
           if (st && st.on && st.qty > 0) {
-            extrasTotal += getItemPrice(e, st) * st.qty;
-            extrasCount += st.qty;
+            var lineTotal = getItemPrice(e, st) * st.qty;
+            toolsTotal += lineTotal;
+            var sizeName = e.sizes && e.sizes[st.size || 0] ? e.sizes[st.size || 0].label : "";
+            var itemName = e.name + (sizeName ? " " + sizeName : "");
+            toolsDetails.push({ name: itemName, qty: st.qty, total: lineTotal });
           }
         });
-        if (extrasTotal > 0) {
-          toolsTotal += extrasTotal;
-          toolsLabel += " + " + extrasCount + " extra";
+        if (toolsDetails.length > 1) {
+          toolsLabel = "Gereedschap";
         }
       } else if (state.toolMode === "individual") {
-        var toolLines = [];
         TC.tools.forEach(function(t) {
           var st = state.tools[t.id];
           if (st && st.on && st.qty > 0) {
             var lineTotal = getItemPrice(t, st) * st.qty;
             toolsTotal += lineTotal;
-            toolLines.push({ name: t.name, qty: st.qty, total: lineTotal });
+            var sizeName = t.sizes && t.sizes[st.size || 0] ? t.sizes[st.size || 0].label : "";
+            var itemName = t.name + (sizeName ? " " + sizeName : "");
+            toolsDetails.push({ name: itemName, qty: st.qty, total: lineTotal });
           }
         });
-        if (toolLines.length === 1) {
-          toolsLabel = toolLines[0].name + (toolLines[0].qty > 1 ? " \xD7" + toolLines[0].qty : "");
-        } else if (toolLines.length > 1) {
-          var totalItems = toolLines.reduce(function(sum, l) {
-            return sum + l.qty;
-          }, 0);
-          toolsLabel = "Gereedschap (" + totalItems + (totalItems === 1 ? " item" : " items") + ")";
+        if (toolsDetails.length === 1) {
+          toolsLabel = toolsDetails[0].name + (toolsDetails[0].qty > 1 ? " \xD7" + toolsDetails[0].qty : "");
+        } else if (toolsDetails.length > 1) {
+          toolsLabel = "Gereedschap";
         }
       }
     }
@@ -142,6 +142,7 @@
       colorfreshPrice,
       toolsTotal,
       toolsLabel,
+      toolsDetails,
       unitTotal,
       total
     };
@@ -267,6 +268,7 @@
     DOM.slotSheet = document.getElementById("optionsSlotSheet");
     DOM.colorModeSlot = document.getElementById("colorModeSlot");
     DOM.colorLabel = document.getElementById("colorLabel");
+    DOM.priceBaseLabel = document.getElementById("priceBaseLabel");
     DOM.priceBase = document.getElementById("priceBase");
     DOM.pricePuLine = document.getElementById("pricePuLine");
     DOM.pricePu = document.getElementById("pricePu");
@@ -488,8 +490,10 @@
     var nudgeEl = section.querySelector(".oz-smart-nudge");
     if (nudgeEl) {
       var hasExtraRollers = extras["pu-roller"] && extras["pu-roller"].on;
-      var threshold = TC.nudgeQtyThreshold || 3;
-      nudgeEl.classList.toggle("visible", toolMode === "set" && qty >= threshold && !hasExtraRollers);
+      var m2PerUnit = parseFloat(P.unitM2) || 0;
+      var totalM2 = qty * m2PerUnit;
+      var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5);
+      nudgeEl.classList.toggle("visible", toolMode === "set" && totalM2 >= m2Threshold && !hasExtraRollers);
     }
     var indList = section.querySelector('[data-list-type="individual"]');
     if (indList) indList.classList.toggle("hidden", toolMode !== "individual");
@@ -607,7 +611,43 @@
       if (P.hasTools) {
         syncToolSectionV2("toolSection", S.toolMode, S.tools, S.extras, S.qty);
       }
+    }, renderToolDetails = function(prices, anchor, lineClass) {
+      if (!anchor) return;
+      var parent = anchor.parentNode;
+      var existing = parent.querySelectorAll(".oz-tool-detail-line");
+      for (var i = 0; i < existing.length; i++) {
+        if (existing[i].parentNode === parent) existing[i].remove();
+      }
+      if (prices.toolsTotal <= 0 || !prices.toolsDetails || prices.toolsDetails.length === 0) {
+        hide(anchor);
+        return;
+      }
+      if (prices.toolsDetails.length === 1) {
+        show(anchor);
+        var d = prices.toolsDetails[0];
+        var label = d.name + (d.qty > 1 ? " \xD7" + d.qty : "");
+        anchor.querySelector("span:first-child").textContent = label;
+        anchor.querySelector("span:last-child").textContent = fmt(d.total);
+        return;
+      }
+      hide(anchor);
+      var insertBefore = anchor.nextSibling;
+      for (var j = 0; j < prices.toolsDetails.length; j++) {
+        var detail = prices.toolsDetails[j];
+        var div = document.createElement("div");
+        div.className = lineClass + " oz-tool-detail-line";
+        var nameSpan = document.createElement("span");
+        nameSpan.textContent = detail.name + (detail.qty > 1 ? " \xD7" + detail.qty : "");
+        var priceSpan = document.createElement("span");
+        priceSpan.textContent = fmt(detail.total);
+        div.appendChild(nameSpan);
+        div.appendChild(priceSpan);
+        parent.insertBefore(div, insertBefore);
+      }
     }, renderBreakdown = function(prices) {
+      var isM2 = (parseFloat(P.unitM2) || 0) > 0;
+      var perUnit = S.qty > 1 && isM2 ? " (per m\xB2)" : "";
+      if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
       if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
       var lines = [
@@ -615,11 +655,9 @@
         { line: DOM.pricePuLine, value: prices.puPrice, el: DOM.pricePu },
         { line: DOM.pricePrimerLine, value: prices.primerPrice, el: DOM.pricePrimer, labelEl: DOM.pricePrimerLabel, label: "Primer: " + S.primer },
         { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh },
-        { line: DOM.priceToolsLine, value: prices.toolsTotal, el: DOM.priceTools, labelEl: DOM.priceToolsLabel, label: prices.toolsLabel },
         // Sheet lines (mirror desktop)
         { line: DOM.sheetPricePuLine, value: prices.puPrice, el: DOM.sheetPricePu },
-        { line: DOM.sheetPricePrimerLine, value: prices.primerPrice, el: DOM.sheetPricePrimer },
-        { line: DOM.sheetPriceToolsLine, value: prices.toolsTotal, el: DOM.sheetPriceTools, labelEl: DOM.sheetPriceToolsLabel, label: prices.toolsLabel }
+        { line: DOM.sheetPricePrimerLine, value: prices.primerPrice, el: DOM.sheetPricePrimer }
       ];
       for (var i = 0; i < lines.length; i++) {
         var item = lines[i];
@@ -632,11 +670,16 @@
           hide(item.line);
         }
       }
+      renderToolDetails(prices, DOM.priceToolsLine, "oz-price-line");
+      renderToolDetails(prices, DOM.sheetPriceToolsLine, "oz-sheet-price-line");
+      var m2PerUnit = parseFloat(P.unitM2) || 0;
+      var qtyLabel = isM2 ? S.qty * m2PerUnit + " m\xB2 (" + S.qty + "\xD7)" : S.qty + " stuks";
+      var qtySubtotal = fmt(prices.unitTotal * S.qty);
       if (DOM.priceQtyLine) {
         if (S.qty > 1) {
           show(DOM.priceQtyLine);
-          DOM.priceQtyLabel.textContent = S.qty + "\xD7 " + fmt(prices.unitTotal);
-          DOM.priceQty.textContent = fmt(prices.unitTotal * S.qty);
+          DOM.priceQtyLabel.textContent = qtyLabel;
+          DOM.priceQty.textContent = qtySubtotal;
         } else {
           hide(DOM.priceQtyLine);
         }
@@ -644,8 +687,8 @@
       if (DOM.sheetPriceQtyLine) {
         if (S.qty > 1) {
           show(DOM.sheetPriceQtyLine);
-          if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = S.qty + "\xD7 " + fmt(prices.unitTotal);
-          if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = fmt(prices.unitTotal * S.qty);
+          if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = qtyLabel;
+          if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = qtySubtotal;
         } else {
           hide(DOM.sheetPriceQtyLine);
         }

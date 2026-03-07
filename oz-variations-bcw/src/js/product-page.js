@@ -108,12 +108,70 @@ function syncUI() {
 }
 
 /**
+ * Render tool detail lines in a price summary.
+ * When tools are selected, shows each item (set + extras, or individual picks)
+ * as its own line with name, qty, and price.
+ * Dynamically inserts/removes divs after the anchor element.
+ *
+ * @param {Object}  prices     From calculatePrices()
+ * @param {Element} anchor     The priceToolsLine element to anchor after
+ * @param {string}  lineClass  CSS class for each line ('oz-price-line' or 'oz-sheet-price-line')
+ */
+function renderToolDetails(prices, anchor, lineClass) {
+  if (!anchor) return;
+
+  // Remove any previously rendered detail lines
+  var parent = anchor.parentNode;
+  var existing = parent.querySelectorAll('.oz-tool-detail-line');
+  for (var i = 0; i < existing.length; i++) {
+    // Only remove lines that belong to this anchor's parent
+    if (existing[i].parentNode === parent) existing[i].remove();
+  }
+
+  // If no tools selected, hide the anchor and bail
+  if (prices.toolsTotal <= 0 || !prices.toolsDetails || prices.toolsDetails.length === 0) {
+    hide(anchor);
+    return;
+  }
+
+  // Single tool item — use the existing anchor line (no sub-lines needed)
+  if (prices.toolsDetails.length === 1) {
+    show(anchor);
+    var d = prices.toolsDetails[0];
+    var label = d.name + (d.qty > 1 ? ' \u00d7' + d.qty : '');
+    anchor.querySelector('span:first-child').textContent = label;
+    anchor.querySelector('span:last-child').textContent = fmt(d.total);
+    return;
+  }
+
+  // Multiple items — hide the summary anchor, render each item as its own line
+  hide(anchor);
+  var insertBefore = anchor.nextSibling;
+  for (var j = 0; j < prices.toolsDetails.length; j++) {
+    var detail = prices.toolsDetails[j];
+    var div = document.createElement('div');
+    div.className = lineClass + ' oz-tool-detail-line';
+    var nameSpan = document.createElement('span');
+    nameSpan.textContent = detail.name + (detail.qty > 1 ? ' \u00d7' + detail.qty : '');
+    var priceSpan = document.createElement('span');
+    priceSpan.textContent = fmt(detail.total);
+    div.appendChild(nameSpan);
+    div.appendChild(priceSpan);
+    parent.insertBefore(div, insertBefore);
+  }
+}
+
+/**
  * Render the price breakdown panel.
  * Data-driven: each price line is described as { line, value, el, labelEl?, label? }.
  * One generic loop replaces 6 repetitions of show/hide + setText.
  */
 function renderBreakdown(prices) {
-  // Desktop base price
+  // Desktop base price — annotate with "per m²" when qty > 1 and product is m²-based
+  // Helps customer understand the breakdown lines are per-unit, not total
+  var isM2 = (parseFloat(P.unitM2) || 0) > 0;
+  var perUnit = (S.qty > 1 && isM2) ? ' (per m²)' : '';
+  if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
   if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
   // Sheet base price
   if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
@@ -125,11 +183,9 @@ function renderBreakdown(prices) {
     { line: DOM.pricePuLine,            value: prices.puPrice,         el: DOM.pricePu },
     { line: DOM.pricePrimerLine,        value: prices.primerPrice,     el: DOM.pricePrimer,        labelEl: DOM.pricePrimerLabel,        label: 'Primer: ' + S.primer },
     { line: DOM.priceColorfreshLine,    value: prices.colorfreshPrice, el: DOM.priceColorfresh },
-    { line: DOM.priceToolsLine,         value: prices.toolsTotal,      el: DOM.priceTools,          labelEl: DOM.priceToolsLabel,         label: prices.toolsLabel },
     // Sheet lines (mirror desktop)
     { line: DOM.sheetPricePuLine,       value: prices.puPrice,         el: DOM.sheetPricePu },
     { line: DOM.sheetPricePrimerLine,   value: prices.primerPrice,     el: DOM.sheetPricePrimer },
-    { line: DOM.sheetPriceToolsLine,    value: prices.toolsTotal,      el: DOM.sheetPriceTools,     labelEl: DOM.sheetPriceToolsLabel,    label: prices.toolsLabel },
   ];
 
   // Generic render: show line if value > 0, update price + optional label
@@ -145,24 +201,36 @@ function renderBreakdown(prices) {
     }
   }
 
-  // Quantity line — special: shows when qty > 1, displays "qty × unitPrice = subtotal"
-  // Shows unit subtotal (qty × unitTotal), NOT the grand total (which includes tools)
+  // Tool detail lines — render each tool/extra as a sub-line in the breakdown.
+  // Uses the single priceToolsLine as an anchor point; detail divs are inserted after it.
+  renderToolDetails(prices, DOM.priceToolsLine, 'oz-price-line');
+  renderToolDetails(prices, DOM.sheetPriceToolsLine, 'oz-sheet-price-line');
+
+  // Quantity / m² subtotal line — shows when qty > 1
+  // m²-based: "20 m² (4×)" → subtotal   |   non-m²: "3 stuks" → subtotal
+  // This line sits ABOVE tools in the DOM (template reordered), creating a natural
+  // visual separator between per-m² costs and one-time costs (tools).
+  var m2PerUnit = parseFloat(P.unitM2) || 0;
+  var qtyLabel = isM2
+    ? (S.qty * m2PerUnit) + ' m² (' + S.qty + '×)'
+    : S.qty + ' stuks';
+  var qtySubtotal = fmt(prices.unitTotal * S.qty);
+
   if (DOM.priceQtyLine) {
     if (S.qty > 1) {
       show(DOM.priceQtyLine);
-      DOM.priceQtyLabel.textContent = S.qty + '× ' + fmt(prices.unitTotal);
-      DOM.priceQty.textContent = fmt(prices.unitTotal * S.qty);
+      DOM.priceQtyLabel.textContent = qtyLabel;
+      DOM.priceQty.textContent = qtySubtotal;
     } else {
       hide(DOM.priceQtyLine);
     }
   }
-
-  // Sheet quantity line — same logic, different DOM elements
+  // Sheet — same logic, different DOM elements
   if (DOM.sheetPriceQtyLine) {
     if (S.qty > 1) {
       show(DOM.sheetPriceQtyLine);
-      if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = S.qty + '× ' + fmt(prices.unitTotal);
-      if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = fmt(prices.unitTotal * S.qty);
+      if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = qtyLabel;
+      if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = qtySubtotal;
     } else {
       hide(DOM.sheetPriceQtyLine);
     }
