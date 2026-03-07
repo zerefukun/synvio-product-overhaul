@@ -495,42 +495,45 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             </div>
             <button class="oz-add-to-cart" id="addToCartBtn">In winkelmand</button>
           </div>
-
-      <!-- Payment method icons — dynamically from WooCommerce active gateways -->
-      <?php
-      // Only show the most relevant payment methods (not all 18 Mollie gateways)
-      $oz_show_gateways = [
-          'mollie_wc_gateway_ideal',
-          'mollie_wc_gateway_creditcard',
-          'mollie_wc_gateway_paypal',
-
-          'mollie_wc_gateway_applepay',
-          'mollie_wc_gateway_bancontact',
-          'mollie_wc_gateway_klarnapaylater',
-      ];
-      $oz_gateways = WC()->payment_gateways()->get_available_payment_gateways();
-      $oz_payment_icons = [];
-      foreach ($oz_show_gateways as $gw_id) {
-          if (isset($oz_gateways[$gw_id])) {
-              $icon_html = $oz_gateways[$gw_id]->get_icon();
-              if ($icon_html) {
-                  $oz_payment_icons[] = $icon_html;
-              }
-          }
-      }
-      ?>
-      <?php if (!empty($oz_payment_icons)) : ?>
-        <div class="oz-payment-section">
-          <div class="oz-payment-label">Veilig betalen</div>
-          <div class="oz-payment-methods">
-            <?php foreach ($oz_payment_icons as $icon) : ?>
-              <div class="oz-payment-icon"><?php echo $icon; ?></div>
-            <?php endforeach; ?>
-          </div>
         </div>
-      <?php endif; ?>
 
-      <!-- Delivery Timeline — shown after the buy box and payment reassurance -->
+        <!-- Payment method icons — dynamically from WooCommerce active gateways -->
+        <?php
+        // Only show the most relevant payment methods (not all 18 Mollie gateways)
+        $oz_show_gateways = [
+            'mollie_wc_gateway_ideal',
+            'mollie_wc_gateway_creditcard',
+            'mollie_wc_gateway_paypal',
+            'mollie_wc_gateway_applepay',
+            'mollie_wc_gateway_bancontact',
+            'mollie_wc_gateway_klarnapaylater',
+        ];
+        $oz_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+        $oz_payment_icons = [];
+        foreach ($oz_show_gateways as $gw_id) {
+            if (isset($oz_gateways[$gw_id])) {
+                $icon_html = $oz_gateways[$gw_id]->get_icon();
+                if ($icon_html) {
+                    $oz_payment_icons[] = $icon_html;
+                }
+            }
+        }
+        ?>
+        <?php if (!empty($oz_payment_icons)) : ?>
+          <div class="oz-payment-section">
+            <div class="oz-payment-label">Veilig betalen</div>
+            <div class="oz-payment-methods">
+              <?php foreach ($oz_payment_icons as $icon) : ?>
+                <div class="oz-payment-icon"><?php echo $icon; ?></div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div><!-- #priceSummary -->
+      </div><!-- #optionsWidget -->
+      </div><!-- #optionsDesktopHome -->
+
+      <!-- Delivery Timeline — below the buy box, above trust badges -->
       <?php
       // Calculate shipping & delivery dates
       // Before 14:00 = shipped same day, after 14:00 = shipped next day
@@ -590,13 +593,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span class="oz-step-label">Bezorgd</span>
           <span class="oz-step-date"><?php echo esc_html($oz_del_txt); ?></span>
         </div>
-      </div>
-
-        </div>
-
-      </div><!-- #optionsWidget -->
-      </div><!-- #optionsDesktopHome -->
-
       </div>
 
       <!-- Trust Badges -->
