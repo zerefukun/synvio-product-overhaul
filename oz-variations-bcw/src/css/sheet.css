@@ -342,6 +342,11 @@ button.oz-sticky-btn:active {
   transform: translateY(0);
 }
 
+/* Remove bottom margin on price summary inside sheet — avoids empty space at bottom */
+.oz-bottom-sheet .oz-price-summary {
+  margin-bottom: 0;
+}
+
 .oz-sheet-handle {
   width: 36px;
   height: 4px;
