@@ -31,8 +31,8 @@ class OZ_Product_Processor {
         'metallic-stuc-velvet',
         'lavasteen-gietvloeren',
         'lavasteen-gietvloer',
-        'all-in-one-kant-klaar',
-        'easyline-kant-klaar',
+        'beton-cire-all-in-one-kant-klaar',
+        'beton-cire-easyline-kant-klaar',
         'beton-cire-original',
         // Single-word prefixes
         'microcement',
@@ -59,6 +59,13 @@ class OZ_Product_Processor {
         // Single-product lines don't have color variants
         $config = $line_info['config'];
         if ($config['base_id'] === null) {
+            return;
+        }
+
+        // Base products are not color variants — skip color extraction + variant linking
+        if (self::is_base_product($product)) {
+            delete_post_meta($product_id, '_oz_color');
+            delete_post_meta($product_id, '_oz_variants');
             return;
         }
 
@@ -147,15 +154,15 @@ class OZ_Product_Processor {
             return false;
         }
 
-        $base_slug = $product->get_slug();
-
-        // Find color variants in the same category.
-        // Try sales-ordered first, then fall back to any matching variant
-        // (handles products with no total_sales meta yet).
-        $base_args = [
+        // Find color variants in the same category that have _oz_color set.
+        // This is simpler and more reliable than slug prefix matching, because
+        // base product slugs don't always match the variant slug prefix
+        // (e.g. base "metallic-stuc" vs variants "metallic-velvet-4m2-pakket-*").
+        // Order by total_sales so the most popular variant is returned first.
+        $args = [
             'post_type'      => 'product',
             'post_status'    => 'publish',
-            'posts_per_page' => 50,
+            'posts_per_page' => 1,
             'post__not_in'   => [$product_id],
             'fields'         => 'ids',
             'tax_query'      => [[
@@ -163,40 +170,29 @@ class OZ_Product_Processor {
                 'field'    => 'term_id',
                 'terms'    => $line_info['config']['cats'],
             ]],
+            'meta_query'     => [[
+                'key'     => '_oz_color',
+                'value'   => '',
+                'compare' => '!=',
+            ]],
+            'meta_key'       => 'total_sales',
+            'orderby'        => 'meta_value_num',
+            'order'          => 'DESC',
             'no_found_rows'  => true,
         ];
 
-        // First attempt: ordered by total_sales (best seller first)
-        $args = $base_args;
-        $args['meta_key'] = 'total_sales';
-        $args['orderby']  = 'meta_value_num';
-        $args['order']    = 'DESC';
-
-        $query    = new WP_Query($args);
-        $variants = $query->posts;
-
-        // Find first variant whose slug starts with the base slug
-        foreach ($variants as $variant_id) {
-            $variant = wc_get_product($variant_id);
-            if ($variant && strpos($variant->get_slug(), $base_slug . '-') === 0) {
-                return $variant_id;
-            }
+        $query = new WP_Query($args);
+        if (!empty($query->posts)) {
+            return $query->posts[0];
         }
 
-        // Fallback: query without meta_key requirement so products
-        // without total_sales meta are still found (new/imported products)
-        $args = $base_args;
+        // Fallback: without total_sales ordering (new/imported products)
+        unset($args['meta_key']);
         $args['orderby'] = 'date';
-        $args['order']   = 'DESC';
 
-        $query    = new WP_Query($args);
-        $variants = $query->posts;
-
-        foreach ($variants as $variant_id) {
-            $variant = wc_get_product($variant_id);
-            if ($variant && strpos($variant->get_slug(), $base_slug . '-') === 0) {
-                return $variant_id;
-            }
+        $query = new WP_Query($args);
+        if (!empty($query->posts)) {
+            return $query->posts[0];
         }
 
         return false;

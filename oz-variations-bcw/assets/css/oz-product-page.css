@@ -1,0 +1,2407 @@
+/**
+ * OZ Variations BCW — Product Page Styles
+ *
+ * Based on productpagina-voorbeeld.html mockup.
+ * Scoped to .oz-product-page to avoid Flatsome conflicts.
+ *
+ * Brand: Teal (#135350) accent, Orange (#E67C00) CTA
+ * Fonts: DM Serif Display (headings), Raleway (body)
+ *
+ * @package OZ_Variations_BCW
+ * @since 1.1.0
+ */
+
+:root {
+  /* ═══ Design tokens — duplicated from .oz-product-page for elements outside it ═══ */
+  /* Sticky bar and bottom sheet are position:fixed OUTSIDE .oz-product-page,
+     so they can't inherit CSS variables from it. :root makes them global. */
+  --oz-accent: #135350;
+  --oz-accent-hover: #0E3E3C;
+  --oz-accent-light: #E8F0F0;
+  --oz-accent-text: #FFFFFF;
+  --oz-cta: #E67C00;
+  --oz-cta-hover: #D06E00;
+  --oz-cta-text: #FFFFFF;
+  --oz-label-bg: #F7F7F5;
+  --oz-label-text: #3D3D3D;
+  --oz-label-border: #E0DFDD;
+  --oz-label-hover-bg: #E8F0F0;
+  --oz-label-hover-border: #135350;
+  --oz-text-primary: #1A1A1A;
+  --oz-text-body: #555555;
+  --oz-text-muted: #999999;
+  --oz-bg-page: #FFFFFF;
+  --oz-bg-subtle: #FAFAF9;
+  --oz-bg-warm: #F5F4F0;
+  --oz-border: #E5E5E3;
+  --oz-border-light: #F0EFED;
+  --oz-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --oz-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --oz-shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --oz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══ DESIGN TOKENS ═══════════════════════════════════════════ */
+
+.oz-product-page {
+  /* Brand */
+  --oz-accent: #135350;
+  --oz-accent-hover: #0E3E3C;
+  --oz-accent-light: #E8F0F0;
+  --oz-accent-text: #FFFFFF;
+  --oz-cta: #E67C00;
+  --oz-cta-hover: #D06E00;
+  --oz-cta-text: #FFFFFF;
+
+  /* Labels / option buttons */
+  --oz-label-bg: #F7F7F5;
+  --oz-label-text: #3D3D3D;
+  --oz-label-border: #E0DFDD;
+  --oz-label-hover-bg: #E8F0F0;
+  --oz-label-hover-border: #135350;
+
+  /* Text */
+  --oz-text-primary: #1A1A1A;
+  --oz-text-body: #555555;
+  --oz-text-muted: #999999;
+
+  /* Backgrounds */
+  --oz-bg-page: #FFFFFF;
+  --oz-bg-subtle: #FAFAF9;
+  --oz-bg-warm: #F5F4F0;
+
+  /* Borders */
+  --oz-border: #E5E5E3;
+  --oz-border-light: #F0EFED;
+
+  /* Shadows */
+  --oz-shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  --oz-shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --oz-shadow-lg: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+
+  /* Transitions */
+  --oz-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ═══ PAGE LAYOUT ═════════════════════════════════════════════ */
+
+.oz-product-page {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 8px 40px 80px;
+  font-family: 'Raleway', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--oz-text-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset Flatsome interference */
+.oz-product-page *,
+.oz-product-page *::before,
+.oz-product-page *::after {
+  box-sizing: border-box;
+}
+
+/* Neutralize Flatsome global form/button resets */
+.oz-product-page button,
+.oz-product-page fieldset,
+.oz-product-page input,
+.oz-product-page select,
+.oz-product-page textarea {
+  margin-bottom: 0;
+  box-shadow: none;
+  border-radius: 0;
+  height: auto;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  width: auto;
+  max-width: none;
+  vertical-align: baseline;
+  transition: none;
+}
+
+/* Flatsome label resets — prevent bold/block/margin from theme */
+.oz-product-page label {
+  display: inline;
+  font-size: inherit;
+  font-weight: inherit;
+  margin-bottom: 0;
+  color: inherit;
+}
+
+/* Flatsome a tag — prevent theme link color override */
+.oz-product-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Flatsome img — prevent inline-block and transitions */
+.oz-product-page img {
+  display: block;
+  transition: none;
+}
+
+/* Flatsome small — prevent inline-block */
+.oz-product-page small {
+  display: inline;
+  font-size: inherit;
+}
+
+/* Flatsome headings — prevent color/margin/width overrides */
+.oz-product-page h1,
+.oz-product-page h2,
+.oz-product-page h3,
+.oz-product-page h4,
+.oz-product-page h5,
+.oz-product-page h6 {
+  color: inherit;
+  width: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-rendering: auto;
+}
+
+/* Flatsome ul/li — prevent list margin/padding/style */
+.oz-product-page ul,
+.oz-product-page ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.oz-product-page li {
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+/* Flatsome p — prevent bottom margin */
+.oz-product-page p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Flatsome table — prevent bottom margin */
+.oz-product-page table {
+  margin-bottom: 0;
+}
+
+/* Flatsome .button class — prevent theme button styling */
+.oz-product-page .button,
+.oz-product-page button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: inherit;
+  letter-spacing: normal;
+  line-height: inherit;
+  margin: 0;
+  min-height: auto;
+  min-width: auto;
+  padding: 0;
+  text-align: inherit;
+  text-shadow: none;
+  text-transform: none;
+  transition: none;
+  vertical-align: baseline;
+}
+
+/* Flatsome form — prevent bottom margin */
+.oz-product-page form {
+  margin-bottom: 0;
+}
+
+/* Restore specific input styling where needed */
+.oz-product-page input[type="number"] {
+  border: 1px solid var(--oz-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  height: 38px;
+  width: 80px;
+  background: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+.oz-breadcrumb {
+  padding: 14px 0;
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  letter-spacing: 0.2px;
+}
+
+.oz-breadcrumb a {
+  color: var(--oz-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.oz-breadcrumb a:hover {
+  color: var(--oz-accent);
+}
+
+.oz-product-grid {
+  display: grid;
+  grid-template-columns: 56% 44%;
+  gap: 56px;
+  align-items: start;
+}
+
+
+/* ═══ GALLERY ═════════════════════════════════════════════════ */
+
+.oz-gallery-main {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+  margin-bottom: 12px;
+  cursor: zoom-in;
+  position: relative;
+}
+
+.oz-gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s var(--oz-ease), transform 0.8s var(--oz-ease);
+}
+
+.oz-gallery-main:hover img {
+  transform: scale(1.02);
+}
+
+.oz-gallery-main img.oz-fade {
+  opacity: 0;
+}
+
+.oz-gallery-thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.oz-gallery-thumb {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: var(--oz-bg-warm);
+  transition: border-color 0.3s var(--oz-ease), box-shadow 0.3s var(--oz-ease);
+}
+
+.oz-gallery-thumb:hover {
+  border-color: var(--oz-text-muted);
+}
+
+.oz-gallery-thumb.selected {
+  border-color: var(--oz-accent);
+}
+
+.oz-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ═══ PRODUCT INFO (below gallery) ════════════════════════════ */
+
+.oz-product-info-section {
+  margin-top: 56px;
+}
+
+.oz-section-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--oz-accent);
+  display: inline-block;
+  letter-spacing: 0.2px;
+}
+
+.oz-description-wrapper {
+  position: relative;
+}
+
+.oz-description-content {
+  max-height: 160px;
+  overflow: hidden;
+  line-height: 1.9;
+  color: var(--oz-text-body);
+  font-size: 14px;
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  transition: max-height 0.6s var(--oz-ease), -webkit-mask-image 0.4s;
+}
+
+.oz-description-content.expanded {
+  max-height: 5000px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.oz-description-content p {
+  margin-bottom: 14px;
+}
+
+.oz-description-content h3 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  margin: 24px 0 10px;
+  color: var(--oz-text-primary);
+}
+
+.oz-description-content ul {
+  margin: 10px 0 14px 20px;
+  color: var(--oz-text-body);
+}
+
+.oz-description-content li {
+  margin-bottom: 4px;
+}
+
+.oz-read-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  margin: 8px auto 0;
+  color: var(--oz-accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.3s var(--oz-ease);
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.oz-read-more:hover {
+  color: var(--oz-accent-hover);
+}
+
+
+/* ═══ RIGHT COLUMN: PRODUCT SUMMARY ══════════════════════════ */
+
+.oz-product-summary {
+  padding-left: 8px;
+}
+
+/* Color label badge above title */
+.oz-color-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--oz-accent-text);
+  background: var(--oz-accent);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.oz-product-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--oz-text-primary);
+  margin: 0 0 2px;
+}
+
+.oz-product-base-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  margin-bottom: 16px;
+}
+
+.oz-product-base-price del {
+  color: var(--oz-text-muted);
+  font-weight: 400;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.oz-per-unit {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  margin-left: 4px;
+}
+
+/* Short description — teal accent chips */
+.oz-short-desc {
+  margin-bottom: 28px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--oz-text-body);
+}
+
+.oz-short-desc ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-short-desc li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--oz-accent-light);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-accent);
+  margin-bottom: 0;
+  position: static;
+}
+
+/* Override any ::before from theme */
+.oz-short-desc li::before {
+  content: '✓';
+  position: static;
+  color: var(--oz-accent);
+  font-weight: 700;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+}
+
+
+/* ═══ OPTION GROUPS ═══════════════════════════════════════════ */
+
+.oz-option-group {
+  margin-bottom: 24px;
+}
+
+.oz-option-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.oz-selected-value {
+  font-weight: 500;
+  color: var(--oz-accent);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oz-m2-note {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+
+/* ─── Info tooltip ─── */
+
+.oz-product-page .oz-info-btn,
+.oz-bottom-sheet .oz-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--oz-accent-light);
+  color: var(--oz-accent);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-style: italic;
+  font-family: Georgia, serif;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.25s var(--oz-ease), color 0.25s var(--oz-ease);
+}
+
+.oz-product-page .oz-info-btn:hover,
+.oz-bottom-sheet .oz-info-btn:hover {
+  background: var(--oz-accent);
+  color: white;
+}
+
+.oz-info-tooltip {
+  background: var(--oz-bg-warm);
+  border: 0px solid var(--oz-border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--oz-text-body);
+  line-height: 1.7;
+  /* Smooth reveal from collapsed state */
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0 18px;
+  margin: 0;
+  transition: max-height 0.35s var(--oz-ease), opacity 0.3s var(--oz-ease),
+              padding 0.35s var(--oz-ease), margin 0.35s var(--oz-ease),
+              border-width 0.35s;
+}
+
+.oz-info-tooltip.visible {
+  max-height: 200px;
+  opacity: 1;
+  padding: 14px 18px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  border-width: 1px;
+}
+
+
+/* ─── Option buttons (PU, Primer, Colorfresh, Pakket, Toepassing) ─── */
+
+.oz-option-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.oz-product-page .oz-option-label-btn {
+  padding: 10px 18px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  color: var(--oz-label-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s var(--oz-ease), background 0.25s var(--oz-ease),
+              color 0.25s var(--oz-ease), box-shadow 0.25s var(--oz-ease);
+  font-family: 'Raleway', sans-serif;
+  white-space: nowrap;
+  position: relative;
+}
+
+.oz-product-page .oz-option-label-btn:hover {
+  border-color: var(--oz-label-hover-border);
+  background: var(--oz-label-hover-bg);
+}
+
+.oz-product-page .oz-option-label-btn.selected {
+  border-color: var(--oz-accent);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text);
+}
+
+.oz-price-add {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-left: 4px;
+}
+
+.oz-product-page .oz-option-label-btn.selected .oz-price-add {
+  opacity: 0.9;
+}
+
+/* "Advies" badge on recommended option (e.g. 2 PU lagen) */
+.oz-recommended {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--oz-cta);
+  color: white;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* When parent button is selected, keep badge visible with contrast */
+.oz-product-page .oz-option-label-btn.selected .oz-recommended {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+
+/* ═══ COLOR SWATCHES ══════════════════════════════════════════ */
+
+.oz-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.oz-color-swatch {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  border: 2px solid var(--oz-border);
+  cursor: pointer;
+  transition: border-color 0.3s var(--oz-ease), box-shadow 0.3s var(--oz-ease),
+              transform 0.3s var(--oz-ease);
+  position: relative;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+
+.oz-color-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-color-swatch:hover {
+  transform: scale(1.06);
+  border-color: var(--oz-text-muted);
+}
+
+.oz-color-swatch.selected {
+  border-color: var(--oz-accent);
+}
+
+
+/* ─── RAL/NCS color mode ─── */
+
+.oz-color-mode-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.oz-product-page .oz-color-mode-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  color: var(--oz-label-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  text-align: center;
+  transition: border-color 0.25s var(--oz-ease), background 0.25s var(--oz-ease),
+              color 0.25s var(--oz-ease);
+}
+
+.oz-product-page .oz-color-mode-btn:hover {
+  border-color: var(--oz-label-hover-border);
+  background: var(--oz-label-hover-bg);
+}
+
+.oz-product-page .oz-color-mode-btn.active {
+  border-color: var(--oz-accent);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text);
+}
+
+/* custom-color-wrap: see gap-fixes section below */
+
+.oz-custom-color-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Raleway', sans-serif;
+  color: var(--oz-text-primary);
+  background: white;
+  transition: border-color 0.2s var(--oz-ease), box-shadow 0.2s var(--oz-ease);
+  box-sizing: border-box;
+}
+
+.oz-custom-color-input:focus {
+  outline: none;
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 3px rgba(19,83,80,0.1);
+}
+
+.oz-custom-color-input.invalid {
+  border-color: #E53E3E;
+}
+
+.oz-custom-color-input.valid {
+  border-color: var(--oz-accent);
+}
+
+.oz-custom-color-hint {
+  font-size: 11px;
+  margin-top: 4px;
+  color: var(--oz-text-muted);
+  min-height: 18px;
+}
+
+.oz-custom-color-hint.error {
+  color: #E53E3E;
+}
+
+.oz-custom-color-hint.success,
+.oz-custom-color-hint.ok {
+  color: var(--oz-accent);
+}
+
+
+/* ═══ QUANTITY + ADD TO CART ═══════════════════════════════════ */
+
+.oz-product-page .oz-cart-row,
+.oz-bottom-sheet .oz-cart-row {
+  display: inline-flex !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.oz-product-page .oz-quantity-wrapper,
+.oz-bottom-sheet .oz-quantity-wrapper {
+  display: inline-flex !important;
+  align-items: center;
+  border: 1.5px solid var(--oz-border) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+  margin: 0;
+  padding: 0;
+  background: white;
+}
+
+.oz-quantity-wrapper:hover {
+  border-color: var(--oz-text-muted);
+}
+
+.oz-product-page button.oz-qty-btn {
+  width: 32px !important;
+  height: 48px !important;
+  background: var(--oz-bg-subtle) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--oz-text-primary);
+  transition: background-color 0.15s var(--oz-ease);
+  font-family: 'Raleway', sans-serif;
+  user-select: none;
+  padding: 0 !important;
+  margin: 0;
+  min-height: auto !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.oz-product-page .oz-qty-btn:hover {
+  background: var(--oz-border);
+}
+
+.oz-product-page .oz-qty-btn:active {
+  background: var(--oz-text-muted);
+}
+
+.oz-product-page input.oz-qty-input,
+.oz-product-page input.oz-qty-input[type="number"] {
+  width: 32px !important;
+  height: 48px !important;
+  text-align: center;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Raleway', sans-serif;
+  color: var(--oz-text-primary);
+  background: white !important;
+  padding: 0 !important;
+  margin: 0;
+  max-width: 32px;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+  vertical-align: middle;
+}
+
+.oz-product-page input.oz-qty-input:focus,
+.oz-product-page input.oz-qty-input[type="number"]:focus {
+  outline: none;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  border: none !important;
+  background: white !important;
+}
+
+.oz-product-page .oz-qty-input::-webkit-inner-spin-button,
+.oz-product-page .oz-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.oz-product-page button.oz-add-to-cart {
+  flex: 1 !important;
+  height: 50px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text) !important;
+  font-size: 15px !important;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s var(--oz-ease);
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 20px !important;
+  margin: 0;
+  min-height: auto !important;
+  line-height: 50px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.oz-product-page button.oz-add-to-cart:hover {
+  background: var(--oz-cta-hover) !important;
+}
+
+.oz-product-page button.oz-add-to-cart:active {
+  background: #b86200 !important;
+}
+
+.oz-product-page button.oz-add-to-cart:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed;
+}
+
+
+/* ═══ PRICE BREAKDOWN ═════════════════════════════════════════ */
+
+.oz-price-summary {
+  background: var(--oz-bg-warm);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+  border: 1px solid var(--oz-border-light);
+  font-size: 13px;
+}
+
+.oz-price-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  color: var(--oz-text-body);
+  transition: opacity 0.2s;
+}
+
+.oz-price-line.oz-price-total {
+  border-top: 2px solid var(--oz-accent);
+  margin-top: 10px;
+  padding-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  letter-spacing: -0.3px;
+}
+
+
+/* ═══ TRUST BADGES ════════════════════════════════════════════ */
+
+.oz-trust-badges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 0;
+}
+
+.oz-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--oz-bg-subtle);
+  border: 1px solid var(--oz-border-light);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--oz-text-body);
+  transition: background-color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
+}
+
+.oz-trust-badge:hover {
+  border-color: var(--oz-accent-light);
+  background: var(--oz-accent-light);
+}
+
+
+/* ═══ DIVIDER — between option groups ═════════════════════════ */
+
+.oz-divider {
+  height: 1px;
+  background: var(--oz-border);
+  margin: 28px 0;
+}
+
+
+
+
+/* ═══ FLATSOME ISOLATION — sticky bar + bottom sheet ═════════ */
+/* These elements live OUTSIDE .oz-product-page (they're position:fixed).
+   Flatsome's global button/input rules still apply. Reset them here. */
+.oz-sticky-bar button,
+.oz-sticky-bar input,
+.oz-sticky-bar select,
+.oz-sticky-bar textarea,
+.oz-sticky-bar label,
+.oz-sticky-bar fieldset,
+.oz-bottom-sheet button,
+.oz-bottom-sheet input,
+.oz-bottom-sheet select,
+.oz-bottom-sheet textarea,
+.oz-bottom-sheet label,
+.oz-bottom-sheet fieldset {
+  /* Kill Flatsome's global margin-bottom: 1em on form elements */
+  margin-bottom: 0;
+  margin-right: 0;
+  /* Kill Flatsome's letter-spacing, text-transform, line-height on buttons */
+  letter-spacing: normal;
+  text-transform: none;
+  text-shadow: none;
+  text-decoration: none;
+  /* Kill Flatsome's min-height: 2.5em on buttons */
+  min-height: auto;
+  min-width: auto;
+  /* Kill Flatsome's box-shadow: inset on inputs */
+  box-shadow: none;
+}
+
+.oz-sticky-bar button,
+.oz-sticky-bar input,
+.oz-bottom-sheet button,
+.oz-bottom-sheet input {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+  display: inline-block;
+  max-width: none;
+  width: auto;
+  height: auto;
+  transition: none;
+}
+
+/* ═══ MOBILE STICKY BAR ═══════════════════════════════════════ */
+
+.oz-sticky-bar {
+  /* Hidden on desktop — only shown on mobile via media query */
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border-top: 1px solid var(--oz-border-light);
+  padding: 10px 16px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.08), 0 -1px 4px rgba(0,0,0,0.04);
+  /* Hidden off-screen by default, animated in via .visible */
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.oz-sticky-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.oz-sticky-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--oz-border-light);
+  flex-shrink: 0;
+}
+
+.oz-sticky-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.oz-sticky-product-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oz-sticky-color {
+  font-size: 11px;
+  color: var(--oz-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.oz-sticky-price {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--oz-text-primary);
+  letter-spacing: -0.5px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+button.oz-sticky-btn {
+  display: block !important;
+  width: 100% !important;
+  padding: 13px 20px !important;
+  border: none !important;
+  border-radius: 10px !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text) !important;
+  font-size: 14px !important;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1 !important;
+  min-height: auto !important;
+  box-shadow: none !important;
+  margin: 0;
+  transition: background-color 0.2s var(--oz-ease);
+}
+
+button.oz-sticky-btn:active {
+  background: var(--oz-cta-hover) !important;
+  transform: scale(0.98);
+}
+
+
+/* ═══ BOTTOM SHEET ════════════════════════════════════════════ */
+
+.oz-sheet-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--oz-ease);
+}
+
+.oz-sheet-overlay.open {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.oz-bottom-sheet {
+  /* Hidden on desktop — only shown on mobile via media query */
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1002;
+  background: white;
+  border-radius: 16px 16px 0 0;
+  max-height: 85vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.4s var(--oz-ease);
+  padding: 0 20px 24px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.oz-bottom-sheet.open {
+  transform: translateY(0);
+}
+
+.oz-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--oz-border);
+  border-radius: 2px;
+  margin: 12px auto 16px;
+}
+
+.oz-sheet-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  margin-bottom: 20px;
+}
+
+
+/* Mirror .oz-product-page button resets for .oz-bottom-sheet
+   (optionsWidget moves into sheet on mobile, losing .oz-product-page scope) */
+.oz-bottom-sheet button,
+.oz-bottom-sheet input,
+.oz-bottom-sheet select {
+  margin-bottom: 0 !important;
+  margin-right: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: normal !important;
+  line-height: inherit !important;
+  min-height: auto !important;
+  padding: 0 !important;
+  text-transform: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+}
+
+/* Option buttons inside bottom sheet need the same styling as in .oz-product-page */
+.oz-bottom-sheet .oz-option-label-btn {
+  padding: 10px 18px !important;
+  border: 1.5px solid var(--oz-label-border) !important;
+  border-radius: 8px !important;
+  background: var(--oz-label-bg) !important;
+  color: var(--oz-label-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  white-space: nowrap;
+  position: relative;
+  display: inline-block !important;
+  line-height: 1.4 !important;
+  transition: border-color 0.25s, background 0.25s, color 0.25s !important;
+}
+
+.oz-bottom-sheet .oz-option-label-btn:hover {
+  border-color: var(--oz-label-hover-border) !important;
+  background: var(--oz-label-hover-bg) !important;
+}
+
+.oz-bottom-sheet .oz-option-label-btn.selected {
+  border-color: var(--oz-accent) !important;
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+}
+
+.oz-bottom-sheet .oz-color-mode-btn {
+  padding: 8px 16px !important;
+  border: 1.5px solid var(--oz-label-border) !important;
+  border-radius: 8px !important;
+  background: var(--oz-label-bg) !important;
+  color: var(--oz-label-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  display: inline-block !important;
+  line-height: 1.4 !important;
+}
+
+.oz-bottom-sheet .oz-color-mode-btn.active {
+  border-color: var(--oz-accent) !important;
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+}
+
+.oz-bottom-sheet button.oz-qty-btn {
+  width: 32px !important;
+  height: 48px !important;
+  background: var(--oz-bg-subtle) !important;
+  border: none !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: var(--oz-text-primary) !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.oz-bottom-sheet input.oz-qty-input,
+.oz-bottom-sheet input.oz-qty-input[type="number"] {
+  width: 32px !important;
+  height: 48px !important;
+  text-align: center;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  background: white !important;
+  color: var(--oz-text-primary) !important;
+  padding: 0 !important;
+  -moz-appearance: textfield;
+}
+
+.oz-bottom-sheet button.oz-add-to-cart {
+  flex: 1 !important;
+  height: 50px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  padding: 0 20px !important;
+  line-height: 50px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Info button inside bottom sheet — needs !important to beat isolation reset */
+.oz-bottom-sheet .oz-info-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: var(--oz-accent-light) !important;
+  color: var(--oz-accent) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  font-style: italic;
+  font-family: Georgia, serif;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.oz-sheet-footer {
+  position: sticky;
+  bottom: -24px;  /* counteract the sheet's own bottom padding */
+  background: white;
+  border-top: 1px solid var(--oz-border);
+  padding: 8px 0 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  margin-top: 8px;
+  z-index: 2;
+}
+
+.oz-sheet-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding-top: 4px;
+  border-top: 1px solid var(--oz-border-light);
+  font-size: 16px;
+}
+
+.oz-sheet-total-label {
+  font-weight: 600;
+  color: var(--oz-text-primary);
+}
+
+.oz-sheet-total-price {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--oz-text-primary);
+}
+
+button.oz-sheet-cta {
+  width: 100% !important;
+  height: 50px !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 20px !important;
+  margin: 0;
+  min-height: auto !important;
+  line-height: 50px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ═══ SHAKE ANIMATION (cart validation) ═══════════════════════ */
+
+@keyframes oz-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+
+/* ═══ RESPONSIVE ══════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .oz-product-page {
+    padding: 8px 16px 100px; /* room for sticky bar */
+  }
+
+  .oz-product-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .oz-product-summary {
+    padding-left: 0;
+  }
+
+  .oz-trust-badges {
+    grid-template-columns: 1fr;
+  }
+
+  /* Show sticky bar on mobile */
+  .oz-sticky-bar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .oz-sheet-overlay.open {
+    display: block;
+  }
+
+  .oz-bottom-sheet.open {
+    display: block;
+  }
+
+  .oz-product-page .oz-add-to-cart {
+    width: 100%;
+    flex: none;
+    height: 54px;
+    font-size: 16px;
+  }
+
+  .oz-product-info-section {
+    margin-top: 40px;
+  }
+
+  /* Mobile order: Gallery → Summary → Description */
+  .oz-left-column {
+    display: contents;
+  }
+
+  .oz-product-gallery {
+    order: 1;
+  }
+
+  .oz-product-summary {
+    order: 2;
+  }
+
+  .oz-product-info-section {
+    order: 3;
+  }
+
+  .oz-gallery-thumb {
+    width: 60px;
+    height: 60px;
+  }
+
+  .oz-product-page .oz-add-to-cart,
+  button.oz-sticky-btn,
+  button.oz-sheet-cta {
+    height: 54px;
+    font-size: 16px;
+  }
+}
+
+
+/* ═══ MISSING CSS — GAP ANALYSIS FIXES ═════════════════════════ */
+
+/* ── Page load animations ──────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.oz-product-gallery {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s both;
+}
+
+.oz-product-summary {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.12s both;
+}
+
+.oz-product-info-section {
+  animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+}
+
+/* ── Read more chevron rotation ────────────────────────────────── */
+.oz-read-more-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.oz-read-more[aria-expanded="true"] .oz-read-more-icon,
+.oz-description-content.expanded + .oz-read-more .oz-read-more-icon {
+  transform: rotate(180deg);
+}
+
+/* ── Swatch hover tooltip ──────────────────────────────────────── */
+.oz-color-swatch {
+  position: relative;
+}
+
+.oz-swatch-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--oz-text-primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.oz-swatch-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--oz-text-primary);
+}
+
+.oz-color-swatch:hover .oz-swatch-tooltip {
+  opacity: 1;
+}
+
+/* ── "Aanbevolen" recommended badge on option buttons ──────────── */
+.oz-recommended {
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--oz-cta);
+  color: white;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+/* ── "Vanaf" price prefix ──────────────────────────────────────── */
+.oz-product-base-price .oz-vanaf {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-text-muted);
+}
+
+/* ── Per-unit note next to quantity ─────────────────────────────── */
+.oz-qty-unit {
+  font-size: 13px;
+  color: var(--oz-text-muted);
+  white-space: nowrap;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+/* ── Animated custom color input (smooth reveal instead of display toggle) */
+.oz-custom-color-wrap {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.3s;
+}
+
+.oz-custom-color-wrap.visible {
+  max-height: 130px;
+  opacity: 1;
+  margin-top: 4px;
+}
+
+/* ── Color prefix label (RAL / NCS) ────────────────────────────── */
+.oz-color-input-row {
+  position: relative;
+}
+
+.oz-color-prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.oz-color-prefix.visible {
+  opacity: 1;
+}
+
+/* ── Custom color info box ─────────────────────────────────────── */
+.oz-custom-color-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--oz-accent-light);
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--oz-accent);
+}
+
+.oz-custom-color-info svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Color swatch animated hide/show (RAL/NCS mode switch) ─────── */
+.oz-color-swatches {
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 500px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.oz-color-swatches.hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* ── Specs table ───────────────────────────────────────────────── */
+.oz-specs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.oz-specs-table tr {
+  border-bottom: 1px solid var(--oz-border-light);
+  transition: background 0.15s;
+}
+
+.oz-specs-table tr:last-child {
+  border-bottom: none;
+}
+
+.oz-specs-table tr:hover {
+  background: var(--oz-bg-subtle);
+}
+
+.oz-specs-table td {
+  padding: 13px 0;
+  vertical-align: top;
+}
+
+.oz-specs-table td:first-child {
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  width: 42%;
+  padding-right: 20px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.oz-specs-table td:last-child {
+  color: var(--oz-text-body);
+}
+
+/* ── M2 advice tip box ─────────────────────────────────────────── */
+.oz-m2-advice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--oz-accent-light);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--oz-accent);
+}
+
+.oz-m2-advice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Option dropdown (styled select) ───────────────────────────── */
+.oz-option-dropdown {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  font-family: "Raleway", sans-serif;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  transition: border-color 0.2s;
+}
+
+.oz-option-dropdown:focus {
+  outline: none;
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.1);
+}
+
+/* ── Trust badge SVG sizing ────────────────────────────────────── */
+.oz-trust-badge svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--oz-accent);
+}
+
+/* ── Payment methods section ───────────────────────────────────── */
+.oz-payment-section {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.oz-payment-label {
+  font-size: 11px;
+  color: var(--oz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.oz-payment-methods {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.oz-payment-icon {
+  width: 38px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--oz-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  transition: border-color 0.2s;
+  padding: 3px;
+}
+
+.oz-payment-icon:hover {
+  border-color: var(--oz-accent);
+}
+
+.oz-payment-icon img,
+.oz-payment-icon svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ── Sticky bar improvements ───────────────────────────────────── */
+.oz-sticky-color {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.oz-sticky-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--oz-border);
+}
+
+.oz-sticky-price-unit {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  letter-spacing: 0;
+}
+
+.oz-product-page .oz-sticky-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Sticky bar animation (transform instead of abrupt display) ── */
+.oz-sticky-bar.visible {
+  transform: translateY(0);
+}
+
+/* ── Bottom sheet inner components ─────────────────────────────── */
+.oz-sheet-group {
+  margin-bottom: 20px;
+}
+
+.oz-sheet-group-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.oz-sheet-group-label span {
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oz-sheet-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.oz-sheet-swatch {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.oz-sheet-swatch.selected {
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 2px rgba(19, 83, 80, 0.15);
+}
+
+.oz-sheet-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.oz-sheet-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.oz-bottom-sheet .oz-sheet-label-btn {
+  padding: 10px 16px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-label-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.oz-bottom-sheet .oz-sheet-label-btn.selected {
+  border-color: var(--oz-accent);
+  background: var(--oz-accent-light);
+  color: var(--oz-accent);
+}
+
+.oz-bottom-sheet .oz-sheet-label-btn .oz-price-add {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--oz-text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+.oz-bottom-sheet .oz-sheet-label-btn.selected .oz-price-add {
+  color: var(--oz-accent);
+}
+
+.oz-sheet-dropdown {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  font-family: "Raleway", sans-serif;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.oz-sheet-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.oz-bottom-sheet .oz-sheet-qty-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--oz-border);
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--oz-text-primary);
+  transition: all 0.15s;
+}
+
+.oz-bottom-sheet .oz-sheet-qty-btn:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+}
+
+.oz-bottom-sheet .oz-sheet-qty-input {
+  width: 60px;
+  height: 36px;
+  text-align: center;
+  border: 1.5px solid var(--oz-border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  background: white;
+  color: var(--oz-text-primary);
+}
+
+.oz-bottom-sheet .oz-sheet-qty-input::-webkit-inner-spin-button,
+.oz-bottom-sheet .oz-sheet-qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.oz-sheet-breakdown {
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.oz-sheet-price-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 2px 0;
+  font-size: 13px;
+  color: var(--oz-text-body);
+}
+
+.oz-sheet-m2-small {
+  font-size: 11px;
+  color: var(--oz-text-muted);
+}
+
+.oz-sheet-m2-note {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+}
+
+/* ── Price line m2 note ────────────────────────────────────────── */
+.oz-price-line .oz-m2-note {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+}
+
+/* ── Sheet total fixes (match mockup values) ───────────────────── */
+.oz-sheet-total-price {
+  font-size: 22px;
+  letter-spacing: -0.3px;
+}
+
+.oz-sheet-total-label {
+  font-size: 14px;
+  color: var(--oz-text-body);
+}
+
+/* ── Sheet CTA hover state ─────────────────────────────────────── */
+.oz-product-page .oz-sheet-cta:hover {
+  background: var(--oz-cta-hover);
+}
+
+
+/* ═══ TOOL SELECTION — selectable card rows matching label-btn design ═══ */
+
+/* Mode toggle: "Geen" / "Kant & Klaar" / "Zelf samenstellen" */
+.oz-tool-mode {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.oz-tool-mode-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  color: var(--oz-label-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "Raleway", sans-serif;
+  transition: border-color 0.25s, background 0.25s, color 0.25s;
+  text-align: center;
+  /* Reset browser/theme button defaults */
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  box-shadow: none;
+  margin: 0;
+}
+.oz-tool-mode-btn:hover {
+  border-color: var(--oz-label-hover-border);
+  background: var(--oz-label-hover-bg);
+}
+.oz-tool-mode-btn.selected {
+  border-color: var(--oz-accent);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text);
+}
+.oz-tool-mode-btn .oz-price-add {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-left: 4px;
+}
+.oz-tool-mode-btn.selected .oz-price-add { opacity: 0.9; }
+
+/* Individual tool items — card rows */
+.oz-tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  transition: max-height 0.35s, opacity 0.25s;
+}
+.oz-tool-list.hidden {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.oz-tool-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--oz-label-border);
+  border-radius: 8px;
+  background: var(--oz-label-bg);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+.oz-tool-item:hover {
+  border-color: var(--oz-label-hover-border);
+  background: var(--oz-label-hover-bg);
+}
+.oz-tool-item.selected {
+  border-color: var(--oz-accent);
+  background: rgba(19, 83, 80, 0.04);
+}
+
+/* Custom checkbox — teal square, matches the brand */
+.oz-tool-check {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--oz-border);
+  border-radius: 4px;
+  background: white;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.oz-tool-check svg { opacity: 0; transition: opacity 0.15s; }
+.oz-tool-item.selected .oz-tool-check {
+  background: var(--oz-accent);
+  border-color: var(--oz-accent);
+}
+.oz-tool-item.selected .oz-tool-check svg { opacity: 1; }
+
+.oz-tool-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-text-primary);
+}
+.oz-tool-price {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  white-space: nowrap;
+}
+.oz-tool-item.selected .oz-tool-price { color: var(--oz-accent); font-weight: 600; }
+
+/* Qty stepper — slides in when selected */
+.oz-tool-qty {
+  display: flex;
+  align-items: center;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-width 0.25s, opacity 0.2s;
+}
+.oz-tool-qty.visible {
+  max-width: 100px;
+  opacity: 1;
+}
+.oz-tool-qty-wrap {
+  display: inline-flex;
+  border: 1px solid var(--oz-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.oz-tool-qty-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--oz-bg-subtle);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--oz-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Raleway", sans-serif;
+  transition: background 0.1s;
+}
+.oz-tool-qty-btn:hover { background: var(--oz-border-light); }
+.oz-tool-qty-btn:active { background: var(--oz-border); }
+.oz-tool-qty-input {
+  width: 30px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid var(--oz-border);
+  border-right: 1px solid var(--oz-border);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Raleway", sans-serif;
+  color: var(--oz-text-primary);
+  background: white;
+  -moz-appearance: textfield;
+}
+.oz-tool-qty-input::-webkit-inner-spin-button,
+.oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Size selector — segmented pills for sized tools */
+.oz-tool-sizes {
+  display: none;
+  gap: 4px;
+  margin-top: -4px;
+  padding-left: 28px; /* align with tool name past checkmark */
+  flex-basis: 100%;
+}
+.oz-tool-sizes.visible {
+  display: flex;
+}
+.oz-tool-size-btn {
+  padding: 3px 10px;
+  border: 1px solid var(--oz-border);
+  border-radius: 5px;
+  background: var(--oz-bg-subtle);
+  font-size: 11px;
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
+  color: var(--oz-text-body);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.oz-tool-size-btn:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+}
+.oz-tool-size-btn.selected {
+  background: var(--oz-accent-light);
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+/* Set contents — what is in the box */
+.oz-set-contents {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  line-height: 1.5;
+  padding: 0 2px;
+  margin-top: -2px;
+  margin-bottom: 6px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s, opacity 0.25s, margin 0.3s;
+}
+.oz-set-contents.visible {
+  max-height: 60px;
+  opacity: 1;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+/* Extras section wrapper — shown only when set mode is active */
+.oz-tool-extras-wrap {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.35s, opacity 0.25s;
+}
+.oz-tool-extras-wrap.visible {
+  max-height: 800px;
+  opacity: 1;
+  overflow: visible;
+}
+.oz-extras-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  margin-bottom: 6px;
+  margin-top: 8px;
+}
+
+/* Smart nudge — PU roller recommendation for large projects */
+.oz-smart-nudge {
+  display: none;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #92400e;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.oz-smart-nudge.visible {
+  display: flex;
+}
+.oz-smart-nudge svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #f59e0b;
+}
+
+/* ── Upsell modal (placeholder for Phase 3) ────────────────────── */
+.oz-upsell-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.oz-upsell-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.oz-upsell-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  box-shadow: var(--oz-shadow-lg);
+}
+
+.oz-upsell-title {
+  font-family: "DM Serif Display", Georgia, serif;
+  font-size: 22px;
+  color: var(--oz-text-primary);
+  margin-bottom: 8px;
+}
+
+.oz-upsell-text {
+  font-size: 14px;
+  color: var(--oz-text-body);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.oz-upsell-add {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--oz-cta);
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 10px;
+}
+
+.oz-upsell-add:hover {
+  background: var(--oz-cta-hover);
+}
+
+.oz-upsell-skip {
+  font-size: 13px;
+  color: var(--oz-text-muted);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.oz-upsell-skip:hover {
+  color: var(--oz-text-primary);
+}
+
+/* ── Mobile responsive fixes ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .oz-product-gallery {
+    position: static;
+  }
+
+  .oz-product-title {
+    font-size: 26px;
+  }
+
+  .oz-breadcrumb {
+    padding: 8px 0;
+  }
+
+  /* Activate sticky bar and bottom sheet on mobile */
+  .oz-sticky-bar {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .oz-sheet-overlay.open {
+    display: block;
+  }
+
+  .oz-bottom-sheet.open {
+    display: block;
+  }
+
+  body.oz-has-sticky {
+    padding-bottom: 100px;
+  }
+}
+
+
+/* ═══ RECAPTCHA BADGE + COOKIE/PRIVACY — always hidden on product pages ═══ */
+/* These overlap with sticky bar and bottom sheet on mobile */
+.oz-product-page ~ .grecaptcha-badge,
+.grecaptcha-badge,
+body.single-product .grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ═══ COOKIEBOT + PRIVACY BANNERS — hidden for 30s on product pages ═══ */
+/* JS will remove this class after 30 seconds of no interaction */
+body.oz-hide-banners #CookiebotWidget,
+body.oz-hide-banners #CookieConsent,
+body.oz-hide-banners #cookiebanner,
+body.oz-hide-banners .cookieconsent,
+body.oz-hide-banners [id*="cookiebot"],
+body.oz-hide-banners [class*="cookie-banner"],
+body.oz-hide-banners [class*="privacy-banner"],
+body.oz-hide-banners .cc-window,
+body.oz-hide-banners #uc-corner-modal,
+body.oz-hide-banners #CybotCookiebotDialog,
+body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+

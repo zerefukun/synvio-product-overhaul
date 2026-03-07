@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('OZ_BCW_VERSION', '1.0.0');
+define('OZ_BCW_VERSION', '1.1.0');
 define('OZ_BCW_PLUGIN_FILE', __FILE__);
 define('OZ_BCW_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('OZ_BCW_PLUGIN_URL', plugin_dir_url(__FILE__));

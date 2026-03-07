@@ -1,0 +1,76 @@
+name: Deploy BCW Plugin
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "oz-variations-bcw/**"
+      - ".github/workflows/deploy-bcw.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-bcw-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH access
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+          BCW_SSH_KEY: ${{ secrets.BCW_SSH_KEY }}
+        run: |
+          set -eu
+
+          : "${BCW_HOST:?Missing secret BCW_HOST}"
+          : "${BCW_USER:?Missing secret BCW_USER}"
+          : "${BCW_SSH_KEY:?Missing secret BCW_SSH_KEY}"
+
+          port="${BCW_PORT:-22}"
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$BCW_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -p "$port" -H "$BCW_HOST" >> ~/.ssh/known_hosts
+
+      - name: Ensure plugin directory exists on BCW
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
+            "mkdir -p /home/betoncire/public_html/wp-content/plugins/oz-variations-bcw"
+
+      - name: Deploy plugin files to BCW
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".DS_Store" \
+            -e "ssh -p $port" \
+            ./oz-variations-bcw/ \
+            "${BCW_USER}@${BCW_HOST}:/home/betoncire/public_html/wp-content/plugins/oz-variations-bcw/"

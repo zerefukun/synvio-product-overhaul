@@ -137,7 +137,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => true,
             'ral_ncs'        => false,  // Original has NO RAL/NCS
             'ral_ncs_only'   => false,
-            'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu'],
+            'has_tools'      => true,
+            'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
         ],
 
         // ─── ALL-IN-ONE ──────────────────────────────────────────────
@@ -155,7 +156,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => false,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
-            'option_order'   => ['color', 'pu'],
+            'has_tools'      => true,
+            'option_order'   => ['color', 'pu', 'tools'],
         ],
 
         // ─── EASYLINE ────────────────────────────────────────────────
@@ -173,7 +175,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => true,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
-            'option_order'   => ['color', 'pakket', 'pu'],
+            'has_tools'      => true,
+            'option_order'   => ['color', 'pakket', 'pu', 'tools'],
         ],
 
         // ─── MICROCEMENT ─────────────────────────────────────────────
@@ -181,7 +184,7 @@ class OZ_Product_Line_Config {
         'microcement' => [
             'cats'           => [455, 463],
             'base_id'        => 22760,
-            'unit'           => 'per stuk (1m²)',
+            'unit'           => 'stuk (1m²)',
             'unitM2'         => 1,
             'has_pu'         => true,
             'has_primer'     => false,
@@ -190,7 +193,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => false,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
-            'option_order'   => ['color', 'pu'],
+            'has_tools'      => true,
+            'option_order'   => ['color', 'pu', 'tools'],
         ],
 
         // ─── METALLIC VELVET ─────────────────────────────────────────
@@ -207,7 +211,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => false,
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
-            'option_order'   => ['color', 'primer', 'pu'],  // corrected from WAPO block order
+            'has_tools'      => true,
+            'option_order'   => ['color', 'primer', 'pu', 'tools'],  // corrected from WAPO block order
         ],
 
         // ─── LAVASTEEN ───────────────────────────────────────────────
@@ -224,7 +229,8 @@ class OZ_Product_Line_Config {
             'has_pakket'     => false,
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
-            'option_order'   => ['color', 'pu'],
+            'has_tools'      => true,
+            'option_order'   => ['color', 'pu', 'tools'],
         ],
 
         // ─── BETONLOOK VERF ─────────────────────────────────────────
@@ -233,7 +239,7 @@ class OZ_Product_Line_Config {
             'cats'           => [],
             'product_ids'    => [11135],  // single product, detect by ID
             'base_id'        => null,
-            'unit'           => 'per stuk',
+            'unit'           => 'stuk',
             'unitM2'         => 0,
             'has_pu'         => false,
             'has_primer'     => true,
@@ -250,7 +256,7 @@ class OZ_Product_Line_Config {
         'stuco-paste' => [
             'cats'           => [457],
             'base_id'        => null,
-            'unit'           => 'per stuk',
+            'unit'           => 'stuk',
             'unitM2'         => 0,
             'has_pu'         => false,
             'has_primer'     => true,
@@ -267,7 +273,7 @@ class OZ_Product_Line_Config {
         'pu-color' => [
             'cats'           => [456],
             'base_id'        => null,
-            'unit'           => 'per stuk',
+            'unit'           => 'stuk',
             'unitM2'         => 0,
             'has_pu'         => false,
             'has_primer'     => false,

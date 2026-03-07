@@ -29,6 +29,10 @@ class OZ_Frontend_Display {
         // Base product redirect (before template loads)
         add_action('template_redirect', [__CLASS__, 'redirect_base_products']);
 
+        // Override single-product template for BCW product lines
+        // Priority 20 to run AFTER WC_Template_Loader::template_loader (priority 10)
+        add_filter('template_include', [__CLASS__, 'override_product_template'], 20);
+
         // Enqueue product page assets
         add_action('wp_enqueue_scripts', [__CLASS__, 'enqueue_assets']);
 
@@ -67,6 +71,37 @@ class OZ_Frontend_Display {
     }
 
     /**
+     * Override single-product template for products in a BCW product line.
+     * Non-BCW products keep the theme's default template.
+     *
+     * @param string $template  Current template path
+     * @return string
+     */
+    public static function override_product_template($template) {
+        if (!is_product()) {
+            return $template;
+        }
+
+        $product = wc_get_product(get_the_ID());
+        if (!$product instanceof WC_Product) {
+            return $template;
+        }
+
+        // Only override for detected BCW product lines
+        $line = OZ_Product_Line_Config::detect($product);
+        if (!$line) {
+            return $template;
+        }
+
+        $custom = OZ_BCW_PLUGIN_DIR . 'templates/single-product.php';
+        if (file_exists($custom)) {
+            return $custom;
+        }
+
+        return $template;
+    }
+
+    /**
      * Enqueue product page CSS and JS.
      * Only loads on single product pages.
      */
@@ -75,12 +110,20 @@ class OZ_Frontend_Display {
             return;
         }
 
+        // Google Fonts: DM Serif Display (headings) + Raleway (body)
+        wp_enqueue_style(
+            'oz-google-fonts',
+            'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
+            [],
+            null // no version for external fonts
+        );
+
         // Product page CSS
         wp_enqueue_style(
             'oz-product-page',
             OZ_BCW_PLUGIN_URL . 'assets/css/oz-product-page.css',
-            [],
-            OZ_BCW_VERSION
+            ['oz-google-fonts'],
+            OZ_BCW_VERSION . "." . time()
         );
 
         // Product page JS (vanilla, no jQuery dependency)
@@ -88,7 +131,7 @@ class OZ_Frontend_Display {
             'oz-product-page',
             OZ_BCW_PLUGIN_URL . 'assets/js/oz-product-page.js',
             [],
-            OZ_BCW_VERSION,
+            OZ_BCW_VERSION . '.' . time(),
             true // Load in footer
         );
     }
@@ -177,6 +220,10 @@ class OZ_Frontend_Display {
             // Cross-sells for upsell system
             'crossSells' => $cross_sell_ids,
 
+            // Tool/gereedschap config — only for lines with has_tools
+            'hasTools' => !empty($config['has_tools']),
+            'toolConfig' => !empty($config['has_tools']) ? self::get_tool_config() : null,
+
             // WooCommerce cart endpoints
             'ajaxUrl'     => admin_url('admin-ajax.php'),
             'cartUrl'     => wc_get_cart_url(),
@@ -195,46 +242,135 @@ class OZ_Frontend_Display {
      * @return string  HTML
      */
     public static function render_color_swatches($product) {
-        $current_color = get_post_meta($product->get_id(), '_oz_color', true);
-        $variants      = OZ_Product_Processor::get_variant_display_data($product->get_id());
+        $current_id    = $product->get_id();
+        $current_color = get_post_meta($current_id, '_oz_color', true);
+        $variants      = OZ_Product_Processor::get_variant_display_data($current_id);
 
         if (empty($variants)) {
             return '';
         }
 
-        $html = '<div class="oz-color-swatches">';
-
-        // Current product swatch (highlighted)
-        $current_image = get_post_thumbnail_id($product->get_id())
-            ? wp_get_attachment_image_url(get_post_thumbnail_id($product->get_id()), 'thumbnail')
+        // Build a unified list: current product + all variants, keyed by product ID
+        $current_image = get_post_thumbnail_id($current_id)
+            ? wp_get_attachment_image_url(get_post_thumbnail_id($current_id), 'thumbnail')
             : '';
 
-        $html .= sprintf(
-            '<a href="%s" class="oz-color-swatch selected" data-color="%s" title="%s">'
-            . '<img src="%s" alt="%s">'
-            . '</a>',
-            esc_url(get_permalink($product->get_id())),
-            esc_attr($current_color),
-            esc_attr($current_color),
-            esc_url($current_image),
-            esc_attr($current_color)
-        );
+        $all_swatches = [];
+        $all_swatches[$current_id] = [
+            'color' => $current_color,
+            'url'   => get_permalink($current_id),
+            'image' => $current_image,
+        ];
 
-        // Variant swatches
         foreach ($variants as $vid => $v) {
+            $all_swatches[$vid] = $v;
+        }
+
+        // Sort by product ID — ensures identical order on every color page
+        ksort($all_swatches);
+
+        $html = '<div class="oz-color-swatches">';
+
+        foreach ($all_swatches as $pid => $s) {
+            $is_current = ($pid === $current_id);
             $html .= sprintf(
-                '<a href="%s" class="oz-color-swatch" data-color="%s" title="%s">'
-                . '<img src="%s" alt="%s">'
+                '<a href="%s" class="oz-color-swatch%s" data-color="%s" title="%s">'
+                . '<img src="%s" alt="%s" width="46" height="46" loading="eager">'
                 . '</a>',
-                esc_url($v['url']),
-                esc_attr($v['color']),
-                esc_attr($v['color']),
-                esc_url($v['image']),
-                esc_attr($v['color'])
+                esc_url($s['url']),
+                $is_current ? ' selected' : '',
+                esc_attr($s['color']),
+                esc_attr($s['color']),
+                esc_url($s['image']),
+                esc_attr($s['color'])
             );
         }
 
         $html .= '</div>';
         return $html;
+    }
+
+    /**
+     * Get tool/gereedschap configuration for JS.
+     * Contains the complete set, extras with sizes, and individual tools with sizes.
+     * All prices and WooCommerce product IDs from real BCW catalog.
+     *
+     * @return array  Tool config array for wp_localize_script
+     */
+    public static function get_tool_config() {
+        return array(
+            'toolSet' => array(
+                'id'       => 11177,
+                'name'     => 'Gereedschapset Kant & Klaar',
+                'price'    => 89.99,
+                'contents' => array(
+                    '1x Flexibele spaan',
+                    '1x Kwast primer',
+                    '1x Kwast PU',
+                    '1x PU garde',
+                    '3x PU roller',
+                    '1x Tape',
+                    '2x Verfbak',
+                    '1x Vachtroller',
+                ),
+            ),
+            'extras' => array(
+                array(
+                    'id' => 'pu-roller', 'name' => 'PU Roller', 'price' => 2.50,
+                    'wcId' => 11175, 'note' => 'Verhardt na ~2 uur',
+                    'sizes' => array(
+                        array('label' => '10cm', 'price' => 2.50,  'wcId' => 11175),
+                        array('label' => '18cm', 'price' => 9.95,  'wcId' => 17360),
+                        array('label' => '25cm', 'price' => 12.95, 'wcId' => 17361),
+                        array('label' => '50cm', 'price' => 17.50, 'wcId' => 19705),
+                    ),
+                ),
+                array(
+                    'id' => 'verfbak', 'name' => 'Verfbak', 'price' => 2.95,
+                    'wcId' => 11164,
+                    'sizes' => array(
+                        array('label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null),
+                        array('label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'),
+                        array('label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'),
+                    ),
+                ),
+                array('id' => 'tape',           'name' => 'Tape',                   'price' => 5.99,  'wcId' => 11018),
+                array('id' => 'vachtroller',    'name' => 'Vachtroller',             'price' => 8.95,  'wcId' => 11015),
+                array('id' => 'troffel',        'name' => 'Troffel 180mm',           'price' => 16.95, 'wcId' => 11017),
+                array('id' => 'hoek-inwendig',  'name' => 'Inwendige hoektroffel',   'price' => 15.95, 'wcId' => 11023),
+                array('id' => 'hoek-uitwendig', 'name' => 'Uitwendige hoektroffel',  'price' => 15.95, 'wcId' => 11016),
+            ),
+            'tools' => array(
+                array('id' => 'flexibele-spaan', 'name' => 'Flexibele spaan',  'price' => 39.95, 'wcId' => 11025),
+                array(
+                    'id' => 'pu-roller', 'name' => 'PU Roller', 'price' => 2.50,
+                    'wcId' => 11175, 'note' => 'Verhardt na ~2 uur',
+                    'sizes' => array(
+                        array('label' => '10cm', 'price' => 2.50,  'wcId' => 11175),
+                        array('label' => '18cm', 'price' => 9.95,  'wcId' => 17360),
+                        array('label' => '25cm', 'price' => 12.95, 'wcId' => 17361),
+                        array('label' => '50cm', 'price' => 17.50, 'wcId' => 19705),
+                    ),
+                ),
+                array('id' => 'kwast',          'name' => 'Kwast',                   'price' => 1.99,  'wcId' => 11022),
+                array('id' => 'pu-garde',       'name' => 'PU garde',                'price' => 8.99,  'wcId' => 11020),
+                array('id' => 'tape',           'name' => 'Tape',                    'price' => 5.99,  'wcId' => 11018),
+                array(
+                    'id' => 'verfbak', 'name' => 'Verfbak', 'price' => 2.95,
+                    'wcId' => 11164,
+                    'sizes' => array(
+                        array('label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null),
+                        array('label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'),
+                        array('label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'),
+                    ),
+                ),
+                array('id' => 'vachtroller',    'name' => 'Vachtroller',             'price' => 8.95,  'wcId' => 11015),
+                array('id' => 'blokkwast',      'name' => 'Blokkwast',               'price' => 6.99,  'wcId' => 22997),
+                array('id' => 'troffel',        'name' => 'Troffel 180mm',           'price' => 16.95, 'wcId' => 11017),
+                array('id' => 'hoek-inwendig',  'name' => 'Inwendige hoektroffel',   'price' => 15.95, 'wcId' => 11023),
+                array('id' => 'hoek-uitwendig', 'name' => 'Uitwendige hoektroffel',  'price' => 15.95, 'wcId' => 11016),
+            ),
+            'nudgeQtyThreshold' => 3,
+        );
     }
 }

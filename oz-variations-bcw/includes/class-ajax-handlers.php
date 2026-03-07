@@ -103,6 +103,53 @@ class OZ_Ajax_Handlers {
             wp_send_json_error('Kon product niet toevoegen aan winkelmand.');
         }
 
+        // ═══ TOOL PRODUCTS — add as separate cart items ═══
+        // Tools are standalone WC products, not price addons on the main product.
+        $tool_mode = isset($_POST['oz_tool_mode']) ? sanitize_text_field($_POST['oz_tool_mode']) : '';
+
+        if ($tool_mode === 'set') {
+            // Add the Kant & Klaar set as a separate product
+            $set_id = isset($_POST['oz_tool_set_id']) ? intval($_POST['oz_tool_set_id']) : 0;
+            if ($set_id > 0 && wc_get_product($set_id)) {
+                WC()->cart->add_to_cart($set_id, 1);
+            }
+
+            // Add any extras on top of the set
+            if (!empty($_POST['oz_extras']) && is_array($_POST['oz_extras'])) {
+                foreach ($_POST['oz_extras'] as $extra_id => $extra_data) {
+                    $extra_qty  = isset($extra_data['qty']) ? max(1, intval($extra_data['qty'])) : 1;
+                    $extra_wcid = isset($extra_data['wcId']) ? intval($extra_data['wcId']) : 0;
+
+                    if ($extra_wcid > 0 && wc_get_product($extra_wcid)) {
+                        // WAPO addon handling: some sizes use WAPO addon field instead of separate product
+                        $wapo_addon = isset($extra_data['wapoAddon']) ? sanitize_text_field($extra_data['wapoAddon']) : '';
+                        $extra_cart_data = [];
+                        if ($wapo_addon) {
+                            $extra_cart_data['oz_wapo_addon'] = $wapo_addon;
+                        }
+                        WC()->cart->add_to_cart($extra_wcid, $extra_qty, 0, [], $extra_cart_data);
+                    }
+                }
+            }
+        } elseif ($tool_mode === 'individual') {
+            // Add each selected individual tool as a separate product
+            if (!empty($_POST['oz_tools']) && is_array($_POST['oz_tools'])) {
+                foreach ($_POST['oz_tools'] as $tool_id => $tool_data) {
+                    $tool_qty  = isset($tool_data['qty']) ? max(1, intval($tool_data['qty'])) : 1;
+                    $tool_wcid = isset($tool_data['wcId']) ? intval($tool_data['wcId']) : 0;
+
+                    if ($tool_wcid > 0 && wc_get_product($tool_wcid)) {
+                        $tool_cart_data = [];
+                        $wapo_addon = isset($tool_data['wapoAddon']) ? sanitize_text_field($tool_data['wapoAddon']) : '';
+                        if ($wapo_addon) {
+                            $tool_cart_data['oz_wapo_addon'] = $wapo_addon;
+                        }
+                        WC()->cart->add_to_cart($tool_wcid, $tool_qty, 0, [], $tool_cart_data);
+                    }
+                }
+            }
+        }
+
         // Return fresh cart data for the drawer
         wp_send_json_success([
             'cart_key'   => $cart_key,
