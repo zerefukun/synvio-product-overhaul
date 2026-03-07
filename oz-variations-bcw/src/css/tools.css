@@ -171,24 +171,31 @@
   justify-content: center;
   font-family: "Raleway", sans-serif;
   transition: background 0.1s;
+  flex-shrink: 0; /* prevent buttons from shrinking */
 }
 .oz-product-page .oz-tool-qty-btn:hover { background: var(--oz-border-light); }
 .oz-product-page .oz-tool-qty-btn:active { background: var(--oz-border); }
-.oz-product-page .oz-tool-qty-input {
+/* input.oz-tool-qty-input beats the generic input[type="number"] reset (0,2,1 vs 0,2,1 — same specificity, later wins) */
+.oz-product-page input.oz-tool-qty-input {
   width: 30px;
+  height: 28px;
   text-align: center;
   border: none;
   border-left: 1px solid var(--oz-border);
   border-right: 1px solid var(--oz-border);
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   font-family: "Raleway", sans-serif;
   color: var(--oz-text-primary);
   background: white;
+  padding: 0;
   -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
 }
-.oz-product-page .oz-tool-qty-input::-webkit-inner-spin-button,
-.oz-product-page .oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.oz-product-page input.oz-tool-qty-input::-webkit-inner-spin-button,
+.oz-product-page input.oz-tool-qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
 
 /* ═══ SIZE SELECTOR — segmented pills for sized tools ═════════ */
