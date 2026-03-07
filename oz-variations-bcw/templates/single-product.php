@@ -435,68 +435,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
         <?php endif; ?>
 
-      <!-- Delivery Timeline — dynamic dates based on order time -->
-      <?php
-      // Calculate shipping & delivery dates
-      // Before 14:00 = shipped same day, after 14:00 = shipped next day
-      // Carrier (PostNL/DHL via Sendcloud) delivers in 1-2 business days
-      $oz_now = new DateTime('now', new DateTimeZone('Europe/Amsterdam'));
-      $oz_hour = (int) $oz_now->format('H');
-
-      // Ship date logic:
-      // - Weekday before 14:00 → shipped today
-      // - Weekday after 14:00 → shipped next business day
-      // - Weekend (Sat/Sun) → shipped Monday
-      $oz_ship = clone $oz_now;
-      $oz_dow = (int) $oz_now->format('N'); // 1=Mon .. 7=Sun
-      if ($oz_dow >= 6) {
-          // Weekend — next Monday
-          $oz_ship->modify('next Monday');
-      } elseif ($oz_hour >= 14) {
-          // Weekday after 14:00 — next business day
-          $oz_ship->modify('+1 weekday');
-      }
-
-      // Delivery: 1-2 business days after ship date (carriers don't deliver on weekends)
-      $oz_del_from = clone $oz_ship;
-      $oz_del_from->modify('+1 weekday');
-      $oz_del_to = clone $oz_ship;
-      $oz_del_to->modify('+2 weekday');
-
-      // Dutch day/month formatting
-      $oz_d = ['', 'ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
-      $oz_m = ['', 'jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-      $oz_dfmt = function($d) use ($oz_d, $oz_m) {
-          return $oz_d[(int)$d->format('N')] . ' ' . (int)$d->format('j') . ' ' . $oz_m[(int)$d->format('n')];
-      };
-
-      $oz_ship_txt = ($oz_ship->format('Y-m-d') === $oz_now->format('Y-m-d')) ? 'Vandaag' : $oz_dfmt($oz_ship);
-      $oz_del_txt = $oz_dfmt($oz_del_from) . ' - ' . $oz_dfmt($oz_del_to);
-      ?>
-      <div class="oz-delivery-timeline">
-        <div class="oz-delivery-step completed">
-          <div class="oz-step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          </div>
-          <span class="oz-step-label">Besteld</span>
-          <span class="oz-step-date">Vandaag</span>
-        </div>
-        <div class="oz-delivery-step">
-          <div class="oz-step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-          </div>
-          <span class="oz-step-label">Verzonden</span>
-          <span class="oz-step-date"><?php echo esc_html($oz_ship_txt); ?></span>
-        </div>
-        <div class="oz-delivery-step">
-          <div class="oz-step-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05"></path><path d="M12 22.08V12"></path></svg>
-          </div>
-          <span class="oz-step-label">Bezorgd</span>
-          <span class="oz-step-date"><?php echo esc_html($oz_del_txt); ?></span>
-        </div>
-      </div>
-
       <!-- Price Breakdown -->
       <div class="oz-price-summary" id="priceSummary">
         <div class="oz-price-line" id="priceBaseLine">
@@ -591,6 +529,68 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           </div>
         </div>
       <?php endif; ?>
+
+      <!-- Delivery Timeline — shown after the buy box and payment reassurance -->
+      <?php
+      // Calculate shipping & delivery dates
+      // Before 14:00 = shipped same day, after 14:00 = shipped next day
+      // Carrier (PostNL/DHL via Sendcloud) delivers in 1-2 business days
+      $oz_now = new DateTime('now', new DateTimeZone('Europe/Amsterdam'));
+      $oz_hour = (int) $oz_now->format('H');
+
+      // Ship date logic:
+      // - Weekday before 14:00 → shipped today
+      // - Weekday after 14:00 → shipped next business day
+      // - Weekend (Sat/Sun) → shipped Monday
+      $oz_ship = clone $oz_now;
+      $oz_dow = (int) $oz_now->format('N'); // 1=Mon .. 7=Sun
+      if ($oz_dow >= 6) {
+          // Weekend — next Monday
+          $oz_ship->modify('next Monday');
+      } elseif ($oz_hour >= 14) {
+          // Weekday after 14:00 — next business day
+          $oz_ship->modify('+1 weekday');
+      }
+
+      // Delivery: 1-2 business days after ship date (carriers don't deliver on weekends)
+      $oz_del_from = clone $oz_ship;
+      $oz_del_from->modify('+1 weekday');
+      $oz_del_to = clone $oz_ship;
+      $oz_del_to->modify('+2 weekday');
+
+      // Dutch day/month formatting
+      $oz_d = ['', 'ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+      $oz_m = ['', 'jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+      $oz_dfmt = function($d) use ($oz_d, $oz_m) {
+          return $oz_d[(int)$d->format('N')] . ' ' . (int)$d->format('j') . ' ' . $oz_m[(int)$d->format('n')];
+      };
+
+      $oz_ship_txt = ($oz_ship->format('Y-m-d') === $oz_now->format('Y-m-d')) ? 'Vandaag' : $oz_dfmt($oz_ship);
+      $oz_del_txt = $oz_dfmt($oz_del_from) . ' - ' . $oz_dfmt($oz_del_to);
+      ?>
+      <div class="oz-delivery-timeline">
+        <div class="oz-delivery-step completed">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          </div>
+          <span class="oz-step-label">Besteld</span>
+          <span class="oz-step-date">Vandaag</span>
+        </div>
+        <div class="oz-delivery-step">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <span class="oz-step-label">Verzonden</span>
+          <span class="oz-step-date"><?php echo esc_html($oz_ship_txt); ?></span>
+        </div>
+        <div class="oz-delivery-step">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05"></path><path d="M12 22.08V12"></path></svg>
+          </div>
+          <span class="oz-step-label">Bezorgd</span>
+          <span class="oz-step-date"><?php echo esc_html($oz_del_txt); ?></span>
+        </div>
+      </div>
 
         </div>
 

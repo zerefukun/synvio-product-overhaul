@@ -101,6 +101,23 @@ class OZ_Product_Line_Config {
             ['Nee', 0,     false],
             ['Ja',  16.00, false],
         ],
+        // Beton Ciré lines — simple yes/no primer
+        'all-in-one' => [
+            ['Geen',   0,     true],
+            ['Primer', 12.50, false],
+        ],
+        'easyline' => [
+            ['Geen',   0,     true],
+            ['Primer', 12.50, false],
+        ],
+        'microcement' => [
+            ['Geen',   0,     true],
+            ['Primer', 12.50, false],
+        ],
+        'lavasteen' => [
+            ['Geen',   0,     true],
+            ['Primer', 12.50, false],
+        ],
     ];
 
     /**
@@ -179,14 +196,14 @@ class OZ_Product_Line_Config {
             'unit'           => '1m² emmer',
             'unitM2'         => 1,
             'has_pu'         => true,
-            'has_primer'     => false,
+            'has_primer'     => true,
             'has_colorfresh' => false,
             'has_toepassing' => false,
             'has_pakket'     => false,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'option_order'   => ['color', 'pu', 'tools'],
+            'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
         // ─── EASYLINE ────────────────────────────────────────────────
@@ -213,14 +230,14 @@ class OZ_Product_Line_Config {
             'unit'           => '5m² pakket',  // corrected from 4m²
             'unitM2'         => 5,
             'has_pu'         => true,
-            'has_primer'     => false,
+            'has_primer'     => true,
             'has_colorfresh' => false,
             'has_toepassing' => false,
             'has_pakket'     => true,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'option_order'   => ['color', 'pakket', 'pu', 'tools'],
+            'option_order'   => ['color', 'pakket', 'primer', 'pu', 'tools'],
         ],
 
         // ─── MICROCEMENT ─────────────────────────────────────────────
@@ -246,14 +263,14 @@ class OZ_Product_Line_Config {
             'unit'           => 'stuk (1m²)',
             'unitM2'         => 1,
             'has_pu'         => true,
-            'has_primer'     => false,
+            'has_primer'     => true,
             'has_colorfresh' => false,
             'has_toepassing' => false,
             'has_pakket'     => false,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'option_order'   => ['color', 'pu', 'tools'],
+            'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
         // ─── METALLIC VELVET ─────────────────────────────────────────
@@ -311,14 +328,14 @@ class OZ_Product_Line_Config {
             'unit'           => '5m² pakket',
             'unitM2'         => 5,
             'has_pu'         => true,
-            'has_primer'     => false,
+            'has_primer'     => true,
             'has_colorfresh' => false,
             'has_toepassing' => false,
             'has_pakket'     => false,
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'option_order'   => ['color', 'pu', 'tools'],
+            'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
         // ─── BETONLOOK VERF ─────────────────────────────────────────
