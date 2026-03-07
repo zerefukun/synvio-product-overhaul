@@ -173,9 +173,12 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- FAQ accordion — editable per product via WP admin metabox -->
+      <!-- FAQ accordion — fallback chain: product meta → product line config → nothing -->
       <?php
       $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+      if (empty($oz_faq) || !is_array($oz_faq)) {
+          $oz_faq = isset($config['faq']) ? $config['faq'] : [];
+      }
       if (!empty($oz_faq) && is_array($oz_faq)) : ?>
       <div class="oz-product-info-section" id="sectionFaq">
         <h2 class="oz-section-title">Veelgestelde vragen</h2>

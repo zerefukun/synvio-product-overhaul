@@ -171,6 +171,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/original-kleurstalen/',
             'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Kan ik Beton Ciré Original zelf aanbrengen?', 'a' => 'Ja, met de juiste voorbereiding en ons gereedschapset is het goed zelf te doen. Bekijk onze handleiding of volg een workshop voor het beste resultaat.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes raden wij minimaal 2 lagen PU aan. Dit beschermt tegen slijtage en maakt het oppervlak waterdicht. Voor wanden is PU optioneel.'],
+                ['q' => 'Wat is het verschil tussen wand- en vloertoepassing?', 'a' => 'De vloertoepassing bevat een harder bindmiddel dat bestand is tegen loopverkeer. De wandtoepassing is lichter en makkelijker verticaal aan te brengen.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── ALL-IN-ONE ──────────────────────────────────────────────
@@ -206,6 +213,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Wat is het verschil met Beton Ciré Original?', 'a' => 'All-in-One is een voorgemengde pasta op kleur — geen zelf mengen nodig. Je bestelt per 1 m², inclusief primer en pre-seal. Ideaal als je minder ervaring hebt.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes raden wij minimaal 2 lagen PU aan. Voor wanden kun je het zonder PU laten, maar het maakt schoonmaken wel makkelijker.'],
+                ['q' => 'Kan ik een RAL of NCS kleur bestellen?', 'a' => 'Ja, kies de optie "RAL/NCS kleur" bij de kleurselectie en vul je kleurcode in. Wij mengen de pasta op maat. Levertijd kan 1-2 werkdagen langer zijn.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── EASYLINE ────────────────────────────────────────────────
@@ -241,6 +255,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
             'option_order'   => ['color', 'pakket', 'primer', 'pu', 'tools'],
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Wat is het verschil tussen Easyline en All-in-One?', 'a' => 'Easyline is speciaal ontwikkeld voor eenvoudige toepassing op wanden. Het is lichter, makkelijker te verwerken en beschikbaar in handige pakketten. All-in-One is veelzijdiger voor zowel wand als vloer.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor natte ruimtes (badkamer, keuken) raden wij minimaal 2 lagen PU aan. Voor droge wanden is 1 laag voldoende voor extra bescherming.'],
+                ['q' => 'Kan ik een RAL of NCS kleur bestellen?', 'a' => 'Ja, kies de optie "RAL/NCS kleur" bij de kleurselectie en vul je kleurcode in. Wij mengen de pasta op maat.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── MICROCEMENT ─────────────────────────────────────────────
@@ -275,6 +296,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen-microcement-aanvragen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Wat is het verschil tussen Microcement en Beton Ciré?', 'a' => 'Microcement is dunner (1-2mm) en flexibeler dan traditioneel Beton Ciré. Het is ideaal voor renovatie omdat het direct over bestaande tegels of ondergronden kan.'],
+                ['q' => 'Kan ik Microcement over tegels aanbrengen?', 'a' => 'Ja, mits de tegels goed vastzitten en de ondergrond schoon en vetvrij is. Gebruik altijd onze primer voor de beste hechting.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes raden wij minimaal 2 lagen PU aan. Dit beschermt tegen slijtage en maakt het oppervlak waterdicht.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── METALLIC VELVET ─────────────────────────────────────────
@@ -308,6 +336,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/velvet-kleurstalen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],  // corrected from WAPO block order
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Hoe krijg ik het metallic effect?', 'a' => 'Het metallic effect ontstaat door de speciale Velvet pasta in twee lagen aan te brengen. Door de richting van je spatel te variëren creëer je een uniek lichtspel.'],
+                ['q' => 'Is Metallic Velvet geschikt voor vloeren?', 'a' => 'Metallic Velvet is primair ontwikkeld voor wanden en meubels. Voor vloeren raden wij Beton Ciré Original of Lavasteen aan.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor wanden is PU optioneel maar het maakt schoonmaken makkelijker. Voor meubels en aanrechtbladen raden wij minimaal 2 lagen PU aan.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── LAVASTEEN ───────────────────────────────────────────────
@@ -342,6 +377,13 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url' => '/product/kleurenpakket/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
+            'faq' => [
+                ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
+                ['q' => 'Wat is Lavasteen gietvloer?', 'a' => 'Lavasteen is een minerale gietvloer op basis van vulkanisch gesteente. Het geeft een robuuste, natuurlijke uitstraling met de sterkte van een industriële vloer.'],
+                ['q' => 'Is Lavasteen geschikt voor vloerverwarming?', 'a' => 'Ja, Lavasteen geleidt warmte uitstekend en is volledig geschikt voor vloerverwarming. Het oppervlak warmt gelijkmatig op.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Wij raden minimaal 1 laag PU aan voor bescherming. Voor intensief belopen ruimtes adviseren wij 2 lagen voor extra slijtvastheid.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
+            ],
         ],
 
         // ─── BETONLOOK VERF ─────────────────────────────────────────
@@ -371,6 +413,12 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'kleurstalen_url' => '/kleurstalen-betonlook/',
             'option_order'   => ['color', 'primer'],
+            'faq' => [
+                ['q' => 'Hoeveel m² doe ik met één pot?', 'a' => 'Eén pot is voldoende voor het aangegeven oppervlak in m². Breng twee lagen aan voor een dekkend resultaat. Houd 10% extra aan voor onregelmatigheden.'],
+                ['q' => 'Kan ik Betonlook Verf over tegels aanbrengen?', 'a' => 'Ja, mits de tegels schoon, vetvrij en licht opgeschuurd zijn. Gebruik altijd onze primer voor optimale hechting.'],
+                ['q' => 'Is Betonlook Verf waterdicht?', 'a' => 'Betonlook Verf is vochtbestendig maar niet volledig waterdicht. Voor natte ruimtes zoals douches raden wij Microcement of Beton Ciré Original aan.'],
+                ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na 48 uur is het oppervlak volledig droog en belastbaar.'],
+            ],
         ],
 
         // ─── STUCO PASTE ─────────────────────────────────────────────
@@ -397,6 +445,10 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'option_order'   => ['primer'],
+            'faq' => [
+                ['q' => 'Waarvoor gebruik ik Stuco Paste?', 'a' => 'Stuco Paste is een decoratieve stucpasta waarmee je diverse texturen en effecten op wanden kunt creëren. Denk aan een betonlook, marmereffect of rustieke stijl.'],
+                ['q' => 'Heb ik primer nodig?', 'a' => 'Wij raden altijd primer aan voor de beste hechting, vooral op gladde of geschilderde ondergronden.'],
+            ],
         ],
 
         // ─── PU COLOR ────────────────────────────────────────────────
@@ -424,6 +476,10 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => true,   // ONLY RAL/NCS, standard swatches disabled
             'option_order'   => ['color'],
+            'faq' => [
+                ['q' => 'Wat is PU Color?', 'a' => 'PU Color is een gekleurde polyurethaan toplaag. Het beschermt je Beton Ciré oppervlak én geeft het een kleur naar keuze in elke RAL of NCS tint.'],
+                ['q' => 'Hoe breng ik PU Color aan?', 'a' => 'Breng PU Color aan met een roller of kwast over een volledig uitgeharde Beton Ciré ondergrond. Minimaal 2 lagen voor een dekkend resultaat.'],
+            ],
         ],
     ];
 
