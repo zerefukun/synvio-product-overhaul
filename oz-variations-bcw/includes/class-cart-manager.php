@@ -259,9 +259,13 @@ class OZ_Cart_Manager {
                 $cart_item[$mk] = $values[$mk];
             }
         }
-        // Generic addon keys (oz_addon_*) and page mode
+        // Generic addon keys (oz_addon_*), page mode, and tool price/size overrides
         foreach ($values as $vk => $vv) {
-            if (strpos($vk, self::$addon_prefix) === 0 || $vk === 'oz_page_mode') {
+            if (strpos($vk, self::$addon_prefix) === 0
+                || $vk === 'oz_page_mode'
+                || $vk === 'oz_tool_price'
+                || $vk === 'oz_tool_size'
+                || $vk === 'oz_wapo_addon') {
                 $cart_item[$vk] = $vv;
             }
         }
@@ -300,6 +304,11 @@ class OZ_Cart_Manager {
                     $cart_item
                 );
             }
+            // Tool products with size-specific price override (e.g. Verfbak 18cm)
+            elseif (isset($cart_item['oz_tool_price'])) {
+                $product->set_price(floatval($cart_item['oz_tool_price']));
+                continue; // Price is absolute, not additive — skip base price logic
+            }
             else {
                 continue; // Not our product
             }
@@ -326,6 +335,14 @@ class OZ_Cart_Manager {
      * @return string
      */
     public static function display_addons_in_cart($name, $cart_item, $cart_item_key) {
+        // Tool products with size override — show size label below name
+        if (isset($cart_item['oz_tool_size']) && !empty($cart_item['oz_tool_size'])) {
+            $name .= '<div class="oz-cart-addons" style="font-size:12px;color:#666;margin-top:4px;">';
+            $name .= esc_html('Maat: ' . $cart_item['oz_tool_size']);
+            $name .= '</div>';
+            return $name;
+        }
+
         // Handle both configured-line and generic addon products
         if (!isset($cart_item['oz_line']) && !isset($cart_item['oz_page_mode'])) {
             return $name;
@@ -357,9 +374,12 @@ class OZ_Cart_Manager {
                 $item->add_meta_data('_' . $cart_key, $values[$cart_key]);
             }
         }
-        // Generic addon keys (oz_addon_*) and page mode
+        // Generic addon keys (oz_addon_*), page mode, and tool size overrides
         foreach ($values as $vk => $vv) {
-            if (strpos($vk, self::$addon_prefix) === 0 || $vk === 'oz_page_mode') {
+            if (strpos($vk, self::$addon_prefix) === 0
+                || $vk === 'oz_page_mode'
+                || $vk === 'oz_tool_price'
+                || $vk === 'oz_tool_size') {
                 $item->add_meta_data('_' . $vk, $vv);
             }
         }
@@ -424,8 +444,8 @@ class OZ_Cart_Manager {
             if (in_array($d['key'], self::$meta_keys, true)) return false;
             // Hide generic addon keys (oz_addon_*)
             if (strpos($d['key'], $prefix) === 0) return false;
-            // Hide page mode key
-            if ($d['key'] === 'oz_page_mode') return false;
+            // Hide page mode and tool override keys
+            if (in_array($d['key'], ['oz_page_mode', 'oz_tool_price', 'oz_tool_size', 'oz_wapo_addon'], true)) return false;
             return true;
         });
     }
@@ -483,6 +503,13 @@ class OZ_Cart_Manager {
                     if (!empty($extra['wapoAddon'])) {
                         $cart_data['oz_wapo_addon'] = $extra['wapoAddon'];
                     }
+                    // Store intended price and size label for cart pricing + display
+                    if ($extra['price'] > 0) {
+                        $cart_data['oz_tool_price'] = $extra['price'];
+                    }
+                    if (!empty($extra['sizeLabel'])) {
+                        $cart_data['oz_tool_size'] = $extra['sizeLabel'];
+                    }
                     $items[] = ['product_id' => $extra['wcId'], 'qty' => $extra['qty'], 'cart_data' => $cart_data];
                 }
             }
@@ -493,6 +520,12 @@ class OZ_Cart_Manager {
                     $cart_data = [];
                     if (!empty($tool['wapoAddon'])) {
                         $cart_data['oz_wapo_addon'] = $tool['wapoAddon'];
+                    }
+                    if ($tool['price'] > 0) {
+                        $cart_data['oz_tool_price'] = $tool['price'];
+                    }
+                    if (!empty($tool['sizeLabel'])) {
+                        $cart_data['oz_tool_size'] = $tool['sizeLabel'];
                     }
                     $items[] = ['product_id' => $tool['wcId'], 'qty' => $tool['qty'], 'cart_data' => $cart_data];
                 }
@@ -537,6 +570,8 @@ class OZ_Cart_Manager {
                 'qty'       => isset($data['qty']) ? max(1, intval($data['qty'])) : 1,
                 'wcId'      => isset($data['wcId']) ? intval($data['wcId']) : 0,
                 'wapoAddon' => isset($data['wapoAddon']) ? sanitize_text_field($data['wapoAddon']) : '',
+                'price'     => isset($data['price']) ? floatval($data['price']) : 0,
+                'sizeLabel' => isset($data['sizeLabel']) ? sanitize_text_field($data['sizeLabel']) : '',
             ];
         }
         return $sanitized;

@@ -257,7 +257,8 @@
           var st = state.extras[e.id];
           if (st && st.on && st.qty > 0) {
             var sizeData = e.sizes ? e.sizes[st.size || 0] : e;
-            extras[e.id] = { qty: st.qty, wcId: sizeData.wcId };
+            extras[e.id] = { qty: st.qty, wcId: sizeData.wcId, price: sizeData.price };
+            if (e.sizes) extras[e.id].sizeLabel = sizeData.label;
             if (sizeData.wapoAddon) extras[e.id].wapoAddon = sizeData.wapoAddon;
           }
         });
@@ -268,7 +269,8 @@
           var st = state.tools[t.id];
           if (st && st.on && st.qty > 0) {
             var sizeData = t.sizes ? t.sizes[st.size || 0] : t;
-            tools[t.id] = { qty: st.qty, wcId: sizeData.wcId };
+            tools[t.id] = { qty: st.qty, wcId: sizeData.wcId, price: sizeData.price };
+            if (t.sizes) tools[t.id].sizeLabel = sizeData.label;
             if (sizeData.wapoAddon) tools[t.id].wapoAddon = sizeData.wapoAddon;
           }
         });
