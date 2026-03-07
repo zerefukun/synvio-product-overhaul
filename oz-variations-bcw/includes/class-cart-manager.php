@@ -491,7 +491,7 @@ class OZ_Cart_Manager {
         $items = [];
 
         if ($tool_data['mode'] === 'set') {
-            // The Kant & Klaar set itself
+            // The Kant & Klaar set itself — no custom data so identical adds merge
             if ($tool_data['set_id'] > 0) {
                 $items[] = ['product_id' => $tool_data['set_id'], 'qty' => 1, 'cart_data' => []];
             }
@@ -499,16 +499,15 @@ class OZ_Cart_Manager {
             // Extras on top of set
             foreach ($tool_data['extras'] as $extra_id => $extra) {
                 if ($extra['wcId'] > 0 && $extra['qty'] > 0) {
+                    // Only add cart_data for size variants — keeps tools mergeable
+                    // Tools with same wcId + same size will share the same cart hash
                     $cart_data = [];
-                    if (!empty($extra['wapoAddon'])) {
-                        $cart_data['oz_wapo_addon'] = $extra['wapoAddon'];
-                    }
-                    // Store intended price and size label for cart pricing + display
-                    if ($extra['price'] > 0) {
-                        $cart_data['oz_tool_price'] = $extra['price'];
-                    }
                     if (!empty($extra['sizeLabel'])) {
                         $cart_data['oz_tool_size'] = $extra['sizeLabel'];
+                        // Price override only needed for non-default sizes
+                        if ($extra['price'] > 0) {
+                            $cart_data['oz_tool_price'] = $extra['price'];
+                        }
                     }
                     $items[] = ['product_id' => $extra['wcId'], 'qty' => $extra['qty'], 'cart_data' => $cart_data];
                 }
@@ -517,15 +516,13 @@ class OZ_Cart_Manager {
             // Each selected individual tool
             foreach ($tool_data['tools'] as $tool_id => $tool) {
                 if ($tool['wcId'] > 0 && $tool['qty'] > 0) {
+                    // Only add cart_data for size variants — keeps tools mergeable
                     $cart_data = [];
-                    if (!empty($tool['wapoAddon'])) {
-                        $cart_data['oz_wapo_addon'] = $tool['wapoAddon'];
-                    }
-                    if ($tool['price'] > 0) {
-                        $cart_data['oz_tool_price'] = $tool['price'];
-                    }
                     if (!empty($tool['sizeLabel'])) {
                         $cart_data['oz_tool_size'] = $tool['sizeLabel'];
+                        if ($tool['price'] > 0) {
+                            $cart_data['oz_tool_price'] = $tool['price'];
+                        }
                     }
                     $items[] = ['product_id' => $tool['wcId'], 'qty' => $tool['qty'], 'cart_data' => $cart_data];
                 }
@@ -589,6 +586,16 @@ class OZ_Cart_Manager {
      * @param array $data  Cart item data or reconstructed order meta
      * @return array
      */
+    /**
+     * Public wrapper for build_addon_details — used by cart drawer AJAX.
+     *
+     * @param array $data  Cart item data
+     * @return array  Human-readable addon detail strings
+     */
+    public static function get_addon_details($data) {
+        return self::build_addon_details($data);
+    }
+
     private static function build_addon_details($data) {
         $details = [];
 

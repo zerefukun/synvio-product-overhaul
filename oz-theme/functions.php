@@ -502,19 +502,21 @@ function oz_cart_drawer_get() {
         // Build meta string from cart item data (color, options, etc.)
         $meta_parts = [];
 
-        // Check for oz_ meta (from our plugin)
-        if (!empty($cart_item['oz_color'])) {
-            $meta_parts[] = $cart_item['oz_color'];
-        }
-        if (!empty($cart_item['oz_pu_label'])) {
-            $meta_parts[] = $cart_item['oz_pu_label'];
-        }
-        if (!empty($cart_item['oz_primer_label'])) {
-            $meta_parts[] = $cart_item['oz_primer_label'];
+        // Use our cart manager's build_addon_details for configured products
+        if (class_exists('OZ_Cart_Manager') && (isset($cart_item['oz_line']) || isset($cart_item['oz_page_mode']))) {
+            // Pass product_id so generic addon groups can resolve labels
+            $addon_data = $cart_item;
+            $addon_data['product_id'] = $product->get_id();
+            $meta_parts = OZ_Cart_Manager::get_addon_details($addon_data);
         }
 
-        // Check for variation attributes
-        if (!empty($cart_item['variation']) && is_array($cart_item['variation'])) {
+        // Tool size label
+        if (!empty($cart_item['oz_tool_size'])) {
+            $meta_parts[] = 'Maat: ' . $cart_item['oz_tool_size'];
+        }
+
+        // WC variation attributes (fallback for non-oz products)
+        if (empty($meta_parts) && !empty($cart_item['variation']) && is_array($cart_item['variation'])) {
             foreach ($cart_item['variation'] as $attr => $val) {
                 if (!empty($val)) {
                     $meta_parts[] = ucfirst(str_replace(['attribute_pa_', 'attribute_', '-', '_'], ['', '', ' ', ' '], $attr)) . ': ' . $val;
