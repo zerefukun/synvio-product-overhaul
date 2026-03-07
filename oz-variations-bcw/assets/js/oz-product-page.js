@@ -1503,27 +1503,3 @@
   }
 
 })();
-
-
-  // ═══ COOKIEBOT / PRIVACY BANNER — hide for 30s unless user interacts ═══
-  (function() {
-    document.body.classList.add('oz-hide-banners');
-    var timer = setTimeout(function() {
-      document.body.classList.remove('oz-hide-banners');
-    }, 30000);
-
-    // If user scrolls or touches, they're active — show banners sooner?
-    // No — user said 30s of standing still. So we only remove on timeout.
-    // But if they interact, we could reset. User said "unless if you stand still for 30seconds"
-    // meaning: show banners only after 30s of inactivity. Reset timer on interaction.
-    var resetTimer = function() {
-      clearTimeout(timer);
-      timer = setTimeout(function() {
-        document.body.classList.remove('oz-hide-banners');
-      }, 30000);
-    };
-
-    document.addEventListener('scroll', resetTimer, { passive: true });
-    document.addEventListener('touchstart', resetTimer, { passive: true });
-    document.addEventListener('click', resetTimer);
-  })();

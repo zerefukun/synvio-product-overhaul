@@ -136,6 +136,16 @@ class OZ_Frontend_Display {
             OZ_BCW_VERSION . '.' . filemtime($js_path),
             true // Load in footer
         );
+
+        // Cookie/privacy banner delay — separate concern, no dependencies
+        $banner_path = OZ_BCW_PLUGIN_DIR . 'assets/js/oz-cookie-banner.js';
+        wp_enqueue_script(
+            'oz-cookie-banner',
+            OZ_BCW_PLUGIN_URL . 'assets/js/oz-cookie-banner.js',
+            [],
+            OZ_BCW_VERSION . '.' . filemtime($banner_path),
+            true
+        );
     }
 
     /**
