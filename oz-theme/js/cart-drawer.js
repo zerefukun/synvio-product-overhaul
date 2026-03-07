@@ -270,7 +270,7 @@
                 '<div class="oz-cart-item-row">' +
                     '<div class="oz-cart-qty">' +
                         '<button class="oz-cart-qty-btn dec" aria-label="Minder">\u2212</button>' +
-                        '<span class="oz-cart-qty-val">' + item.qty + '</span>' +
+                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
                         '<button class="oz-cart-qty-btn inc" aria-label="Meer">+</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +
@@ -282,6 +282,8 @@
 
         /* Bind events */
         var cartKey = item.key;
+        var qtyInput = el.querySelector('.oz-cart-qty-input');
+
         el.querySelector('.dec').addEventListener('click', function () {
             var current = findItem(cartKey);
             if (current && current.qty <= 1) {
@@ -294,6 +296,16 @@
             var current = findItem(cartKey);
             updateQty(cartKey, (current ? current.qty : 1) + 1);
         });
+
+        /* Direct input change — user types a qty */
+        qtyInput.addEventListener('change', function () {
+            var val = parseInt(qtyInput.value, 10);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 99) val = 99;
+            qtyInput.value = val;
+            updateQty(cartKey, val);
+        });
+
         el.querySelector('.oz-cart-item-remove').addEventListener('click', function () {
             removeItem(cartKey);
         });
@@ -308,11 +320,11 @@
 
     /** Update existing cart item node (qty + price) */
     function updateItemNode(el, item) {
-        var qtySpan = el.querySelector('.oz-cart-qty-val');
+        var qtyInput = el.querySelector('.oz-cart-qty-input');
         var priceDiv = el.querySelector('.oz-cart-item-price');
         var decBtn = el.querySelector('.dec');
 
-        if (qtySpan) qtySpan.textContent = item.qty;
+        if (qtyInput) qtyInput.value = item.qty;
         if (priceDiv) priceDiv.textContent = fmt(item.line_total);
         if (decBtn) decBtn.classList.toggle('bin', item.qty <= 1);
     }
@@ -398,6 +410,9 @@
        DRAWER OPEN / CLOSE
        ============================================ */
     function openDrawer() {
+        /* Don't open drawer on cart or checkout pages — let WC handle it */
+        if (ozCartDrawer.isCartOrCheckout === '1') return;
+
         S.open = true;
         /* Always refresh cart when opening */
         S.loading = true;

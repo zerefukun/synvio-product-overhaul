@@ -418,10 +418,12 @@ function oz_cart_drawer_enqueue() {
         true
     );
 
-    // Pass AJAX URL and nonce to JS
+    // Pass AJAX URL, nonce, and page context to JS
+    // isCartOrCheckout tells the drawer to stay disabled on cart/checkout pages
     wp_localize_script('oz-cart-drawer', 'ozCartDrawer', [
-        'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('oz_cart_drawer'),
+        'ajaxUrl'          => admin_url('admin-ajax.php'),
+        'nonce'            => wp_create_nonce('oz_cart_drawer'),
+        'isCartOrCheckout' => (is_cart() || is_checkout()) ? '1' : '0',
     ]);
 }
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
