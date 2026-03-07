@@ -196,7 +196,7 @@ class OZ_Frontend_Display {
             // Product identity
             'productId'    => $product->get_id(),
             'productName'  => $product->get_name(),
-            'basePrice'    => floatval(wc_get_price_including_tax($product)),
+            'basePrice'    => floatval($product->get_price()),
             'productLine'  => $line_key ?: null,
 
             // Unit info

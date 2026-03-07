@@ -529,7 +529,7 @@ function oz_cart_drawer_get() {
             'qty'        => $cart_item['quantity'],
             'image'      => $image_url,
             'meta'       => implode(' · ', $meta_parts),
-            'line_total' => floatval($cart_item['line_total']),
+            'line_total' => floatval($cart_item['line_total']) + floatval($cart_item['line_tax']),
             'product_id' => $product->get_id(),
         ];
     }
@@ -540,7 +540,7 @@ function oz_cart_drawer_get() {
     wp_send_json_success([
         'items'    => $items,
         'upsells'  => $upsells,
-        'subtotal' => floatval($cart->get_subtotal()),
+        'subtotal' => floatval($cart->get_subtotal()) + floatval($cart->get_subtotal_tax()),
         'total'    => floatval($cart->get_total('edit')),
     ]);
 }
