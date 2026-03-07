@@ -12,8 +12,7 @@
 /* ═══ MOBILE STICKY BAR ═══════════════════════════════════════ */
 
 .oz-sticky-bar {
-  /* Hidden on desktop — only shown on mobile via media query */
-  display: none;
+  /* Visible on all viewports — IntersectionObserver adds .visible class */
   position: fixed;
   bottom: 0;
   left: 0;
@@ -26,11 +25,63 @@
   box-shadow: 0 -4px 24px rgba(0,0,0,0.08), 0 -1px 4px rgba(0,0,0,0.04);
   /* Hidden off-screen by default, animated in via .visible */
   transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.35s;
 }
 
 .oz-sticky-bar.visible {
   transform: translateY(0);
+  visibility: visible;
+}
+
+/* Desktop (>900px): slim bar — hide thumbnail + color, show name + price + CTA inline */
+@media (min-width: 901px) {
+  .oz-sticky-bar {
+    padding: 8px 24px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .oz-sticky-bar .oz-sticky-info {
+    margin-bottom: 0;
+  }
+
+  /* Hide thumbnail and color on desktop — product is already visible above */
+  .oz-sticky-bar .oz-sticky-thumb,
+  .oz-sticky-bar .oz-sticky-color {
+    display: none;
+  }
+
+  /* Inline layout: name + price + button in one row */
+  .oz-sticky-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .oz-sticky-bar .oz-sticky-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .oz-sticky-bar .oz-sticky-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .oz-sticky-bar .oz-sticky-product-name {
+    font-size: 14px;
+  }
+
+  .oz-sticky-bar .oz-sticky-price {
+    font-size: 22px;
+  }
+
+  .oz-sticky-bar button.oz-sticky-btn {
+    width: auto !important;
+    min-width: 200px;
+    padding: 12px 28px !important;
+  }
 }
 
 .oz-sticky-info {

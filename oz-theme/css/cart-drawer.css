@@ -1,12 +1,14 @@
 /* ============================================
    CART DRAWER — slide-in panel from right
-   Matches product page design system exactly.
-   Variables inherited from oz-product-page tokens.
+   Uses design tokens from oz-variations-bcw/tokens.css
+   which are defined on :root and inherited globally.
    ============================================ */
 
-/* === Drawer-specific variable === */
+/* === Drawer-specific variables === */
 :root {
     --drawer-width: 430px;
+    --drawer-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --drawer-slide-ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* === Body scroll lock when drawer is open === */
@@ -15,16 +17,39 @@ body.oz-drawer-open {
 }
 
 /* ============================================
+   FLATSOME RESET — targeted, not sledgehammer
+   Only neutralize the specific Flatsome base properties
+   that conflict with our components. No border/background/
+   transition kill — components set those themselves.
+   ============================================ */
+.oz-drawer button,
+.oz-drawer input[type="number"] {
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    margin-right: 0 !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+/* ============================================
    OVERLAY
    ============================================ */
 .oz-drawer-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     z-index: 999998;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.35s var(--drawer-ease), visibility 0.35s var(--drawer-ease);
 }
 
 .oz-drawer-overlay.open {
@@ -42,46 +67,17 @@ body.oz-drawer-open {
     width: 100%;
     max-width: var(--drawer-width);
     height: 100%;
-    background: #FFFFFF;
+    background: var(--oz-bg-page, #FFFFFF);
     z-index: 999999;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.38s var(--drawer-slide-ease);
+    box-shadow: var(--oz-shadow-lg, 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04));
 }
 
 .oz-drawer.open {
     transform: translateX(0);
-}
-
-/* === Flatsome global reset ===
- * Flatsome applies aggressive base styles to ALL button, input, select, textarea.
- * We neutralize these inside the drawer so our components render correctly. */
-.oz-drawer button,
-.oz-drawer input {
-    margin: 0 !important;
-    margin-bottom: 0 !important;
-    margin-right: 0 !important;
-    min-height: 0 !important;
-    min-width: 0 !important;
-    padding: 0 !important;
-    line-height: normal !important;
-    letter-spacing: normal !important;
-    text-transform: none !important;
-    text-rendering: auto !important;
-    text-shadow: none !important;
-    box-shadow: none !important;
-    border-radius: 0;
-    font-size: inherit;
-    font-weight: inherit;
-    vertical-align: middle;
-    box-sizing: border-box;
-    height: auto;
-    width: auto;
-    background-color: transparent;
-    border: none;
-    transition: none;
 }
 
 /* ============================================
@@ -92,7 +88,7 @@ body.oz-drawer-open {
     align-items: center;
     justify-content: space-between;
     padding: 18px 24px;
-    border-bottom: 1px solid #F0EFED;
+    border-bottom: 1px solid var(--oz-border-light, #F0EFED);
     flex-shrink: 0;
 }
 
@@ -100,15 +96,15 @@ body.oz-drawer-open {
     font-family: 'DM Serif Display', serif;
     font-size: 20px;
     font-weight: 400;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
 }
 
 .oz-drawer-count {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: #E8F0F0;
-    color: #135350;
+    background: var(--oz-accent-light, #E8F0F0);
+    color: var(--oz-accent, #135350);
     font-size: 11px;
     font-weight: 700;
     min-width: 22px;
@@ -118,9 +114,10 @@ body.oz-drawer-open {
     margin-left: 10px;
 }
 
+/* Close button — explicit dimensions beat Flatsome's button reset */
 .oz-drawer-close {
     background: none !important;
-    border: 1px solid #E5E5E3 !important;
+    border: 1px solid var(--oz-border, #E5E5E3) !important;
     width: 34px !important;
     height: 34px !important;
     border-radius: 50% !important;
@@ -128,20 +125,20 @@ body.oz-drawer-open {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: border-color 0.2s var(--drawer-ease), background 0.2s var(--drawer-ease) !important;
     flex-shrink: 0;
-    color: #555555;
+    color: var(--oz-text-body, #555555);
 }
 
 .oz-drawer-close:hover {
-    border-color: #E0DFDD !important;
-    background: #FAFAF9 !important;
+    border-color: var(--oz-label-border, #E0DFDD) !important;
+    background: var(--oz-bg-subtle, #FAFAF9) !important;
 }
 
 .oz-drawer-close svg {
     width: 13px;
     height: 13px;
-    color: #555555;
+    color: var(--oz-text-body, #555555);
     display: block;
 }
 
@@ -150,45 +147,41 @@ body.oz-drawer-open {
    ============================================ */
 .oz-shipping-bar {
     padding: 12px 24px;
-    background: #E8F0F0;
+    background: var(--oz-accent-light, #E8F0F0);
     flex-shrink: 0;
 }
 
 .oz-shipping-text {
     font-size: 12px;
     line-height: 1.5;
-    color: #555555;
+    color: var(--oz-text-body, #555555);
     margin-bottom: 8px;
 }
 
 .oz-shipping-text strong {
-    color: #135350;
+    color: var(--oz-accent, #135350);
     font-weight: 700;
 }
 
 .oz-shipping-text.qualified {
-    color: #135350;
+    color: var(--oz-accent, #135350);
     font-weight: 600;
 }
 
 .oz-shipping-track {
     width: 100%;
     height: 3px;
-    background: #E5E5E3;
+    background: var(--oz-border, #E5E5E3);
     border-radius: 3px;
     overflow: hidden;
 }
 
 .oz-shipping-fill {
     height: 100%;
-    background: #135350;
+    background: var(--oz-accent, #135350);
     border-radius: 3px;
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.5s var(--drawer-ease);
     position: relative;
-}
-
-.oz-shipping-fill.full {
-    background: #135350;
 }
 
 /* Shimmer on unfilled bar */
@@ -206,7 +199,7 @@ body.oz-drawer-open {
 }
 
 /* ============================================
-   SCROLLABLE REGIONS — cart items + upsells scroll independently
+   SCROLLABLE REGIONS — cart + upsells independent
    ============================================ */
 
 /* Cart items region: takes remaining space, scrolls independently */
@@ -216,6 +209,79 @@ body.oz-drawer-open {
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+/* Subtle scroll fade indicators at top and bottom edges */
+.oz-drawer-body::before,
+.oz-drawer-body::after {
+    content: '';
+    position: sticky;
+    left: 0;
+    right: 0;
+    height: 16px;
+    pointer-events: none;
+    z-index: 1;
+    display: block;
+}
+
+.oz-drawer-body::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--oz-bg-page, #FFFFFF), transparent);
+    margin-bottom: -16px;
+}
+
+.oz-drawer-body::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--oz-bg-page, #FFFFFF), transparent);
+    margin-top: -16px;
+}
+
+/* ============================================
+   LOADING SKELETON — shown during initial fetch
+   ============================================ */
+.oz-cart-skeleton {
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.oz-cart-skeleton-item {
+    display: grid;
+    grid-template-columns: 68px 1fr;
+    gap: 14px;
+}
+
+.oz-cart-skeleton-img {
+    width: 68px;
+    height: 68px;
+    border-radius: 8px;
+    background: var(--oz-border-light, #F0EFED);
+    animation: oz-pulse 1.5s ease-in-out infinite;
+}
+
+.oz-cart-skeleton-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 4px;
+}
+
+.oz-cart-skeleton-line {
+    height: 12px;
+    border-radius: 4px;
+    background: var(--oz-border-light, #F0EFED);
+    animation: oz-pulse 1.5s ease-in-out infinite;
+}
+
+.oz-cart-skeleton-line:nth-child(1) { width: 75%; }
+.oz-cart-skeleton-line:nth-child(2) { width: 50%; animation-delay: 0.15s; }
+.oz-cart-skeleton-line:nth-child(3) { width: 35%; animation-delay: 0.3s; }
+
+@keyframes oz-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }
 
 /* ============================================
@@ -230,9 +296,9 @@ body.oz-drawer-open {
     grid-template-columns: 68px 1fr;
     gap: 14px;
     padding: 16px 0;
-    border-bottom: 1px solid #F0EFED;
+    border-bottom: 1px solid var(--oz-border-light, #F0EFED);
     position: relative;
-    transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s var(--drawer-ease);
 }
 
 .oz-cart-item:last-child {
@@ -249,8 +315,8 @@ body.oz-drawer-open {
     width: 68px;
     height: 68px;
     border-radius: 8px;
-    background: #F5F4F0;
-    border: 1px solid #F0EFED;
+    background: var(--oz-bg-warm, #F5F4F0);
+    border: 1px solid var(--oz-border-light, #F0EFED);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -276,7 +342,7 @@ body.oz-drawer-open {
     font-size: 13px;
     font-weight: 600;
     line-height: 1.4;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -284,7 +350,7 @@ body.oz-drawer-open {
 
 .oz-cart-item-meta {
     font-size: 11px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
     font-weight: 500;
 }
 
@@ -301,14 +367,16 @@ body.oz-drawer-open {
 .oz-cart-item-price {
     font-size: 14px;
     font-weight: 700;
-    color: #135350;
+    color: var(--oz-accent, #135350);
     white-space: nowrap;
 }
 
-/* Qty controls — matches oz-tool-qty from product page plugin */
+/* ============================================
+   QTY CONTROLS — matches oz-tool-qty from plugin
+   ============================================ */
 .oz-cart-qty {
     display: inline-flex;
-    border: 1px solid #E5E5E3;
+    border: 1px solid var(--oz-border, #E5E5E3);
     border-radius: 6px;
     overflow: hidden;
 }
@@ -316,24 +384,27 @@ body.oz-drawer-open {
 .oz-cart-qty-btn {
     width: 28px !important;
     height: 28px !important;
-    background: #FAFAF9 !important;
+    background: var(--oz-bg-subtle, #FAFAF9) !important;
+    border: none !important;
+    border-radius: 0 !important;
     cursor: pointer;
     font-size: 13px !important;
     font-weight: 400 !important;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
     display: flex !important;
     align-items: center;
     justify-content: center;
-    transition: background 0.1s !important;
+    transition: background 0.1s var(--drawer-ease) !important;
     flex-shrink: 0;
+    touch-action: manipulation; /* prevent double-tap zoom on mobile */
 }
 
 .oz-cart-qty-btn:hover {
-    background: #F0EFED !important;
+    background: var(--oz-border-light, #F0EFED) !important;
 }
 
 .oz-cart-qty-btn:active {
-    background: #E5E5E3 !important;
+    background: var(--oz-border, #E5E5E3) !important;
 }
 
 .oz-cart-qty-btn.bin {
@@ -345,23 +416,29 @@ body.oz-drawer-open {
     color: #a22 !important;
 }
 
-/* Number input — matches .oz-tool-qty-input, !important beats Flatsome input[type=number] */
+/* Number input — matches .oz-tool-qty-input */
 .oz-cart-qty-input {
     width: 30px !important;
     height: 28px !important;
     text-align: center;
     border: none !important;
-    border-left: 1px solid #E5E5E3 !important;
-    border-right: 1px solid #E5E5E3 !important;
+    border-left: 1px solid var(--oz-border, #E5E5E3) !important;
+    border-right: 1px solid var(--oz-border, #E5E5E3) !important;
     border-radius: 0 !important;
     font-size: 12px !important;
     font-weight: 600 !important;
     font-family: "Raleway", sans-serif;
-    color: #1A1A1A !important;
-    background: white !important;
+    color: var(--oz-text-primary, #1A1A1A) !important;
+    background: var(--oz-bg-page, white) !important;
     -moz-appearance: textfield;
     -webkit-appearance: none;
     appearance: none;
+}
+
+/* Focus ring for keyboard/tap users */
+.oz-cart-qty-input:focus {
+    outline: 2px solid var(--oz-accent, #135350);
+    outline-offset: -2px;
 }
 
 /* Hide number spinners */
@@ -371,19 +448,25 @@ body.oz-drawer-open {
     margin: 0;
 }
 
-/* Remove button */
+/* ============================================
+   REMOVE BUTTON
+   ============================================ */
 .oz-cart-item-remove {
     position: absolute;
     top: 14px;
     right: 0;
     width: 22px !important;
     height: 22px !important;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
     cursor: pointer;
     display: flex !important;
     align-items: center;
     justify-content: center;
-    color: #999999;
-    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    color: var(--oz-text-muted, #999999);
+    transition: color 0.15s var(--drawer-ease) !important;
+    touch-action: manipulation;
 }
 
 .oz-cart-item-remove:hover {
@@ -393,19 +476,20 @@ body.oz-drawer-open {
 .oz-cart-item-remove svg {
     width: 11px;
     height: 11px;
+    display: block; /* prevent phantom inline spacing */
 }
 
 /* ============================================
-   UPSELL SECTION — own scrollable region, ~20% of drawer height
+   UPSELL SECTION — own scrollable region, capped height
    ============================================ */
 .oz-drawer-upsells {
     padding: 16px 24px 12px;
-    max-height: 20vh;
+    max-height: min(20vh, 200px);
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     flex-shrink: 0;
-    border-top: 1px solid #F0EFED;
+    border-top: 1px solid var(--oz-border-light, #F0EFED);
 }
 
 /* Section header — flanking lines */
@@ -414,7 +498,7 @@ body.oz-drawer-open {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -426,7 +510,7 @@ body.oz-drawer-open {
     content: '';
     flex: 1;
     height: 1px;
-    background: #F0EFED;
+    background: var(--oz-border-light, #F0EFED);
 }
 
 .oz-drawer-upsell-list {
@@ -441,21 +525,21 @@ body.oz-drawer-open {
     align-items: center;
     gap: 12px;
     padding: 10px 12px;
-    background: #F7F7F5;
-    border: 1px solid #E0DFDD;
+    background: var(--oz-label-bg, #F7F7F5);
+    border: 1px solid var(--oz-label-border, #E0DFDD);
     border-radius: 8px;
-    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s var(--drawer-ease);
 }
 
 .oz-drawer-upsell-card:hover {
-    border-color: #135350;
+    border-color: var(--oz-accent, #135350);
 }
 
 .oz-drawer-upsell-img {
     width: 40px;
     height: 40px;
     border-radius: 6px;
-    background: #F5F4F0;
+    background: var(--oz-bg-warm, #F5F4F0);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -478,12 +562,12 @@ body.oz-drawer-open {
     font-size: 12px;
     font-weight: 600;
     line-height: 1.3;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
 }
 
 .oz-drawer-upsell-price {
     font-size: 11px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
     font-weight: 500;
     margin-top: 1px;
 }
@@ -491,28 +575,29 @@ body.oz-drawer-open {
 /* Upsell add button — teal outline */
 .oz-drawer-upsell-add {
     background: none !important;
-    border: 1.5px solid #135350 !important;
+    border: 1.5px solid var(--oz-accent, #135350) !important;
     border-radius: 5px !important;
     padding: 6px 12px !important;
     font-family: inherit;
     font-size: 11px !important;
     font-weight: 700 !important;
-    color: #135350 !important;
+    color: var(--oz-accent, #135350) !important;
     cursor: pointer;
-    transition: background 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: background 0.15s var(--drawer-ease), color 0.15s var(--drawer-ease) !important;
     white-space: nowrap;
     flex-shrink: 0;
+    touch-action: manipulation;
 }
 
 .oz-drawer-upsell-add:hover {
-    background: #135350 !important;
-    color: #FFFFFF !important;
+    background: var(--oz-accent, #135350) !important;
+    color: var(--oz-accent-text, #FFFFFF) !important;
 }
 
 .oz-drawer-upsell-add.added {
-    background: #135350 !important;
-    color: white !important;
-    border-color: #135350 !important;
+    background: var(--oz-accent, #135350) !important;
+    color: var(--oz-accent-text, white) !important;
+    border-color: var(--oz-accent, #135350) !important;
     pointer-events: none;
 }
 
@@ -531,7 +616,7 @@ body.oz-drawer-open {
 .oz-cart-empty svg {
     width: 56px;
     height: 56px;
-    color: #E5E5E3;
+    color: var(--oz-border, #E5E5E3);
     margin-bottom: 20px;
     stroke-width: 1;
 }
@@ -540,13 +625,13 @@ body.oz-drawer-open {
     font-family: 'DM Serif Display', serif;
     font-size: 20px;
     font-weight: 400;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
     margin-bottom: 8px;
 }
 
 .oz-cart-empty-text {
     font-size: 13px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
     margin-bottom: 24px;
     max-width: 240px;
     line-height: 1.6;
@@ -554,8 +639,9 @@ body.oz-drawer-open {
 
 .oz-cart-empty-btn {
     padding: 10px 24px !important;
-    background: #E67C00 !important;
-    color: #FFFFFF !important;
+    background: var(--oz-cta, #E67C00) !important;
+    color: var(--oz-cta-text, #FFFFFF) !important;
+    border: none !important;
     border-radius: 5px !important;
     font-family: inherit;
     font-size: 12px !important;
@@ -563,11 +649,12 @@ body.oz-drawer-open {
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
     cursor: pointer;
-    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: background 0.2s var(--drawer-ease) !important;
+    touch-action: manipulation;
 }
 
 .oz-cart-empty-btn:hover {
-    background: #D06E00 !important;
+    background: var(--oz-cta-hover, #D06E00) !important;
 }
 
 /* ============================================
@@ -575,8 +662,10 @@ body.oz-drawer-open {
    ============================================ */
 .oz-drawer-footer {
     padding: 16px 24px 20px;
-    border-top: 1px solid #E5E5E3;
-    background: white;
+    /* iOS safe area inset for notch devices */
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--oz-border, #E5E5E3);
+    background: var(--oz-bg-page, white);
     flex-shrink: 0;
 }
 
@@ -589,12 +678,12 @@ body.oz-drawer-open {
 
 .oz-drawer-footer-label {
     font-size: 12px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
 }
 
 .oz-drawer-footer-value {
     font-size: 12px;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
 }
 
 /* Subtotal row */
@@ -606,22 +695,22 @@ body.oz-drawer-open {
 .oz-drawer-footer-row.subtotal .oz-drawer-footer-label {
     font-size: 15px;
     font-weight: 600;
-    color: #1A1A1A;
+    color: var(--oz-text-primary, #1A1A1A);
 }
 
 .oz-drawer-footer-row.subtotal .oz-drawer-footer-value {
     font-size: 18px;
     font-weight: 700;
-    color: #135350;
+    color: var(--oz-accent, #135350);
 }
 
-/* Checkout button — ORANGE CTA */
+/* Checkout button — ORANGE CTA (is an <a> tag, not affected by button reset) */
 .oz-checkout-btn {
     display: block;
     width: 100%;
     padding: 14px;
-    background: #E67C00;
-    color: #FFFFFF;
+    background: var(--oz-cta, #E67C00);
+    color: var(--oz-cta-text, #FFFFFF);
     border: none;
     border-radius: 5px;
     font-family: inherit;
@@ -632,12 +721,12 @@ body.oz-drawer-open {
     cursor: pointer;
     text-align: center;
     text-decoration: none;
-    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s var(--drawer-ease);
 }
 
 .oz-checkout-btn:hover {
-    background: #D06E00;
-    color: #FFFFFF;
+    background: var(--oz-cta-hover, #D06E00);
+    color: var(--oz-cta-text, #FFFFFF);
 }
 
 .oz-checkout-btn:active {
@@ -655,15 +744,15 @@ body.oz-drawer-open {
 .oz-drawer-payment-icon {
     width: 38px;
     height: 24px;
-    background: #FAFAF9;
-    border: 1px solid #F0EFED;
+    background: var(--oz-bg-subtle, #FAFAF9);
+    border: 1px solid var(--oz-border-light, #F0EFED);
     border-radius: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 8px;
     font-weight: 700;
-    color: #999999;
+    color: var(--oz-text-muted, #999999);
     letter-spacing: 0.3px;
 }
 
@@ -686,7 +775,8 @@ body.oz-drawer-open {
     .oz-drawer-upsells { padding: 12px 16px 10px; }
     .oz-drawer-header { padding: 14px 16px; }
     .oz-shipping-bar { padding: 10px 16px; }
-    .oz-drawer-footer { padding: 14px 16px 18px; }
+    .oz-drawer-footer { padding: 14px 16px 18px; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+    .oz-cart-skeleton { padding: 16px 16px; }
 
     .oz-cart-item {
         grid-template-columns: 56px 1fr;
@@ -694,6 +784,11 @@ body.oz-drawer-open {
     }
 
     .oz-cart-item-img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .oz-cart-skeleton-img {
         width: 56px;
         height: 56px;
     }

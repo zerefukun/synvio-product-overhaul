@@ -140,3 +140,68 @@
 .oz-specs-table td {
   color: var(--oz-text-body);
 }
+
+
+/* ═══ FAQ ACCORDION ══════════════════════════════════════════ */
+
+.oz-faq-list {
+  /* Vertical stack — border-bottom handles spacing */
+}
+
+.oz-faq-item {
+  border-bottom: 1px solid var(--oz-border-light);
+  padding: 14px 0;
+}
+
+.oz-faq-item:last-child {
+  border-bottom: none;
+}
+
+/* Question row — clickable summary */
+.oz-faq-question {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Hide default marker */
+.oz-faq-question::-webkit-details-marker {
+  display: none;
+}
+
+/* Custom arrow indicator */
+.oz-faq-question::after {
+  content: '+';
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  flex-shrink: 0;
+  transition: transform 0.25s var(--oz-ease);
+}
+
+/* Rotate arrow when open */
+details.oz-faq-item[open] .oz-faq-question::after {
+  content: '−';
+}
+
+/* Answer content */
+.oz-faq-answer {
+  padding-top: 8px;
+  font-size: 14px;
+  color: var(--oz-text-body);
+  line-height: 1.7;
+}
+
+.oz-faq-answer p {
+  margin-bottom: 8px;
+}
+
+.oz-faq-answer p:last-child {
+  margin-bottom: 0;
+}

@@ -282,6 +282,65 @@ class OZ_BCW_Admin {
                 </tbody>
             </table>
         </div>
+
+        <hr style="margin: 16px 0;">
+
+        <!-- FAQ (Veelgestelde vragen) — repeating Q&A pairs -->
+        <?php
+        $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+        if (!is_array($oz_faq)) $oz_faq = [];
+        ?>
+        <div class="oz-meta-section">
+            <h4>Veelgestelde vragen (FAQ)</h4>
+            <p class="description">Voeg vraag/antwoord paren toe. Verschijnt als accordion onder Specificaties.</p>
+
+            <div id="oz-faq-rows">
+                <?php
+                // Show existing FAQs + 1 empty row
+                $faq_rows = !empty($oz_faq) ? $oz_faq : [];
+                $faq_rows[] = ['q' => '', 'a' => '']; // always one empty row at the end
+                foreach ($faq_rows as $fi => $faq_item) :
+                ?>
+                <div class="oz-faq-row" style="border:1px solid #ddd; padding:10px; margin-bottom:8px; border-radius:4px; background:#fafafa;">
+                    <p style="margin:0 0 6px;">
+                        <input type="text"
+                               name="oz_faq_questions[]"
+                               value="<?php echo esc_attr($faq_item['q']); ?>"
+                               placeholder="Vraag"
+                               style="width:100%;">
+                    </p>
+                    <p style="margin:0 0 6px;">
+                        <textarea name="oz_faq_answers[]"
+                                  placeholder="Antwoord"
+                                  rows="2"
+                                  style="width:100%;"><?php echo esc_textarea($faq_item['a']); ?></textarea>
+                    </p>
+                    <button type="button" class="button oz-faq-remove" style="color:#a00;">Verwijderen</button>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="button" id="oz-faq-add">+ Vraag toevoegen</button>
+        </div>
+
+        <!-- Inline JS for FAQ add/remove (lightweight, no external file needed) -->
+        <script>
+        (function(){
+            document.getElementById('oz-faq-add').addEventListener('click', function() {
+                var row = document.createElement('div');
+                row.className = 'oz-faq-row';
+                row.style.cssText = 'border:1px solid #ddd; padding:10px; margin-bottom:8px; border-radius:4px; background:#fafafa;';
+                row.innerHTML = '<p style="margin:0 0 6px;"><input type="text" name="oz_faq_questions[]" value="" placeholder="Vraag" style="width:100%;"></p>'
+                    + '<p style="margin:0 0 6px;"><textarea name="oz_faq_answers[]" placeholder="Antwoord" rows="2" style="width:100%;"></textarea></p>'
+                    + '<button type="button" class="button oz-faq-remove" style="color:#a00;">Verwijderen</button>';
+                document.getElementById('oz-faq-rows').appendChild(row);
+            });
+            document.getElementById('oz-faq-rows').addEventListener('click', function(e) {
+                if (e.target.classList.contains('oz-faq-remove')) {
+                    e.target.closest('.oz-faq-row').remove();
+                }
+            });
+        })();
+        </script>
         <?php
     }
 
@@ -336,6 +395,23 @@ class OZ_BCW_Admin {
             update_post_meta($product_id, '_oz_specs', $specs);
         } else {
             delete_post_meta($product_id, '_oz_specs');
+        }
+
+        // Save FAQs — question/answer pairs
+        $faqs = [];
+        if (!empty($_POST['oz_faq_questions'])) {
+            foreach ($_POST['oz_faq_questions'] as $i => $q) {
+                $q = sanitize_text_field($q);
+                $a = sanitize_textarea_field($_POST['oz_faq_answers'][$i] ?? '');
+                if ($q && $a) {
+                    $faqs[] = ['q' => $q, 'a' => $a];
+                }
+            }
+        }
+        if (!empty($faqs)) {
+            update_post_meta($product_id, '_oz_faq', $faqs);
+        } else {
+            delete_post_meta($product_id, '_oz_faq');
         }
     }
 

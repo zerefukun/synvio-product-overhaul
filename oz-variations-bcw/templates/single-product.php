@@ -173,6 +173,23 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
+      <!-- FAQ accordion — editable per product via WP admin metabox -->
+      <?php
+      $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+      if (!empty($oz_faq) && is_array($oz_faq)) : ?>
+      <div class="oz-product-info-section">
+        <h2 class="oz-section-title">Veelgestelde vragen</h2>
+        <div class="oz-faq-list">
+          <?php foreach ($oz_faq as $faq) : ?>
+            <details class="oz-faq-item">
+              <summary class="oz-faq-question"><?php echo esc_html($faq['q']); ?></summary>
+              <div class="oz-faq-answer"><?php echo wp_kses_post($faq['a']); ?></div>
+            </details>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <?php endif; ?>
+
     </div><!-- .oz-left-column -->
 
 
@@ -276,6 +293,14 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
                   <?php if (!$ral_ncs_only) : ?>
                     <?php echo OZ_Frontend_Display::render_color_swatches($product); ?>
+                  <?php endif; ?>
+
+                  <?php /* "Gratis kleurstalen aanvragen" link — only for lines with kleurstalen */ ?>
+                  <?php if (!empty($config['kleurstalen_slug'])) : ?>
+                    <a href="/kleurstalen-aanvragen/?lijn=<?php echo esc_attr($config['kleurstalen_slug']); ?>"
+                       class="oz-sample-link" target="_blank">
+                      Gratis kleurstalen aanvragen &rarr;
+                    </a>
                   <?php endif; ?>
                 </div>
               <?php break;
@@ -595,24 +620,12 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       </div>
 
-      <!-- Trust Badges -->
-      <div class="oz-trust-badges">
-                <div class="oz-trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                    Verzending NL, BE en DE
-                </div>
-                <div class="oz-trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                    Achteraf betalen mogelijk
-                </div>
-                <div class="oz-trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                    20.000+ klanten
-                </div>
-                <div class="oz-trust-badge">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    Vragen? Wij helpen je!
-                </div>
+      <!-- Trust Checks — compact inline checkmarks -->
+      <div class="oz-trust-checks">
+        <span class="oz-trust-check">&#10003; Verzending NL, BE en DE</span>
+        <span class="oz-trust-check">&#10003; Achteraf betalen mogelijk</span>
+        <span class="oz-trust-check">&#10003; 20.000+ klanten</span>
+        <span class="oz-trust-check">&#10003; Vragen? Wij helpen je!</span>
       </div>
 
       <?php /* Short description removed — client decision 2026-03-07 */ ?>

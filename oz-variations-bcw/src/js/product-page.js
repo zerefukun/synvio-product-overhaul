@@ -508,10 +508,16 @@ function handleClick(e) {
     return;
   }
 
-  // Sticky bar button — opens bottom sheet on mobile
+  // Sticky bar button — opens bottom sheet on mobile, scrolls to CTA on desktop
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
-    openSheet();
+    if (window.innerWidth >= 900) {
+      // Desktop: scroll to the add-to-cart button instead of opening sheet
+      var cartBtn = DOM.addToCartBtn;
+      if (cartBtn) cartBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      openSheet();
+    }
     return;
   }
 
@@ -958,18 +964,18 @@ function removeCartMsg() {
  * Shows when the add-to-cart button scrolls out of view.
  */
 function setupStickyBar() {
-  if (!DOM.stickyBar || !DOM.optionsWidget) return;
+  if (!DOM.stickyBar) return;
 
-  // Only observe on mobile (< 900px)
-  if (window.innerWidth >= 900) return;
+  // Observe the add-to-cart button — show sticky bar when it scrolls out of view
+  var target = DOM.addToCartBtn || DOM.optionsWidget;
+  if (!target) return;
 
   var observer = new IntersectionObserver(function (entries) {
-    // Show sticky bar when optionsWidget is NOT visible
     var isVisible = entries[0].isIntersecting;
     DOM.stickyBar.classList.toggle('visible', !isVisible);
   }, { threshold: 0 });
 
-  observer.observe(DOM.optionsWidget);
+  observer.observe(target);
 }
 
 
@@ -1050,12 +1056,7 @@ function init() {
   // Mobile sticky bar
   setupStickyBar();
 
-  // Re-check sticky bar on resize
-  window.addEventListener('resize', function () {
-    if (window.innerWidth >= 900 && DOM.stickyBar) {
-      DOM.stickyBar.classList.remove('visible');
-    }
-  });
+  // Re-check sticky bar on resize — observer handles show/hide automatically
 
   // Hide "read more" button if content is short enough
   if (DOM.descContent && DOM.readMoreBtn) {

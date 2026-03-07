@@ -20,15 +20,7 @@
     order: 2;
   }
 
-  .oz-trust-badges {
-    grid-template-columns: 1fr;
-  }
-
-  /* Activate sticky bar and bottom sheet on mobile */
-  .oz-sticky-bar {
-    display: flex;
-    flex-direction: column;
-  }
+  /* Activate bottom sheet on mobile (sticky bar is always in DOM now) */
 
   .oz-sheet-overlay.open {
     display: block;

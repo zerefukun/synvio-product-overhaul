@@ -45,10 +45,10 @@ if (function_exists('WC') && WC()->payment_gateways()) {
     <div class="oz-drawer-header">
         <div>
             <span class="oz-drawer-title">Winkelwagen</span>
-            <span class="oz-drawer-count" id="ozDrawerCount">0</span>
+            <span class="oz-drawer-count" id="ozDrawerCount" aria-live="polite" aria-atomic="true">0</span>
         </div>
-        <button class="oz-drawer-close" id="ozDrawerClose" aria-label="Sluiten">
-            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <button class="oz-drawer-close" id="ozDrawerClose" aria-label="Sluiten" title="Sluiten">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
                 <path d="M1 1l12 12M13 1L1 13"/>
             </svg>
         </button>
@@ -62,15 +62,35 @@ if (function_exists('WC') && WC()->payment_gateways()) {
         </div>
     </div>
 
-    <!-- Scrollable cart items region (~80% of body) -->
+    <!-- Scrollable cart items region -->
     <div class="oz-drawer-body" id="ozDrawerBody">
+
+        <!-- Loading skeleton — shown during initial fetch -->
+        <div class="oz-cart-skeleton" id="ozCartSkeleton" style="display:none" aria-hidden="true">
+            <div class="oz-cart-skeleton-item">
+                <div class="oz-cart-skeleton-img"></div>
+                <div class="oz-cart-skeleton-lines">
+                    <div class="oz-cart-skeleton-line"></div>
+                    <div class="oz-cart-skeleton-line"></div>
+                    <div class="oz-cart-skeleton-line"></div>
+                </div>
+            </div>
+            <div class="oz-cart-skeleton-item">
+                <div class="oz-cart-skeleton-img"></div>
+                <div class="oz-cart-skeleton-lines">
+                    <div class="oz-cart-skeleton-line"></div>
+                    <div class="oz-cart-skeleton-line"></div>
+                    <div class="oz-cart-skeleton-line"></div>
+                </div>
+            </div>
+        </div>
 
         <!-- Cart items — populated by JS -->
         <div class="oz-cart-items" id="ozCartItems"></div>
 
         <!-- Empty cart state -->
         <div class="oz-cart-empty" id="ozCartEmpty" style="display:none">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
@@ -80,7 +100,7 @@ if (function_exists('WC') && WC()->payment_gateways()) {
         </div>
     </div>
 
-    <!-- Upsell section — own scrollable region (~20% of body) -->
+    <!-- Upsell section — own scrollable region -->
     <div class="oz-drawer-upsells" id="ozUpsellSection" style="display:none">
         <div class="oz-drawer-upsells-title">Vakmannen bestellen ook</div>
         <div class="oz-drawer-upsell-list" id="ozUpsellList"></div>
@@ -94,7 +114,7 @@ if (function_exists('WC') && WC()->payment_gateways()) {
         </div>
         <div class="oz-drawer-footer-row subtotal">
             <span class="oz-drawer-footer-label">Subtotaal</span>
-            <span class="oz-drawer-footer-value" id="ozFooterSubtotal">&euro;0,00</span>
+            <span class="oz-drawer-footer-value" id="ozFooterSubtotal" aria-live="polite">&euro;0,00</span>
         </div>
         <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="oz-checkout-btn" id="ozCheckoutBtn">Doorgaan naar afrekenen</a>
 

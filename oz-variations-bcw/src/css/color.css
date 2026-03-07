@@ -224,3 +224,21 @@
   flex-shrink: 0;
   margin-top: 1px;
 }
+
+
+/* ─── Kleurstalen link ─── */
+
+.oz-sample-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-accent);
+  text-decoration: none;
+  transition: color 0.2s var(--oz-ease);
+}
+
+.oz-sample-link:hover {
+  color: var(--oz-accent-hover);
+  text-decoration: underline;
+}

@@ -158,8 +158,8 @@
 .oz-price-summary {
   background: var(--oz-bg-warm);
   border-radius: 12px;
-  padding: 18px 22px;
-  margin-bottom: 28px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
   border: 1px solid var(--oz-border-light);
   font-size: 13px;
 }
@@ -200,40 +200,25 @@
 }
 
 
-/* ═══ TRUST BADGES ════════════════════════════════════════════ */
+/* ═══ TRUST CHECKS (compact checkmarks) ══════════════════════ */
 
-.oz-trust-badges {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+.oz-trust-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
   margin-top: 0;
 }
 
-.oz-trust-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: var(--oz-bg-subtle);
-  border: 1px solid var(--oz-border-light);
+.oz-trust-check {
   font-size: 12px;
   font-weight: 500;
-  color: var(--oz-text-body);
-  transition: background-color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
+  color: var(--oz-text-muted);
 }
 
-.oz-trust-badge:hover {
-  border-color: var(--oz-accent-light);
-  background: var(--oz-accent-light);
-}
-
-/* Trust badge SVG sizing */
-.oz-trust-badge svg {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+/* Checkmark character in accent color */
+.oz-trust-check::first-letter {
   color: var(--oz-accent);
+  font-weight: 700;
 }
 
 
@@ -242,8 +227,8 @@
 .oz-delivery-timeline {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 28px;
-  padding: 20px 18px;
+  margin-bottom: 16px;
+  padding: 16px 14px;
   background: var(--oz-bg-warm);
   border-radius: 12px;
   border: 1px solid var(--oz-border-light);

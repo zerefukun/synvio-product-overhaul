@@ -169,6 +169,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,  // Original has NO RAL/NCS
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'original',
             'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
         ],
 
@@ -203,6 +204,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'all-in-one',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
@@ -237,6 +239,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'easyline',
             'option_order'   => ['color', 'pakket', 'primer', 'pu', 'tools'],
         ],
 
@@ -270,6 +273,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'microcement',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
@@ -302,6 +306,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'metallic',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],  // corrected from WAPO block order
         ],
 
@@ -335,6 +340,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
+            'kleurstalen_slug' => 'lavasteen',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
