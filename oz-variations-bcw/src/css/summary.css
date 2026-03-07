@@ -60,7 +60,7 @@
   margin-left: 4px;
 }
 
-/* Short description — teal accent chips */
+/* Short description — vertical checkmark list */
 .oz-short-desc {
   margin-bottom: 28px;
   font-size: 14px;
@@ -71,33 +71,35 @@
 .oz-short-desc ul {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding: 0;
   margin: 0;
 }
 
 .oz-short-desc li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--oz-accent-light);
-  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--oz-accent);
+  color: var(--oz-text-body);
   margin-bottom: 0;
   position: static;
+  line-height: 1.5;
 }
 
-/* Override any ::before from theme */
-.oz-short-desc li::before {
-  content: '\2713';
-  position: static;
-  color: var(--oz-accent);
-  font-weight: 700;
+/* Checkmark icon — teal SVG or fallback character */
+.oz-short-desc li .oz-check-icon {
   flex-shrink: 0;
-  width: auto;
-  height: auto;
+  width: 16px;
+  height: 16px;
+  color: var(--oz-accent);
+  margin-top: 1px;
+}
+
+/* Override any ::before from theme — hide when SVG icon is present */
+.oz-short-desc li::before {
+  content: none;
+  display: none;
 }

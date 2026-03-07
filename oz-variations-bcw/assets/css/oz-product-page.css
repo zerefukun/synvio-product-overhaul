@@ -497,32 +497,32 @@
 .oz-short-desc ul {
   list-style: none;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   padding: 0;
   margin: 0;
 }
 .oz-short-desc li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--oz-accent-light);
-  border-radius: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--oz-accent);
+  color: var(--oz-text-body);
   margin-bottom: 0;
   position: static;
+  line-height: 1.5;
+}
+.oz-short-desc li .oz-check-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--oz-accent);
+  margin-top: 1px;
 }
 .oz-short-desc li::before {
-  content: "\2713";
-  position: static;
-  color: var(--oz-accent);
-  font-weight: 700;
-  flex-shrink: 0;
-  width: auto;
-  height: auto;
+  content: none;
+  display: none;
 }
 
 /* src/css/options.css */
