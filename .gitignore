@@ -3,3 +3,9 @@
 
 # Temporary extraction scripts
 tmp-*.php
+
+# Node dependencies — not deployed, only used for build
+oz-variations-bcw/node_modules/
+
+# esbuild source maps — dev only, not deployed
+oz-variations-bcw/assets/js/*.map

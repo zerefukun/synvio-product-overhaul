@@ -46,6 +46,15 @@ jobs:
           touch ~/.ssh/known_hosts
           ssh-keyscan -p "$port" -H "$BCW_HOST" >> ~/.ssh/known_hosts
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build JS bundles
+        working-directory: oz-variations-bcw
+        run: npm ci && npm run build
+
       - name: Ensure plugin directory exists on BCW
         shell: bash
         env:
@@ -71,6 +80,12 @@ jobs:
             --exclude ".git" \
             --exclude ".github" \
             --exclude ".DS_Store" \
+            --exclude "node_modules" \
+            --exclude "src" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "esbuild.config.mjs" \
+            --exclude "*.map" \
             -e "ssh -p $port" \
             ./oz-variations-bcw/ \
             "${BCW_USER}@${BCW_HOST}:/home/betoncire/public_html/wp-content/plugins/oz-variations-bcw/"

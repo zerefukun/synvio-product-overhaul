@@ -1,0 +1,13 @@
+{
+  "name": "oz-variations-bcw",
+  "version": "2.0.0",
+  "private": true,
+  "description": "OZ Variations BCW — Product page JS build",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}
