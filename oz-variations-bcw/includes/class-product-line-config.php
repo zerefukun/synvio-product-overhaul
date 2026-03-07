@@ -434,6 +434,239 @@ class OZ_Product_Line_Config {
 
 
     /* ══════════════════════════════════════════════════════════════════
+     * GENERIC ADDON GROUPS — per-product option groups for generic_addons mode
+     *
+     * Replaces YITH WAPO for non-line products. Each product ID maps to
+     * an array of addon groups. Each group has:
+     *   key      => unique slug (used in cart data as oz_addon_{key})
+     *   label    => display label
+     *   type     => 'select' (single choice — only type for now)
+     *   required => bool (must pick a non-zero option)
+     *   options  => array of [label, price, default]
+     *
+     * Source: YITH WAPO Block #14 extracted 2026-03-07.
+     * ══════════════════════════════════════════════════════════════════ */
+
+    private static $generic_addon_configs = [
+
+        // Gereedschapset Kant & Klaar (product 11177)
+        // YITH Block #14, Addon #40 + #41
+        // Options format: [label, price, default] — same as PU/primer/colorfresh
+        11177 => [
+            [
+                'key'      => 'formaat_roller',
+                'label'    => 'Formaat Roller',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Roller 10cm', 0,     true],
+                    ['Roller 18cm', 10,    false],
+                    ['Roller 25cm', 14.99, false],
+                ],
+            ],
+            [
+                'key'      => 'troffels',
+                'label'    => 'Troffels?',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Nee, Ik heb voldoende gereedschap', 0,  true],
+                    ['Ja, Ik wil alle troffels erbij',    45, false],
+                ],
+            ],
+        ],
+
+        // Gereedschapset Zelf Mengen (product 11163)
+        // Same YITH Block #14 — identical addons
+        11163 => [
+            [
+                'key'      => 'formaat_roller',
+                'label'    => 'Formaat Roller',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Roller 10cm', 0,     true],
+                    ['Roller 18cm', 10,    false],
+                    ['Roller 25cm', 14.99, false],
+                ],
+            ],
+            [
+                'key'      => 'troffels',
+                'label'    => 'Troffels?',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Nee, Ik heb voldoende gereedschap', 0,  true],
+                    ['Ja, Ik wil alle troffels erbij',    45, false],
+                ],
+            ],
+        ],
+    ];
+
+    /**
+     * Get addon groups for a product.
+     * Checks product meta _oz_addon_groups first, falls back to static config.
+     *
+     * @param int $product_id
+     * @return array|false  Array of addon groups or false
+     */
+    public static function get_addon_groups($product_id) {
+        // Future: check product meta first
+        // $meta = get_post_meta($product_id, '_oz_addon_groups', true);
+        // if (!empty($meta) && is_array($meta)) return $meta;
+
+        if (isset(self::$generic_addon_configs[$product_id])) {
+            return self::$generic_addon_configs[$product_id];
+        }
+
+        return false;
+    }
+
+    /**
+     * Get addon groups formatted for wp_localize_script (JS payload).
+     * Transforms [label, price, default] tuples into keyed objects.
+     *
+     * @param int $product_id
+     * @return array|false
+     */
+    public static function get_addon_groups_for_js($product_id) {
+        $groups = self::get_addon_groups($product_id);
+        if (!$groups) {
+            return false;
+        }
+
+        $js_groups = [];
+        foreach ($groups as $group) {
+            $options = [];
+            foreach ($group['options'] as list($label, $price, $default)) {
+                $options[] = [
+                    'label'   => $label,
+                    'price'   => $price,
+                    'default' => $default,
+                ];
+            }
+            $js_groups[] = [
+                'key'      => $group['key'],
+                'label'    => $group['label'],
+                'type'     => $group['type'],
+                'required' => $group['required'],
+                'options'  => $options,
+            ];
+        }
+        return $js_groups;
+    }
+
+    /**
+     * Check if a product has generic addon groups configured.
+     *
+     * @param int $product_id
+     * @return bool
+     */
+    public static function has_addon_groups($product_id) {
+        return isset(self::$generic_addon_configs[$product_id]);
+    }
+
+    /**
+     * Resolve total addon price surcharge for a generic_addons product.
+     * Reads oz_addon_{key} values from cart data and sums matching prices.
+     *
+     * @param int   $product_id
+     * @param array $cart_data  Cart item data (oz_addon_* keys)
+     * @return float  Per-unit surcharge
+     */
+    public static function resolve_generic_addon_price($product_id, $cart_data) {
+        $groups = self::get_addon_groups($product_id);
+        if (!$groups) {
+            return 0;
+        }
+
+        $total = 0;
+        foreach ($groups as $group) {
+            $cart_key = 'oz_addon_' . $group['key'];
+            if (empty($cart_data[$cart_key])) {
+                continue;
+            }
+            $selected_label = $cart_data[$cart_key];
+            foreach ($group['options'] as list($label, $price, $default)) {
+                if ($label === $selected_label) {
+                    $total += floatval($price);
+                    break;
+                }
+            }
+        }
+        return $total;
+    }
+
+
+    /* ══════════════════════════════════════════════════════════════════
+     * PAGE MODE — determines which template mode a product uses
+     *
+     * Three modes:
+     *   'configured_line'  — auto-detected BCW product line (full options)
+     *   'generic_simple'   — manually assigned, no addons (just shell)
+     *   'generic_addons'   — manually assigned, with custom addon groups
+     *   false              — not our product, use theme default
+     * ══════════════════════════════════════════════════════════════════ */
+
+    /** Valid page modes that can be set via product meta */
+    private static $valid_modes = ['generic_simple', 'generic_addons'];
+
+    /**
+     * Determine the page mode for a product.
+     * BCW product lines are auto-detected. Other products can be
+     * manually assigned a mode via _oz_page_mode product meta.
+     *
+     * @param WC_Product $product
+     * @return string|false  Page mode or false (use theme default)
+     */
+    public static function get_page_mode($product) {
+        // BCW product lines always use configured_line
+        if (self::detect($product)) {
+            return 'configured_line';
+        }
+
+        // Check for explicit page mode meta (set via admin metabox)
+        $mode = get_post_meta($product->get_id(), '_oz_page_mode', true);
+        if (in_array($mode, self::$valid_modes, true)) {
+            return $mode;
+        }
+
+        // Auto-detect products with generic addon configs
+        if (self::has_addon_groups($product->get_id())) {
+            return 'generic_addons';
+        }
+
+        return false;
+    }
+
+    /**
+     * Get a default config array for generic products (no product line).
+     * Provides sensible fallbacks so the template doesn't need null checks.
+     *
+     * @return array
+     */
+    public static function get_generic_config() {
+        return [
+            'cats'           => [],
+            'usps'           => [],
+            'specs'          => [],
+            'base_id'        => null,
+            'unit'           => 'stuk',
+            'unitM2'         => 0,
+            'has_pu'         => false,
+            'has_primer'     => false,
+            'has_colorfresh' => false,
+            'has_toepassing' => false,
+            'has_pakket'     => false,
+            'ral_ncs'        => false,
+            'ral_ncs_only'   => false,
+            'has_tools'      => false,
+            'option_order'   => [],
+        ];
+    }
+
+
+    /* ══════════════════════════════════════════════════════════════════
      * DETECTION
      * ══════════════════════════════════════════════════════════════════ */
 

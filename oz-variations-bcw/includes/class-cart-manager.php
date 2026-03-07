@@ -28,7 +28,7 @@ if (!defined('ABSPATH')) {
 class OZ_Cart_Manager {
 
     /**
-     * All oz_ cart item data keys we manage.
+     * All oz_ cart item data keys we manage (configured_line mode).
      * Used for session restore, meta persistence, and display filtering.
      */
     private static $meta_keys = [
@@ -36,6 +36,12 @@ class OZ_Cart_Manager {
         'oz_toepassing', 'oz_color_mode', 'oz_custom_color',
         'oz_selected_color', 'oz_pakket',
     ];
+
+    /**
+     * Prefix for generic addon cart keys.
+     * Full key format: oz_addon_{group_key}
+     */
+    private static $addon_prefix = 'oz_addon_';
 
     /**
      * Initialize cart hooks.
@@ -135,6 +141,17 @@ class OZ_Cart_Manager {
             }
         }
 
+        // Generic addon groups — extract oz_addon_{key} fields from POST
+        $addon_data = self::extract_generic_addon_data($product_id);
+        foreach ($addon_data as $key => $value) {
+            $cart_item_data[$key] = $value;
+        }
+
+        // Mark as generic_addons if product has addon groups (for pricing)
+        if (!$line && OZ_Product_Line_Config::has_addon_groups($product_id)) {
+            $cart_item_data['oz_page_mode'] = 'generic_addons';
+        }
+
         return $cart_item_data;
     }
 
@@ -205,6 +222,29 @@ class OZ_Cart_Manager {
     }
 
     /**
+     * Extract generic addon selections from $_POST.
+     * Reads oz_addon_{key} fields for addon groups defined on this product.
+     *
+     * @param int $product_id
+     * @return array  Sanitized ['oz_addon_{key}' => 'selected label', ...]
+     */
+    public static function extract_generic_addon_data($product_id) {
+        $groups = OZ_Product_Line_Config::get_addon_groups($product_id);
+        if (!$groups) {
+            return [];
+        }
+
+        $data = [];
+        foreach ($groups as $group) {
+            $post_key = self::$addon_prefix . $group['key'];
+            if (isset($_POST[$post_key]) && $_POST[$post_key] !== '') {
+                $data[$post_key] = sanitize_text_field(wp_unslash($_POST[$post_key]));
+            }
+        }
+        return $data;
+    }
+
+    /**
      * Restore addon data from session after page load.
      *
      * @param array  $cart_item
@@ -213,9 +253,16 @@ class OZ_Cart_Manager {
      * @return array
      */
     public static function restore_from_session($cart_item, $values, $key) {
+        // Configured-line keys
         foreach (self::$meta_keys as $mk) {
             if (isset($values[$mk])) {
                 $cart_item[$mk] = $values[$mk];
+            }
+        }
+        // Generic addon keys (oz_addon_*) and page mode
+        foreach ($values as $vk => $vv) {
+            if (strpos($vk, self::$addon_prefix) === 0 || $vk === 'oz_page_mode') {
+                $cart_item[$vk] = $vv;
             }
         }
         return $cart_item;
@@ -236,11 +283,26 @@ class OZ_Cart_Manager {
         }
 
         foreach ($cart->get_cart() as $cart_key => $cart_item) {
-            if (!isset($cart_item['oz_line'])) {
-                continue;
-            }
-
             $product = $cart_item['data'];
+            $addon_total = 0;
+
+            // Configured-line products — PU + primer + colorfresh
+            if (isset($cart_item['oz_line'])) {
+                $addon_total = OZ_Product_Line_Config::resolve_addon_price(
+                    $cart_item['oz_line'],
+                    $cart_item
+                );
+            }
+            // Generic addon products — oz_addon_* keys
+            elseif (isset($cart_item['oz_page_mode']) && $cart_item['oz_page_mode'] === 'generic_addons') {
+                $addon_total = OZ_Product_Line_Config::resolve_generic_addon_price(
+                    $cart_item['product_id'],
+                    $cart_item
+                );
+            }
+            else {
+                continue; // Not our product
+            }
 
             // Use sale price only when the sale is currently active
             // (not scheduled/expired). We read from DB-backed methods
@@ -249,12 +311,6 @@ class OZ_Cart_Manager {
             $base_price = ($product->is_on_sale())
                 ? floatval($product->get_sale_price())
                 : floatval($product->get_regular_price());
-
-            // Single call resolves PU + primer + colorfresh
-            $addon_total = OZ_Product_Line_Config::resolve_addon_price(
-                $cart_item['oz_line'],
-                $cart_item
-            );
 
             // Set modified price (base + addons per unit, WooCommerce multiplies by qty)
             $product->set_price($base_price + $addon_total);
@@ -270,7 +326,8 @@ class OZ_Cart_Manager {
      * @return string
      */
     public static function display_addons_in_cart($name, $cart_item, $cart_item_key) {
-        if (!isset($cart_item['oz_line'])) {
+        // Handle both configured-line and generic addon products
+        if (!isset($cart_item['oz_line']) && !isset($cart_item['oz_page_mode'])) {
             return $name;
         }
 
@@ -294,10 +351,16 @@ class OZ_Cart_Manager {
      * @param WC_Order              $order
      */
     public static function save_addons_to_order($item, $cart_item_key, $values, $order) {
+        // Configured-line keys
         foreach (self::$meta_keys as $cart_key) {
             if (isset($values[$cart_key])) {
-                // Prefix with underscore for hidden order meta
                 $item->add_meta_data('_' . $cart_key, $values[$cart_key]);
+            }
+        }
+        // Generic addon keys (oz_addon_*) and page mode
+        foreach ($values as $vk => $vv) {
+            if (strpos($vk, self::$addon_prefix) === 0 || $vk === 'oz_page_mode') {
+                $item->add_meta_data('_' . $vk, $vv);
             }
         }
     }
@@ -318,8 +381,20 @@ class OZ_Cart_Manager {
                 $data[$key] = $val;
             }
         }
+        // Restore generic addon keys from order meta
+        $all_meta = $item->get_meta_data();
+        foreach ($all_meta as $meta) {
+            $mk = $meta->key;
+            if (strpos($mk, '_' . self::$addon_prefix) === 0) {
+                // Remove leading underscore to get cart key format
+                $data[substr($mk, 1)] = $meta->value;
+            }
+            if ($mk === '_oz_page_mode') {
+                $data['oz_page_mode'] = $meta->value;
+            }
+        }
 
-        if (empty($data) || !isset($data['oz_line'])) {
+        if (empty($data) || (!isset($data['oz_line']) && !isset($data['oz_page_mode']))) {
             return $name;
         }
 
@@ -342,8 +417,16 @@ class OZ_Cart_Manager {
      * @return array
      */
     public static function hide_raw_meta($item_data, $cart_item) {
-        return array_filter($item_data, function ($d) {
-            return !isset($d['key']) || !in_array($d['key'], self::$meta_keys, true);
+        $prefix = self::$addon_prefix;
+        return array_filter($item_data, function ($d) use ($prefix) {
+            if (!isset($d['key'])) return true;
+            // Hide configured-line meta keys
+            if (in_array($d['key'], self::$meta_keys, true)) return false;
+            // Hide generic addon keys (oz_addon_*)
+            if (strpos($d['key'], $prefix) === 0) return false;
+            // Hide page mode key
+            if ($d['key'] === 'oz_page_mode') return false;
+            return true;
         });
     }
 
@@ -511,6 +594,21 @@ class OZ_Cart_Manager {
         // Toepassing
         if (!empty($data['oz_toepassing'])) {
             $details[] = 'Toepassing: ' . $data['oz_toepassing'];
+        }
+
+        // Generic addon groups — show each selected addon with its group label
+        // Reads oz_addon_{key} from cart data and resolves the group label from config
+        $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+        if ($product_id) {
+            $groups = OZ_Product_Line_Config::get_addon_groups($product_id);
+            if ($groups) {
+                foreach ($groups as $group) {
+                    $cart_key = self::$addon_prefix . $group['key'];
+                    if (!empty($data[$cart_key])) {
+                        $details[] = $group['label'] . ': ' . $data[$cart_key];
+                    }
+                }
+            }
         }
 
         return $details;

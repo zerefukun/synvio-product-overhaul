@@ -79,6 +79,10 @@ if ($has_options) {
     $variants = [];
 }
 
+// Generic addon groups — per-product option groups (replaces YITH WAPO)
+$has_addon_groups = ($page_mode === 'generic_addons');
+$addon_groups = $has_addon_groups ? OZ_Product_Line_Config::get_addon_groups($product_id) : false;
+
 // Format price for display
 $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 ?>
@@ -222,6 +226,43 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <div id="optionsDesktopHome">
       <div id="optionsWidget">
         <div id="optionsSlotDesktop"></div>
+
+        <?php
+        // ─── GENERIC ADDON GROUPS ───
+        // Rendered for generic_addons mode — per-product option groups
+        if ($has_addon_groups && !empty($addon_groups)) :
+          foreach ($addon_groups as $group) :
+            $group_key = $group['key'];
+            // Find default option
+            $default_label = '';
+            foreach ($group['options'] as list($opt_label, $opt_price, $opt_default)) {
+                if ($opt_default) { $default_label = $opt_label; break; }
+            }
+            if (!$default_label && !empty($group['options'])) {
+                $default_label = $group['options'][0][0];
+            }
+        ?>
+            <div class="oz-option-group" data-option="addon_<?php echo esc_attr($group_key); ?>">
+              <div class="oz-option-header">
+                <?php echo esc_html($group['label']); ?>
+              </div>
+              <div class="oz-option-labels">
+                <?php foreach ($group['options'] as list($opt_label, $opt_price, $opt_default)) : ?>
+                  <button class="oz-option-label-btn<?php echo ($opt_label === $default_label) ? ' selected' : ''; ?>"
+                          data-addon-key="<?php echo esc_attr($group_key); ?>"
+                          data-addon-value="<?php echo esc_attr($opt_label); ?>">
+                    <?php echo esc_html($opt_label); ?>
+                    <?php if ($opt_price > 0) : ?>
+                      <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt_price)); ?></span>
+                    <?php endif; ?>
+                  </button>
+                <?php endforeach; ?>
+              </div>
+            </div>
+        <?php
+          endforeach;
+        endif;
+        ?>
 
         <?php
         // Render option sections — only for configured_line mode with options
@@ -474,6 +515,14 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span id="priceColorfreshLabel">Colorfresh</span>
           <span id="priceColorfresh"></span>
         </div>
+        <?php endif; ?>
+        <?php if ($has_addon_groups && !empty($addon_groups)) : ?>
+          <?php foreach ($addon_groups as $group) : ?>
+        <div class="oz-price-line" id="priceAddon_<?php echo esc_attr($group['key']); ?>Line" style="display:none;">
+          <span id="priceAddon_<?php echo esc_attr($group['key']); ?>Label"><?php echo esc_html($group['label']); ?></span>
+          <span id="priceAddon_<?php echo esc_attr($group['key']); ?>"></span>
+        </div>
+          <?php endforeach; ?>
         <?php endif; ?>
         <div class="oz-price-line oz-price-subtotal" id="priceQtyLine" style="display:none;">
           <span id="priceQtyLabel"></span>

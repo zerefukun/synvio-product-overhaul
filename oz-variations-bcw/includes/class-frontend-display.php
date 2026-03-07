@@ -71,8 +71,9 @@ class OZ_Frontend_Display {
     }
 
     /**
-     * Override single-product template for products in a BCW product line.
-     * Non-BCW products keep the theme's default template.
+     * Override single-product template for products with a page mode.
+     * Products without a mode (no BCW line, no manual assignment) keep
+     * the theme's default template.
      *
      * @param string $template  Current template path
      * @return string
@@ -87,9 +88,9 @@ class OZ_Frontend_Display {
             return $template;
         }
 
-        // Only override for detected BCW product lines
-        $line = OZ_Product_Line_Config::detect($product);
-        if (!$line) {
+        // Check page mode — covers both auto-detected lines and manual assignments
+        $mode = OZ_Product_Line_Config::get_page_mode($product);
+        if (!$mode) {
             return $template;
         }
 
@@ -103,10 +104,16 @@ class OZ_Frontend_Display {
 
     /**
      * Enqueue product page CSS and JS.
-     * Only loads on single product pages.
+     * Only loads on products with a page mode (BCW line or manual assignment).
      */
     public static function enqueue_assets() {
         if (!is_product()) {
+            return;
+        }
+
+        // Only enqueue for products using our template
+        $product = wc_get_product(get_the_ID());
+        if (!$product || !OZ_Product_Line_Config::get_page_mode($product)) {
             return;
         }
 
@@ -151,97 +158,101 @@ class OZ_Frontend_Display {
     /**
      * Pass product config data to JS via wp_localize_script.
      *
-     * Payload shape matches WAPO-PARITY-CONFIG.md §16 exactly:
-     * - puOptions: [{layers, label, price, default}] | false
-     * - primerOptions: [{label, price, default}] | false
-     * - colorfresh: [{label, price, default}] | false
-     * - toepassing: ["Vloer", ...] | false
-     * - pakket: [{label, price, default}] | false
-     * - hasRalNcs: bool
-     * - ralNcsOnly: bool
+     * For configured_line mode, payload matches WAPO-PARITY-CONFIG.md §16:
+     * - puOptions, primerOptions, colorfresh, toepassing, pakket, etc.
+     *
+     * For generic modes, a minimal payload is sent (no addon options).
+     * The JS handles both cases gracefully.
      */
     public static function localize_product_data() {
         if (!is_product()) {
             return;
         }
 
-        // Same as redirect: global $product may not be a WC_Product yet
         $product = wc_get_product(get_the_ID());
         if (!$product instanceof WC_Product) {
             return;
         }
 
-        $line_info = OZ_Product_Line_Config::for_product($product);
-        if (!$line_info['line']) {
+        // Determine page mode — bail if product doesn't use our template
+        $page_mode = OZ_Product_Line_Config::get_page_mode($product);
+        if (!$page_mode) {
             return;
         }
 
-        $line_key = $line_info['line'];
-        $config   = $line_info['config'];
+        // Resolve line config (null for generic modes)
+        $line_info = OZ_Product_Line_Config::for_product($product);
+        $line_key  = $line_info['line'];
+        $config    = $line_info['config'] ?: OZ_Product_Line_Config::get_generic_config();
 
-        // Color variant data for swatches
-        $current_color = get_post_meta($product->get_id(), '_oz_color', true);
-        $variants      = OZ_Product_Processor::get_variant_display_data($product->get_id());
-
-        // Current product image for sticky bar
+        // Common data for all modes
         $image_id  = get_post_thumbnail_id($product->get_id());
         $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
-        // Cross-sell product IDs (for upsell system)
-        $cross_sell_ids = $product->get_cross_sell_ids();
-
-        // Build JS data object — matches WAPO-PARITY-CONFIG.md §16
         $js_data = [
+            // Page mode — JS can branch on this
+            'pageMode'     => $page_mode,
+
             // Product identity
             'productId'    => $product->get_id(),
             'productName'  => $product->get_name(),
             'basePrice'    => floatval($product->get_price()),
-            'productLine'  => $line_key,
+            'productLine'  => $line_key ?: null,
 
             // Unit info
             'unit'   => $config['unit'],
             'unitM2' => $config['unitM2'],
 
-            // PU options: [{layers, label, price, default}] or false
-            'puOptions' => OZ_Product_Line_Config::get_pu_options($line_key),
-
-            // Primer options: [{label, price, default}] or false
-            'primerOptions' => OZ_Product_Line_Config::get_primer_options($line_key),
-
-            // Colorfresh: [{label, price, default}] or false (Original only)
-            'colorfresh' => OZ_Product_Line_Config::get_colorfresh_options($line_key),
-
-            // Toepassing: ["Vloer", "Wand", ...] or false (Original only)
-            'toepassing' => OZ_Product_Line_Config::get_toepassing_options($line_key),
-
-            // Pakket: [{label, price, default}] or false
-            'pakket' => OZ_Product_Line_Config::get_pakket_options($line_key),
-
-            // RAL/NCS color mode
-            'hasRalNcs'  => (bool) $config['ral_ncs'],
-            'ralNcsOnly' => (bool) $config['ral_ncs_only'],
-
-            // Option display order
-            'optionOrder' => $config['option_order'],
-
             // Color/variant data
-            'currentColor' => $current_color ? $current_color : '',
-            'variants'     => $variants,
+            'currentColor' => get_post_meta($product->get_id(), '_oz_color', true) ?: '',
+            'variants'     => $line_key ? OZ_Product_Processor::get_variant_display_data($product->get_id()) : [],
             'productImage' => $image_url,
 
-            // Cross-sells for upsell system
-            'crossSells' => $cross_sell_ids,
-
-            // Tool/gereedschap config — only for lines with has_tools
-            'hasTools' => !empty($config['has_tools']),
-            'toolConfig' => !empty($config['has_tools']) ? OZ_Product_Line_Config::get_tool_config() : null,
-
-            // WooCommerce cart endpoints
+            // WooCommerce cart endpoints (always needed)
             'ajaxUrl'     => admin_url('admin-ajax.php'),
             'cartUrl'     => wc_get_cart_url(),
             'checkoutUrl' => wc_get_checkout_url(),
             'nonce'       => wp_create_nonce('oz_bcw_cart'),
         ];
+
+        // Configured line mode — full addon options
+        if ($page_mode === 'configured_line' && $line_key) {
+            $js_data += [
+                'puOptions'     => OZ_Product_Line_Config::get_pu_options($line_key),
+                'primerOptions' => OZ_Product_Line_Config::get_primer_options($line_key),
+                'colorfresh'    => OZ_Product_Line_Config::get_colorfresh_options($line_key),
+                'toepassing'    => OZ_Product_Line_Config::get_toepassing_options($line_key),
+                'pakket'        => OZ_Product_Line_Config::get_pakket_options($line_key),
+                'hasRalNcs'     => (bool) $config['ral_ncs'],
+                'ralNcsOnly'    => (bool) $config['ral_ncs_only'],
+                'optionOrder'   => $config['option_order'],
+                'crossSells'    => $product->get_cross_sell_ids(),
+                'hasTools'      => !empty($config['has_tools']),
+                'toolConfig'    => !empty($config['has_tools']) ? OZ_Product_Line_Config::get_tool_config() : null,
+            ];
+        } else {
+            // Generic modes — no configured-line addon options
+            $js_data += [
+                'puOptions'     => false,
+                'primerOptions' => false,
+                'colorfresh'    => false,
+                'toepassing'    => false,
+                'pakket'        => false,
+                'hasRalNcs'     => false,
+                'ralNcsOnly'    => false,
+                'optionOrder'   => [],
+                'crossSells'    => [],
+                'hasTools'      => false,
+                'toolConfig'    => null,
+            ];
+
+            // Generic addon groups — per-product option groups (replaces YITH WAPO)
+            if ($page_mode === 'generic_addons') {
+                $js_data['addonGroups'] = OZ_Product_Line_Config::get_addon_groups_for_js($product->get_id());
+            } else {
+                $js_data['addonGroups'] = false;
+            }
+        }
 
         wp_localize_script('oz-product-page', 'ozProduct', $js_data);
     }

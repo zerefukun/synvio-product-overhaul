@@ -194,6 +194,22 @@ function renderBreakdown(prices) {
     }
   }
 
+  // Generic addon group price lines — show/hide each group's price line
+  if (P.addonGroups && prices.addonPrices) {
+    P.addonGroups.forEach(function(g) {
+      var lineEl = document.getElementById('priceAddon_' + g.key + 'Line');
+      var priceEl = document.getElementById('priceAddon_' + g.key);
+      if (lineEl && priceEl) {
+        if (prices.addonPrices[g.key] > 0) {
+          show(lineEl);
+          priceEl.textContent = fmt(prices.addonPrices[g.key]);
+        } else {
+          hide(lineEl);
+        }
+      }
+    });
+  }
+
   // Tool detail lines — render each tool/extra as a sub-line in the breakdown.
   // Uses the single priceToolsLine as an anchor point; detail divs are inserted after it.
   renderToolDetails(prices, DOM.priceToolsLine, 'oz-price-line');
@@ -378,10 +394,31 @@ function handleClick(e) {
 
   // Walk up to find the actionable element (button, swatch, etc.)
   var btn = target.closest('[data-pu], [data-primer], [data-colorfresh], [data-toepassing], [data-pakket]');
+  var addonBtn = target.closest('[data-addon-key]');
   var thumb = target.closest('.oz-gallery-thumb');
   var infoBtn = target.closest('.oz-info-btn');
   var qtyBtn = target.closest('[data-qty-delta]');
   var modeBtn = target.closest('.oz-color-mode-btn');
+
+  // Generic addon group button clicks — update addons state
+  if (addonBtn && !btn) {
+    e.preventDefault();
+    var key = addonBtn.getAttribute('data-addon-key');
+    var value = addonBtn.getAttribute('data-addon-value');
+    if (key && value) {
+      S.addons[key] = value;
+      // Highlight selected button within this group
+      var group = addonBtn.closest('.oz-option-group');
+      if (group) {
+        var groupBtns = group.querySelectorAll('[data-addon-key]');
+        for (var gi = 0; gi < groupBtns.length; gi++) {
+          groupBtns[gi].classList.toggle('selected', groupBtns[gi].getAttribute('data-addon-value') === value);
+        }
+      }
+      syncUI();
+    }
+    return;
+  }
 
   // Option button clicks — update state + re-render
   if (btn) {

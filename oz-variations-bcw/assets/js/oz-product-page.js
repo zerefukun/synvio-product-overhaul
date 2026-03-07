@@ -38,7 +38,10 @@
     // Keyed by tool id: { on: bool, qty: int, size: int }
     tools: {},
     // Upsell modal state
-    upsellOpen: false
+    upsellOpen: false,
+    // Generic addon selections — keyed by group key, value is selected label
+    // Populated from P.addonGroups defaults below
+    addons: {}
   } : null;
   if (P && P.hasTools && P.toolConfig && P.toolConfig.extras) {
     P.toolConfig.extras.forEach(function(e) {
@@ -48,6 +51,11 @@
   if (P && P.hasTools && P.toolConfig && P.toolConfig.tools) {
     P.toolConfig.tools.forEach(function(t) {
       S.tools[t.id] = { on: false, qty: 0, size: 0 };
+    });
+  }
+  if (P && P.addonGroups && P.addonGroups.length) {
+    P.addonGroups.forEach(function(g) {
+      S.addons[g.key] = findDefault(g.options, "label");
     });
   }
   function updateState(patch) {
@@ -133,13 +141,32 @@
         }
       }
     }
-    var unitTotal = base + puPrice + primerPrice + colorfreshPrice;
+    var addonPrices = {};
+    var addonTotal = 0;
+    if (config.addonGroups && config.addonGroups.length && state.addons) {
+      config.addonGroups.forEach(function(g) {
+        var selected = state.addons[g.key];
+        var price = 0;
+        if (selected) {
+          for (var i2 = 0; i2 < g.options.length; i2++) {
+            if (g.options[i2].label === selected) {
+              price = parseFloat(g.options[i2].price) || 0;
+              break;
+            }
+          }
+        }
+        addonPrices[g.key] = price;
+        addonTotal += price;
+      });
+    }
+    var unitTotal = base + puPrice + primerPrice + colorfreshPrice + addonTotal;
     var total = unitTotal * state.qty + toolsTotal;
     return {
       base,
       puPrice,
       primerPrice,
       colorfreshPrice,
+      addonPrices,
       toolsTotal,
       toolsLabel,
       toolsDetails,
@@ -210,6 +237,13 @@
     if (state.colorfresh) payload.oz_colorfresh = state.colorfresh;
     if (state.toepassing) payload.oz_toepassing = state.toepassing;
     if (state.pakket) payload.oz_pakket = state.pakket;
+    if (config.addonGroups && config.addonGroups.length && state.addons) {
+      config.addonGroups.forEach(function(g) {
+        if (state.addons[g.key]) {
+          payload["oz_addon_" + g.key] = state.addons[g.key];
+        }
+      });
+    }
     payload.oz_color_mode = state.colorMode;
     if (state.colorMode === "ral_ncs") {
       payload.oz_custom_color = state.customColor;
@@ -653,6 +687,20 @@
           hide(item.line);
         }
       }
+      if (P.addonGroups && prices.addonPrices) {
+        P.addonGroups.forEach(function(g) {
+          var lineEl = document.getElementById("priceAddon_" + g.key + "Line");
+          var priceEl = document.getElementById("priceAddon_" + g.key);
+          if (lineEl && priceEl) {
+            if (prices.addonPrices[g.key] > 0) {
+              show(lineEl);
+              priceEl.textContent = fmt(prices.addonPrices[g.key]);
+            } else {
+              hide(lineEl);
+            }
+          }
+        });
+      }
       renderToolDetails(prices, DOM.priceToolsLine, "oz-price-line");
       var m2PerUnit = parseFloat(P.unitM2) || 0;
       var qtyLabel = isM2 ? S.qty * m2PerUnit + " m\xB2 (" + S.qty + "\xD7)" : S.qty + " stuks";
@@ -761,10 +809,28 @@
     }, handleClick = function(e) {
       var target = e.target;
       var btn = target.closest("[data-pu], [data-primer], [data-colorfresh], [data-toepassing], [data-pakket]");
+      var addonBtn = target.closest("[data-addon-key]");
       var thumb = target.closest(".oz-gallery-thumb");
       var infoBtn = target.closest(".oz-info-btn");
       var qtyBtn = target.closest("[data-qty-delta]");
       var modeBtn = target.closest(".oz-color-mode-btn");
+      if (addonBtn && !btn) {
+        e.preventDefault();
+        var key = addonBtn.getAttribute("data-addon-key");
+        var value = addonBtn.getAttribute("data-addon-value");
+        if (key && value) {
+          S.addons[key] = value;
+          var group = addonBtn.closest(".oz-option-group");
+          if (group) {
+            var groupBtns = group.querySelectorAll("[data-addon-key]");
+            for (var gi = 0; gi < groupBtns.length; gi++) {
+              groupBtns[gi].classList.toggle("selected", groupBtns[gi].getAttribute("data-addon-value") === value);
+            }
+          }
+          syncUI();
+        }
+        return;
+      }
       if (btn) {
         e.preventDefault();
         if (btn.hasAttribute("data-pu")) {

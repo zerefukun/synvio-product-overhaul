@@ -83,6 +83,10 @@ export var S = P ? {
 
   // Upsell modal state
   upsellOpen: false,
+
+  // Generic addon selections — keyed by group key, value is selected label
+  // Populated from P.addonGroups defaults below
+  addons: {},
 } : null;
 
 // Initialize extras state from tool config
@@ -92,6 +96,13 @@ if (P && P.hasTools && P.toolConfig && P.toolConfig.extras) {
 // Initialize individual tools state from tool config
 if (P && P.hasTools && P.toolConfig && P.toolConfig.tools) {
   P.toolConfig.tools.forEach(function(t) { S.tools[t.id] = { on: false, qty: 0, size: 0 }; });
+}
+
+// Initialize generic addon group state from config defaults
+if (P && P.addonGroups && P.addonGroups.length) {
+  P.addonGroups.forEach(function(g) {
+    S.addons[g.key] = findDefault(g.options, 'label');
+  });
 }
 
 
@@ -225,8 +236,28 @@ export function calculatePrices(config, state) {
     }
   }
 
+  // Generic addon group prices — keyed by group key for price breakdown display
+  var addonPrices = {};
+  var addonTotal = 0;
+  if (config.addonGroups && config.addonGroups.length && state.addons) {
+    config.addonGroups.forEach(function(g) {
+      var selected = state.addons[g.key];
+      var price = 0;
+      if (selected) {
+        for (var i = 0; i < g.options.length; i++) {
+          if (g.options[i].label === selected) {
+            price = parseFloat(g.options[i].price) || 0;
+            break;
+          }
+        }
+      }
+      addonPrices[g.key] = price;
+      addonTotal += price;
+    });
+  }
+
   // Unit total (per-unit price including all addons)
-  var unitTotal = base + puPrice + primerPrice + colorfreshPrice;
+  var unitTotal = base + puPrice + primerPrice + colorfreshPrice + addonTotal;
 
   // Grand total (unit * quantity) + tools (not per-unit)
   var total = (unitTotal * state.qty) + toolsTotal;
@@ -236,6 +267,7 @@ export function calculatePrices(config, state) {
     puPrice: puPrice,
     primerPrice: primerPrice,
     colorfreshPrice: colorfreshPrice,
+    addonPrices: addonPrices,
     toolsTotal: toolsTotal,
     toolsLabel: toolsLabel,
     toolsDetails: toolsDetails,
@@ -358,6 +390,15 @@ export function buildCartPayload(config, state) {
   if (state.colorfresh)         payload.oz_colorfresh = state.colorfresh;
   if (state.toepassing)         payload.oz_toepassing = state.toepassing;
   if (state.pakket)             payload.oz_pakket = state.pakket;
+
+  // Generic addon selections — oz_addon_{key} = selected label
+  if (config.addonGroups && config.addonGroups.length && state.addons) {
+    config.addonGroups.forEach(function(g) {
+      if (state.addons[g.key]) {
+        payload['oz_addon_' + g.key] = state.addons[g.key];
+      }
+    });
+  }
 
   // Color mode
   payload.oz_color_mode = state.colorMode;

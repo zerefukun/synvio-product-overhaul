@@ -123,12 +123,12 @@ class OZ_BCW_Admin {
 
     /**
      * Register the BCW product metabox on the WC product editor.
-     * Shows USPs and Specs fields that override the product line defaults.
+     * Shows page mode selector, USPs, and Specs fields.
      */
     public static function add_product_metabox() {
         add_meta_box(
             'oz-bcw-product-meta',
-            'BCW: USPs & Specificaties',
+            'OZ Productpagina',
             [__CLASS__, 'render_product_metabox'],
             'product',
             'normal',
@@ -175,10 +175,47 @@ class OZ_BCW_Admin {
             .oz-meta-default { color: #999; font-size: 12px; }
         </style>
 
-        <p>
-            Productlijn: <strong><?php echo esc_html($line_key ?: 'Niet herkend'); ?></strong>
+        <?php
+        // Page mode: auto-detected lines show as "configured_line", others can be assigned
+        $current_mode = get_post_meta($product_id, '_oz_page_mode', true);
+        $effective_mode = $line_key ? 'configured_line' : ($current_mode ?: '');
+        ?>
+
+        <!-- Page mode selector — determines which template this product uses -->
+        <div class="oz-meta-section">
+            <h4>Paginamodus</h4>
             <?php if ($line_key) : ?>
-                — Standaard waarden worden uit de productlijn geladen. Vul hieronder in om per product te overschrijven.
+                <p>
+                    <strong style="color:#135350;">&#10003; Productlijn: <?php echo esc_html($line_key); ?></strong>
+                    — Automatisch herkend. Template met volledige opties actief.
+                </p>
+                <input type="hidden" name="oz_page_mode" value="">
+            <?php else : ?>
+                <p class="description">
+                    Dit product is niet automatisch herkend als BCW productlijn.
+                    Kies een modus om onze template te activeren.
+                </p>
+                <select name="oz_page_mode" style="width:300px;">
+                    <option value="" <?php selected($current_mode, ''); ?>>
+                        Niet actief (standaard thema)
+                    </option>
+                    <option value="generic_simple" <?php selected($current_mode, 'generic_simple'); ?>>
+                        Generiek — eenvoudig (geen product-opties)
+                    </option>
+                    <option value="generic_addons" <?php selected($current_mode, 'generic_addons'); ?>>
+                        Generiek — met add-ons (toekomstig)
+                    </option>
+                </select>
+            <?php endif; ?>
+        </div>
+
+        <hr style="margin: 16px 0;">
+
+        <p>
+            <?php if ($line_key) : ?>
+                Standaard waarden worden uit de productlijn geladen. Vul hieronder in om per product te overschrijven.
+            <?php else : ?>
+                Vul hieronder USPs en specificaties in voor dit product. Als deze leeg zijn worden de WooCommerce beschrijving en korte beschrijving gebruikt.
             <?php endif; ?>
         </p>
 
@@ -257,6 +294,16 @@ class OZ_BCW_Admin {
         if (!isset($_POST['oz_bcw_meta_nonce']) ||
             !wp_verify_nonce($_POST['oz_bcw_meta_nonce'], 'oz_bcw_product_meta')) {
             return;
+        }
+
+        // Save page mode — only for non-line products
+        if (isset($_POST['oz_page_mode'])) {
+            $mode = sanitize_text_field($_POST['oz_page_mode']);
+            if (in_array($mode, ['generic_simple', 'generic_addons'], true)) {
+                update_post_meta($product_id, '_oz_page_mode', $mode);
+            } else {
+                delete_post_meta($product_id, '_oz_page_mode');
+            }
         }
 
         // Save USPs — only if at least one is filled
