@@ -11,7 +11,7 @@
 
 .oz-product-page .oz-cart-row,
 .oz-bottom-sheet .oz-cart-row {
-  display: inline-flex !important;
+  display: flex !important;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
@@ -237,6 +237,89 @@
 }
 
 
+/* ═══ DELIVERY TIMELINE ══════════════════════════════════════ */
+
+.oz-delivery-timeline {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding: 20px 18px;
+  background: var(--oz-bg-warm);
+  border-radius: 12px;
+  border: 1px solid var(--oz-border-light);
+}
+
+.oz-delivery-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  position: relative;
+}
+
+/* Connecting line between steps — on each step except last */
+.oz-delivery-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 2px;
+  background: var(--oz-border);
+  transition: background 0.3s;
+}
+
+/* Completed step connector turns teal */
+.oz-delivery-step.completed:not(:last-child)::after {
+  background: var(--oz-accent);
+}
+
+.oz-step-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--oz-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.3s var(--oz-ease), color 0.3s var(--oz-ease);
+}
+
+.oz-step-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+/* Completed step — teal icon with glow */
+.oz-delivery-step.completed .oz-step-icon {
+  background: var(--oz-accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(19, 83, 80, 0.3);
+}
+
+.oz-delivery-step.completed .oz-step-icon svg {
+  stroke: white;
+}
+
+.oz-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  letter-spacing: 0.2px;
+}
+
+.oz-step-date {
+  font-size: 11px;
+  color: var(--oz-text-muted);
+  margin-top: 3px;
+}
+
+
 /* Cart error message — styled via CSS class, not inline JS */
 .oz-cart-error {
   color: var(--oz-error);
@@ -247,9 +330,14 @@
 
 /* ═══ PAYMENT METHODS ═════════════════════════════════════════ */
 
+/* Tight coupling with add-to-cart button — feels like one unit */
 .oz-payment-section {
-  margin-top: 16px;
-  text-align: center;
+  margin-top: -12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .oz-payment-label {
@@ -257,14 +345,14 @@
   color: var(--oz-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  white-space: nowrap;
 }
 
 .oz-payment-methods {
   display: flex;
-  justify-content: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .oz-payment-icon {
@@ -288,4 +376,11 @@
 .oz-payment-icon svg {
   max-width: 100%;
   max-height: 100%;
+  display: block;
+}
+
+/* Mollie gateway icons — override their default class sizing */
+.oz-payment-icon .mollie-gateway-icon {
+  width: auto;
+  height: 18px;
 }

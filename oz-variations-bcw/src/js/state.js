@@ -250,17 +250,18 @@ export function calculatePrices(config, state) {
  * @return {boolean}
  */
 export function validateRal(code) {
-  return /^\d{4}$/.test(code.trim());
+  // Accepts "4070" or "RAL 4070"
+  return /^(RAL\s?)?\d{4}$/i.test(code.trim());
 }
 
 /**
- * Validate an NCS color code (e.g. "S 1050-Y90R").
- * Loose match — allows common NCS formats.
+ * Validate an NCS color code (e.g. "S 1050-Y90R" or "NCS S 1050-Y90R").
+ * Loose match — allows common NCS formats with or without NCS prefix.
  * @param {string} code
  * @return {boolean}
  */
 export function validateNcs(code) {
-  return /^S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+  return /^(NCS\s+)?S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
 }
 
 /**

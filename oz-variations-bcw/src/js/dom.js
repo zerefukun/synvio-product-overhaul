@@ -33,7 +33,6 @@ export function cacheDom() {
   DOM.stickyPrice    = document.getElementById('stickyPrice');
   DOM.sheetOverlay   = document.getElementById('sheetOverlay');
   DOM.bottomSheet    = document.getElementById('bottomSheet');
-  DOM.sheetTotal     = document.getElementById('sheetTotal');
   DOM.sheetCtaBtn    = document.getElementById('sheetCtaBtn');
   DOM.optionsWidget  = document.getElementById('optionsWidget');
   DOM.slotDesktop    = document.getElementById('optionsSlotDesktop');
@@ -56,18 +55,6 @@ export function cacheDom() {
   DOM.priceToolsLine     = document.getElementById('priceToolsLine');
   DOM.priceToolsLabel    = document.getElementById('priceToolsLabel');
   DOM.priceTools         = document.getElementById('priceTools');
-  // Sheet price breakdown elements
-  DOM.sheetPriceBase         = document.getElementById('sheetPriceBase');
-  DOM.sheetPricePuLine       = document.getElementById('sheetPricePuLine');
-  DOM.sheetPricePu           = document.getElementById('sheetPricePu');
-  DOM.sheetPricePrimerLine   = document.getElementById('sheetPricePrimerLine');
-  DOM.sheetPricePrimer       = document.getElementById('sheetPricePrimer');
-  DOM.sheetPriceToolsLine    = document.getElementById('sheetPriceToolsLine');
-  DOM.sheetPriceToolsLabel   = document.getElementById('sheetPriceToolsLabel');
-  DOM.sheetPriceTools        = document.getElementById('sheetPriceTools');
-  DOM.sheetPriceQtyLine      = document.getElementById('sheetPriceQtyLine');
-  DOM.sheetPriceQtyLabel     = document.getElementById('sheetPriceQtyLabel');
-  DOM.sheetPriceQtyNote      = document.getElementById('sheetPriceQtyNote');
   DOM.upsellOverlay      = document.getElementById('upsellOverlay');
   DOM.upsellAddBtn       = document.getElementById('upsellAddBtn');
   DOM.upsellSkipBtn      = document.getElementById('upsellSkipBtn');

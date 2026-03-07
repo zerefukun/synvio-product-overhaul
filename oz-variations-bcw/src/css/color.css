@@ -164,6 +164,8 @@
 .oz-custom-color-hint.success,
 .oz-custom-color-hint.ok {
   color: var(--oz-accent);
+  /* Reset any theme background on .success class (Flatsome adds green bg) */
+  background: none;
 }
 
 /* Animated custom color input (smooth reveal instead of display toggle) */

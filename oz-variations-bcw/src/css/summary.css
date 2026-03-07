@@ -60,42 +60,41 @@
   margin-left: 4px;
 }
 
-/* Short description — vertical checkmark list */
+/* Short description — horizontal pill chips with checkmark icons */
 .oz-short-desc {
   margin-bottom: 28px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--oz-text-body);
 }
 
 .oz-short-desc ul {
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  gap: 8px;
   padding: 0;
   margin: 0;
 }
 
 .oz-short-desc li {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--oz-accent-light);
+  border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--oz-text-body);
+  color: var(--oz-accent);
   margin-bottom: 0;
   position: static;
   line-height: 1.5;
 }
 
-/* Checkmark icon — teal SVG or fallback character */
+/* Checkmark icon inside each pill */
 .oz-short-desc li .oz-check-icon {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: var(--oz-accent);
-  margin-top: 1px;
 }
 
 /* Override any ::before from theme — hide when SVG icon is present */

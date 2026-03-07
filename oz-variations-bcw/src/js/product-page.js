@@ -173,19 +173,12 @@ function renderBreakdown(prices) {
   var perUnit = (S.qty > 1 && isM2) ? ' (per m²)' : '';
   if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
   if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
-  // Sheet base price
-  if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
 
   // Each line: row element, value to check, price element, optional label element + text
-  // Desktop AND sheet lines — sheet mirrors desktop but is a separate DOM tree
   var lines = [
-    // Desktop lines
     { line: DOM.pricePuLine,            value: prices.puPrice,         el: DOM.pricePu },
     { line: DOM.pricePrimerLine,        value: prices.primerPrice,     el: DOM.pricePrimer,        labelEl: DOM.pricePrimerLabel,        label: 'Primer: ' + S.primer },
     { line: DOM.priceColorfreshLine,    value: prices.colorfreshPrice, el: DOM.priceColorfresh },
-    // Sheet lines (mirror desktop)
-    { line: DOM.sheetPricePuLine,       value: prices.puPrice,         el: DOM.sheetPricePu },
-    { line: DOM.sheetPricePrimerLine,   value: prices.primerPrice,     el: DOM.sheetPricePrimer },
   ];
 
   // Generic render: show line if value > 0, update price + optional label
@@ -204,7 +197,6 @@ function renderBreakdown(prices) {
   // Tool detail lines — render each tool/extra as a sub-line in the breakdown.
   // Uses the single priceToolsLine as an anchor point; detail divs are inserted after it.
   renderToolDetails(prices, DOM.priceToolsLine, 'oz-price-line');
-  renderToolDetails(prices, DOM.sheetPriceToolsLine, 'oz-sheet-price-line');
 
   // Quantity / m² subtotal line — shows when qty > 1
   // m²-based: "20 m² (4×)" → subtotal   |   non-m²: "3 stuks" → subtotal
@@ -225,17 +217,6 @@ function renderBreakdown(prices) {
       hide(DOM.priceQtyLine);
     }
   }
-  // Sheet — same logic, different DOM elements
-  if (DOM.sheetPriceQtyLine) {
-    if (S.qty > 1) {
-      show(DOM.sheetPriceQtyLine);
-      if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = qtyLabel;
-      if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = qtySubtotal;
-    } else {
-      hide(DOM.sheetPriceQtyLine);
-    }
-  }
-
   // Total
   if (DOM.priceTotal) DOM.priceTotal.textContent = fmt(prices.total);
 }
@@ -310,10 +291,10 @@ function renderColorMode() {
     customWrap.classList.toggle('visible', S.colorMode === 'ral_ncs');
   }
 
-  // Show/hide swatches (hide when in ral_ncs mode)
+  // Show/hide swatches with smooth animation (CSS class toggle, not display:none)
   var swatches = document.querySelector('.oz-color-swatches');
   if (swatches) {
-    swatches.style.display = S.colorMode === 'ral_ncs' ? 'none' : '';
+    swatches.classList.toggle('hidden', S.colorMode === 'ral_ncs');
   }
 }
 
@@ -575,13 +556,50 @@ function toggleReadMore() {
 }
 
 /**
+ * Auto-format a raw color input string into proper RAL or NCS notation.
+ * - 4 digits (e.g. "4070") → "RAL 4070"
+ * - NCS-like pattern (e.g. "1050y90r") → "NCS S 1050-Y90R"
+ * - Already prefixed values are left as-is.
+ *
+ * @param {string} raw  User input (trimmed)
+ * @return {string}  Formatted code, or original if no pattern matched
+ */
+function autoFormatColor(raw) {
+  // Already has RAL/NCS prefix — leave it
+  if (/^RAL\s/i.test(raw)) return 'RAL ' + raw.replace(/^RAL\s*/i, '').trim();
+  if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, 'NCS ');
+
+  // Pure 4-digit number → RAL code
+  if (/^\d{4}$/.test(raw)) return 'RAL ' + raw;
+
+  // NCS-like without prefix: digits + letter + digits + letter (e.g. "1050y90r" or "1050-y90r")
+  var ncsMatch = raw.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+  if (ncsMatch) return 'NCS S ' + ncsMatch[1] + '-' + ncsMatch[2].toUpperCase();
+
+  // NCS with S prefix but no NCS (e.g. "s1050-y90r")
+  var ncsWithS = raw.match(/^[Ss]\s?(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+  if (ncsWithS) return 'NCS S ' + ncsWithS[1] + '-' + ncsWithS[2].toUpperCase();
+
+  return raw;
+}
+
+/**
  * Handle custom color input (RAL/NCS field).
- * Validates on every keystroke.
+ * Auto-formats on blur and validates on every keystroke.
  */
 function handleCustomColorInput(e) {
   var input = e.target;
   var value = input.value.trim();
   var hint = document.getElementById('customColorHint');
+
+  // Auto-format on blur — applies RAL/NCS prefix formatting
+  if (e.type === 'blur' && value) {
+    var formatted = autoFormatColor(value);
+    if (formatted !== value) {
+      input.value = formatted;
+      value = formatted;
+    }
+  }
 
   updateState({ customColor: value });
 
@@ -593,9 +611,10 @@ function handleCustomColorInput(e) {
     return;
   }
 
-  // Check if it looks like RAL or NCS
-  var isRal = validateRal(value);
-  var isNcs = validateNcs(value);
+  // Check if it looks like RAL or NCS (also check the auto-formatted version)
+  var checkValue = autoFormatColor(value);
+  var isRal = validateRal(checkValue);
+  var isNcs = validateNcs(checkValue);
 
   if (isRal || isNcs) {
     input.classList.remove('invalid');
@@ -899,18 +918,18 @@ function removeCartMsg() {
  * Shows when the add-to-cart button scrolls out of view.
  */
 function setupStickyBar() {
-  if (!DOM.stickyBar || !DOM.addToCartBtn) return;
+  if (!DOM.stickyBar || !DOM.optionsWidget) return;
 
   // Only observe on mobile (< 900px)
   if (window.innerWidth >= 900) return;
 
   var observer = new IntersectionObserver(function (entries) {
-    // Show sticky bar when add-to-cart button is NOT visible
+    // Show sticky bar when optionsWidget is NOT visible
     var isVisible = entries[0].isIntersecting;
     DOM.stickyBar.classList.toggle('visible', !isVisible);
   }, { threshold: 0 });
 
-  observer.observe(DOM.addToCartBtn);
+  observer.observe(DOM.optionsWidget);
 }
 
 
@@ -941,7 +960,14 @@ function init() {
   }
 
   // Custom color input (delegated since it's built dynamically)
+  // 'input' fires on every keystroke for live validation
+  // 'blur' fires when user leaves the field — applies auto-formatting (RAL/NCS prefix)
   document.addEventListener('input', function (e) {
+    if (e.target.id === 'customColorInput') {
+      handleCustomColorInput(e);
+    }
+  });
+  document.addEventListener('focusout', function (e) {
     if (e.target.id === 'customColorInput') {
       handleCustomColorInput(e);
     }

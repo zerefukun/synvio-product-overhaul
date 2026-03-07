@@ -148,10 +148,10 @@
     };
   }
   function validateRal(code) {
-    return /^\d{4}$/.test(code.trim());
+    return /^(RAL\s?)?\d{4}$/i.test(code.trim());
   }
   function validateNcs(code) {
-    return /^S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+    return /^(NCS\s+)?S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
   }
   function hasAnyTool(toolMode, tools, toolConfig) {
     if (!toolConfig) return false;
@@ -260,7 +260,6 @@
     DOM.stickyPrice = document.getElementById("stickyPrice");
     DOM.sheetOverlay = document.getElementById("sheetOverlay");
     DOM.bottomSheet = document.getElementById("bottomSheet");
-    DOM.sheetTotal = document.getElementById("sheetTotal");
     DOM.sheetCtaBtn = document.getElementById("sheetCtaBtn");
     DOM.optionsWidget = document.getElementById("optionsWidget");
     DOM.slotDesktop = document.getElementById("optionsSlotDesktop");
@@ -281,17 +280,6 @@
     DOM.priceToolsLine = document.getElementById("priceToolsLine");
     DOM.priceToolsLabel = document.getElementById("priceToolsLabel");
     DOM.priceTools = document.getElementById("priceTools");
-    DOM.sheetPriceBase = document.getElementById("sheetPriceBase");
-    DOM.sheetPricePuLine = document.getElementById("sheetPricePuLine");
-    DOM.sheetPricePu = document.getElementById("sheetPricePu");
-    DOM.sheetPricePrimerLine = document.getElementById("sheetPricePrimerLine");
-    DOM.sheetPricePrimer = document.getElementById("sheetPricePrimer");
-    DOM.sheetPriceToolsLine = document.getElementById("sheetPriceToolsLine");
-    DOM.sheetPriceToolsLabel = document.getElementById("sheetPriceToolsLabel");
-    DOM.sheetPriceTools = document.getElementById("sheetPriceTools");
-    DOM.sheetPriceQtyLine = document.getElementById("sheetPriceQtyLine");
-    DOM.sheetPriceQtyLabel = document.getElementById("sheetPriceQtyLabel");
-    DOM.sheetPriceQtyNote = document.getElementById("sheetPriceQtyNote");
     DOM.upsellOverlay = document.getElementById("upsellOverlay");
     DOM.upsellAddBtn = document.getElementById("upsellAddBtn");
     DOM.upsellSkipBtn = document.getElementById("upsellSkipBtn");
@@ -649,15 +637,10 @@
       var perUnit = S.qty > 1 && isM2 ? " (per m\xB2)" : "";
       if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
-      if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
       var lines = [
-        // Desktop lines
         { line: DOM.pricePuLine, value: prices.puPrice, el: DOM.pricePu },
         { line: DOM.pricePrimerLine, value: prices.primerPrice, el: DOM.pricePrimer, labelEl: DOM.pricePrimerLabel, label: "Primer: " + S.primer },
-        { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh },
-        // Sheet lines (mirror desktop)
-        { line: DOM.sheetPricePuLine, value: prices.puPrice, el: DOM.sheetPricePu },
-        { line: DOM.sheetPricePrimerLine, value: prices.primerPrice, el: DOM.sheetPricePrimer }
+        { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh }
       ];
       for (var i = 0; i < lines.length; i++) {
         var item = lines[i];
@@ -671,7 +654,6 @@
         }
       }
       renderToolDetails(prices, DOM.priceToolsLine, "oz-price-line");
-      renderToolDetails(prices, DOM.sheetPriceToolsLine, "oz-sheet-price-line");
       var m2PerUnit = parseFloat(P.unitM2) || 0;
       var qtyLabel = isM2 ? S.qty * m2PerUnit + " m\xB2 (" + S.qty + "\xD7)" : S.qty + " stuks";
       var qtySubtotal = fmt(prices.unitTotal * S.qty);
@@ -682,15 +664,6 @@
           DOM.priceQty.textContent = qtySubtotal;
         } else {
           hide(DOM.priceQtyLine);
-        }
-      }
-      if (DOM.sheetPriceQtyLine) {
-        if (S.qty > 1) {
-          show(DOM.sheetPriceQtyLine);
-          if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = qtyLabel;
-          if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = qtySubtotal;
-        } else {
-          hide(DOM.sheetPriceQtyLine);
         }
       }
       if (DOM.priceTotal) DOM.priceTotal.textContent = fmt(prices.total);
@@ -740,7 +713,7 @@
       }
       var swatches = document.querySelector(".oz-color-swatches");
       if (swatches) {
-        swatches.style.display = S.colorMode === "ral_ncs" ? "none" : "";
+        swatches.classList.toggle("hidden", S.colorMode === "ral_ncs");
       }
     }, buildColorModeUI = function() {
       var html = "";
@@ -904,10 +877,26 @@
       if (!DOM.descContent || !DOM.readMoreBtn) return;
       var expanded = DOM.descContent.classList.toggle("expanded");
       DOM.readMoreBtn.textContent = expanded ? "Lees minder" : "Lees meer";
+    }, autoFormatColor = function(raw) {
+      if (/^RAL\s/i.test(raw)) return "RAL " + raw.replace(/^RAL\s*/i, "").trim();
+      if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, "NCS ");
+      if (/^\d{4}$/.test(raw)) return "RAL " + raw;
+      var ncsMatch = raw.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+      if (ncsMatch) return "NCS S " + ncsMatch[1] + "-" + ncsMatch[2].toUpperCase();
+      var ncsWithS = raw.match(/^[Ss]\s?(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+      if (ncsWithS) return "NCS S " + ncsWithS[1] + "-" + ncsWithS[2].toUpperCase();
+      return raw;
     }, handleCustomColorInput = function(e) {
       var input = e.target;
       var value = input.value.trim();
       var hint = document.getElementById("customColorHint");
+      if (e.type === "blur" && value) {
+        var formatted = autoFormatColor(value);
+        if (formatted !== value) {
+          input.value = formatted;
+          value = formatted;
+        }
+      }
       updateState({ customColor: value });
       if (!value) {
         input.classList.remove("valid", "invalid");
@@ -918,8 +907,9 @@
         syncUI();
         return;
       }
-      var isRal = validateRal(value);
-      var isNcs = validateNcs(value);
+      var checkValue = autoFormatColor(value);
+      var isRal = validateRal(checkValue);
+      var isNcs = validateNcs(checkValue);
       if (isRal || isNcs) {
         input.classList.remove("invalid");
         input.classList.add("valid");
@@ -1083,13 +1073,13 @@
       var existing = document.querySelector(".oz-cart-msg");
       if (existing) existing.remove();
     }, setupStickyBar = function() {
-      if (!DOM.stickyBar || !DOM.addToCartBtn) return;
+      if (!DOM.stickyBar || !DOM.optionsWidget) return;
       if (window.innerWidth >= 900) return;
       var observer = new IntersectionObserver(function(entries) {
         var isVisible = entries[0].isIntersecting;
         DOM.stickyBar.classList.toggle("visible", !isVisible);
       }, { threshold: 0 });
-      observer.observe(DOM.addToCartBtn);
+      observer.observe(DOM.optionsWidget);
     }, init = function() {
       cacheDom();
       setToolSyncCallback(syncUI);
@@ -1102,6 +1092,11 @@
         DOM.qtyInput.addEventListener("input", handleQtyInput);
       }
       document.addEventListener("input", function(e) {
+        if (e.target.id === "customColorInput") {
+          handleCustomColorInput(e);
+        }
+      });
+      document.addEventListener("focusout", function(e) {
         if (e.target.id === "customColorInput") {
           handleCustomColorInput(e);
         }

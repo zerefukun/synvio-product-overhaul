@@ -369,26 +369,59 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
         <?php endif; ?>
 
-        <!-- Quantity + Add to Cart -->
-        <div class="oz-option-group">
-          <div class="oz-option-header">
-            Aantal
-            <?php if ($config['unitM2'] > 0) : ?>
-              <span class="oz-m2-note" id="optionsM2Note">per <?php echo esc_html($config['unit']); ?></span>
-            <?php endif; ?>
-          </div>
-          <div class="oz-cart-row">
-            <div class="oz-quantity-wrapper">
-              <button class="oz-qty-btn" data-qty-delta="-1">−</button>
-              <input type="number" class="oz-qty-input" id="qtyInput" value="1" min="1" max="99">
-              <button class="oz-qty-btn" data-qty-delta="1">+</button>
-            </div>
-            <button class="oz-add-to-cart" id="addToCartBtn">In winkelmand</button>
-          </div>
-        </div>
+      <!-- Delivery Timeline — dynamic dates based on order time -->
+      <?php
+      // Calculate shipping & delivery dates
+      // Before 14:00 = shipped same day, after 14:00 = shipped next day
+      // Carrier (PostNL/DHL via Sendcloud) delivers in 1-2 business days
+      $oz_now = new DateTime('now', new DateTimeZone('Europe/Amsterdam'));
+      $oz_hour = (int) $oz_now->format('H');
 
-      </div><!-- #optionsWidget -->
-      </div><!-- #optionsDesktopHome -->
+      // Ship date: before 14:00 = today, after 14:00 = tomorrow
+      $oz_ship = clone $oz_now;
+      if ($oz_hour >= 14) {
+          $oz_ship->modify('+1 day');
+      }
+
+      // Delivery: 1-2 business days after ship date (carriers don't deliver on weekends)
+      $oz_del_from = clone $oz_ship;
+      $oz_del_from->modify('+1 weekday');
+      $oz_del_to = clone $oz_ship;
+      $oz_del_to->modify('+2 weekday');
+
+      // Dutch day/month formatting
+      $oz_d = ['', 'ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+      $oz_m = ['', 'jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+      $oz_dfmt = function($d) use ($oz_d, $oz_m) {
+          return $oz_d[(int)$d->format('N')] . ' ' . (int)$d->format('j') . ' ' . $oz_m[(int)$d->format('n')];
+      };
+
+      $oz_ship_txt = ($oz_ship->format('Y-m-d') === $oz_now->format('Y-m-d')) ? 'Vandaag' : $oz_dfmt($oz_ship);
+      $oz_del_txt = $oz_dfmt($oz_del_from) . ' - ' . $oz_dfmt($oz_del_to);
+      ?>
+      <div class="oz-delivery-timeline">
+        <div class="oz-delivery-step completed">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          </div>
+          <span class="oz-step-label">Besteld</span>
+          <span class="oz-step-date">Vandaag</span>
+        </div>
+        <div class="oz-delivery-step">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 3v5h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+          </div>
+          <span class="oz-step-label">Verzonden</span>
+          <span class="oz-step-date"><?php echo esc_html($oz_ship_txt); ?></span>
+        </div>
+        <div class="oz-delivery-step">
+          <div class="oz-step-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.27 6.96L12 12.01l8.73-5.05"></path><path d="M12 22.08V12"></path></svg>
+          </div>
+          <span class="oz-step-label">Bezorgd</span>
+          <span class="oz-step-date"><?php echo esc_html($oz_del_txt); ?></span>
+        </div>
+      </div>
 
       <!-- Price Breakdown -->
       <div class="oz-price-summary" id="priceSummary">
@@ -420,6 +453,64 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span>Totaal</span>
           <span id="priceTotal"><?php echo esc_html($fmt_price($price)); ?></span>
         </div>
+
+
+        <!-- Quantity + Add to Cart -->
+        <div class="oz-option-group">
+          <div class="oz-option-header">
+            Aantal
+            <?php if ($config['unitM2'] > 0) : ?>
+              <span class="oz-m2-note" id="optionsM2Note">per <?php echo esc_html($config['unit']); ?></span>
+            <?php endif; ?>
+          </div>
+          <div class="oz-cart-row">
+            <div class="oz-quantity-wrapper">
+              <button class="oz-qty-btn" data-qty-delta="-1">−</button>
+              <input type="number" class="oz-qty-input" id="qtyInput" value="1" min="1" max="99">
+              <button class="oz-qty-btn" data-qty-delta="1">+</button>
+            </div>
+            <button class="oz-add-to-cart" id="addToCartBtn">In winkelmand</button>
+          </div>
+
+      <!-- Payment method icons — dynamically from WooCommerce active gateways -->
+      <?php
+      // Only show the most relevant payment methods (not all 18 Mollie gateways)
+      $oz_show_gateways = [
+          'mollie_wc_gateway_ideal',
+          'mollie_wc_gateway_creditcard',
+          'mollie_wc_gateway_paypal',
+          
+          'mollie_wc_gateway_applepay',
+          'mollie_wc_gateway_bancontact',
+          'mollie_wc_gateway_klarnapaylater',
+      ];
+      $oz_gateways = WC()->payment_gateways()->get_available_payment_gateways();
+      $oz_payment_icons = [];
+      foreach ($oz_show_gateways as $gw_id) {
+          if (isset($oz_gateways[$gw_id])) {
+              $icon_html = $oz_gateways[$gw_id]->get_icon();
+              if ($icon_html) {
+                  $oz_payment_icons[] = $icon_html;
+              }
+          }
+      }
+      ?>
+      <?php if (!empty($oz_payment_icons)) : ?>
+        <div class="oz-payment-section">
+          <div class="oz-payment-label">Veilig betalen</div>
+          <div class="oz-payment-methods">
+            <?php foreach ($oz_payment_icons as $icon) : ?>
+              <div class="oz-payment-icon"><?php echo $icon; ?></div>
+            <?php endforeach; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+
+        </div>
+
+      </div><!-- #optionsWidget -->
+      </div><!-- #optionsDesktopHome -->
+
       </div>
 
       <!-- Trust Badges -->
@@ -441,6 +532,8 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                     Vragen? Wij helpen je!
                 </div>
       </div>
+
+
 
     </div><!-- .oz-product-summary -->
 
@@ -481,34 +574,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
   <div class="oz-sheet-title">Kies je opties</div>
   <div id="optionsSlotSheet"></div>
 
-  <div class="oz-sheet-footer">
-    <div class="oz-sheet-breakdown">
-      <div class="oz-sheet-price-line">
-        <span><?php echo esc_html($product_name); ?> <span id="sheetColorName"><?php echo esc_html($current_color); ?></span></span>
-        <span id="sheetPriceBase"><?php echo esc_html($fmt_price($price)); ?></span>
-      </div>
-      <div class="oz-sheet-price-line" id="sheetPricePuLine" style="display:none">
-        <span id="sheetPricePuLabel">PU Toplaag</span>
-        <span id="sheetPricePu"></span>
-      </div>
-      <div class="oz-sheet-price-line" id="sheetPricePrimerLine" style="display:none">
-        <span>Primer</span>
-        <span id="sheetPricePrimer"></span>
-      </div>
-      <div class="oz-sheet-price-line oz-price-subtotal" id="sheetPriceQtyLine" style="display:none">
-        <span id="sheetPriceQtyLabel"></span>
-        <span class="oz-sheet-m2-small" id="sheetPriceQtyNote"></span>
-      </div>
-      <div class="oz-sheet-price-line" id="sheetPriceToolsLine" style="display:none">
-        <span id="sheetPriceToolsLabel">Gereedschapsset</span>
-        <span id="sheetPriceTools"></span>
-      </div>
-    </div>
-    <div class="oz-sheet-total">
-      <span class="oz-sheet-total-label">Totaal</span>
-      <span class="oz-sheet-total-price" id="sheetTotal"><?php echo esc_html($fmt_price($price)); ?></span>
-    </div>
-  </div>
 </div>
 
 
