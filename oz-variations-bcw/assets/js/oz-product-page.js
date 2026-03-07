@@ -962,17 +962,13 @@
         e.preventDefault();
         var sectionId = navLink.getAttribute("data-scroll");
         var section = sectionId ? document.getElementById(sectionId) : null;
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        if (section) smoothScrollTo(section);
         return;
       }
       if (target === DOM.stickyDOptions || target.closest("#stickyDOptions")) {
         e.preventDefault();
         var optionsEl = DOM.optionsWidget || DOM.addToCartBtn;
-        if (optionsEl) {
-          optionsEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        if (optionsEl) smoothScrollTo(optionsEl);
         return;
       }
       if (target === DOM.sheetOverlay) {
@@ -1212,6 +1208,10 @@
     }, removeCartMsg = function() {
       var existing = document.querySelector(".oz-cart-msg");
       if (existing) existing.remove();
+    }, smoothScrollTo = function(el) {
+      var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
+      var top = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+      window.scrollTo({ top, behavior: "smooth" });
     }, setupStickyBar = function() {
       if (!DOM.stickyBar) return;
       var target = DOM.addToCartBtn || DOM.optionsWidget;

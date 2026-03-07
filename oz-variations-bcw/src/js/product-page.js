@@ -596,9 +596,7 @@ function handleClick(e) {
     e.preventDefault();
     var sectionId = navLink.getAttribute('data-scroll');
     var section = sectionId ? document.getElementById(sectionId) : null;
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (section) smoothScrollTo(section);
     return;
   }
 
@@ -606,9 +604,7 @@ function handleClick(e) {
   if (target === DOM.stickyDOptions || target.closest('#stickyDOptions')) {
     e.preventDefault();
     var optionsEl = DOM.optionsWidget || DOM.addToCartBtn;
-    if (optionsEl) {
-      optionsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (optionsEl) smoothScrollTo(optionsEl);
     return;
   }
 
@@ -1045,6 +1041,19 @@ function showCartSuccess(data) {
 function removeCartMsg() {
   var existing = document.querySelector('.oz-cart-msg');
   if (existing) existing.remove();
+}
+
+
+/* ═══ SMOOTH SCROLL HELPER ═════════════════════════════════ */
+
+/**
+ * Smooth scroll to an element, offsetting for the sticky bar height + 20px padding.
+ * Uses window.scrollTo with behavior:'smooth' for reliable cross-browser animation.
+ */
+function smoothScrollTo(el) {
+  var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
+  var top = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+  window.scrollTo({ top: top, behavior: 'smooth' });
 }
 
 
