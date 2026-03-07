@@ -503,7 +503,105 @@ class OZ_Product_Line_Config {
         ],
     ];
 
+    /* ══════════════════════════════════════════════════════════════════
+     * GENERIC PRODUCT CONTENT — USPs & specs for non-line products
+     *
+     * Products without a BCW product line have no config-level USPs or
+     * specs. This static map provides per-product content so the
+     * template can render complete pages without manual _oz_usps/_oz_specs
+     * meta setup.
+     *
+     * Fallback chain (template): _oz_usps meta → this config → empty (hidden)
+     * ══════════════════════════════════════════════════════════════════ */
+
+    private static $generic_product_content = [
+
+        // Gereedschapset Kant & Klaar (11177) — €89.99
+        11177 => [
+            'usps' => [
+                'Compleet gereedschapspakket voor Beton Ciré',
+                'Geschikt voor alle Kant & Klaar toepassingen',
+                'Spaan, PU rollers, kwast, verfbakken en meer',
+                'Optioneel uitbreidbaar met troffels',
+            ],
+            'specs' => [
+                'Geschikt voor'     => 'Kant & Klaar Beton Ciré',
+                'Inhoud'            => 'Spaan, 3x PU roller, kwast, PU garde, tape, 2x verfbak, vachtroller',
+                'Rollerformaat'     => '10cm (standaard), 18cm of 25cm',
+                'Optioneel'         => 'Troffelset (+€45)',
+            ],
+        ],
+
+        // Gereedschapset Zelf Mengen (11163) — €119.99
+        11163 => [
+            'usps' => [
+                'Compleet gereedschapspakket voor Zelf Mengen',
+                'Geschikt voor alle Zelf Mengen & Mixen toepassingen',
+                'Spaan, PU rollers, kwast, verfbakken en meer',
+                'Optioneel uitbreidbaar met troffels',
+            ],
+            'specs' => [
+                'Geschikt voor'     => 'Zelf Mengen & Mixen Beton Ciré',
+                'Inhoud'            => 'Spaan, 3x PU roller, kwast, PU garde, tape, 2x verfbak, vachtroller, mengstaaf',
+                'Rollerformaat'     => '10cm (standaard), 18cm of 25cm',
+                'Optioneel'         => 'Troffelset (+€45)',
+            ],
+        ],
+
+        // Gereedschapset Lavasteen (25550) — €115.95
+        25550 => [
+            'usps' => [
+                'Compleet gereedschapspakket voor Lavasteen',
+                'Geschikt voor alle 2K Epoxystone toepassingen',
+                'Spaan, PU rollers, kwast, verfbakken en meer',
+            ],
+            'specs' => [
+                'Geschikt voor'     => '2K Epoxystone / Lavasteen',
+                'Inhoud'            => 'Spaan, 3x PU roller, kwast, PU garde, tape, 2x verfbak, vachtroller',
+                'Rollerformaat'     => '10cm (standaard), 18cm of 25cm',
+            ],
+        ],
+
+        // RAL Kleurenwaaier (10998) — €15.00
+        10998 => [
+            'usps' => [
+                'Bekijk RAL kleuren in het echt',
+                '€15 cashback bij bestelling Beton Ciré pakket',
+                'Handig ter indicatie voor kleurkeuze',
+            ],
+            'specs' => [
+                'Type'          => 'RAL Kleurenwaaier',
+                'Cashback'      => '€15 bij pakketbestelling',
+            ],
+        ],
+
+        // Verfbak (11164) — €2.95
+        11164 => [
+            'usps' => [
+                'Geschikt voor 10cm, 18cm en 25cm rollers',
+                'Stevig kunststof',
+            ],
+            'specs' => [
+                'Formaten' => '10cm, 18cm, 25cm',
+                'Materiaal' => 'Kunststof',
+            ],
+        ],
+    ];
+
     /**
+     * Get content (USPs + specs) for a generic product.
+     * Returns array with 'usps' and 'specs' keys, or false.
+     *
+     * @param int $product_id
+     * @return array|false
+     */
+    public static function get_product_content($product_id) {
+        return isset(self::$generic_product_content[$product_id])
+            ? self::$generic_product_content[$product_id]
+            : false;
+    }
+
+        /**
      * Get addon groups for a product.
      * Checks product meta _oz_addon_groups first, falls back to static config.
      *

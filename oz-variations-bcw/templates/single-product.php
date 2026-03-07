@@ -150,9 +150,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- Specifications table — from product line config, with per-product override -->
       <?php
+      // Specs fallback chain: _oz_specs meta → product content config → line config → empty
       $oz_specs = get_post_meta($product_id, '_oz_specs', true);
       if (empty($oz_specs) || !is_array($oz_specs)) {
-          $oz_specs = isset($config['specs']) ? $config['specs'] : [];
+          $pc_specs = OZ_Product_Line_Config::get_product_content($product_id);
+          $oz_specs = ($pc_specs && !empty($pc_specs['specs'])) ? $pc_specs['specs'] : (isset($config['specs']) ? $config['specs'] : []);
       }
       ?>
       <?php if (!empty($oz_specs)) : ?>
@@ -193,10 +195,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
-      // USPs: only from _oz_usps meta or product line config — never from short description
+      // USPs fallback chain: _oz_usps meta → product content config → line config → empty
       $oz_usps = get_post_meta($product_id, '_oz_usps', true);
       if (empty($oz_usps) || !array_filter($oz_usps)) {
-          $oz_usps = isset($config['usps']) ? $config['usps'] : [];
+          $pc = OZ_Product_Line_Config::get_product_content($product_id);
+          $oz_usps = ($pc && !empty($pc['usps'])) ? $pc['usps'] : (isset($config['usps']) ? $config['usps'] : []);
       }
       ?>
       <?php if (!empty($oz_usps) && array_filter($oz_usps)) : ?>
