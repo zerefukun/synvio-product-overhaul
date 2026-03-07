@@ -1,4 +1,4 @@
-name: Deploy BCW Plugin
+name: Deploy BCW Plugin + Theme
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "oz-variations-bcw/**"
+      - "oz-theme/**"
       - ".github/workflows/deploy-bcw.yml"
   workflow_dispatch:
 
@@ -55,7 +56,7 @@ jobs:
         working-directory: oz-variations-bcw
         run: npm ci && npm run build
 
-      - name: Ensure plugin directory exists on BCW
+      - name: Ensure directories exist on BCW
         shell: bash
         env:
           BCW_HOST: ${{ secrets.BCW_HOST }}
@@ -65,7 +66,8 @@ jobs:
           set -eu
           port="${BCW_PORT:-22}"
           ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
-            "mkdir -p /home/betoncire/public_html/wp-content/plugins/oz-variations-bcw"
+            "mkdir -p /home/betoncire/public_html/wp-content/plugins/oz-variations-bcw \
+                      /home/betoncire/public_html/wp-content/themes/OzTheme"
 
       - name: Deploy plugin files to BCW
         shell: bash
@@ -89,3 +91,19 @@ jobs:
             -e "ssh -p $port" \
             ./oz-variations-bcw/ \
             "${BCW_USER}@${BCW_HOST}:/home/betoncire/public_html/wp-content/plugins/oz-variations-bcw/"
+
+      - name: Deploy child theme to BCW
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".DS_Store" \
+            -e "ssh -p $port" \
+            ./oz-theme/ \
+            "${BCW_USER}@${BCW_HOST}:/home/betoncire/public_html/wp-content/themes/OzTheme/"

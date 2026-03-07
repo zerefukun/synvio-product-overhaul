@@ -1,0 +1,663 @@
+/*
+Theme Name:     Oz Theme
+Template:       flatsome
+Author:         Ozmarketing
+Author URI:     https://ozmarketing.nl
+Description:    Flatsome Integratie betonciré webshop gebouwd op Flatsome theme framework.
+Version:        1.07.5
+License:        Ozmarketing - All rights reserved
+*/
+
+
+@import url("../flatsome/style.css");
+
+/* FLATSOME CUSTOM CSS */
+.ux-quantity__button-container {
+    display: inline-flex!important;
+    height: 100%;
+    margin-right: 5px;
+}
+
+.nav .nav-dropdown {
+    border-radius: 0px !important;
+}
+
+.nav-dropdown {
+    margin-top: 2px!important;
+}
+
+.nav-dropdown-default {
+    padding: 10px 20px!important;
+}
+/* FLATSOME CUSTOM CSS EINDE */
+
+/* nieuwe mobiele stlying */
+.yith-wapo-option {
+    max-width: fit-content!important;
+}
+
+div#yith-wapo-option-15-0 {
+    max-width: fit-content!important;
+}
+/* General styles for all addons except color type, addon-20, and addon-75 */
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color):not(#yith-wapo-addon-20):not(#yith-wapo-addon-75) .options {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color):not(#yith-wapo-addon-20):not(#yith-wapo-addon-75) .yith-wapo-option {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(33.333% - 10px);
+    margin: 5px!important;
+    min-width: 0;
+}
+
+/* Specific styles for addon-20 and addon-75 */
+#yith-wapo-addon-20 .options,
+#yith-wapo-addon-75 .options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: -5px;
+}
+
+#yith-wapo-addon-20 .yith-wapo-option,
+#yith-wapo-addon-75 .yith-wapo-option {
+    flex: 0 1 auto;
+    margin: 5px!important;
+    min-width: 80px;
+    max-width: calc(25% - 10px);
+}
+
+#yith-wapo-addon-20 .yith-wapo-option .label_container,
+#yith-wapo-addon-75 .yith-wapo-option .label_container {
+    width: 100%;
+    height: 100%;
+}
+
+#yith-wapo-addon-20 .yith-wapo-option label,
+#yith-wapo-addon-75 .yith-wapo-option label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    padding: 10px;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+#yith-wapo-addon-20 .yith-wapo-option label .label_price,
+#yith-wapo-addon-75 .yith-wapo-option label .label_price {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+/* Common styles */
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option .label_container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding: 10px;
+    border-radius: 5px;
+	border: 3px solid #d4d4d4;
+    transition: all 0.3s ease;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label:hover {
+    border-color: var(--fs-color-primary);
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option.selected label {
+    border-color: var(--fs-color-primary);
+	color: black;
+}
+
+.button.alt, .button.checkout, .checkout-button, .secondary {
+	border-radius: 5px!important;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color):not(#yith-wapo-addon-20):not(#yith-wapo-addon-75) .options {
+        display: flex !important;
+        flex-direction: column !important;
+        margin: 0 !important;
+    }
+
+	#wapo-total-price-table table {
+    width: auto;
+    font-size: 16px;
+    line-height: 40px;
+	}
+
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color):not(#yith-wapo-addon-20):not(#yith-wapo-addon-75) .yith-wapo-option {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        margin: 2px 0px !important;
+    }
+
+    #yith-wapo-addon-20 .options,
+    #yith-wapo-addon-75 .options {
+        justify-content: flex-start;
+    }
+
+    #yith-wapo-addon-20 .yith-wapo-option,
+    #yith-wapo-addon-75 .yith-wapo-option {
+        min-width: calc(50% - 10px);
+        max-width: calc(50% - 10px);
+        margin: 2px !important;
+    }
+
+    #yith-wapo-addon-20 .yith-wapo-option label,
+    #yith-wapo-addon-75 .yith-wapo-option label {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    #yith-wapo-addon-20 .yith-wapo-option label .label_price,
+    #yith-wapo-addon-75 .yith-wapo-option label .label_price {
+        font-size: 11px;
+    }
+
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option .label_container {
+        height: auto !important;
+    }
+
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label {
+        height: auto !important;
+        min-height: 50px !important;
+    }
+
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option .label_container .image,
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option .label_container .outside .description {
+        display: block !important;
+    }
+
+    .yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color):not(#yith-wapo-addon-20):not(#yith-wapo-addon-75) .yith-wapo-option .label_container .outside .label_price {
+        display: none !important;
+    }
+}
+/*nieuwe mobiele styling end */
+
+.yith-wapo-block .yith-wapo-addon .options.per-row-2 .yith-wapo-option {
+    margin: 2px !important;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .options {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -5px;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 calc(33.333% - 10px);
+    margin: 5px;
+    min-width: 0;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option .label_container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label:hover {
+    border-color: var(--fs-color-primary);
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option.selected label {
+    border-color: var(--fs-color-primary);
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label .label_price {
+    margin-top: auto;
+}
+
+.yith-wapo-block .yith-wapo-addon:not(.yith-wapo-addon-type-color) .yith-wapo-option label > div {
+    width: 100%;
+}
+
+/*new end */
+
+.yith-wapo-option small{
+    display: none!important;
+}
+
+.yith-wapo-addon-type-label .yith-wapo-option {
+    margin: 0px 10px 0px 0px!important;
+}
+
+input#yith-wapo-8-0 {
+    margin-bottom: 0px!important;
+}
+
+span.custom-placeholder {
+    width: auto!important;
+    position: relative;
+    display: inline-block;
+    color: #135350;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.selected label:after{
+        content: '';
+    width: 18px;
+    height: 18px;
+    background: #135350 url('img/icon-check.png') center no-repeat;
+    background-size: 50%;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    top: -9px;
+    right: -9px;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-color .yith-wapo-option.selected label:after, .select_box .select_option.selected:after{
+    content: '';
+    width: 18px;
+    height: 18px;
+    background: #135350 url('img/icon-check.png') center no-repeat;
+    background-size: 50%;
+    border-radius: 50%;
+    margin: 0;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    right: 50%;
+}
+
+p.wapo-addon-description {
+    width: auto!important;
+    font-weight: 300;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-color .yith-wapo-option label:hover span.color {
+    border: 3px solid #135350;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-color .yith-wapo-option.selected label span.color {
+    border: 3px solid #135350;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.selected label {
+    border: 3px solid #135350;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option label:hover {
+    border: 3px solid #135350;
+}
+
+#yith-wapo-addon-75 > .options > .wapo-addon-description {
+    width: 50.1%;
+    margin-right: 4px;
+}
+
+#yith-wapo-option-75-0 > div > div > p, #yith-wapo-option-75-1 > div > div > p, #yith-wapo-option-75-2 > div > div > p, #yith-wapo-option-75-3 > div > div > p, #yith-wapo-option-75-4 > div > div > p, #yith-wapo-option-75-5 > div > div > p{
+    display: none;
+}
+
+div#yith-wapo-addon-18 {
+    width: 687px;
+}
+
+.yith-wapo-addon-type-color H3 {
+    width: auto!important;
+    display: inline-block;
+    position: relative!important;
+}
+
+.oz-vanaf {
+    width: 11.5%;
+    display: inline-block;
+    position: relative;
+    color: #00a1fa;
+    font-weight: 700;
+    font-size: 16px;
+    display: none;
+}
+
+.price.product-page-price .woocommerce-Price-currencySymbol, .price.product-page-price .woocommerce-Price-amount bdi, .woocommerce div.product p.price ins, .woocommerce div.product span.price ins {
+    color: #00a1fa!important;
+    font-weight: 900;
+    font-size: 18px;
+    display: none;
+}
+
+.yith-wapo-block .yith-wapo-addon-type-color .yith-wapo-option {
+    margin: 0px 0px 0px 0px !important;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-color .yith-wapo-option label {
+    margin-bottom: 4px;
+    display: block;
+    position: relative;
+}
+
+.yith-wapo-block .yith-wapo-addon .options.grid.per-row-10 .yith-wapo-option {
+    width: 10% !important;
+    margin-right: 2%;
+    float: left;
+    clear: none;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option {
+    width: 100%;
+    margin: 0px 4px 10px 0px;
+    display: block;
+    float: left;
+}
+
+.yith-wapo-addon-type-color .yith-wapo-option {
+    transition: all 0.4s ease-in-out;
+}
+
+.yith-wapo-addon-type-color .yith-wapo-option:hover{
+transform: scale(1.5);
+z-index: 1;
+}
+
+#yith-wapo-option-4-40{
+display: none;
+}
+
+.yith-wapo-block .yith-wapo-addon .options.per-row-10 .yith-wapo-option {
+    width: auto !important;
+    max-width: 100% !important;
+    float: left !important;
+}
+
+.yith-wapo-addon.yith-wapo-addon-type-label h3.wapo-addon-title {
+    width: auto!important;
+    display: inline-block;
+}
+
+h3.wapo-addon-title {
+    margin-right: 5px!important;
+}
+
+.yith-wapo-block .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.selected label:after {
+    z-index: 1;
+}
+
+.woocommerce-tabs.wc-tabs-wrapper.container.tabbed-content {
+    margin-top: 20px;
+}
+
+#yith-wapo-option-75-0, #yith-wapo-option-75-1, #yith-wapo-option-75-2, #yith-wapo-option-75-3, #yith-wapo-option-75-4, #yith-wapo-option-75-5 {
+    max-width: 56px;
+}
+
+.options.default-closed.per-row-4 {
+    width: 540px;
+}
+
+.tooltip-text {
+    display: none;
+}
+
+.tooltip-icon {
+    cursor: pointer;
+    margin-left: 2px;
+    color: #135350;
+    vertical-align: -1px;
+}
+
+.oztooltipdiv {
+    width: 60%!important;
+    display: inline-block!important;
+    float: none!important;
+}
+
+.yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.oztooltipdiv:hover > span > span {
+    white-space: normal;
+    width: 600px;
+    z-index: 2;
+    transform: translateX(-48%) translateY(2px) !important;
+}
+
+.yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.oztooltipdiv .tooltipstered span a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+
+.yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.oztooltipdiv .tooltipstered span a:hover {
+    color: #000000;
+}
+
+.label_price {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+.handleiding-main {
+    clear: both;
+    margin: 50px 0;
+    user-select: none;
+}
+
+.handleiding-container {
+    display: flex;
+    padding: 15px;
+    align-items: center;
+    background-color: #dcd6cf;
+    border-radius: 4px;
+    box-shadow: 0px 0px 4px 1px #b9b8b8;
+}
+
+.handleiding-img{
+    flex: 0 0 auto;
+}
+
+.handleiding-img > img{
+    max-width: 150px;
+    max-height: 150px;
+}
+
+.handleiding-text {
+    padding: 0 20px;
+    font-size: 14px;
+}
+
+.handleiding-button {
+    white-space: nowrap;
+    margin: 0px 20px;
+    font-size: 14px;
+    position: relative;
+}
+
+.handleiding-button > a {
+    margin: 0;
+    border-radius: 4px;
+}
+
+.handleiding-button > a:hover{
+    box-shadow: 0 14px 28px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.1);
+    transform: translateY(-6px);
+}
+
+.lrow-ral {
+    justify-content: left!important;
+    left: 12.71%;
+    margin-bottom: 50px!important;
+    position: relative;
+}
+
+.lrow-ral .col {
+    width: 220px;
+    position: relative;
+    justify-content: left;
+}
+
+
+.col-xs-12.col-sm-6 {
+    width: 48%;
+    margin: 0 2% 0px 0px;
+}
+
+.col-xs-12.col-sm-6 > p > label > span > input {
+    padding: 10% 4%;
+    font-size: medium;
+    font-family: 'Lexend';
+    font-weight: 400;
+}
+
+.wpcf7-form-control-wrap {
+    font-size: medium;
+    font-weight: 400;
+}
+
+.col-xs-12 {
+    width: 98%;
+}
+
+.col-xs-12  > p > label > span > input {
+    padding: 30px 20px
+}
+
+.alignnone {
+    scale:0.75;
+    margin-top:-8px;
+    }
+@media (min-width: 600px) {
+    .wp-block-gallery.has-nested-images.columns-8 figure.wp-block-image:not(#individual-image) {
+        width: calc(12.5% - var(--wp--style--unstable-gallery-gap, 16px)*.875);
+    }
+}
+/* MOBIEL STYLES */
+@media (max-width: 768px) {
+    .handleiding-img > img {
+        display: none!important;
+    }
+
+    /* .yith-wapo-block .yith-wapo-addon .options.per-row-2 .yith-wapo-option {
+        width: auto;
+        max-width: 48%;
+        float: left;
+        margin: 0% 1%!important;
+    } */
+
+    .yith-wapo-block .yith-wapo-addon .options {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+    
+    .yith-wapo-block .yith-wapo-addon .options .yith-wapo-option {
+        width: auto;
+        max-width: 48%;
+        margin: 0% 1%!important;
+        box-sizing: border-box;
+    }
+    
+    .yith-wapo-addon-type-label .options {
+        display: inline-flex;
+        align-items: stretch;
+        justify-content: space-between;
+    }
+    
+    .yith-wapo-addon-type-label .options .yith-wapo-option {
+        flex: 1;
+        max-width: 48%;
+        box-sizing: border-box;
+        margin: 2px 1% 1% 0%;
+    }
+
+    .options.default-closed {
+        display: inline-flex!important;
+    }
+    
+    .quantity, .text-center .quantity{
+        margin-bottom: 1%!important;
+    }
+
+    .quantity+.button {
+        font-size: 0.8em;
+    }
+
+    div#yith-wapo-addon-18 {
+        width: 100%!important;
+    }
+    
+    .yith-wapo-addon.yith-wapo-addon-type-label .yith-wapo-option.oztooltipdiv:hover > span > span {
+        white-space: normal;
+        width: 213px;
+        z-index: 2;
+        transform: translateX(-45.5%) translateY(2px) !important;
+    }
+
+    .yith-wapo-block .yith-wapo-addon .options.per-row-3 .yith-wapo-option {
+        width: auto;
+        max-width: 100%!important;
+        float: left;
+    }
+
+    #yith-wapo-addon-18 .options.per-row-3 .yith-wapo-option {
+        flex-basis: 100%;
+        margin: 2px 0;
+    }
+
+    #yith-wapo-addon-16 > .options > .wapo-addon-description {
+        width: 100%;
+        margin-right: 4px;
+    }
+
+    .yith-wapo-block .yith-wapo-addon .options.per-row-2 .yith-wapo-option {
+        width: auto;
+        max-width: 100%!important;
+        float: left;
+        flex-basis: 100%!important;
+    }
+
+    .label_price {
+        text-align: center;
+    }
+
+    .options.default-closed.per-row-4 {
+        width: 100%;
+        display: inline-flex!important;
+        flex-basis: 100%!important;
+    }
+    
+    .alignnone {
+    scale:0.75; 
+    margin-top:40px;
+    }
+    
+    .ozscale{
+        scale: 0.5;
+    }
+
+    .wp-block-image {
+        margin: 0;
+        width: calc(50% - var(--wp--style--unstable-gallery-gap, 16px)/2);
+    }
+}
