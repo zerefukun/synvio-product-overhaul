@@ -14,6 +14,14 @@ body.oz-drawer-open {
     overflow: hidden;
 }
 
+/* === Hide Flatsome's default mini-cart dropdown === */
+.header-cart .nav-dropdown,
+.cart-item .nav-dropdown,
+.header-cart-link .nav-dropdown,
+.cart-icon .nav-dropdown {
+    display: none !important;
+}
+
 /* ============================================
    OVERLAY
    ============================================ */
@@ -21,7 +29,7 @@ body.oz-drawer-open {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.3);
-    z-index: 200;
+    z-index: 999998;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.35s cubic-bezier(0.4, 0, 0.2, 1);
@@ -43,7 +51,7 @@ body.oz-drawer-open {
     max-width: var(--drawer-width);
     height: 100%;
     background: #FFFFFF;
-    z-index: 210;
+    z-index: 999999;
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
