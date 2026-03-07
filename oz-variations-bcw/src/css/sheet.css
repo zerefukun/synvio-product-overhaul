@@ -44,11 +44,20 @@
 @media (min-width: 901px) {
   /* Swap: hide mobile, show desktop */
   .oz-sticky-mobile  { display: none; }
-  .oz-sticky-desktop { display: flex; align-items: center; gap: 16px; width: 100%; }
+  .oz-sticky-desktop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    min-width: 0; /* prevent flex children from overflowing */
+  }
 
   .oz-sticky-bar {
     padding: 10px 32px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   /* Title — left side, bold */
@@ -60,7 +69,7 @@
     flex-shrink: 0;
   }
 
-  /* Color — right of title */
+  /* Color — right of title, accent */
   .oz-sticky-d-color {
     font-size: 13px;
     font-weight: 500;
@@ -72,7 +81,7 @@
   /* Hide color element when empty */
   .oz-sticky-d-color:empty { display: none; }
 
-  /* Options summary — middle, takes remaining space */
+  /* Options summary — middle, takes remaining space, truncates */
   .oz-sticky-d-options {
     flex: 1;
     min-width: 0;
@@ -89,20 +98,34 @@
     opacity: 0.35;
   }
 
-  /* Right group: price + qty + CTA — stay together */
+  /* Right group: price + qty + CTA — stay together, never wrap */
   .oz-sticky-d-right {
     display: flex;
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
+  /* Price with inline m² superscript */
   .oz-sticky-d-price {
     font-size: 20px;
     font-weight: 800;
     color: var(--oz-text-primary);
     letter-spacing: -0.5px;
     white-space: nowrap;
+    line-height: 1;
+    position: relative;
+  }
+
+  /* Small "/m²" superscript — sits top-right of price, doesn't push line height */
+  .oz-sticky-d-unit {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--oz-text-muted);
+    vertical-align: super;
+    letter-spacing: 0;
+    margin-left: 1px;
   }
 
   .oz-sticky-d-qty {
@@ -115,11 +138,29 @@
   /* Hide qty display when it's just "1×" — not useful */
   .oz-sticky-d-qty[data-qty="1"] { display: none; }
 
+  /* Desktop CTA button — same boxed style as main CTA */
   .oz-sticky-d-btn {
     width: auto !important;
-    min-width: 180px;
-    padding: 11px 24px !important;
+    min-width: 170px;
+    padding: 12px 24px !important;
     flex-shrink: 0;
+    border-radius: 8px !important;
+    background: var(--oz-cta) !important;
+    color: var(--oz-cta-text) !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none !important;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    box-shadow: none !important;
+    line-height: 1 !important;
+    transition: background-color 0.2s var(--oz-ease);
+  }
+
+  .oz-sticky-d-btn:hover {
+    background: var(--oz-cta-hover) !important;
   }
 }
 

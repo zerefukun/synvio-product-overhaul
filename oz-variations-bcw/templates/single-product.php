@@ -450,16 +450,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         endif;
         ?>
 
-        <!-- M² advice tip — only for m²-based products -->
-        <?php if ($config['unitM2'] > 0) : ?>
-        <div class="oz-m2-advice">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>
-          </svg>
-          <span>Tip van onze specialist: bestel altijd extra materiaal. Oneffenheden in de ondergrond, reparaties en verwerking vragen meer product dan de berekende vierkante meters. Tekort komen is geen optie!</span>
-        </div>
-        <?php endif; ?>
-
       <!-- Price Breakdown -->
       <div class="oz-price-summary" id="priceSummary">
         <div class="oz-price-line" id="priceBaseLine">
@@ -557,6 +547,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div><!-- #priceSummary -->
       </div><!-- #optionsWidget -->
       </div><!-- #optionsDesktopHome -->
+
+      <!-- M² advice tip — below payment, above delivery -->
+      <?php if ($config['unitM2'] > 0) : ?>
+      <div class="oz-m2-advice">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>
+        </svg>
+        <span>Tip van onze specialist: bestel altijd extra materiaal. Oneffenheden in de ondergrond, reparaties en verwerking vragen meer product dan de berekende vierkante meters. Tekort komen is geen optie!</span>
+      </div>
+      <?php endif; ?>
 
       <!-- Delivery Timeline — below the buy box, above trust badges -->
       <?php
@@ -671,7 +671,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <div class="oz-sticky-d-color" id="stickyDColor"><?php echo esc_html($current_color ?: ''); ?></div>
     <div class="oz-sticky-d-options" id="stickyDOptions"></div>
     <div class="oz-sticky-d-right">
-      <span class="oz-sticky-d-price" id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span>
+      <span class="oz-sticky-d-price">
+        <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span><?php if (!empty($config['unitM2'])) : ?><sup class="oz-sticky-d-unit">/m²</sup><?php endif; ?>
+      </span>
       <span class="oz-sticky-d-qty" id="stickyDQty">1×</span>
       <button class="oz-sticky-btn oz-sticky-d-btn" id="stickyDBtn">In winkelmand</button>
     </div>

@@ -1655,10 +1655,14 @@ details.oz-faq-item[open] .oz-faq-question::after {
     align-items: center;
     gap: 16px;
     width: 100%;
+    min-width: 0;
   }
   .oz-sticky-bar {
     padding: 10px 32px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
   }
   .oz-sticky-d-title {
     font-size: 14px;
@@ -1695,6 +1699,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
     align-items: center;
     gap: 12px;
     flex-shrink: 0;
+    white-space: nowrap;
   }
   .oz-sticky-d-price {
     font-size: 20px;
@@ -1702,6 +1707,16 @@ details.oz-faq-item[open] .oz-faq-question::after {
     color: var(--oz-text-primary);
     letter-spacing: -0.5px;
     white-space: nowrap;
+    line-height: 1;
+    position: relative;
+  }
+  .oz-sticky-d-unit {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--oz-text-muted);
+    vertical-align: super;
+    letter-spacing: 0;
+    margin-left: 1px;
   }
   .oz-sticky-d-qty {
     font-size: 13px;
@@ -1714,9 +1729,25 @@ details.oz-faq-item[open] .oz-faq-question::after {
   }
   .oz-sticky-d-btn {
     width: auto !important;
-    min-width: 180px;
-    padding: 11px 24px !important;
+    min-width: 170px;
+    padding: 12px 24px !important;
     flex-shrink: 0;
+    border-radius: 8px !important;
+    background: var(--oz-cta) !important;
+    color: var(--oz-cta-text) !important;
+    font-size: 13px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none !important;
+    cursor: pointer;
+    font-family: "Raleway", sans-serif;
+    box-shadow: none !important;
+    line-height: 1 !important;
+    transition: background-color 0.2s var(--oz-ease);
+  }
+  .oz-sticky-d-btn:hover {
+    background: var(--oz-cta-hover) !important;
   }
 }
 .oz-sticky-info {
