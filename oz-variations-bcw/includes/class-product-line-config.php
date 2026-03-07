@@ -810,16 +810,46 @@ class OZ_Product_Line_Config {
      *
      * @return array  Tool config array for wp_localize_script
      */
+    /**
+     * Check WooCommerce stock status for a tool item wcId.
+     * Returns true if the product exists and is in stock, false otherwise.
+     */
+    private static function check_tool_stock($wc_id) {
+        if (!function_exists('wc_get_product') || !$wc_id) return true;
+        $product = wc_get_product($wc_id);
+        return $product ? $product->is_in_stock() : false;
+    }
+
+    /**
+     * Add stock status to a tool/extra item and its sizes.
+     * Adds 'inStock' boolean to the item and each size entry.
+     */
+    private static function enrich_with_stock($item) {
+        $item['inStock'] = self::check_tool_stock($item['wcId'] ?? null);
+        if (!empty($item['sizes'])) {
+            foreach ($item['sizes'] as &$size) {
+                $size['inStock'] = self::check_tool_stock($size['wcId'] ?? null);
+            }
+            unset($size);
+        }
+        return $item;
+    }
+
     public static function get_tool_config() {
         // Build extras and tools arrays from catalog references
+        // Each item is enriched with stock status from WooCommerce
         $extras = [];
         foreach (self::$set_extra_ids as $id) {
-            $extras[] = array_merge(['id' => $id], self::$tool_catalog[$id]);
+            $extras[] = self::enrich_with_stock(
+                array_merge(['id' => $id], self::$tool_catalog[$id])
+            );
         }
 
         $tools = [];
         foreach (self::$individual_tool_ids as $id) {
-            $tools[] = array_merge(['id' => $id], self::$tool_catalog[$id]);
+            $tools[] = self::enrich_with_stock(
+                array_merge(['id' => $id], self::$tool_catalog[$id])
+            );
         }
 
         return [
