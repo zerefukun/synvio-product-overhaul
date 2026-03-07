@@ -709,4 +709,124 @@ class OZ_Product_Line_Config {
         }
         return wp_list_pluck($terms, 'term_id');
     }
+
+
+    /* ══════════════════════════════════════════════════════════════════
+     * TOOL / GEREEDSCHAP CATALOG
+     *
+     * Each tool is defined once in $tool_catalog. The extras and
+     * individual lists reference items by ID — no duplication.
+     * All prices and WooCommerce product IDs from real BCW catalog.
+     * ══════════════════════════════════════════════════════════════════ */
+
+    /**
+     * Master tool catalog — each tool defined exactly once.
+     * Keyed by tool slug. Contains name, base price, WC product ID,
+     * optional note, and optional size variants.
+     */
+    private static $tool_catalog = [
+        'flexibele-spaan' => [
+            'name' => 'Flexibele spaan', 'price' => 39.95, 'wcId' => 11025,
+        ],
+        'pu-roller' => [
+            'name' => 'PU Roller', 'price' => 2.50, 'wcId' => 11175,
+            'note' => 'Verhardt na ~2 uur',
+            'sizes' => [
+                ['label' => '10cm', 'price' => 2.50,  'wcId' => 11175],
+                ['label' => '18cm', 'price' => 9.95,  'wcId' => 17360],
+                ['label' => '25cm', 'price' => 12.95, 'wcId' => 17361],
+                ['label' => '50cm', 'price' => 17.50, 'wcId' => 19705],
+            ],
+        ],
+        'kwast' => [
+            'name' => 'Kwast', 'price' => 1.99, 'wcId' => 11022,
+        ],
+        'pu-garde' => [
+            'name' => 'PU garde', 'price' => 8.99, 'wcId' => 11020,
+        ],
+        'tape' => [
+            'name' => 'Tape', 'price' => 5.99, 'wcId' => 11018,
+        ],
+        'verfbak' => [
+            'name' => 'Verfbak', 'price' => 2.95, 'wcId' => 11164,
+            'sizes' => [
+                ['label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null],
+                ['label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'],
+                ['label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'],
+            ],
+        ],
+        'vachtroller' => [
+            'name' => 'Vachtroller', 'price' => 8.95, 'wcId' => 11015,
+        ],
+        'blokkwast' => [
+            'name' => 'Blokkwast', 'price' => 6.99, 'wcId' => 22997,
+        ],
+        'troffel' => [
+            'name' => 'Troffel 180mm', 'price' => 16.95, 'wcId' => 11017,
+        ],
+        'hoek-inwendig' => [
+            'name' => 'Inwendige hoektroffel', 'price' => 15.95, 'wcId' => 11023,
+        ],
+        'hoek-uitwendig' => [
+            'name' => 'Uitwendige hoektroffel', 'price' => 15.95, 'wcId' => 11016,
+        ],
+    ];
+
+    /**
+     * Gereedschapset Kant & Klaar — the complete set product.
+     */
+    private static $tool_set = [
+        'id'       => 11177,
+        'name'     => 'Gereedschapset Kant & Klaar',
+        'price'    => 89.99,
+        'contents' => [
+            '1x Flexibele spaan',
+            '1x Kwast primer',
+            '1x Kwast PU',
+            '1x PU garde',
+            '3x PU roller',
+            '1x Tape',
+            '2x Verfbak',
+            '1x Vachtroller',
+        ],
+    ];
+
+    /** Tool IDs available as extras on top of the set */
+    private static $set_extra_ids = [
+        'pu-roller', 'verfbak', 'tape', 'vachtroller',
+        'troffel', 'hoek-inwendig', 'hoek-uitwendig',
+    ];
+
+    /** Tool IDs available in "Zelf samenstellen" (individual) mode */
+    private static $individual_tool_ids = [
+        'flexibele-spaan', 'pu-roller', 'kwast', 'pu-garde', 'tape',
+        'verfbak', 'vachtroller', 'blokkwast', 'troffel',
+        'hoek-inwendig', 'hoek-uitwendig',
+    ];
+
+    /**
+     * Get tool/gereedschap configuration for JS.
+     * Composes from single-source catalog — no data duplication.
+     *
+     * @return array  Tool config array for wp_localize_script
+     */
+    public static function get_tool_config() {
+        // Build extras and tools arrays from catalog references
+        $extras = [];
+        foreach (self::$set_extra_ids as $id) {
+            $extras[] = array_merge(['id' => $id], self::$tool_catalog[$id]);
+        }
+
+        $tools = [];
+        foreach (self::$individual_tool_ids as $id) {
+            $tools[] = array_merge(['id' => $id], self::$tool_catalog[$id]);
+        }
+
+        return [
+            'toolSet'            => self::$tool_set,
+            'extras'             => $extras,
+            'tools'              => $tools,
+            'nudgeQtyThreshold'  => 3,
+        ];
+    }
 }

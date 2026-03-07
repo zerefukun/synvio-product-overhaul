@@ -349,6 +349,118 @@ class OZ_Cart_Manager {
 
 
     /* ══════════════════════════════════════════════════════════════════
+     * TOOL PRODUCTS — extraction + cart addition
+     *
+     * Tools are standalone WC products (not price addons). Each needs
+     * its own add_to_cart() call. These methods keep the AJAX handler
+     * thin and maintain a single $_POST extraction boundary.
+     * ══════════════════════════════════════════════════════════════════ */
+
+    /**
+     * Extract and sanitize tool-related POST data.
+     * Single point of $_POST access for tool fields.
+     *
+     * @return array  ['mode' => string, 'set_id' => int, 'extras' => array, 'tools' => array]
+     */
+    public static function extract_tool_post_data() {
+        $mode   = isset($_POST['oz_tool_mode']) ? sanitize_text_field(wp_unslash($_POST['oz_tool_mode'])) : '';
+        $set_id = isset($_POST['oz_tool_set_id']) ? intval($_POST['oz_tool_set_id']) : 0;
+
+        $extras = self::sanitize_tool_items_array(isset($_POST['oz_extras']) ? $_POST['oz_extras'] : []);
+        $tools  = self::sanitize_tool_items_array(isset($_POST['oz_tools']) ? $_POST['oz_tools'] : []);
+
+        return [
+            'mode'   => $mode,
+            'set_id' => $set_id,
+            'extras' => $extras,
+            'tools'  => $tools,
+        ];
+    }
+
+    /**
+     * Parse tool data into a flat list of cart-ready items.
+     * Pure function — no I/O, no $_POST, no WC calls.
+     *
+     * @param array $tool_data  From extract_tool_post_data()
+     * @return array  List of ['product_id' => int, 'qty' => int, 'cart_data' => array]
+     */
+    public static function parse_tool_items(array $tool_data) {
+        $items = [];
+
+        if ($tool_data['mode'] === 'set') {
+            // The Kant & Klaar set itself
+            if ($tool_data['set_id'] > 0) {
+                $items[] = ['product_id' => $tool_data['set_id'], 'qty' => 1, 'cart_data' => []];
+            }
+
+            // Extras on top of set
+            foreach ($tool_data['extras'] as $extra_id => $extra) {
+                if ($extra['wcId'] > 0 && $extra['qty'] > 0) {
+                    $cart_data = [];
+                    if (!empty($extra['wapoAddon'])) {
+                        $cart_data['oz_wapo_addon'] = $extra['wapoAddon'];
+                    }
+                    $items[] = ['product_id' => $extra['wcId'], 'qty' => $extra['qty'], 'cart_data' => $cart_data];
+                }
+            }
+        } elseif ($tool_data['mode'] === 'individual') {
+            // Each selected individual tool
+            foreach ($tool_data['tools'] as $tool_id => $tool) {
+                if ($tool['wcId'] > 0 && $tool['qty'] > 0) {
+                    $cart_data = [];
+                    if (!empty($tool['wapoAddon'])) {
+                        $cart_data['oz_wapo_addon'] = $tool['wapoAddon'];
+                    }
+                    $items[] = ['product_id' => $tool['wcId'], 'qty' => $tool['qty'], 'cart_data' => $cart_data];
+                }
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Add parsed tool items to the WC cart.
+     * Imperative shell — validates product existence and calls add_to_cart().
+     *
+     * @param array $tool_items  From parse_tool_items()
+     */
+    public static function add_tool_products_to_cart(array $tool_items) {
+        foreach ($tool_items as $item) {
+            if (wc_get_product($item['product_id'])) {
+                WC()->cart->add_to_cart($item['product_id'], $item['qty'], 0, [], $item['cart_data']);
+            }
+        }
+    }
+
+    /**
+     * Sanitize a nested tool items array from $_POST.
+     * Handles oz_extras[id][qty], oz_extras[id][wcId], oz_extras[id][wapoAddon].
+     *
+     * @param mixed $raw  Raw $_POST array (may not be array)
+     * @return array  Sanitized ['id' => ['qty' => int, 'wcId' => int, 'wapoAddon' => string]]
+     */
+    private static function sanitize_tool_items_array($raw) {
+        if (!is_array($raw)) {
+            return [];
+        }
+
+        $sanitized = [];
+        foreach ($raw as $id => $data) {
+            if (!is_array($data)) {
+                continue;
+            }
+            $sanitized[sanitize_text_field($id)] = [
+                'qty'       => isset($data['qty']) ? max(1, intval($data['qty'])) : 1,
+                'wcId'      => isset($data['wcId']) ? intval($data['wcId']) : 0,
+                'wapoAddon' => isset($data['wapoAddon']) ? sanitize_text_field($data['wapoAddon']) : '',
+            ];
+        }
+        return $sanitized;
+    }
+
+
+    /* ══════════════════════════════════════════════════════════════════
      * INTERNAL: Build human-readable addon details array
      * ══════════════════════════════════════════════════════════════════ */
 

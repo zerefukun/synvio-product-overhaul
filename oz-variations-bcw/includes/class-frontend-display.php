@@ -118,20 +118,22 @@ class OZ_Frontend_Display {
             null // no version for external fonts
         );
 
-        // Product page CSS
+        // Product page CSS — version based on file modification time for cache busting
+        $css_path = OZ_BCW_PLUGIN_DIR . 'assets/css/oz-product-page.css';
         wp_enqueue_style(
             'oz-product-page',
             OZ_BCW_PLUGIN_URL . 'assets/css/oz-product-page.css',
             ['oz-google-fonts'],
-            OZ_BCW_VERSION . "." . time()
+            OZ_BCW_VERSION . '.' . filemtime($css_path)
         );
 
         // Product page JS (vanilla, no jQuery dependency)
+        $js_path = OZ_BCW_PLUGIN_DIR . 'assets/js/oz-product-page.js';
         wp_enqueue_script(
             'oz-product-page',
             OZ_BCW_PLUGIN_URL . 'assets/js/oz-product-page.js',
             [],
-            OZ_BCW_VERSION . '.' . time(),
+            OZ_BCW_VERSION . '.' . filemtime($js_path),
             true // Load in footer
         );
     }
@@ -222,7 +224,7 @@ class OZ_Frontend_Display {
 
             // Tool/gereedschap config — only for lines with has_tools
             'hasTools' => !empty($config['has_tools']),
-            'toolConfig' => !empty($config['has_tools']) ? self::get_tool_config() : null,
+            'toolConfig' => !empty($config['has_tools']) ? OZ_Product_Line_Config::get_tool_config() : null,
 
             // WooCommerce cart endpoints
             'ajaxUrl'     => admin_url('admin-ajax.php'),
@@ -290,87 +292,4 @@ class OZ_Frontend_Display {
         return $html;
     }
 
-    /**
-     * Get tool/gereedschap configuration for JS.
-     * Contains the complete set, extras with sizes, and individual tools with sizes.
-     * All prices and WooCommerce product IDs from real BCW catalog.
-     *
-     * @return array  Tool config array for wp_localize_script
-     */
-    public static function get_tool_config() {
-        return array(
-            'toolSet' => array(
-                'id'       => 11177,
-                'name'     => 'Gereedschapset Kant & Klaar',
-                'price'    => 89.99,
-                'contents' => array(
-                    '1x Flexibele spaan',
-                    '1x Kwast primer',
-                    '1x Kwast PU',
-                    '1x PU garde',
-                    '3x PU roller',
-                    '1x Tape',
-                    '2x Verfbak',
-                    '1x Vachtroller',
-                ),
-            ),
-            'extras' => array(
-                array(
-                    'id' => 'pu-roller', 'name' => 'PU Roller', 'price' => 2.50,
-                    'wcId' => 11175, 'note' => 'Verhardt na ~2 uur',
-                    'sizes' => array(
-                        array('label' => '10cm', 'price' => 2.50,  'wcId' => 11175),
-                        array('label' => '18cm', 'price' => 9.95,  'wcId' => 17360),
-                        array('label' => '25cm', 'price' => 12.95, 'wcId' => 17361),
-                        array('label' => '50cm', 'price' => 17.50, 'wcId' => 19705),
-                    ),
-                ),
-                array(
-                    'id' => 'verfbak', 'name' => 'Verfbak', 'price' => 2.95,
-                    'wcId' => 11164,
-                    'sizes' => array(
-                        array('label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null),
-                        array('label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'),
-                        array('label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'),
-                    ),
-                ),
-                array('id' => 'tape',           'name' => 'Tape',                   'price' => 5.99,  'wcId' => 11018),
-                array('id' => 'vachtroller',    'name' => 'Vachtroller',             'price' => 8.95,  'wcId' => 11015),
-                array('id' => 'troffel',        'name' => 'Troffel 180mm',           'price' => 16.95, 'wcId' => 11017),
-                array('id' => 'hoek-inwendig',  'name' => 'Inwendige hoektroffel',   'price' => 15.95, 'wcId' => 11023),
-                array('id' => 'hoek-uitwendig', 'name' => 'Uitwendige hoektroffel',  'price' => 15.95, 'wcId' => 11016),
-            ),
-            'tools' => array(
-                array('id' => 'flexibele-spaan', 'name' => 'Flexibele spaan',  'price' => 39.95, 'wcId' => 11025),
-                array(
-                    'id' => 'pu-roller', 'name' => 'PU Roller', 'price' => 2.50,
-                    'wcId' => 11175, 'note' => 'Verhardt na ~2 uur',
-                    'sizes' => array(
-                        array('label' => '10cm', 'price' => 2.50,  'wcId' => 11175),
-                        array('label' => '18cm', 'price' => 9.95,  'wcId' => 17360),
-                        array('label' => '25cm', 'price' => 12.95, 'wcId' => 17361),
-                        array('label' => '50cm', 'price' => 17.50, 'wcId' => 19705),
-                    ),
-                ),
-                array('id' => 'kwast',          'name' => 'Kwast',                   'price' => 1.99,  'wcId' => 11022),
-                array('id' => 'pu-garde',       'name' => 'PU garde',                'price' => 8.99,  'wcId' => 11020),
-                array('id' => 'tape',           'name' => 'Tape',                    'price' => 5.99,  'wcId' => 11018),
-                array(
-                    'id' => 'verfbak', 'name' => 'Verfbak', 'price' => 2.95,
-                    'wcId' => 11164,
-                    'sizes' => array(
-                        array('label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null),
-                        array('label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'),
-                        array('label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'),
-                    ),
-                ),
-                array('id' => 'vachtroller',    'name' => 'Vachtroller',             'price' => 8.95,  'wcId' => 11015),
-                array('id' => 'blokkwast',      'name' => 'Blokkwast',               'price' => 6.99,  'wcId' => 22997),
-                array('id' => 'troffel',        'name' => 'Troffel 180mm',           'price' => 16.95, 'wcId' => 11017),
-                array('id' => 'hoek-inwendig',  'name' => 'Inwendige hoektroffel',   'price' => 15.95, 'wcId' => 11023),
-                array('id' => 'hoek-uitwendig', 'name' => 'Uitwendige hoektroffel',  'price' => 15.95, 'wcId' => 11016),
-            ),
-            'nudgeQtyThreshold' => 3,
-        );
-    }
 }
