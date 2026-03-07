@@ -295,9 +295,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                     <?php echo OZ_Frontend_Display::render_color_swatches($product); ?>
                   <?php endif; ?>
 
-                  <?php /* "Gratis kleurstalen aanvragen" link — only for lines with kleurstalen */ ?>
-                  <?php if (!empty($config['kleurstalen_slug'])) : ?>
-                    <a href="/kleurstalen-aanvragen/?lijn=<?php echo esc_attr($config['kleurstalen_slug']); ?>"
+                  <?php /* "Gratis kleurstalen aanvragen" link — each line has its own page */ ?>
+                  <?php if (!empty($config['kleurstalen_url'])) : ?>
+                    <a href="<?php echo esc_url($config['kleurstalen_url']); ?>"
                        class="oz-sample-link" target="_blank">
                       Gratis kleurstalen aanvragen &rarr;
                     </a>

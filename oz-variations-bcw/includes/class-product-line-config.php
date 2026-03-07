@@ -169,7 +169,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,  // Original has NO RAL/NCS
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'original',
+            'kleurstalen_url' => '/original-kleurstalen/',
             'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
         ],
 
@@ -204,7 +204,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'all-in-one',
+            'kleurstalen_url' => '/kleurstalen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
@@ -239,7 +239,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'easyline',
+            'kleurstalen_url' => '/kleurstalen/',
             'option_order'   => ['color', 'pakket', 'primer', 'pu', 'tools'],
         ],
 
@@ -273,7 +273,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'microcement',
+            'kleurstalen_url' => '/kleurstalen-microcement-aanvragen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
@@ -306,7 +306,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'metallic',
+            'kleurstalen_url' => '/velvet-kleurstalen/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],  // corrected from WAPO block order
         ],
 
@@ -340,7 +340,7 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_slug' => 'lavasteen',
+            'kleurstalen_url' => '/product/kleurenpakket/',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
         ],
 
@@ -369,6 +369,7 @@ class OZ_Product_Line_Config {
             'has_pakket'     => false,
             'ral_ncs'        => true,
             'ral_ncs_only'   => false,
+            'kleurstalen_url' => '/kleurstalen-betonlook/',
             'option_order'   => ['color', 'primer'],
         ],
 
