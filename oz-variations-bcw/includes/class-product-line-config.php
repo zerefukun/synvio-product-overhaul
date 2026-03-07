@@ -636,7 +636,8 @@ class OZ_Product_Line_Config {
             return 'generic_addons';
         }
 
-        return false;
+        // All products use our template — default to generic_simple
+        return 'generic_simple';
     }
 
     /**
