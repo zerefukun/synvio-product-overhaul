@@ -376,3 +376,256 @@ function oz_apply_attribution_fallback($order) {
     
     $order->save();
 }
+
+
+/* ══════════════════════════════════════════════════════════════════
+ * CART DRAWER — slide-in cart panel (replaces Flatsome cart sidebar)
+ *
+ * Components:
+ * 1. Enqueue CSS + JS on all frontend pages
+ * 2. Output drawer HTML template via wp_footer
+ * 3. AJAX endpoints: get cart, update qty, remove item, add product
+ * ══════════════════════════════════════════════════════════════════ */
+
+/**
+ * Enqueue cart drawer CSS and JS on all frontend pages.
+ */
+function oz_cart_drawer_enqueue() {
+    if (is_admin()) return;
+
+    // CSS
+    wp_enqueue_style(
+        'oz-cart-drawer',
+        get_stylesheet_directory_uri() . '/css/cart-drawer.css',
+        [],
+        filemtime(get_stylesheet_directory() . '/css/cart-drawer.css')
+    );
+
+    // Google Fonts (may already be enqueued by plugin, but wp_enqueue is idempotent by handle)
+    wp_enqueue_style(
+        'oz-google-fonts-drawer',
+        'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
+        [],
+        null
+    );
+
+    // JS
+    wp_enqueue_script(
+        'oz-cart-drawer',
+        get_stylesheet_directory_uri() . '/js/cart-drawer.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/cart-drawer.js'),
+        true
+    );
+
+    // Pass AJAX URL and nonce to JS
+    wp_localize_script('oz-cart-drawer', 'ozCartDrawer', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('oz_cart_drawer'),
+    ]);
+}
+add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
+
+/**
+ * Output cart drawer HTML template in the footer of every page.
+ */
+function oz_cart_drawer_template() {
+    if (is_admin()) return;
+    include get_stylesheet_directory() . '/templates/cart-drawer.php';
+}
+add_action('wp_footer', 'oz_cart_drawer_template');
+
+/**
+ * AJAX: Get full cart data as JSON.
+ * Returns items (key, name, price, qty, image, meta, line_total),
+ * upsells, subtotal.
+ */
+function oz_cart_drawer_get() {
+    check_ajax_referer('oz_cart_drawer', 'nonce');
+
+    $cart = WC()->cart;
+    if (!$cart) {
+        wp_send_json_error('Cart not available');
+        return;
+    }
+
+    // Recalculate totals to ensure accuracy
+    $cart->calculate_totals();
+
+    $items = [];
+    foreach ($cart->get_cart() as $cart_key => $cart_item) {
+        $product = $cart_item['data'];
+        if (!$product) continue;
+
+        // Get product thumbnail URL
+        $image_id = $product->get_image_id();
+        $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+        // Build meta string from cart item data (color, options, etc.)
+        $meta_parts = [];
+
+        // Check for oz_ meta (from our plugin)
+        if (!empty($cart_item['oz_color'])) {
+            $meta_parts[] = $cart_item['oz_color'];
+        }
+        if (!empty($cart_item['oz_pu_label'])) {
+            $meta_parts[] = $cart_item['oz_pu_label'];
+        }
+        if (!empty($cart_item['oz_primer_label'])) {
+            $meta_parts[] = $cart_item['oz_primer_label'];
+        }
+
+        // Check for variation attributes
+        if (!empty($cart_item['variation']) && is_array($cart_item['variation'])) {
+            foreach ($cart_item['variation'] as $attr => $val) {
+                if (!empty($val)) {
+                    $meta_parts[] = ucfirst(str_replace(['attribute_pa_', 'attribute_', '-', '_'], ['', '', ' ', ' '], $attr)) . ': ' . $val;
+                }
+            }
+        }
+
+        $items[] = [
+            'key'        => $cart_key,
+            'name'       => $product->get_name(),
+            'price'      => floatval($product->get_price()),
+            'qty'        => $cart_item['quantity'],
+            'image'      => $image_url,
+            'meta'       => implode(' · ', $meta_parts),
+            'line_total' => floatval($cart_item['line_total']),
+            'product_id' => $product->get_id(),
+        ];
+    }
+
+    // Get upsell/cross-sell products
+    $upsells = oz_cart_drawer_get_upsells($cart);
+
+    wp_send_json_success([
+        'items'    => $items,
+        'upsells'  => $upsells,
+        'subtotal' => floatval($cart->get_subtotal()),
+        'total'    => floatval($cart->get_total('edit')),
+    ]);
+}
+add_action('wp_ajax_oz_cart_drawer_get', 'oz_cart_drawer_get');
+add_action('wp_ajax_nopriv_oz_cart_drawer_get', 'oz_cart_drawer_get');
+
+/**
+ * AJAX: Update cart item quantity.
+ */
+function oz_cart_drawer_update() {
+    check_ajax_referer('oz_cart_drawer', 'nonce');
+
+    $cart_key = isset($_POST['cart_key']) ? sanitize_text_field($_POST['cart_key']) : '';
+    $qty      = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
+
+    if (empty($cart_key)) {
+        wp_send_json_error('Missing cart key');
+        return;
+    }
+
+    $cart = WC()->cart;
+    if ($qty < 1) {
+        $cart->remove_cart_item($cart_key);
+    } else {
+        $cart->set_quantity($cart_key, $qty);
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_oz_cart_drawer_update', 'oz_cart_drawer_update');
+add_action('wp_ajax_nopriv_oz_cart_drawer_update', 'oz_cart_drawer_update');
+
+/**
+ * AJAX: Remove cart item.
+ */
+function oz_cart_drawer_remove() {
+    check_ajax_referer('oz_cart_drawer', 'nonce');
+
+    $cart_key = isset($_POST['cart_key']) ? sanitize_text_field($_POST['cart_key']) : '';
+
+    if (empty($cart_key)) {
+        wp_send_json_error('Missing cart key');
+        return;
+    }
+
+    WC()->cart->remove_cart_item($cart_key);
+    wp_send_json_success();
+}
+add_action('wp_ajax_oz_cart_drawer_remove', 'oz_cart_drawer_remove');
+add_action('wp_ajax_nopriv_oz_cart_drawer_remove', 'oz_cart_drawer_remove');
+
+/**
+ * AJAX: Add product to cart (for upsells in drawer).
+ */
+function oz_cart_drawer_add() {
+    check_ajax_referer('oz_cart_drawer', 'nonce');
+
+    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+    $qty        = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
+
+    if (!$product_id) {
+        wp_send_json_error('Missing product ID');
+        return;
+    }
+
+    $result = WC()->cart->add_to_cart($product_id, $qty);
+    if ($result) {
+        wp_send_json_success(['cart_key' => $result]);
+    } else {
+        wp_send_json_error('Could not add product');
+    }
+}
+add_action('wp_ajax_oz_cart_drawer_add', 'oz_cart_drawer_add');
+add_action('wp_ajax_nopriv_oz_cart_drawer_add', 'oz_cart_drawer_add');
+
+/**
+ * Get upsell/cross-sell product suggestions for the cart drawer.
+ * Uses WooCommerce cross-sells from products in cart, limited to 3.
+ *
+ * @param WC_Cart $cart
+ * @return array
+ */
+function oz_cart_drawer_get_upsells($cart) {
+    $cart_product_ids = [];
+    $cross_sell_ids   = [];
+
+    // Collect product IDs in cart and their cross-sells
+    foreach ($cart->get_cart() as $cart_item) {
+        $pid = $cart_item['product_id'];
+        $cart_product_ids[$pid] = true;
+
+        $product = wc_get_product($pid);
+        if ($product) {
+            $cs = $product->get_cross_sell_ids();
+            foreach ($cs as $cs_id) {
+                if (!isset($cart_product_ids[$cs_id])) {
+                    $cross_sell_ids[$cs_id] = true;
+                }
+            }
+        }
+    }
+
+    // Filter out products already in cart, limit to 3
+    $upsells = [];
+    foreach (array_keys($cross_sell_ids) as $cs_id) {
+        if (isset($cart_product_ids[$cs_id])) continue;
+
+        $product = wc_get_product($cs_id);
+        if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) continue;
+
+        $image_id  = $product->get_image_id();
+        $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+        $upsells[] = [
+            'id'        => $cs_id,
+            'name'      => $product->get_name(),
+            'price'     => floatval($product->get_price()),
+            'image'     => $image_url,
+            'permalink' => $product->get_permalink(),
+        ];
+
+        if (count($upsells) >= 3) break;
+    }
+
+    return $upsells;
+}
