@@ -1,15 +1,20 @@
 <?php
 /**
- * Custom single product template for BCW product lines.
+ * Universal single product template.
  *
- * Replaces the theme's default single-product.php when the product
- * belongs to a detected BCW product line. Uses Flatsome's header/footer.
+ * Works for all page modes:
+ * - configured_line: BCW product line with full options (PU, primer, etc.)
+ * - generic_simple:  Any product with our shell (no addons)
+ * - generic_addons:  Custom addon groups (future)
  *
- * Layout: gallery (left) + options sidebar (right) in a 2-column grid.
+ * Layout: gallery (left) + summary sidebar (right) in a 2-column grid.
  * Mobile: single column with sticky bar + bottom sheet.
  *
+ * Missing blocks are hidden cleanly — no empty containers, no empty USP boxes.
+ * Price summary / qty / CTA / delivery / payments / trust always render.
+ *
  * @package OZ_Variations_BCW
- * @since 1.1.0
+ * @since 2.0.0
  */
 
 if (!defined('ABSPATH')) {
@@ -18,16 +23,19 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
-// Resolve product + line config
+// Resolve product + page mode
 $product = wc_get_product(get_the_ID());
 if (!$product) {
     get_footer();
     return;
 }
 
+$page_mode = OZ_Product_Line_Config::get_page_mode($product);
+
+// Line config — real config for configured_line, generic defaults otherwise
 $line_info  = OZ_Product_Line_Config::for_product($product);
 $line_key   = $line_info['line'];
-$config     = $line_info['config'];
+$config     = $line_info['config'] ?: OZ_Product_Line_Config::get_generic_config();
 
 // Product data
 $product_id    = $product->get_id();
@@ -52,18 +60,24 @@ $main_image_url = $main_image_id ? wp_get_attachment_image_url($main_image_id, '
 $main_image_full = $main_image_id ? wp_get_attachment_image_url($main_image_id, 'full') : '';
 $gallery_ids    = $product->get_gallery_image_ids();
 
-// Option data from config
-$pu_options      = OZ_Product_Line_Config::get_pu_options($line_key);
-$primer_options  = OZ_Product_Line_Config::get_primer_options($line_key);
-$colorfresh_opts = OZ_Product_Line_Config::get_colorfresh_options($line_key);
-$toepassing_opts = OZ_Product_Line_Config::get_toepassing_options($line_key);
-$pakket_opts     = OZ_Product_Line_Config::get_pakket_options($line_key);
-$option_order    = OZ_Product_Line_Config::get_option_order($line_key);
-$has_ral_ncs     = !empty($config['ral_ncs']);
-$ral_ncs_only    = !empty($config['ral_ncs_only']);
-
-// Variant swatches
-$variants = OZ_Product_Processor::get_variant_display_data($product_id);
+// Option data — only populated for configured_line mode
+$has_options = ($page_mode === 'configured_line' && $line_key);
+if ($has_options) {
+    $pu_options      = OZ_Product_Line_Config::get_pu_options($line_key);
+    $primer_options  = OZ_Product_Line_Config::get_primer_options($line_key);
+    $colorfresh_opts = OZ_Product_Line_Config::get_colorfresh_options($line_key);
+    $toepassing_opts = OZ_Product_Line_Config::get_toepassing_options($line_key);
+    $pakket_opts     = OZ_Product_Line_Config::get_pakket_options($line_key);
+    $option_order    = OZ_Product_Line_Config::get_option_order($line_key);
+    $has_ral_ncs     = !empty($config['ral_ncs']);
+    $ral_ncs_only    = !empty($config['ral_ncs_only']);
+    $variants        = OZ_Product_Processor::get_variant_display_data($product_id);
+} else {
+    $pu_options = $primer_options = $colorfresh_opts = $toepassing_opts = $pakket_opts = false;
+    $option_order = [];
+    $has_ral_ncs = $ral_ncs_only = false;
+    $variants = [];
+}
 
 // Format price for display
 $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
@@ -115,15 +129,20 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
 
       <!-- Product description -->
+      <?php
+      $description = $product->get_description();
+      if (!empty($description)) :
+      ?>
       <div class="oz-product-info-section">
         <h2 class="oz-section-title">Productinformatie</h2>
         <div class="oz-description-wrapper">
           <div class="oz-description-content" id="descContent">
-            <?php echo wp_kses_post($product->get_description()); ?>
+            <?php echo wp_kses_post($description); ?>
           </div>
           <button class="oz-read-more" id="readMoreBtn">Lees meer</button>
         </div>
       </div>
+      <?php endif; ?>
 
       <!-- Specifications table — from product line config, with per-product override -->
       <?php
@@ -151,7 +170,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     </div><!-- .oz-left-column -->
 
 
-    <?php /* ═══ RIGHT COLUMN: OPTIONS SIDEBAR ═══ */ ?>
+    <?php /* ═══ RIGHT COLUMN: SUMMARY SIDEBAR ═══ */ ?>
     <div class="oz-product-summary">
 
       <?php if ($current_color) : ?>
@@ -168,8 +187,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <span class="oz-per-unit">per <?php echo esc_html($config['unit']); ?></span>
       </div>
 
-      <!-- USP chips — from product line config, with per-product override -->
+      <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
+      // USPs: only from _oz_usps meta or product line config — never from short description
       $oz_usps = get_post_meta($product_id, '_oz_usps', true);
       if (empty($oz_usps) || !array_filter($oz_usps)) {
           $oz_usps = isset($config['usps']) ? $config['usps'] : [];
@@ -188,175 +208,187 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       <?php endif; ?>
 
+      <!-- Short description — rendered as regular text, not as USPs -->
+      <?php
+      $short_desc = $product->get_short_description();
+      if (!empty($short_desc)) :
+      ?>
+        <div class="oz-product-short-desc">
+          <?php echo wp_kses_post($short_desc); ?>
+        </div>
+      <?php endif; ?>
+
       <!-- ═══ OPTIONS WIDGET (moves between page and sheet) ═══ -->
       <div id="optionsDesktopHome">
       <div id="optionsWidget">
         <div id="optionsSlotDesktop"></div>
 
         <?php
-        // Render option sections in the configured order
-        foreach ($option_order as $section) :
-          switch ($section) :
+        // Render option sections — only for configured_line mode with options
+        if ($has_options && !empty($option_order)) :
+          foreach ($option_order as $section) :
+            switch ($section) :
 
-            /* ─── COLOR SWATCHES ─── */
-            case 'color': ?>
-              <div class="oz-option-group" data-option="color">
-                <div class="oz-option-header">
-                  Kleur: <span class="oz-selected-value" id="selectedColorLabel"><?php echo esc_html($current_color ?: ''); ?></span>
-                </div>
+              /* ─── COLOR SWATCHES ─── */
+              case 'color': ?>
+                <div class="oz-option-group" data-option="color">
+                  <div class="oz-option-header">
+                    Kleur: <span class="oz-selected-value" id="selectedColorLabel"><?php echo esc_html($current_color ?: ''); ?></span>
+                  </div>
 
-                <?php if ($has_ral_ncs) : ?>
-                  <div id="colorModeSlot"><!-- Built by JS: mode buttons + custom input --></div>
-                <?php endif; ?>
+                  <?php if ($has_ral_ncs) : ?>
+                    <div id="colorModeSlot"><!-- Built by JS: mode buttons + custom input --></div>
+                  <?php endif; ?>
 
-                <?php if (!$ral_ncs_only) : ?>
-                  <?php echo OZ_Frontend_Display::render_color_swatches($product); ?>
-                <?php endif; ?>
-              </div>
-            <?php break;
+                  <?php if (!$ral_ncs_only) : ?>
+                    <?php echo OZ_Frontend_Display::render_color_swatches($product); ?>
+                  <?php endif; ?>
+                </div>
+              <?php break;
 
-            /* ─── PAKKET ─── */
-            case 'pakket':
-              if ($pakket_opts) : ?>
-              <div class="oz-option-group" data-option="pakket">
-                <div class="oz-option-header">Pakket</div>
-                <div class="oz-option-labels">
-                  <?php foreach ($pakket_opts as $opt) : ?>
-                    <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
-                            data-pakket="<?php echo esc_attr($opt['label']); ?>">
-                      <?php echo esc_html($opt['label']); ?>
-                    </button>
-                  <?php endforeach; ?>
+              /* ─── PAKKET ─── */
+              case 'pakket':
+                if ($pakket_opts) : ?>
+                <div class="oz-option-group" data-option="pakket">
+                  <div class="oz-option-header">Pakket</div>
+                  <div class="oz-option-labels">
+                    <?php foreach ($pakket_opts as $opt) : ?>
+                      <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
+                              data-pakket="<?php echo esc_attr($opt['label']); ?>">
+                        <?php echo esc_html($opt['label']); ?>
+                      </button>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
-            /* ─── TOEPASSING ─── */
-            case 'toepassing':
-              if ($toepassing_opts) : ?>
-              <div class="oz-option-group" data-option="toepassing">
-                <div class="oz-option-header">
-                  Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span>
+              /* ─── TOEPASSING ─── */
+              case 'toepassing':
+                if ($toepassing_opts) : ?>
+                <div class="oz-option-group" data-option="toepassing">
+                  <div class="oz-option-header">
+                    Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span>
+                  </div>
+                  <div class="oz-option-labels">
+                    <?php foreach ($toepassing_opts as $i => $label) : ?>
+                      <button class="oz-option-label-btn<?php echo $i === 0 ? ' selected' : ''; ?>"
+                              data-toepassing="<?php echo esc_attr($label); ?>">
+                        <?php echo esc_html($label); ?>
+                      </button>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-                <div class="oz-option-labels">
-                  <?php foreach ($toepassing_opts as $i => $label) : ?>
-                    <button class="oz-option-label-btn<?php echo $i === 0 ? ' selected' : ''; ?>"
-                            data-toepassing="<?php echo esc_attr($label); ?>">
-                      <?php echo esc_html($label); ?>
-                    </button>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
-            /* ─── PRIMER ─── */
-            case 'primer':
-              if ($primer_options) : ?>
-              <div class="oz-option-group" data-option="primer">
-                <div class="oz-option-header">
-                  Primer
-                  <button class="oz-info-btn" data-info-target="primer-info">i</button>
+              /* ─── PRIMER ─── */
+              case 'primer':
+                if ($primer_options) : ?>
+                <div class="oz-option-group" data-option="primer">
+                  <div class="oz-option-header">
+                    Primer
+                    <button class="oz-info-btn" data-info-target="primer-info">i</button>
+                  </div>
+                  <div class="oz-info-tooltip" id="primer-info">
+                    Primer zorgt voor een goede hechting op de ondergrond. Kies de juiste primer op basis van je ondergrond.
+                  </div>
+                  <div class="oz-option-labels">
+                    <?php foreach ($primer_options as $opt) : ?>
+                      <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
+                              data-primer="<?php echo esc_attr($opt['label']); ?>">
+                        <?php echo esc_html($opt['label']); ?>
+                        <?php if ($opt['price'] > 0) : ?>
+                          <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
+                          <span class="oz-recommended">Advies</span>
+                        <?php endif; ?>
+                      </button>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-                <div class="oz-info-tooltip" id="primer-info">
-                  Primer zorgt voor een goede hechting op de ondergrond. Kies de juiste primer op basis van je ondergrond.
-                </div>
-                <div class="oz-option-labels">
-                  <?php foreach ($primer_options as $opt) : ?>
-                    <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
-                            data-primer="<?php echo esc_attr($opt['label']); ?>">
-                      <?php echo esc_html($opt['label']); ?>
-                      <?php if ($opt['price'] > 0) : ?>
-                        <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
-                      <?php endif; ?>
-                      <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
-                        <span class="oz-recommended">Advies</span>
-                      <?php endif; ?>
-                    </button>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
-            /* ─── COLORFRESH ─── */
-            case 'colorfresh':
-              if ($colorfresh_opts) : ?>
-              <div class="oz-option-group" data-option="colorfresh">
-                <div class="oz-option-header">
-                  Colorfresh
-                  <button class="oz-info-btn" data-info-target="colorfresh-info">i</button>
+              /* ─── COLORFRESH ─── */
+              case 'colorfresh':
+                if ($colorfresh_opts) : ?>
+                <div class="oz-option-group" data-option="colorfresh">
+                  <div class="oz-option-header">
+                    Colorfresh
+                    <button class="oz-info-btn" data-info-target="colorfresh-info">i</button>
+                  </div>
+                  <div class="oz-info-tooltip" id="colorfresh-info">
+                    Colorfresh geeft een extra beschermlaag en frist de kleur op na verloop van tijd.
+                  </div>
+                  <div class="oz-option-labels">
+                    <?php foreach ($colorfresh_opts as $opt) : ?>
+                      <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
+                              data-colorfresh="<?php echo esc_attr($opt['label']); ?>">
+                        <?php echo esc_html($opt['label']); ?>
+                        <?php if ($opt['price'] > 0) : ?>
+                          <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
+                          <span class="oz-recommended">Advies</span>
+                        <?php endif; ?>
+                      </button>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-                <div class="oz-info-tooltip" id="colorfresh-info">
-                  Colorfresh geeft een extra beschermlaag en frist de kleur op na verloop van tijd.
-                </div>
-                <div class="oz-option-labels">
-                  <?php foreach ($colorfresh_opts as $opt) : ?>
-                    <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
-                            data-colorfresh="<?php echo esc_attr($opt['label']); ?>">
-                      <?php echo esc_html($opt['label']); ?>
-                      <?php if ($opt['price'] > 0) : ?>
-                        <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
-                      <?php endif; ?>
-                      <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
-                        <span class="oz-recommended">Advies</span>
-                      <?php endif; ?>
-                    </button>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
-            /* ─── PU TOPLAGEN ─── */
-            case 'pu':
-              if ($pu_options) : ?>
-              <div class="oz-option-group" data-option="pu">
-                <div class="oz-option-header">
-                  PU Toplaag
-                  <button class="oz-info-btn" data-info-target="pu-info">i</button>
+              /* ─── PU TOPLAGEN ─── */
+              case 'pu':
+                if ($pu_options) : ?>
+                <div class="oz-option-group" data-option="pu">
+                  <div class="oz-option-header">
+                    PU Toplaag
+                    <button class="oz-info-btn" data-info-target="pu-info">i</button>
+                  </div>
+                  <div class="oz-info-tooltip" id="pu-info">
+                    PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.
+                  </div>
+                  <div class="oz-option-labels">
+                    <?php foreach ($pu_options as $opt) : ?>
+                      <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
+                              data-pu="<?php echo esc_attr($opt['layers'] ?? ''); ?>">
+                        <?php echo esc_html($opt['label']); ?>
+                        <?php if ($opt['price'] > 0) : ?>
+                          <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
+                        <?php endif; ?>
+                        <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
+                          <span class="oz-recommended">Advies</span>
+                        <?php endif; ?>
+                      </button>
+                    <?php endforeach; ?>
+                  </div>
                 </div>
-                <div class="oz-info-tooltip" id="pu-info">
-                  PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.
-                </div>
-                <div class="oz-option-labels">
-                  <?php foreach ($pu_options as $opt) : ?>
-                    <button class="oz-option-label-btn<?php echo $opt['default'] ? ' selected' : ''; ?>"
-                            data-pu="<?php echo esc_attr($opt['layers'] ?? ''); ?>">
-                      <?php echo esc_html($opt['label']); ?>
-                      <?php if ($opt['price'] > 0) : ?>
-                        <span class="oz-price-add">+<?php echo esc_html($fmt_price($opt['price'])); ?></span>
-                      <?php endif; ?>
-                      <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
-                        <span class="oz-recommended">Advies</span>
-                      <?php endif; ?>
-                    </button>
-                  <?php endforeach; ?>
-                </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
 
-            /* ─── TOOLS / GEREEDSCHAP ─── */
-            case "tools":
-              if (!empty($config["has_tools"])) : ?>
-              <div class="oz-option-group" data-option="tools">
-                <div class="oz-option-header">
-                  Gereedschap
-                  <button class="oz-info-btn" data-info-target="tools-info">i</button>
+              /* ─── TOOLS / GEREEDSCHAP ─── */
+              case "tools":
+                if (!empty($config["has_tools"])) : ?>
+                <div class="oz-option-group" data-option="tools">
+                  <div class="oz-option-header">
+                    Gereedschap
+                    <button class="oz-info-btn" data-info-target="tools-info">i</button>
+                  </div>
+                  <div class="oz-info-tooltip" id="tools-info">Kies een complete set of stel je eigen gereedschap samen. Een PU roller gaat ~2 uur mee, een spaan veel langer — zo bestel je precies wat je nodig hebt.</div>
+                  <div id="toolSection">
+                    <!-- Built by buildToolSectionV2() in JS -->
+                  </div>
                 </div>
-                <div class="oz-info-tooltip" id="tools-info">Kies een complete set of stel je eigen gereedschap samen. Een PU roller gaat ~2 uur mee, een spaan veel langer — zo bestel je precies wat je nodig hebt.</div>
-                <div id="toolSection">
-                  <!-- Built by buildToolSectionV2() in JS -->
-                </div>
-              </div>
-              <?php endif;
-            break;
+                <?php endif;
+              break;
 
-          endswitch;
-        endforeach;
+            endswitch;
+          endforeach;
+        endif;
         ?>
 
         <!-- M² advice tip — only for m²-based products -->
@@ -429,6 +461,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span id="priceBaseLabel"><?php echo esc_html($product_name); ?></span>
           <span id="priceBase"><?php echo esc_html($fmt_price($price)); ?></span>
         </div>
+        <?php if ($has_options) : ?>
         <div class="oz-price-line" id="pricePuLine" style="display:none;">
           <span id="pricePuLabel">PU Toplaag</span>
           <span id="pricePu"></span>
@@ -441,14 +474,17 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span id="priceColorfreshLabel">Colorfresh</span>
           <span id="priceColorfresh"></span>
         </div>
+        <?php endif; ?>
         <div class="oz-price-line oz-price-subtotal" id="priceQtyLine" style="display:none;">
           <span id="priceQtyLabel"></span>
           <span id="priceQty"></span>
         </div>
+        <?php if ($has_options && !empty($config['has_tools'])) : ?>
         <div class="oz-price-line" id="priceToolsLine" style="display:none;">
           <span id="priceToolsLabel">Gereedschapsset</span>
           <span id="priceTools"></span>
         </div>
+        <?php endif; ?>
         <div class="oz-price-line oz-price-total">
           <span>Totaal</span>
           <span id="priceTotal"><?php echo esc_html($fmt_price($price)); ?></span>
@@ -479,7 +515,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           'mollie_wc_gateway_ideal',
           'mollie_wc_gateway_creditcard',
           'mollie_wc_gateway_paypal',
-          
+
           'mollie_wc_gateway_applepay',
           'mollie_wc_gateway_bancontact',
           'mollie_wc_gateway_klarnapaylater',
@@ -577,6 +613,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 </div>
 
 
+<?php if ($has_options && !empty($config['has_tools'])) : ?>
 <!-- Upsell modal — appears after add-to-cart if no tools selected -->
 <div class="oz-upsell-overlay" id="upsellOverlay">
   <div class="oz-upsell-modal" id="upsellModal">
@@ -593,5 +630,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <button class="oz-upsell-skip" id="upsellSkipBtn">Nee bedankt, doorgaan zonder gereedschap</button>
   </div>
 </div>
+<?php endif; ?>
 
 <?php get_footer(); ?>
