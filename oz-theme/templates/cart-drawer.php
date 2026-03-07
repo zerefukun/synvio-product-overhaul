@@ -113,7 +113,7 @@ if (function_exists('WC') && WC()->payment_gateways()) {
             <span class="oz-drawer-footer-value">Berekend bij afrekenen</span>
         </div>
         <div class="oz-drawer-footer-row subtotal">
-            <span class="oz-drawer-footer-label">Subtotaal</span>
+            <span class="oz-drawer-footer-label">Subtotaal <small style="font-weight:400;font-size:11px;color:var(--oz-text-muted,#999)">(incl. BTW)</small></span>
             <span class="oz-drawer-footer-value" id="ozFooterSubtotal" aria-live="polite">&euro;0,00</span>
         </div>
         <a href="<?php echo esc_url(wc_get_checkout_url()); ?>" class="oz-checkout-btn" id="ozCheckoutBtn">Doorgaan naar afrekenen</a>
