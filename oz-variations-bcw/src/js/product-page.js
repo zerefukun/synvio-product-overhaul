@@ -113,14 +113,22 @@ function syncUI() {
  * One generic loop replaces 6 repetitions of show/hide + setText.
  */
 function renderBreakdown(prices) {
+  // Desktop base price
   if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
+  // Sheet base price
+  if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
 
   // Each line: row element, value to check, price element, optional label element + text
+  // Desktop AND sheet lines — sheet mirrors desktop but is a separate DOM tree
   var lines = [
+    // Desktop lines
     { line: DOM.pricePuLine,            value: prices.puPrice,         el: DOM.pricePu },
     { line: DOM.pricePrimerLine,        value: prices.primerPrice,     el: DOM.pricePrimer,        labelEl: DOM.pricePrimerLabel,        label: 'Primer: ' + S.primer },
     { line: DOM.priceColorfreshLine,    value: prices.colorfreshPrice, el: DOM.priceColorfresh },
     { line: DOM.priceToolsLine,         value: prices.toolsTotal,      el: DOM.priceTools,          labelEl: DOM.priceToolsLabel,         label: prices.toolsLabel },
+    // Sheet lines (mirror desktop)
+    { line: DOM.sheetPricePuLine,       value: prices.puPrice,         el: DOM.sheetPricePu },
+    { line: DOM.sheetPricePrimerLine,   value: prices.primerPrice,     el: DOM.sheetPricePrimer },
     { line: DOM.sheetPriceToolsLine,    value: prices.toolsTotal,      el: DOM.sheetPriceTools,     labelEl: DOM.sheetPriceToolsLabel,    label: prices.toolsLabel },
   ];
 
@@ -137,14 +145,26 @@ function renderBreakdown(prices) {
     }
   }
 
-  // Quantity line — special: shows when qty > 1, displays "qty × unitPrice"
+  // Quantity line — special: shows when qty > 1, displays "qty × unitPrice = subtotal"
+  // Shows unit subtotal (qty × unitTotal), NOT the grand total (which includes tools)
   if (DOM.priceQtyLine) {
     if (S.qty > 1) {
       show(DOM.priceQtyLine);
       DOM.priceQtyLabel.textContent = S.qty + '× ' + fmt(prices.unitTotal);
-      DOM.priceQty.textContent = fmt(prices.total);
+      DOM.priceQty.textContent = fmt(prices.unitTotal * S.qty);
     } else {
       hide(DOM.priceQtyLine);
+    }
+  }
+
+  // Sheet quantity line — same logic, different DOM elements
+  if (DOM.sheetPriceQtyLine) {
+    if (S.qty > 1) {
+      show(DOM.sheetPriceQtyLine);
+      if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = S.qty + '× ' + fmt(prices.unitTotal);
+      if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = fmt(prices.unitTotal * S.qty);
+    } else {
+      hide(DOM.sheetPriceQtyLine);
     }
   }
 
@@ -361,6 +381,14 @@ function handleClick(e) {
     return;
   }
 
+  // Color swatch click — save tool state before navigating to new product
+  var swatch = target.closest('.oz-color-swatch');
+  if (swatch) {
+    saveToolState();
+    // Let the default link behavior proceed (page navigation)
+    return;
+  }
+
   // Read more toggle
   if (target === DOM.readMoreBtn || target.closest('#readMoreBtn')) {
     e.preventDefault();
@@ -518,6 +546,82 @@ function handleCustomColorInput(e) {
   }
 
   syncUI();
+}
+
+
+/* ═══ TOOL STATE PERSISTENCE (across color switches) ═══════ */
+
+var TOOL_STATE_KEY = 'oz_bcw_tool_state';
+
+/**
+ * Save tool-related state to sessionStorage before navigating to a new color.
+ * Only saves tool mode, extras, and tools — not color/qty/product-specific state.
+ */
+function saveToolState() {
+  try {
+    var data = {
+      toolMode: S.toolMode,
+      extras: S.extras,
+      tools: S.tools,
+      puLayers: S.puLayers,
+      primer: S.primer,
+      colorfresh: S.colorfresh,
+      toepassing: S.toepassing,
+      pakket: S.pakket,
+      qty: S.qty,
+      timestamp: Date.now(),
+    };
+    sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
+  } catch (e) {
+    // sessionStorage not available — silently ignore
+  }
+}
+
+/**
+ * Restore tool state from sessionStorage on page load.
+ * Only restores if saved within the last 60 seconds (i.e., from a color switch, not stale).
+ */
+function restoreToolState() {
+  try {
+    var raw = sessionStorage.getItem(TOOL_STATE_KEY);
+    if (!raw) return;
+
+    // Clear it immediately so it doesn't persist across unrelated visits
+    sessionStorage.removeItem(TOOL_STATE_KEY);
+
+    var data = JSON.parse(raw);
+
+    // Only restore if saved less than 60 seconds ago (color switch)
+    if (Date.now() - data.timestamp > 60000) return;
+
+    // Restore tool selections
+    if (data.toolMode) updateState({ toolMode: data.toolMode });
+    if (data.qty > 1) updateState({ qty: data.qty });
+
+    // Restore option selections (puLayers, primer, etc.)
+    if (data.puLayers !== undefined && data.puLayers !== null) updateState({ puLayers: data.puLayers });
+    if (data.primer) updateState({ primer: data.primer });
+    if (data.colorfresh) updateState({ colorfresh: data.colorfresh });
+    if (data.toepassing) updateState({ toepassing: data.toepassing });
+    if (data.pakket) updateState({ pakket: data.pakket });
+
+    // Restore nested tool/extra state — merge carefully
+    if (data.extras) {
+      Object.keys(data.extras).forEach(function(id) {
+        if (S.extras[id]) S.extras[id] = data.extras[id];
+      });
+    }
+    if (data.tools) {
+      Object.keys(data.tools).forEach(function(id) {
+        if (S.tools[id]) S.tools[id] = data.tools[id];
+      });
+    }
+
+    // Update qty input to match restored state
+    if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
+  } catch (e) {
+    // Parse error or sessionStorage unavailable — silently ignore
+  }
 }
 
 
@@ -752,6 +856,9 @@ function init() {
 
   // Build tool section DOM (if product has tools)
   buildToolSectionV2("toolSection");
+
+  // Restore tool state from sessionStorage (e.g., after color switch)
+  restoreToolState();
 
   // Initial render — set highlights and prices from defaults
   syncUI();

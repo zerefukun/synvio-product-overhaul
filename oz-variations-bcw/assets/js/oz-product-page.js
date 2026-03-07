@@ -259,9 +259,17 @@
     DOM.priceToolsLine = document.getElementById("priceToolsLine");
     DOM.priceToolsLabel = document.getElementById("priceToolsLabel");
     DOM.priceTools = document.getElementById("priceTools");
+    DOM.sheetPriceBase = document.getElementById("sheetPriceBase");
+    DOM.sheetPricePuLine = document.getElementById("sheetPricePuLine");
+    DOM.sheetPricePu = document.getElementById("sheetPricePu");
+    DOM.sheetPricePrimerLine = document.getElementById("sheetPricePrimerLine");
+    DOM.sheetPricePrimer = document.getElementById("sheetPricePrimer");
     DOM.sheetPriceToolsLine = document.getElementById("sheetPriceToolsLine");
     DOM.sheetPriceToolsLabel = document.getElementById("sheetPriceToolsLabel");
     DOM.sheetPriceTools = document.getElementById("sheetPriceTools");
+    DOM.sheetPriceQtyLine = document.getElementById("sheetPriceQtyLine");
+    DOM.sheetPriceQtyLabel = document.getElementById("sheetPriceQtyLabel");
+    DOM.sheetPriceQtyNote = document.getElementById("sheetPriceQtyNote");
     DOM.upsellOverlay = document.getElementById("upsellOverlay");
     DOM.upsellAddBtn = document.getElementById("upsellAddBtn");
     DOM.upsellSkipBtn = document.getElementById("upsellSkipBtn");
@@ -550,11 +558,16 @@
       }
     }, renderBreakdown = function(prices) {
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
+      if (DOM.sheetPriceBase) DOM.sheetPriceBase.textContent = fmt(prices.base);
       var lines = [
+        // Desktop lines
         { line: DOM.pricePuLine, value: prices.puPrice, el: DOM.pricePu },
         { line: DOM.pricePrimerLine, value: prices.primerPrice, el: DOM.pricePrimer, labelEl: DOM.pricePrimerLabel, label: "Primer: " + S.primer },
         { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh },
         { line: DOM.priceToolsLine, value: prices.toolsTotal, el: DOM.priceTools, labelEl: DOM.priceToolsLabel, label: prices.toolsLabel },
+        // Sheet lines (mirror desktop)
+        { line: DOM.sheetPricePuLine, value: prices.puPrice, el: DOM.sheetPricePu },
+        { line: DOM.sheetPricePrimerLine, value: prices.primerPrice, el: DOM.sheetPricePrimer },
         { line: DOM.sheetPriceToolsLine, value: prices.toolsTotal, el: DOM.sheetPriceTools, labelEl: DOM.sheetPriceToolsLabel, label: prices.toolsLabel }
       ];
       for (var i = 0; i < lines.length; i++) {
@@ -572,9 +585,18 @@
         if (S.qty > 1) {
           show(DOM.priceQtyLine);
           DOM.priceQtyLabel.textContent = S.qty + "\xD7 " + fmt(prices.unitTotal);
-          DOM.priceQty.textContent = fmt(prices.total);
+          DOM.priceQty.textContent = fmt(prices.unitTotal * S.qty);
         } else {
           hide(DOM.priceQtyLine);
+        }
+      }
+      if (DOM.sheetPriceQtyLine) {
+        if (S.qty > 1) {
+          show(DOM.sheetPriceQtyLine);
+          if (DOM.sheetPriceQtyLabel) DOM.sheetPriceQtyLabel.textContent = S.qty + "\xD7 " + fmt(prices.unitTotal);
+          if (DOM.sheetPriceQtyNote) DOM.sheetPriceQtyNote.textContent = fmt(prices.unitTotal * S.qty);
+        } else {
+          hide(DOM.sheetPriceQtyLine);
         }
       }
       if (DOM.priceTotal) DOM.priceTotal.textContent = fmt(prices.total);
@@ -713,6 +735,11 @@
         syncUI();
         return;
       }
+      var swatch = target.closest(".oz-color-swatch");
+      if (swatch) {
+        saveToolState();
+        return;
+      }
       if (target === DOM.readMoreBtn || target.closest("#readMoreBtn")) {
         e.preventDefault();
         toggleReadMore();
@@ -815,6 +842,50 @@
         }
       }
       syncUI();
+    }, saveToolState = function() {
+      try {
+        var data = {
+          toolMode: S.toolMode,
+          extras: S.extras,
+          tools: S.tools,
+          puLayers: S.puLayers,
+          primer: S.primer,
+          colorfresh: S.colorfresh,
+          toepassing: S.toepassing,
+          pakket: S.pakket,
+          qty: S.qty,
+          timestamp: Date.now()
+        };
+        sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
+      } catch (e) {
+      }
+    }, restoreToolState = function() {
+      try {
+        var raw = sessionStorage.getItem(TOOL_STATE_KEY);
+        if (!raw) return;
+        sessionStorage.removeItem(TOOL_STATE_KEY);
+        var data = JSON.parse(raw);
+        if (Date.now() - data.timestamp > 6e4) return;
+        if (data.toolMode) updateState({ toolMode: data.toolMode });
+        if (data.qty > 1) updateState({ qty: data.qty });
+        if (data.puLayers !== void 0 && data.puLayers !== null) updateState({ puLayers: data.puLayers });
+        if (data.primer) updateState({ primer: data.primer });
+        if (data.colorfresh) updateState({ colorfresh: data.colorfresh });
+        if (data.toepassing) updateState({ toepassing: data.toepassing });
+        if (data.pakket) updateState({ pakket: data.pakket });
+        if (data.extras) {
+          Object.keys(data.extras).forEach(function(id) {
+            if (S.extras[id]) S.extras[id] = data.extras[id];
+          });
+        }
+        if (data.tools) {
+          Object.keys(data.tools).forEach(function(id) {
+            if (S.tools[id]) S.tools[id] = data.tools[id];
+          });
+        }
+        if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
+      } catch (e) {
+      }
     }, openSheet = function() {
       if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
       _sheetScrollY = window.scrollY;
@@ -929,6 +1000,7 @@
       cacheDom();
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
+      restoreToolState();
       syncUI();
       document.addEventListener("click", handleClick);
       if (DOM.qtyInput) {
@@ -982,6 +1054,7 @@
         }
       }
     };
+    TOOL_STATE_KEY = "oz_bcw_tool_state";
     _sheetScrollY = 0;
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", init);
@@ -989,6 +1062,7 @@
       init();
     }
   }
+  var TOOL_STATE_KEY;
   var _sheetScrollY;
 })();
 //# sourceMappingURL=oz-product-page.js.map

@@ -15,12 +15,16 @@
   display: flex;
   gap: 6px;
   margin-bottom: 10px;
+  /* Prevent overflow on narrow mobile screens */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Scoped under .oz-product-page to beat the Flatsome button reset */
 .oz-product-page .oz-tool-mode-btn {
   flex: 1;
-  padding: 10px 10px;
+  min-width: 0; /* allow shrinking below content width */
+  padding: 10px 8px;
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
   background: var(--oz-label-bg);

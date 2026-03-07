@@ -1127,10 +1127,13 @@
   display: flex;
   gap: 6px;
   margin-bottom: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .oz-product-page .oz-tool-mode-btn {
   flex: 1;
-  padding: 10px 10px;
+  min-width: 0;
+  padding: 10px 8px;
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
   background: var(--oz-label-bg);
@@ -1638,7 +1641,8 @@ button.oz-sticky-btn:active {
 }
 .oz-bottom-sheet .oz-tool-mode-btn {
   flex: 1 !important;
-  padding: 10px 10px !important;
+  min-width: 0 !important;
+  padding: 10px 8px !important;
   border: 1.5px solid var(--oz-label-border) !important;
   border-radius: 8px !important;
   background: var(--oz-label-bg) !important;
@@ -1669,6 +1673,11 @@ button.oz-sticky-btn:active {
 .oz-bottom-sheet .oz-tool-mode-btn.selected .oz-price-add {
   opacity: 0.9;
 }
+.oz-bottom-sheet .oz-tool-qty-wrap {
+  border: 1px solid var(--oz-border) !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
 .oz-bottom-sheet .oz-tool-qty-btn {
   width: 28px !important;
   height: 28px !important;
@@ -1686,8 +1695,10 @@ button.oz-sticky-btn:active {
 .oz-bottom-sheet .oz-tool-qty-btn:hover {
   background: var(--oz-border-light) !important;
 }
-.oz-bottom-sheet .oz-tool-qty-input {
+.oz-bottom-sheet .oz-tool-qty-input,
+.oz-bottom-sheet input.oz-tool-qty-input {
   width: 30px !important;
+  height: 28px !important;
   text-align: center !important;
   border: none !important;
   border-left: 1px solid var(--oz-border) !important;
