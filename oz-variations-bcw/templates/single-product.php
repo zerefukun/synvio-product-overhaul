@@ -615,8 +615,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                 </div>
       </div>
 
-      <!-- Short description — rendered as regular text at bottom of sidebar -->
-      <?php
       <?php /* Short description removed — client decision 2026-03-07 */ ?>
 
     </div><!-- .oz-product-summary -->
