@@ -1653,27 +1653,29 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-sticky-desktop {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
     width: 100%;
     min-width: 0;
+    overflow: hidden;
   }
   .oz-sticky-bar {
-    padding: 10px 32px;
+    padding: 10px 24px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
-    max-width: 100%;
-    overflow: hidden;
   }
   .oz-sticky-d-title {
     font-size: 14px;
     font-weight: 700;
     color: var(--oz-text-primary);
     white-space: nowrap;
-    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 80px;
   }
   .oz-sticky-d-color {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--oz-accent);
     white-space: nowrap;
     flex-shrink: 0;
@@ -1682,7 +1684,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
     display: none;
   }
   .oz-sticky-d-options {
-    flex: 1;
+    flex: 1 1 0;
     min-width: 0;
     font-size: 12px;
     color: var(--oz-text-muted);
@@ -1697,18 +1699,16 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-sticky-d-right {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     flex-shrink: 0;
-    white-space: nowrap;
   }
   .oz-sticky-d-price {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--oz-text-primary);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
     white-space: nowrap;
     line-height: 1;
-    position: relative;
   }
   .oz-sticky-d-unit {
     font-size: 10px;
@@ -1727,26 +1727,27 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-sticky-d-qty[data-qty="1"] {
     display: none;
   }
-  .oz-sticky-d-btn {
+  button.oz-sticky-d-btn {
     width: auto !important;
-    min-width: 170px;
-    padding: 12px 24px !important;
-    flex-shrink: 0;
+    padding: 10px 20px !important;
     border-radius: 8px !important;
     background: var(--oz-cta) !important;
     color: var(--oz-cta-text) !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     border: none !important;
     cursor: pointer;
     font-family: "Raleway", sans-serif;
     box-shadow: none !important;
     line-height: 1 !important;
+    min-height: auto !important;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: background-color 0.2s var(--oz-ease);
   }
-  .oz-sticky-d-btn:hover {
+  button.oz-sticky-d-btn:hover {
     background: var(--oz-cta-hover) !important;
   }
 }

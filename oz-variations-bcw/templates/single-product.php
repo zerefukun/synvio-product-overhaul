@@ -672,7 +672,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <div class="oz-sticky-d-options" id="stickyDOptions"></div>
     <div class="oz-sticky-d-right">
       <span class="oz-sticky-d-price">
-        <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span><?php if (!empty($config['unitM2'])) : ?><sup class="oz-sticky-d-unit">/m²</sup><?php endif; ?>
+        <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span><?php if (!empty($config['unitM2'])) : ?><sup class="oz-sticky-d-unit"><?php echo esc_html($config['unitM2']); ?>m²</sup><?php endif; ?>
       </span>
       <span class="oz-sticky-d-qty" id="stickyDQty">1×</span>
       <button class="oz-sticky-btn oz-sticky-d-btn" id="stickyDBtn">In winkelmand</button>
