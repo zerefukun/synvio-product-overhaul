@@ -50,6 +50,12 @@
       S.tools[t.id] = { on: false, qty: 0, size: 0 };
     });
   }
+  function updateState(patch) {
+    var keys = Object.keys(patch);
+    for (var i = 0; i < keys.length; i++) {
+      S[keys[i]] = patch[keys[i]];
+    }
+  }
   function fmt(n) {
     n = parseFloat(n) || 0;
     return "\u20AC" + n.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -216,32 +222,10 @@
     }
     return payload;
   }
-  function payloadToFormData(payload) {
-    var data = new FormData();
-    Object.keys(payload).forEach(function(key) {
-      if (key === "_extras" || key === "_tools") return;
-      data.append(key, payload[key]);
-    });
-    if (payload._extras) {
-      Object.keys(payload._extras).forEach(function(id) {
-        var item = payload._extras[id];
-        Object.keys(item).forEach(function(field) {
-          data.append("oz_extras[" + id + "][" + field + "]", item[field]);
-        });
-      });
-    }
-    if (payload._tools) {
-      Object.keys(payload._tools).forEach(function(id) {
-        var item = payload._tools[id];
-        Object.keys(item).forEach(function(field) {
-          data.append("oz_tools[" + id + "][" + field + "]", item[field]);
-        });
-      });
-    }
-    return data;
-  }
   var CHECKMARK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var NUDGE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+
+  // src/js/dom.js
   var DOM = {};
   function cacheDom() {
     DOM.page = document.getElementById("oz-product-page");
@@ -480,7 +464,7 @@
     });
   }
   function setToolMode(mode) {
-    S.toolMode = mode;
+    updateState({ toolMode: mode });
     _onSync();
   }
   function toggleTool(id) {
@@ -530,7 +514,30 @@
   // src/js/product-page.js
   if (!P) {
   } else {
-    let syncUI = function() {
+    let payloadToFormData = function(payload) {
+      var data = new FormData();
+      Object.keys(payload).forEach(function(key) {
+        if (key === "_extras" || key === "_tools") return;
+        data.append(key, payload[key]);
+      });
+      if (payload._extras) {
+        Object.keys(payload._extras).forEach(function(id) {
+          var item = payload._extras[id];
+          Object.keys(item).forEach(function(field) {
+            data.append("oz_extras[" + id + "][" + field + "]", item[field]);
+          });
+        });
+      }
+      if (payload._tools) {
+        Object.keys(payload._tools).forEach(function(id) {
+          var item = payload._tools[id];
+          Object.keys(item).forEach(function(field) {
+            data.append("oz_tools[" + id + "][" + field + "]", item[field]);
+          });
+        });
+      }
+      return data;
+    }, syncUI = function() {
       var prices = calculatePrices(P, S);
       renderBreakdown(prices);
       if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
@@ -634,15 +641,15 @@
       html += "</div>";
       DOM.colorModeSlot.innerHTML = html;
     }, openUpsell = function() {
-      S.upsellOpen = true;
+      updateState({ upsellOpen: true });
       document.body.style.overflow = "hidden";
       renderUpsellModal();
     }, closeUpsell = function() {
-      S.upsellOpen = false;
+      updateState({ upsellOpen: false });
       document.body.style.overflow = "";
       renderUpsellModal();
     }, upsellAddSet = function() {
-      S.toolMode = "set";
+      updateState({ toolMode: "set" });
       closeUpsell();
       syncUI();
       submitCart();
@@ -672,15 +679,15 @@
       if (btn) {
         e.preventDefault();
         if (btn.hasAttribute("data-pu")) {
-          S.puLayers = parseInt(btn.getAttribute("data-pu"), 10);
+          updateState({ puLayers: parseInt(btn.getAttribute("data-pu"), 10) });
         } else if (btn.hasAttribute("data-primer")) {
-          S.primer = btn.getAttribute("data-primer");
+          updateState({ primer: btn.getAttribute("data-primer") });
         } else if (btn.hasAttribute("data-colorfresh")) {
-          S.colorfresh = btn.getAttribute("data-colorfresh");
+          updateState({ colorfresh: btn.getAttribute("data-colorfresh") });
         } else if (btn.hasAttribute("data-toepassing")) {
-          S.toepassing = btn.getAttribute("data-toepassing");
+          updateState({ toepassing: btn.getAttribute("data-toepassing") });
         } else if (btn.hasAttribute("data-pakket")) {
-          S.pakket = btn.getAttribute("data-pakket");
+          updateState({ pakket: btn.getAttribute("data-pakket") });
         }
         syncUI();
         return;
@@ -702,7 +709,7 @@
       }
       if (modeBtn) {
         e.preventDefault();
-        S.colorMode = modeBtn.getAttribute("data-mode");
+        updateState({ colorMode: modeBtn.getAttribute("data-mode") });
         syncUI();
         return;
       }
@@ -761,16 +768,15 @@
       if (!tooltip) return;
       tooltip.classList.toggle("visible");
     }, changeQty = function(delta) {
-      var newQty = S.qty + delta;
-      newQty = Math.max(1, Math.min(99, newQty));
-      S.qty = newQty;
+      var newQty = clampToolQty(S.qty, delta);
+      updateState({ qty: newQty });
       if (DOM.qtyInput) DOM.qtyInput.value = newQty;
       syncUI();
     }, handleQtyInput = function() {
       var val = parseInt(DOM.qtyInput.value, 10);
       if (isNaN(val) || val < 1) val = 1;
       if (val > 99) val = 99;
-      S.qty = val;
+      updateState({ qty: val });
       DOM.qtyInput.value = val;
       syncUI();
     }, toggleReadMore = function() {
@@ -781,7 +787,7 @@
       var input = e.target;
       var value = input.value.trim();
       var hint = document.getElementById("customColorHint");
-      S.customColor = value;
+      updateState({ customColor: value });
       if (!value) {
         input.classList.remove("valid", "invalid");
         if (hint) {
@@ -811,21 +817,21 @@
       syncUI();
     }, openSheet = function() {
       if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
-      S.scrollY = window.scrollY;
+      _sheetScrollY = window.scrollY;
       DOM.slotSheet.appendChild(DOM.optionsWidget);
       if (DOM.desktopHome) DOM.desktopHome.style.minHeight = "0";
-      S.sheetOpen = true;
+      updateState({ sheetOpen: true });
       DOM.sheetOverlay.classList.add("open");
       DOM.bottomSheet.classList.add("open");
       document.body.style.overflow = "hidden";
     }, closeSheet = function() {
       if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
-      S.sheetOpen = false;
+      updateState({ sheetOpen: false });
       DOM.sheetOverlay.classList.remove("open");
       DOM.bottomSheet.classList.remove("open");
       document.body.style.overflow = "";
       if (DOM.desktopHome) DOM.desktopHome.appendChild(DOM.optionsWidget);
-      if (S.scrollY !== void 0) window.scrollTo(0, S.scrollY);
+      window.scrollTo(0, _sheetScrollY);
     }, addToCart = function() {
       var error = validateCartState(P, S);
       if (error) {
@@ -887,7 +893,6 @@
       var el = document.createElement("div");
       el.className = "oz-cart-msg oz-cart-error";
       el.textContent = msg;
-      el.style.cssText = "color:#E53E3E;font-size:13px;margin-top:8px;";
       var cartRow = document.querySelector(".oz-cart-row");
       if (cartRow && cartRow.parentNode) {
         cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
@@ -977,11 +982,13 @@
         }
       }
     };
+    _sheetScrollY = 0;
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", init);
     } else {
       init();
     }
   }
+  var _sheetScrollY;
 })();
 //# sourceMappingURL=oz-product-page.js.map

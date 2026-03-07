@@ -39,7 +39,7 @@ const jsConfig = {
   // Single file per entry — all imports inlined
   bundle: true,
 
-  // Minify for production (comments stripped, names shortened)
+  // No minification — readable output for debugging
   minify: false,
 
   // Source maps for debugging (separate .map file, not inline)

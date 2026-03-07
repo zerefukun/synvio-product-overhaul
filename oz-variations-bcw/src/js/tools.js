@@ -15,7 +15,7 @@
  * @since 2.0.0
  */
 
-import { P, S, fmt, getItemPrice, clampToolQty, CHECKMARK_SVG, NUDGE_ICON } from './state.js';
+import { P, S, updateState, fmt, getItemPrice, clampToolQty, CHECKMARK_SVG, NUDGE_ICON } from './state.js';
 
 
 /* ═══ SYNC CALLBACK ═════════════════════════════════════════ */
@@ -276,7 +276,7 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
 
 /** Switch tool mode: 'none', 'set', or 'individual' */
 function setToolMode(mode) {
-  S.toolMode = mode;
+  updateState({ toolMode: mode });
   _onSync();
 }
 

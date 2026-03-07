@@ -143,7 +143,7 @@
 }
 
 .oz-custom-color-input.invalid {
-  border-color: #E53E3E;
+  border-color: var(--oz-error);
 }
 
 .oz-custom-color-input.valid {
@@ -158,7 +158,7 @@
 }
 
 .oz-custom-color-hint.error {
-  color: #E53E3E;
+  color: var(--oz-error);
 }
 
 .oz-custom-color-hint.success,

@@ -21,13 +21,57 @@
  * @since 2.0.0
  */
 
-import { P, S, DOM, cacheDom, show, hide, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool, validateCartState, buildCartPayload, payloadToFormData } from './state.js';
+import { P, S, updateState, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
+import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
 
 // Guard: only run on pages with ozProduct data
 if (!P) {
   // No-op — not a product page, bail out of the IIFE
 } else {
+
+
+/* ═══ FORM DATA CONVERSION ════════════════════════════════ */
+
+/**
+ * Convert a cart payload object to FormData.
+ * Handles the nested _extras and _tools objects as bracketed keys.
+ * Lives in the shell (not state.js) because FormData is a browser API.
+ *
+ * @param {Object} payload  From buildCartPayload()
+ * @return {FormData}
+ */
+function payloadToFormData(payload) {
+  var data = new FormData();
+
+  Object.keys(payload).forEach(function(key) {
+    // Skip internal nested objects — expanded separately below
+    if (key === '_extras' || key === '_tools') return;
+    data.append(key, payload[key]);
+  });
+
+  // Expand nested extras: oz_extras[id][field]
+  if (payload._extras) {
+    Object.keys(payload._extras).forEach(function(id) {
+      var item = payload._extras[id];
+      Object.keys(item).forEach(function(field) {
+        data.append('oz_extras[' + id + '][' + field + ']', item[field]);
+      });
+    });
+  }
+
+  // Expand nested tools: oz_tools[id][field]
+  if (payload._tools) {
+    Object.keys(payload._tools).forEach(function(id) {
+      var item = payload._tools[id];
+      Object.keys(item).forEach(function(field) {
+        data.append('oz_tools[' + id + '][' + field + ']', item[field]);
+      });
+    });
+  }
+
+  return data;
+}
 
 
 /* ═══ RENDERERS ══════════════════════════════════════════════ */
@@ -215,21 +259,21 @@ function buildColorModeUI() {
 
 /** Open upsell modal — called from addToCart when no tools selected */
 function openUpsell() {
-  S.upsellOpen = true;
+  updateState({ upsellOpen: true });
   document.body.style.overflow = 'hidden';
   renderUpsellModal();
 }
 
 /** Close upsell modal */
 function closeUpsell() {
-  S.upsellOpen = false;
+  updateState({ upsellOpen: false });
   document.body.style.overflow = '';
   renderUpsellModal();
 }
 
 /** Upsell: add the Kant & Klaar set and proceed to cart */
 function upsellAddSet() {
-  S.toolMode = 'set';
+  updateState({ toolMode: 'set' });
   closeUpsell();
   syncUI();
   submitCart();
@@ -274,15 +318,15 @@ function handleClick(e) {
   if (btn) {
     e.preventDefault();
     if (btn.hasAttribute('data-pu')) {
-      S.puLayers = parseInt(btn.getAttribute('data-pu'), 10);
+      updateState({ puLayers: parseInt(btn.getAttribute('data-pu'), 10) });
     } else if (btn.hasAttribute('data-primer')) {
-      S.primer = btn.getAttribute('data-primer');
+      updateState({ primer: btn.getAttribute('data-primer') });
     } else if (btn.hasAttribute('data-colorfresh')) {
-      S.colorfresh = btn.getAttribute('data-colorfresh');
+      updateState({ colorfresh: btn.getAttribute('data-colorfresh') });
     } else if (btn.hasAttribute('data-toepassing')) {
-      S.toepassing = btn.getAttribute('data-toepassing');
+      updateState({ toepassing: btn.getAttribute('data-toepassing') });
     } else if (btn.hasAttribute('data-pakket')) {
-      S.pakket = btn.getAttribute('data-pakket');
+      updateState({ pakket: btn.getAttribute('data-pakket') });
     }
     syncUI();
     return;
@@ -312,7 +356,7 @@ function handleClick(e) {
   // Color mode buttons (RAL/NCS vs swatch)
   if (modeBtn) {
     e.preventDefault();
-    S.colorMode = modeBtn.getAttribute('data-mode');
+    updateState({ colorMode: modeBtn.getAttribute('data-mode') });
     syncUI();
     return;
   }
@@ -403,12 +447,12 @@ function toggleInfoTooltip(btn) {
 
 /**
  * Change quantity by a delta (+1 or -1). Clamps between 1–99.
+ * Uses clampToolQty from state.js (same clamping logic, no duplication).
  * @param {number} delta
  */
 function changeQty(delta) {
-  var newQty = S.qty + delta;
-  newQty = Math.max(1, Math.min(99, newQty));
-  S.qty = newQty;
+  var newQty = clampToolQty(S.qty, delta);
+  updateState({ qty: newQty });
   if (DOM.qtyInput) DOM.qtyInput.value = newQty;
   syncUI();
 }
@@ -420,7 +464,7 @@ function handleQtyInput() {
   var val = parseInt(DOM.qtyInput.value, 10);
   if (isNaN(val) || val < 1) val = 1;
   if (val > 99) val = 99;
-  S.qty = val;
+  updateState({ qty: val });
   DOM.qtyInput.value = val;
   syncUI();
 }
@@ -443,7 +487,7 @@ function handleCustomColorInput(e) {
   var value = input.value.trim();
   var hint = document.getElementById('customColorHint');
 
-  S.customColor = value;
+  updateState({ customColor: value });
 
   // Clear validation state if empty
   if (!value) {
@@ -479,6 +523,9 @@ function handleCustomColorInput(e) {
 
 /* ═══ BOTTOM SHEET ══════════════════════════════════════════ */
 
+// Local variable for scroll position — browser ephemera, not domain state
+var _sheetScrollY = 0;
+
 /**
  * Open the bottom sheet on mobile.
  * Moves #optionsWidget into the sheet slot.
@@ -487,7 +534,7 @@ function openSheet() {
   if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
 
   // Remember scroll position so we can restore it on close
-  S.scrollY = window.scrollY;
+  _sheetScrollY = window.scrollY;
 
   // Move options widget into sheet
   DOM.slotSheet.appendChild(DOM.optionsWidget);
@@ -495,7 +542,7 @@ function openSheet() {
   // Collapse the empty desktop home so the page doesn't show a gap
   if (DOM.desktopHome) DOM.desktopHome.style.minHeight = '0';
 
-  S.sheetOpen = true;
+  updateState({ sheetOpen: true });
   DOM.sheetOverlay.classList.add('open');
   DOM.bottomSheet.classList.add('open');
   document.body.style.overflow = 'hidden'; // prevent body scroll
@@ -508,7 +555,7 @@ function openSheet() {
 function closeSheet() {
   if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
 
-  S.sheetOpen = false;
+  updateState({ sheetOpen: false });
   DOM.sheetOverlay.classList.remove('open');
   DOM.bottomSheet.classList.remove('open');
   document.body.style.overflow = '';
@@ -517,7 +564,7 @@ function closeSheet() {
   if (DOM.desktopHome) DOM.desktopHome.appendChild(DOM.optionsWidget);
 
   // Restore scroll position
-  if (S.scrollY !== undefined) window.scrollTo(0, S.scrollY);
+  window.scrollTo(0, _sheetScrollY);
 }
 
 
@@ -559,7 +606,7 @@ function submitCart() {
   // Pure: build payload object from state
   var payload = buildCartPayload(P, S);
 
-  // Convert to FormData (handles nested tool/extra keys)
+  // Convert to FormData (browser API — lives in this shell module)
   var data = payloadToFormData(payload);
 
   // Disable button + show loading state
@@ -631,7 +678,6 @@ function showCartError(msg) {
   var el = document.createElement('div');
   el.className = 'oz-cart-msg oz-cart-error';
   el.textContent = msg;
-  el.style.cssText = 'color:#E53E3E;font-size:13px;margin-top:8px;';
   var cartRow = document.querySelector('.oz-cart-row');
   if (cartRow && cartRow.parentNode) {
     cartRow.parentNode.insertBefore(el, cartRow.nextSibling);

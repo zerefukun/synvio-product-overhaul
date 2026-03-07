@@ -4,10 +4,11 @@
  * Contains:
  * - P (ozProduct config from PHP)
  * - S (mutable application state)
+ * - updateState() — single gate for all state mutations
  * - All pure helper functions (fmt, calculatePrices, validators)
- * - DOM cache and show/hide helpers
  * - SVG constants
  *
+ * No browser APIs — DOM cache lives in dom.js.
  * Zero dependencies — imported by all other modules.
  *
  * @package OZ_Variations_BCW
@@ -91,6 +92,22 @@ if (P && P.hasTools && P.toolConfig && P.toolConfig.extras) {
 // Initialize individual tools state from tool config
 if (P && P.hasTools && P.toolConfig && P.toolConfig.tools) {
   P.toolConfig.tools.forEach(function(t) { S.tools[t.id] = { on: false, qty: 0, size: 0 }; });
+}
+
+
+/* ═══ STATE MUTATION GATE ═══════════════════════════════════ */
+
+/**
+ * Single gate for all state mutations.
+ * Centralizes writes to S — one place to log, guard, or intercept.
+ *
+ * @param {Object} patch  Key-value pairs to merge into S
+ */
+export function updateState(patch) {
+  var keys = Object.keys(patch);
+  for (var i = 0; i < keys.length; i++) {
+    S[keys[i]] = patch[keys[i]];
+  }
 }
 
 
@@ -350,105 +367,8 @@ export function buildCartPayload(config, state) {
   return payload;
 }
 
-/**
- * Convert a cart payload object to FormData.
- * Handles the nested _extras and _tools objects as bracketed keys.
- *
- * @param {Object} payload  From buildCartPayload()
- * @return {FormData}
- */
-export function payloadToFormData(payload) {
-  var data = new FormData();
-
-  Object.keys(payload).forEach(function(key) {
-    // Skip internal nested objects — expanded separately below
-    if (key === '_extras' || key === '_tools') return;
-    data.append(key, payload[key]);
-  });
-
-  // Expand nested extras: oz_extras[id][field]
-  if (payload._extras) {
-    Object.keys(payload._extras).forEach(function(id) {
-      var item = payload._extras[id];
-      Object.keys(item).forEach(function(field) {
-        data.append('oz_extras[' + id + '][' + field + ']', item[field]);
-      });
-    });
-  }
-
-  // Expand nested tools: oz_tools[id][field]
-  if (payload._tools) {
-    Object.keys(payload._tools).forEach(function(id) {
-      var item = payload._tools[id];
-      Object.keys(item).forEach(function(field) {
-        data.append('oz_tools[' + id + '][' + field + ']', item[field]);
-      });
-    });
-  }
-
-  return data;
-}
-
 /* Checkmark SVG for tool custom checkbox */
 export var CHECKMARK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 /* Info icon SVG for smart nudge */
 export var NUDGE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-
-
-/* ═══ DOM HELPERS ═══════════════════════════════════════════ */
-
-// Cache DOM references for frequently accessed elements
-export var DOM = {};
-
-export function cacheDom() {
-  DOM.page           = document.getElementById('oz-product-page');
-  DOM.mainImg        = document.getElementById('mainImg');
-  DOM.qtyInput       = document.getElementById('qtyInput');
-  DOM.addToCartBtn   = document.getElementById('addToCartBtn');
-  DOM.descContent    = document.getElementById('descContent');
-  DOM.readMoreBtn    = document.getElementById('readMoreBtn');
-  DOM.stickyBar      = document.getElementById('stickyBar');
-  DOM.stickyBtn      = document.getElementById('stickyBtn');
-  DOM.stickyPrice    = document.getElementById('stickyPrice');
-  DOM.sheetOverlay   = document.getElementById('sheetOverlay');
-  DOM.bottomSheet    = document.getElementById('bottomSheet');
-  DOM.sheetTotal     = document.getElementById('sheetTotal');
-  DOM.sheetCtaBtn    = document.getElementById('sheetCtaBtn');
-  DOM.optionsWidget  = document.getElementById('optionsWidget');
-  DOM.slotDesktop    = document.getElementById('optionsSlotDesktop');
-  DOM.desktopHome    = document.getElementById('optionsDesktopHome');
-  DOM.slotSheet      = document.getElementById('optionsSlotSheet');
-  DOM.colorModeSlot  = document.getElementById('colorModeSlot');
-  DOM.colorLabel     = document.getElementById('colorLabel');
-
-  // Price breakdown elements
-  DOM.priceBase          = document.getElementById('priceBase');
-  DOM.pricePuLine        = document.getElementById('pricePuLine');
-  DOM.pricePu            = document.getElementById('pricePu');
-  DOM.pricePuLabel       = document.getElementById('pricePuLabel');
-  DOM.pricePrimerLine    = document.getElementById('pricePrimerLine');
-  DOM.pricePrimer        = document.getElementById('pricePrimer');
-  DOM.pricePrimerLabel   = document.getElementById('pricePrimerLabel');
-  DOM.priceColorfreshLine = document.getElementById('priceColorfreshLine');
-  DOM.priceColorfresh    = document.getElementById('priceColorfresh');
-  DOM.priceToolsLine     = document.getElementById('priceToolsLine');
-  DOM.priceToolsLabel    = document.getElementById('priceToolsLabel');
-  DOM.priceTools         = document.getElementById('priceTools');
-  DOM.sheetPriceToolsLine  = document.getElementById('sheetPriceToolsLine');
-  DOM.sheetPriceToolsLabel = document.getElementById('sheetPriceToolsLabel');
-  DOM.sheetPriceTools      = document.getElementById('sheetPriceTools');
-  DOM.upsellOverlay      = document.getElementById('upsellOverlay');
-  DOM.upsellAddBtn       = document.getElementById('upsellAddBtn');
-  DOM.upsellSkipBtn      = document.getElementById('upsellSkipBtn');
-  DOM.priceQtyLine       = document.getElementById('priceQtyLine');
-  DOM.priceQtyLabel      = document.getElementById('priceQtyLabel');
-  DOM.priceQty           = document.getElementById('priceQty');
-  DOM.priceTotal         = document.getElementById('priceTotal');
-}
-
-/**
- * Set display style for an element. Null-safe.
- */
-export function show(el) { if (el) el.style.display = ''; }
-export function hide(el) { if (el) el.style.display = 'none'; }

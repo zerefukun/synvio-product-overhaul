@@ -17,72 +17,11 @@
 
   .oz-product-summary {
     padding-left: 0;
+    order: 2;
   }
 
   .oz-trust-badges {
     grid-template-columns: 1fr;
-  }
-
-  /* Show sticky bar on mobile */
-  .oz-sticky-bar {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .oz-sheet-overlay.open {
-    display: block;
-  }
-
-  .oz-bottom-sheet.open {
-    display: block;
-  }
-
-  .oz-product-page .oz-add-to-cart {
-    width: 100%;
-    flex: none;
-    height: 54px;
-    font-size: 16px;
-  }
-
-  .oz-product-info-section {
-    margin-top: 40px;
-  }
-
-  /* Mobile order: Gallery -> Summary -> Description */
-  .oz-left-column {
-    display: contents;
-  }
-
-  .oz-product-gallery {
-    order: 1;
-  }
-
-  .oz-product-summary {
-    order: 2;
-  }
-
-  .oz-product-info-section {
-    order: 3;
-  }
-
-  .oz-gallery-thumb {
-    width: 60px;
-    height: 60px;
-  }
-
-  .oz-product-page .oz-add-to-cart,
-  button.oz-sticky-btn,
-  button.oz-sheet-cta {
-    height: 54px;
-    font-size: 16px;
-  }
-
-  .oz-product-title {
-    font-size: 26px;
-  }
-
-  .oz-breadcrumb {
-    padding: 8px 0;
   }
 
   /* Activate sticky bar and bottom sheet on mobile */
@@ -99,11 +38,48 @@
     display: block;
   }
 
-  body.oz-has-sticky {
-    padding-bottom: 100px;
+  .oz-product-page .oz-add-to-cart {
+    width: 100%;
+    flex: none;
+  }
+
+  .oz-product-info-section {
+    margin-top: 40px;
+    order: 3;
+  }
+
+  /* Mobile order: Gallery -> Summary -> Description */
+  .oz-left-column {
+    display: contents;
   }
 
   .oz-product-gallery {
+    order: 1;
     position: static;
+  }
+
+  .oz-gallery-thumb {
+    width: 60px;
+    height: 60px;
+  }
+
+  /* Unified button heights on mobile */
+  .oz-product-page .oz-add-to-cart,
+  button.oz-sticky-btn,
+  button.oz-sheet-cta {
+    height: 54px;
+    font-size: 16px;
+  }
+
+  .oz-product-title {
+    font-size: 26px;
+  }
+
+  .oz-breadcrumb {
+    padding: 8px 0;
+  }
+
+  body.oz-has-sticky {
+    padding-bottom: 100px;
   }
 }

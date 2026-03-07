@@ -226,6 +226,14 @@
 }
 
 
+/* Cart error message — styled via CSS class, not inline JS */
+.oz-cart-error {
+  color: var(--oz-error);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+
 /* ═══ PAYMENT METHODS ═════════════════════════════════════════ */
 
 .oz-payment-section {
