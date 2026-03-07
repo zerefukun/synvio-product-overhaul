@@ -297,7 +297,6 @@ body.oz-drawer-open {
     gap: 14px;
     padding: 16px 0;
     border-bottom: 1px solid var(--oz-border-light, #F0EFED);
-    position: relative;
     transition: opacity 0.2s var(--drawer-ease);
 }
 
@@ -335,7 +334,6 @@ body.oz-drawer-open {
     flex-direction: column;
     gap: 2px;
     min-width: 0;
-    padding-right: 20px; /* space for remove button */
 }
 
 .oz-cart-item-name {
@@ -449,34 +447,15 @@ body.oz-drawer-open {
 }
 
 /* ============================================
-   REMOVE BUTTON
+   BIN ICON in dec button — shows when qty=1 (1-1=0 means remove)
    ============================================ */
-.oz-cart-item-remove {
-    position: absolute;
-    top: 14px;
-    right: 0;
-    width: 22px !important;
-    height: 22px !important;
-    background: none !important;
-    border: none !important;
-    border-radius: 0 !important;
-    cursor: pointer;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    color: var(--oz-text-muted, #999999);
-    transition: color 0.15s var(--drawer-ease) !important;
-    touch-action: manipulation;
+.oz-cart-qty-btn .oz-bin-icon {
+    display: block;
 }
 
-.oz-cart-item-remove:hover {
-    color: #c33;
-}
-
-.oz-cart-item-remove svg {
-    width: 11px;
-    height: 11px;
-    display: block; /* prevent phantom inline spacing */
+.oz-cart-qty-btn .oz-minus-icon {
+    font-size: 13px;
+    line-height: 1;
 }
 
 /* ============================================
@@ -579,26 +558,36 @@ body.oz-drawer-open {
     margin-top: 1px;
 }
 
-/* Upsell add button — teal outline */
+/* Upsell add button — circular icon button */
 .oz-drawer-upsell-add {
+    width: 32px !important;
+    height: 32px !important;
     background: none !important;
     border: 1.5px solid var(--oz-accent, #135350) !important;
-    border-radius: 5px !important;
-    padding: 6px 12px !important;
-    font-family: inherit;
-    font-size: 11px !important;
-    font-weight: 700 !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
     color: var(--oz-accent, #135350) !important;
     cursor: pointer;
-    transition: background 0.15s var(--drawer-ease), color 0.15s var(--drawer-ease) !important;
-    white-space: nowrap;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s var(--drawer-ease), color 0.15s var(--drawer-ease), transform 0.15s var(--drawer-ease) !important;
     flex-shrink: 0;
     touch-action: manipulation;
+}
+
+.oz-drawer-upsell-add svg {
+    display: block;
 }
 
 .oz-drawer-upsell-add:hover {
     background: var(--oz-accent, #135350) !important;
     color: var(--oz-accent-text, #FFFFFF) !important;
+    transform: scale(1.05);
+}
+
+.oz-drawer-upsell-add:active {
+    transform: scale(0.95);
 }
 
 .oz-drawer-upsell-add.added {

@@ -186,8 +186,8 @@
 
     /** Add upsell product to WC cart */
     function addUpsell(productId, btn) {
-        btn.textContent = 'Toevoegen...';
         btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.5';
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', ozCartDrawer.ajaxUrl, true);
@@ -302,6 +302,20 @@
             ? '<img src="' + esc(item.image) + '" alt="' + esc(item.name) + '">'
             : '';
 
+        /* Bin SVG — shown on dec button when qty is 1 (1-1=0 means remove) */
+        var binSvg = '<svg class="oz-bin-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">' +
+            '<path d="M2.545 4.675L3.465 9.72C3.545 10.17 3.94 10.5 4.4 10.5H7.595C8.055 10.5 8.45 10.175 8.53 9.72L9.45 4.675" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M1.515 3.09H10.515" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M3.61 3.09L4.345 1.75C4.43 1.6 4.59 1.505 4.76 1.505H7.24C7.415 1.505 7.575 1.6 7.655 1.75L8.39 3.09" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M7.005 6.5H4.995" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '</svg>';
+
+        /* Minus character — shown on dec button when qty > 1 */
+        var minusSvg = '<span class="oz-minus-icon">\u2212</span>';
+
+        /* Dec button shows bin or minus depending on qty */
+        var decContent = item.qty <= 1 ? binSvg : minusSvg;
+
         el.innerHTML =
             '<div class="oz-cart-item-img">' + imgContent + '</div>' +
             '<div class="oz-cart-item-info">' +
@@ -309,16 +323,13 @@
                 (item.meta ? '<div class="oz-cart-item-meta">' + esc(item.meta) + '</div>' : '') +
                 '<div class="oz-cart-item-row">' +
                     '<div class="oz-cart-qty">' +
-                        '<button class="oz-cart-qty-btn dec" aria-label="Minder">\u2212</button>' +
+                        '<button class="oz-cart-qty-btn dec' + (item.qty <= 1 ? ' bin' : '') + '" aria-label="' + (item.qty <= 1 ? 'Verwijderen' : 'Minder') + '">' + decContent + '</button>' +
                         '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
                         '<button class="oz-cart-qty-btn inc" aria-label="Meer">\u002B</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +
                 '</div>' +
-            '</div>' +
-            '<button class="oz-cart-item-remove" aria-label="Verwijderen">' +
-                '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M1 1l12 12M13 1L1 13"/></svg>' +
-            '</button>';
+            '</div>';
 
         /* Bind events */
         var cartKey = item.key;
@@ -346,19 +357,12 @@
             updateQty(cartKey, val);
         });
 
-        el.querySelector('.oz-cart-item-remove').addEventListener('click', function () {
-            removeItem(cartKey);
-        });
-
-        /* Show bin icon when qty is 1 */
-        if (item.qty <= 1) {
-            el.querySelector('.dec').classList.add('bin');
-        }
+        /* No separate remove button — dec button becomes bin at qty=1 */
 
         return el;
     }
 
-    /** Update existing cart item node (qty + price) */
+    /** Update existing cart item node (qty, price, dec button icon) */
     function updateItemNode(el, item) {
         var qtyInput = el.querySelector('.oz-cart-qty-input');
         var priceDiv = el.querySelector('.oz-cart-item-price');
@@ -366,7 +370,24 @@
 
         if (qtyInput) qtyInput.value = item.qty;
         if (priceDiv) priceDiv.textContent = fmt(item.line_total);
-        if (decBtn) decBtn.classList.toggle('bin', item.qty <= 1);
+
+        /* Swap dec button between bin icon (qty=1) and minus (qty>1) */
+        if (decBtn) {
+            var isBin = item.qty <= 1;
+            decBtn.classList.toggle('bin', isBin);
+            decBtn.setAttribute('aria-label', isBin ? 'Verwijderen' : 'Minder');
+
+            if (isBin && !decBtn.querySelector('.oz-bin-icon')) {
+                decBtn.innerHTML = '<svg class="oz-bin-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">' +
+                    '<path d="M2.545 4.675L3.465 9.72C3.545 10.17 3.94 10.5 4.4 10.5H7.595C8.055 10.5 8.45 10.175 8.53 9.72L9.45 4.675" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '<path d="M1.515 3.09H10.515" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '<path d="M3.61 3.09L4.345 1.75C4.43 1.6 4.59 1.505 4.76 1.505H7.24C7.415 1.505 7.575 1.6 7.655 1.75L8.39 3.09" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '<path d="M7.005 6.5H4.995" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                    '</svg>';
+            } else if (!isBin && !decBtn.querySelector('.oz-minus-icon')) {
+                decBtn.innerHTML = '<span class="oz-minus-icon">\u2212</span>';
+            }
+        }
     }
 
     /** Find item in state by key */
@@ -396,7 +417,9 @@
                         '<div class="oz-drawer-upsell-name">' + esc(u.name) + '</div>' +
                         '<div class="oz-drawer-upsell-price">' + fmt(u.price) + '</div>' +
                     '</div>' +
-                    '<button class="oz-drawer-upsell-add">Toevoegen</button>' +
+                    '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
+                        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+                    '</button>' +
                 '</div>';
         }
         R.upsellList.innerHTML = html;
@@ -409,7 +432,8 @@
                 var btn = card.querySelector('.oz-drawer-upsell-add');
                 btn.addEventListener('click', function () {
                     addUpsell(prodId, btn);
-                    btn.textContent = 'Toegevoegd';
+                    /* Show checkmark after adding */
+                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
                     btn.classList.add('added');
                 });
             })(cards[j]);
