@@ -1657,9 +1657,13 @@ details.oz-faq-item[open] .oz-faq-question::after {
     width: 100%;
     min-width: 0;
     overflow: hidden;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
   }
   .oz-sticky-bar {
-    padding: 10px 24px;
+    padding: 10px 0;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
   }
