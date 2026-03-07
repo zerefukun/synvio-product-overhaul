@@ -55,6 +55,35 @@ body.oz-drawer-open {
     transform: translateX(0);
 }
 
+/* === Flatsome global reset ===
+ * Flatsome applies aggressive base styles to ALL button, input, select, textarea.
+ * We neutralize these inside the drawer so our components render correctly. */
+.oz-drawer button,
+.oz-drawer input {
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    margin-right: 0 !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    line-height: normal !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    text-rendering: auto !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    border-radius: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    vertical-align: middle;
+    box-sizing: border-box;
+    height: auto;
+    width: auto;
+    background-color: transparent;
+    border: none;
+    transition: none;
+}
+
 /* ============================================
    DRAWER HEADER
    ============================================ */
@@ -90,28 +119,30 @@ body.oz-drawer-open {
 }
 
 .oz-drawer-close {
-    background: none;
-    border: 1px solid #E5E5E3;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
+    background: none !important;
+    border: 1px solid #E5E5E3 !important;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     flex-shrink: 0;
+    color: #555555;
 }
 
 .oz-drawer-close:hover {
-    border-color: #E0DFDD;
-    background: #FAFAF9;
+    border-color: #E0DFDD !important;
+    background: #FAFAF9 !important;
 }
 
 .oz-drawer-close svg {
     width: 13px;
     height: 13px;
     color: #555555;
+    display: block;
 }
 
 /* ============================================
@@ -175,10 +206,13 @@ body.oz-drawer-open {
 }
 
 /* ============================================
-   SCROLLABLE BODY
+   SCROLLABLE REGIONS — cart items + upsells scroll independently
    ============================================ */
+
+/* Cart items region: takes remaining space, scrolls independently */
 .oz-drawer-body {
     flex: 1;
+    min-height: 0; /* required for flex child overflow */
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -279,72 +313,52 @@ body.oz-drawer-open {
     overflow: hidden;
 }
 
-/* Reset Flatsome's aggressive button/input base styles inside qty control */
-.oz-cart-qty .oz-cart-qty-btn,
-.oz-cart-qty .oz-cart-qty-input {
-    margin: 0;
-    margin-bottom: 0;
-    margin-right: 0;
-    min-height: 0;
-    min-width: 0;
-    padding: 0;
-    line-height: normal;
-    letter-spacing: normal;
-    text-transform: none;
-    text-rendering: auto;
-    text-shadow: none;
-    vertical-align: middle;
-    box-sizing: border-box;
-}
-
 .oz-cart-qty-btn {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: #FAFAF9;
+    width: 28px !important;
+    height: 28px !important;
+    background: #FAFAF9 !important;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 400;
+    font-size: 13px !important;
+    font-weight: 400 !important;
     color: #1A1A1A;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    transition: background 0.1s;
+    transition: background 0.1s !important;
     flex-shrink: 0;
 }
 
 .oz-cart-qty-btn:hover {
-    background: #F0EFED;
+    background: #F0EFED !important;
 }
 
 .oz-cart-qty-btn:active {
-    background: #E5E5E3;
+    background: #E5E5E3 !important;
 }
 
 .oz-cart-qty-btn.bin {
-    color: #c33;
+    color: #c33 !important;
 }
 
 .oz-cart-qty-btn.bin:hover {
-    background: #FEF2F2;
-    color: #a22;
+    background: #FEF2F2 !important;
+    color: #a22 !important;
 }
 
-/* Number input instead of span — matches .oz-tool-qty-input */
+/* Number input — matches .oz-tool-qty-input, !important beats Flatsome input[type=number] */
 .oz-cart-qty-input {
-    width: 30px;
-    height: 28px;
+    width: 30px !important;
+    height: 28px !important;
     text-align: center;
-    border: none;
-    border-left: 1px solid #E5E5E3;
-    border-right: 1px solid #E5E5E3;
-    border-radius: 0;
-    font-size: 12px;
-    font-weight: 600;
+    border: none !important;
+    border-left: 1px solid #E5E5E3 !important;
+    border-right: 1px solid #E5E5E3 !important;
+    border-radius: 0 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
     font-family: "Raleway", sans-serif;
-    color: #1A1A1A;
-    background: white;
-    padding: 0;
+    color: #1A1A1A !important;
+    background: white !important;
     -moz-appearance: textfield;
     -webkit-appearance: none;
     appearance: none;
@@ -362,16 +376,14 @@ body.oz-drawer-open {
     position: absolute;
     top: 14px;
     right: 0;
-    width: 22px;
-    height: 22px;
-    background: none;
-    border: none;
+    width: 22px !important;
+    height: 22px !important;
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     color: #999999;
-    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .oz-cart-item-remove:hover {
@@ -384,11 +396,16 @@ body.oz-drawer-open {
 }
 
 /* ============================================
-   UPSELL SECTION
+   UPSELL SECTION — own scrollable region, ~20% of drawer height
    ============================================ */
 .oz-drawer-upsells {
-    padding: 16px 24px 20px;
-    margin-top: 4px;
+    padding: 16px 24px 12px;
+    max-height: 20vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+    border-top: 1px solid #F0EFED;
 }
 
 /* Section header — flanking lines */
@@ -473,29 +490,29 @@ body.oz-drawer-open {
 
 /* Upsell add button — teal outline */
 .oz-drawer-upsell-add {
-    background: none;
-    border: 1.5px solid #135350;
-    border-radius: 5px;
-    padding: 6px 12px;
+    background: none !important;
+    border: 1.5px solid #135350 !important;
+    border-radius: 5px !important;
+    padding: 6px 12px !important;
     font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    color: #135350;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #135350 !important;
     cursor: pointer;
-    transition: background 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 .oz-drawer-upsell-add:hover {
-    background: #135350;
-    color: #FFFFFF;
+    background: #135350 !important;
+    color: #FFFFFF !important;
 }
 
 .oz-drawer-upsell-add.added {
-    background: #135350;
-    color: white;
-    border-color: #135350;
+    background: #135350 !important;
+    color: white !important;
+    border-color: #135350 !important;
     pointer-events: none;
 }
 
@@ -536,22 +553,21 @@ body.oz-drawer-open {
 }
 
 .oz-cart-empty-btn {
-    padding: 10px 24px;
-    background: #E67C00;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 5px;
+    padding: 10px 24px !important;
+    background: #E67C00 !important;
+    color: #FFFFFF !important;
+    border-radius: 5px !important;
     font-family: inherit;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
     cursor: pointer;
-    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .oz-cart-empty-btn:hover {
-    background: #D06E00;
+    background: #D06E00 !important;
 }
 
 /* ============================================
@@ -667,7 +683,7 @@ body.oz-drawer-open {
     }
 
     .oz-cart-items { padding: 0 16px; }
-    .oz-drawer-upsells { padding: 14px 16px 18px; }
+    .oz-drawer-upsells { padding: 12px 16px 10px; }
     .oz-drawer-header { padding: 14px 16px; }
     .oz-shipping-bar { padding: 10px 16px; }
     .oz-drawer-footer { padding: 14px 16px 18px; }

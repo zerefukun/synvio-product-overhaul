@@ -62,17 +62,11 @@ if (function_exists('WC') && WC()->payment_gateways()) {
         </div>
     </div>
 
-    <!-- Scrollable body -->
+    <!-- Scrollable cart items region (~80% of body) -->
     <div class="oz-drawer-body" id="ozDrawerBody">
 
         <!-- Cart items — populated by JS -->
         <div class="oz-cart-items" id="ozCartItems"></div>
-
-        <!-- Upsell section — populated by JS -->
-        <div class="oz-drawer-upsells" id="ozUpsellSection" style="display:none">
-            <div class="oz-drawer-upsells-title">Vakmannen bestellen ook</div>
-            <div class="oz-drawer-upsell-list" id="ozUpsellList"></div>
-        </div>
 
         <!-- Empty cart state -->
         <div class="oz-cart-empty" id="ozCartEmpty" style="display:none">
@@ -84,6 +78,12 @@ if (function_exists('WC') && WC()->payment_gateways()) {
             <div class="oz-cart-empty-text">Voeg producten toe om te beginnen met je beton ciré project.</div>
             <button class="oz-cart-empty-btn" id="ozEmptyShopBtn">Verder winkelen</button>
         </div>
+    </div>
+
+    <!-- Upsell section — own scrollable region (~20% of body) -->
+    <div class="oz-drawer-upsells" id="ozUpsellSection" style="display:none">
+        <div class="oz-drawer-upsells-title">Vakmannen bestellen ook</div>
+        <div class="oz-drawer-upsell-list" id="ozUpsellList"></div>
     </div>
 
     <!-- Sticky footer -->
