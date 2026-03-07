@@ -135,31 +135,32 @@
 
   .oz-sticky-d-qty[data-qty="1"] { display: none; }
 
-  /* Desktop CTA — own class, no conflict with mobile button.oz-sticky-btn */
-  .oz-sticky-d-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    border-radius: 8px;
-    background: var(--oz-cta);
-    color: var(--oz-cta-text);
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    border: none;
+  /* Desktop CTA — needs !important to beat Flatsome button resets */
+  button.oz-sticky-d-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    background: var(--oz-cta) !important;
+    color: var(--oz-cta-text) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    border: none !important;
     cursor: pointer;
     font-family: 'Raleway', sans-serif;
-    box-shadow: none;
-    line-height: 1;
+    box-shadow: none !important;
+    line-height: 1 !important;
+    min-height: auto !important;
     white-space: nowrap;
     flex-shrink: 0;
     transition: background-color 0.2s var(--oz-ease);
   }
 
-  .oz-sticky-d-btn:hover {
-    background: var(--oz-cta-hover);
+  button.oz-sticky-d-btn:hover {
+    background: var(--oz-cta-hover) !important;
   }
 }
 
