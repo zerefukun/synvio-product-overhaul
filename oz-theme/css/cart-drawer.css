@@ -553,6 +553,13 @@ body.oz-drawer-open {
     object-fit: cover;
 }
 
+/* Upsell icon fallback (when no product image) */
+.oz-upsell-icon {
+    max-width: 48px;
+    max-height: 48px;
+    margin: auto;
+}
+
 .oz-drawer-upsell-info {
     flex: 1;
     min-width: 0;
