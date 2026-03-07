@@ -86,8 +86,9 @@ function syncUI() {
   // Update price breakdown
   renderBreakdown(prices);
 
-  // Update sticky bar price
+  // Update sticky bar price + summary
   if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
+  renderStickySummary();
 
   // Update sheet total
   if (DOM.sheetTotal) DOM.sheetTotal.textContent = fmt(prices.total);
@@ -280,6 +281,45 @@ function renderSelectedLabels() {
       colorLabel.textContent = P.currentColor;
     }
   }
+}
+
+/**
+ * Build the options summary text for the desktop sticky bar.
+ * Shows selected color, PU layers, primer, qty — separated by dots.
+ */
+function renderStickySummary() {
+  if (!DOM.stickySummary) return;
+
+  var parts = [];
+  var sep = '<span class="oz-sep">&middot;</span>';
+
+  // Color
+  if (S.colorMode === 'ral_ncs' && S.customColor) {
+    parts.push(S.customColor);
+  } else if (P.currentColor) {
+    parts.push(P.currentColor);
+  }
+
+  // PU layers
+  if (S.puLayers !== null && S.puLayers !== undefined) {
+    if (S.puLayers === 0) {
+      parts.push('Geen PU');
+    } else {
+      parts.push(S.puLayers + ' PU ' + (S.puLayers === 1 ? 'laag' : 'lagen'));
+    }
+  }
+
+  // Primer
+  if (S.primer && S.primer !== 'Geen' && S.primer !== 'Geen Primer' && S.primer !== 'Nee') {
+    parts.push('Primer: ' + S.primer);
+  }
+
+  // Quantity (only if > 1)
+  if (S.qty > 1) {
+    parts.push(S.qty + '×');
+  }
+
+  DOM.stickySummary.innerHTML = parts.join(sep);
 }
 
 /**
@@ -508,13 +548,12 @@ function handleClick(e) {
     return;
   }
 
-  // Sticky bar button — opens bottom sheet on mobile, scrolls to CTA on desktop
+  // Sticky bar button — opens bottom sheet on mobile, adds to cart on desktop
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
     if (window.innerWidth >= 900) {
-      // Desktop: scroll to the add-to-cart button instead of opening sheet
-      var cartBtn = DOM.addToCartBtn;
-      if (cartBtn) cartBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Desktop: add to cart directly from sticky bar
+      addToCart();
     } else {
       openSheet();
     }

@@ -637,8 +637,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 </div><!-- .oz-product-page -->
 
 
-<?php /* ═══ MOBILE STICKY BAR ═══ */ ?>
+<?php /* ═══ STICKY BAR (mobile: full info + sheet opener, desktop: summary + direct CTA) ═══ */ ?>
 <div class="oz-sticky-bar" id="stickyBar">
+  <!-- Mobile layout: thumbnail + name + color + price -->
   <div class="oz-sticky-info">
     <img class="oz-sticky-thumb" id="stickyThumb"
          src="<?php echo esc_url(wp_get_attachment_image_url($main_image_id, 'thumbnail')); ?>"
@@ -659,6 +660,8 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php endif; ?>
     </div>
   </div>
+  <!-- Desktop: selected options summary (hidden on mobile via CSS) -->
+  <div class="oz-sticky-summary" id="stickySummary"></div>
   <button class="oz-sticky-btn" id="stickyBtn">In winkelmand</button>
 </div>
 

@@ -40,6 +40,7 @@ export function cacheDom() {
   DOM.slotSheet      = document.getElementById('optionsSlotSheet');
   DOM.colorModeSlot  = document.getElementById('colorModeSlot');
   DOM.colorLabel     = document.getElementById('colorLabel');
+  DOM.stickySummary  = document.getElementById('stickySummary');
 
   // Price breakdown elements
   DOM.priceBaseLabel     = document.getElementById('priceBaseLabel');

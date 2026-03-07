@@ -35,52 +35,70 @@
   visibility: visible;
 }
 
-/* Desktop (>900px): slim bar — hide thumbnail + color, show name + price + CTA inline */
+/* Options summary line — only shown on desktop */
+.oz-sticky-summary {
+  display: none;
+}
+
+/* Desktop (>900px): slim bar with summary + price + CTA */
 @media (min-width: 901px) {
   .oz-sticky-bar {
-    padding: 8px 24px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 32px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
 
+  /* Hide mobile-only elements on desktop */
   .oz-sticky-bar .oz-sticky-info {
     margin-bottom: 0;
+    flex-shrink: 0;
   }
 
-  /* Hide thumbnail and color on desktop — product is already visible above */
   .oz-sticky-bar .oz-sticky-thumb,
   .oz-sticky-bar .oz-sticky-color {
     display: none;
   }
 
-  /* Inline layout: name + price + button in one row */
-  .oz-sticky-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .oz-sticky-bar .oz-sticky-info {
-    flex: 1;
-    min-width: 0;
-  }
-
   .oz-sticky-bar .oz-sticky-details {
-    flex: 1;
+    flex-shrink: 0;
     min-width: 0;
   }
 
   .oz-sticky-bar .oz-sticky-product-name {
     font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* Show options summary on desktop */
+  .oz-sticky-summary {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: var(--oz-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Separator dot between summary items — styled via JS-generated spans */
+  .oz-sticky-summary .oz-sep {
+    margin: 0 6px;
+    opacity: 0.4;
   }
 
   .oz-sticky-bar .oz-sticky-price {
     font-size: 22px;
+    flex-shrink: 0;
   }
 
   .oz-sticky-bar button.oz-sticky-btn {
     width: auto !important;
     min-width: 200px;
     padding: 12px 28px !important;
+    flex-shrink: 0;
   }
 }
 
