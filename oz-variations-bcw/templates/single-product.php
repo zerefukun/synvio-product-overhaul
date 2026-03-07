@@ -443,10 +443,18 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       $oz_now = new DateTime('now', new DateTimeZone('Europe/Amsterdam'));
       $oz_hour = (int) $oz_now->format('H');
 
-      // Ship date: before 14:00 = today, after 14:00 = tomorrow
+      // Ship date logic:
+      // - Weekday before 14:00 → shipped today
+      // - Weekday after 14:00 → shipped next business day
+      // - Weekend (Sat/Sun) → shipped Monday
       $oz_ship = clone $oz_now;
-      if ($oz_hour >= 14) {
-          $oz_ship->modify('+1 day');
+      $oz_dow = (int) $oz_now->format('N'); // 1=Mon .. 7=Sun
+      if ($oz_dow >= 6) {
+          // Weekend — next Monday
+          $oz_ship->modify('next Monday');
+      } elseif ($oz_hour >= 14) {
+          // Weekday after 14:00 — next business day
+          $oz_ship->modify('+1 weekday');
       }
 
       // Delivery: 1-2 business days after ship date (carriers don't deliver on weekends)
