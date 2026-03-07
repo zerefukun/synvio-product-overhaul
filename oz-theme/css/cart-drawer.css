@@ -14,14 +14,6 @@ body.oz-drawer-open {
     overflow: hidden;
 }
 
-/* === Hide Flatsome's default mini-cart dropdown === */
-.header-cart .nav-dropdown,
-.cart-item .nav-dropdown,
-.header-cart-link .nav-dropdown,
-.cart-icon .nav-dropdown {
-    display: none !important;
-}
-
 /* ============================================
    OVERLAY
    ============================================ */
@@ -287,6 +279,24 @@ body.oz-drawer-open {
     overflow: hidden;
 }
 
+/* Reset Flatsome's aggressive button/input base styles inside qty control */
+.oz-cart-qty .oz-cart-qty-btn,
+.oz-cart-qty .oz-cart-qty-input {
+    margin: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+    min-height: 0;
+    min-width: 0;
+    padding: 0;
+    line-height: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    text-rendering: auto;
+    text-shadow: none;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
 .oz-cart-qty-btn {
     width: 28px;
     height: 28px;
@@ -294,6 +304,7 @@ body.oz-drawer-open {
     background: #FAFAF9;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 400;
     color: #1A1A1A;
     display: flex;
     align-items: center;
