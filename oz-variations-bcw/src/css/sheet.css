@@ -35,69 +35,90 @@
   visibility: visible;
 }
 
-/* Options summary line — only shown on desktop */
-.oz-sticky-summary {
-  display: none;
-}
+/* ── Mobile / Desktop layout switching ── */
 
-/* Desktop (>900px): slim bar with summary + price + CTA */
+/* Hide desktop layout on mobile, show mobile layout */
+.oz-sticky-desktop { display: none; }
+.oz-sticky-mobile  { display: block; }
+
 @media (min-width: 901px) {
+  /* Swap: hide mobile, show desktop */
+  .oz-sticky-mobile  { display: none; }
+  .oz-sticky-desktop { display: flex; align-items: center; gap: 16px; width: 100%; }
+
   .oz-sticky-bar {
-    display: flex;
-    align-items: center;
-    gap: 20px;
     padding: 10px 32px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
 
-  /* Hide mobile-only elements on desktop */
-  .oz-sticky-bar .oz-sticky-info {
-    margin-bottom: 0;
-    flex-shrink: 0;
-  }
-
-  .oz-sticky-bar .oz-sticky-thumb,
-  .oz-sticky-bar .oz-sticky-color {
-    display: none;
-  }
-
-  .oz-sticky-bar .oz-sticky-details {
-    flex-shrink: 0;
-    min-width: 0;
-  }
-
-  .oz-sticky-bar .oz-sticky-product-name {
+  /* Title — left side, bold */
+  .oz-sticky-d-title {
     font-size: 14px;
     font-weight: 700;
+    color: var(--oz-text-primary);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  /* Show options summary on desktop */
-  .oz-sticky-summary {
-    display: block;
+  /* Color — right of title */
+  .oz-sticky-d-color {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--oz-accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Hide color element when empty */
+  .oz-sticky-d-color:empty { display: none; }
+
+  /* Options summary — middle, takes remaining space */
+  .oz-sticky-d-options {
     flex: 1;
     min-width: 0;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--oz-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  /* Separator dot between summary items — styled via JS-generated spans */
-  .oz-sticky-summary .oz-sep {
-    margin: 0 6px;
-    opacity: 0.4;
+  /* Separator dot between option items */
+  .oz-sticky-d-options .oz-sep {
+    margin: 0 5px;
+    opacity: 0.35;
   }
 
-  .oz-sticky-bar .oz-sticky-price {
-    font-size: 22px;
+  /* Right group: price + qty + CTA — stay together */
+  .oz-sticky-d-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     flex-shrink: 0;
   }
 
-  .oz-sticky-bar button.oz-sticky-btn {
+  .oz-sticky-d-price {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--oz-text-primary);
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+
+  .oz-sticky-d-qty {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--oz-text-muted);
+    white-space: nowrap;
+  }
+
+  /* Hide qty display when it's just "1×" — not useful */
+  .oz-sticky-d-qty[data-qty="1"] { display: none; }
+
+  .oz-sticky-d-btn {
     width: auto !important;
-    min-width: 200px;
-    padding: 12px 28px !important;
+    min-width: 180px;
+    padding: 11px 24px !important;
     flex-shrink: 0;
   }
 }

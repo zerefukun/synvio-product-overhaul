@@ -86,8 +86,9 @@ function syncUI() {
   // Update price breakdown
   renderBreakdown(prices);
 
-  // Update sticky bar price + summary
+  // Update sticky bar — desktop price + mobile price + options summary
   if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
+  if (DOM.stickyPriceMobile) DOM.stickyPriceMobile.textContent = fmt(prices.total);
   renderStickySummary();
 
   // Update sheet total
@@ -284,42 +285,69 @@ function renderSelectedLabels() {
 }
 
 /**
- * Build the options summary text for the desktop sticky bar.
- * Shows selected color, PU layers, primer, qty — separated by dots.
+ * Update the desktop sticky bar elements: color, options summary, qty.
+ * Layout: [Title] [Color] [Options...] [Price Qty CTA]
  */
 function renderStickySummary() {
-  if (!DOM.stickySummary) return;
-
-  var parts = [];
   var sep = '<span class="oz-sep">&middot;</span>';
 
-  // Color
-  if (S.colorMode === 'ral_ncs' && S.customColor) {
-    parts.push(S.customColor);
-  } else if (P.currentColor) {
-    parts.push(P.currentColor);
-  }
-
-  // PU layers
-  if (S.puLayers !== null && S.puLayers !== undefined) {
-    if (S.puLayers === 0) {
-      parts.push('Geen PU');
+  // Update color text
+  if (DOM.stickyDColor) {
+    if (S.colorMode === 'ral_ncs' && S.customColor) {
+      DOM.stickyDColor.textContent = S.customColor;
     } else {
-      parts.push(S.puLayers + ' PU ' + (S.puLayers === 1 ? 'laag' : 'lagen'));
+      DOM.stickyDColor.textContent = P.currentColor || '';
     }
   }
 
-  // Primer
-  if (S.primer && S.primer !== 'Geen' && S.primer !== 'Geen Primer' && S.primer !== 'Nee') {
-    parts.push('Primer: ' + S.primer);
+  // Build options summary (everything except color — that has its own element)
+  if (DOM.stickyDOptions) {
+    var parts = [];
+
+    // PU layers — always show, even "Geen PU"
+    if (S.puLayers !== null && S.puLayers !== undefined) {
+      if (S.puLayers === 0) {
+        parts.push('Geen PU');
+      } else {
+        parts.push(S.puLayers + ' PU ' + (S.puLayers === 1 ? 'laag' : 'lagen'));
+      }
+    }
+
+    // Primer — always show (including "Geen")
+    if (S.primer) {
+      parts.push('Primer: ' + S.primer);
+    }
+
+    // Colorfresh
+    if (S.colorfresh && S.colorfresh !== 'Zonder Colorfresh') {
+      parts.push(S.colorfresh);
+    }
+
+    // Toepassing
+    if (S.toepassing) {
+      parts.push(S.toepassing);
+    }
+
+    // Pakket
+    if (S.pakket) {
+      parts.push(S.pakket);
+    }
+
+    // Tool mode
+    if (S.toolMode === 'set') {
+      parts.push('Gereedschapset');
+    } else if (S.toolMode === 'individual') {
+      parts.push('Gereedschap');
+    }
+
+    DOM.stickyDOptions.innerHTML = parts.join(sep);
   }
 
-  // Quantity (only if > 1)
-  if (S.qty > 1) {
-    parts.push(S.qty + '×');
+  // Update qty display
+  if (DOM.stickyDQty) {
+    DOM.stickyDQty.textContent = S.qty + '×';
+    DOM.stickyDQty.setAttribute('data-qty', S.qty);
   }
-
-  DOM.stickySummary.innerHTML = parts.join(sep);
 }
 
 /**
@@ -548,15 +576,17 @@ function handleClick(e) {
     return;
   }
 
-  // Sticky bar button — opens bottom sheet on mobile, adds to cart on desktop
+  // Mobile sticky button — opens bottom sheet
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
-    if (window.innerWidth >= 900) {
-      // Desktop: add to cart directly from sticky bar
-      addToCart();
-    } else {
-      openSheet();
-    }
+    openSheet();
+    return;
+  }
+
+  // Desktop sticky button — adds to cart directly
+  if (target === DOM.stickyDBtn || target.closest('#stickyDBtn')) {
+    e.preventDefault();
+    addToCart();
     return;
   }
 

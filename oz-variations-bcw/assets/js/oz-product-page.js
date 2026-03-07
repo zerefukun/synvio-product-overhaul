@@ -303,7 +303,11 @@
     DOM.slotSheet = document.getElementById("optionsSlotSheet");
     DOM.colorModeSlot = document.getElementById("colorModeSlot");
     DOM.colorLabel = document.getElementById("colorLabel");
-    DOM.stickySummary = document.getElementById("stickySummary");
+    DOM.stickyDColor = document.getElementById("stickyDColor");
+    DOM.stickyDOptions = document.getElementById("stickyDOptions");
+    DOM.stickyDQty = document.getElementById("stickyDQty");
+    DOM.stickyDBtn = document.getElementById("stickyDBtn");
+    DOM.stickyPriceMobile = document.getElementById("stickyPriceMobile");
     DOM.priceBaseLabel = document.getElementById("priceBaseLabel");
     DOM.priceBase = document.getElementById("priceBase");
     DOM.pricePuLine = document.getElementById("pricePuLine");
@@ -629,6 +633,7 @@
       var prices = calculatePrices(P, S);
       renderBreakdown(prices);
       if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
+      if (DOM.stickyPriceMobile) DOM.stickyPriceMobile.textContent = fmt(prices.total);
       renderStickySummary();
       if (DOM.sheetTotal) DOM.sheetTotal.textContent = fmt(prices.total);
       renderOptionHighlights();
@@ -751,28 +756,46 @@
         }
       }
     }, renderStickySummary = function() {
-      if (!DOM.stickySummary) return;
-      var parts = [];
       var sep = '<span class="oz-sep">&middot;</span>';
-      if (S.colorMode === "ral_ncs" && S.customColor) {
-        parts.push(S.customColor);
-      } else if (P.currentColor) {
-        parts.push(P.currentColor);
-      }
-      if (S.puLayers !== null && S.puLayers !== void 0) {
-        if (S.puLayers === 0) {
-          parts.push("Geen PU");
+      if (DOM.stickyDColor) {
+        if (S.colorMode === "ral_ncs" && S.customColor) {
+          DOM.stickyDColor.textContent = S.customColor;
         } else {
-          parts.push(S.puLayers + " PU " + (S.puLayers === 1 ? "laag" : "lagen"));
+          DOM.stickyDColor.textContent = P.currentColor || "";
         }
       }
-      if (S.primer && S.primer !== "Geen" && S.primer !== "Geen Primer" && S.primer !== "Nee") {
-        parts.push("Primer: " + S.primer);
+      if (DOM.stickyDOptions) {
+        var parts = [];
+        if (S.puLayers !== null && S.puLayers !== void 0) {
+          if (S.puLayers === 0) {
+            parts.push("Geen PU");
+          } else {
+            parts.push(S.puLayers + " PU " + (S.puLayers === 1 ? "laag" : "lagen"));
+          }
+        }
+        if (S.primer) {
+          parts.push("Primer: " + S.primer);
+        }
+        if (S.colorfresh && S.colorfresh !== "Zonder Colorfresh") {
+          parts.push(S.colorfresh);
+        }
+        if (S.toepassing) {
+          parts.push(S.toepassing);
+        }
+        if (S.pakket) {
+          parts.push(S.pakket);
+        }
+        if (S.toolMode === "set") {
+          parts.push("Gereedschapset");
+        } else if (S.toolMode === "individual") {
+          parts.push("Gereedschap");
+        }
+        DOM.stickyDOptions.innerHTML = parts.join(sep);
       }
-      if (S.qty > 1) {
-        parts.push(S.qty + "\xD7");
+      if (DOM.stickyDQty) {
+        DOM.stickyDQty.textContent = S.qty + "\xD7";
+        DOM.stickyDQty.setAttribute("data-qty", S.qty);
       }
-      DOM.stickySummary.innerHTML = parts.join(sep);
     }, renderColorMode = function() {
       if (!P.hasRalNcs || !DOM.colorModeSlot) return;
       if (!DOM.colorModeSlot.querySelector(".oz-color-mode-btn, .oz-custom-color-wrap")) {
@@ -926,11 +949,12 @@
       }
       if (target === DOM.stickyBtn || target.closest("#stickyBtn")) {
         e.preventDefault();
-        if (window.innerWidth >= 900) {
-          addToCart();
-        } else {
-          openSheet();
-        }
+        openSheet();
+        return;
+      }
+      if (target === DOM.stickyDBtn || target.closest("#stickyDBtn")) {
+        e.preventDefault();
+        addToCart();
         return;
       }
       if (target === DOM.sheetOverlay) {

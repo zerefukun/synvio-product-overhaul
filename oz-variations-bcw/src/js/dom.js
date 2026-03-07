@@ -40,7 +40,13 @@ export function cacheDom() {
   DOM.slotSheet      = document.getElementById('optionsSlotSheet');
   DOM.colorModeSlot  = document.getElementById('colorModeSlot');
   DOM.colorLabel     = document.getElementById('colorLabel');
-  DOM.stickySummary  = document.getElementById('stickySummary');
+
+  // Desktop sticky bar elements
+  DOM.stickyDColor   = document.getElementById('stickyDColor');
+  DOM.stickyDOptions = document.getElementById('stickyDOptions');
+  DOM.stickyDQty     = document.getElementById('stickyDQty');
+  DOM.stickyDBtn     = document.getElementById('stickyDBtn');
+  DOM.stickyPriceMobile = document.getElementById('stickyPriceMobile');
 
   // Price breakdown elements
   DOM.priceBaseLabel     = document.getElementById('priceBaseLabel');

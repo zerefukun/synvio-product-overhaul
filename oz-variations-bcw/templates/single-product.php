@@ -637,32 +637,46 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 </div><!-- .oz-product-page -->
 
 
-<?php /* ═══ STICKY BAR (mobile: full info + sheet opener, desktop: summary + direct CTA) ═══ */ ?>
+<?php /* ═══ STICKY BAR (mobile: full info + sheet, desktop: title · color · options · price+qty+CTA) ═══ */ ?>
 <div class="oz-sticky-bar" id="stickyBar">
-  <!-- Mobile layout: thumbnail + name + color + price -->
-  <div class="oz-sticky-info">
-    <img class="oz-sticky-thumb" id="stickyThumb"
-         src="<?php echo esc_url(wp_get_attachment_image_url($main_image_id, 'thumbnail')); ?>"
-         alt="">
-    <div class="oz-sticky-details">
-      <div class="oz-sticky-product-name"><?php echo esc_html($product_name); ?></div>
-      <?php if ($current_color) : ?>
-      <div class="oz-sticky-color">
-        <span class="oz-sticky-color-dot" id="stickyColorDot"></span>
-        <span id="stickyColorName"><?php echo esc_html($current_color); ?></span>
+
+  <!-- ── Mobile layout ── -->
+  <div class="oz-sticky-mobile">
+    <div class="oz-sticky-info">
+      <img class="oz-sticky-thumb" id="stickyThumb"
+           src="<?php echo esc_url(wp_get_attachment_image_url($main_image_id, 'thumbnail')); ?>"
+           alt="">
+      <div class="oz-sticky-details">
+        <div class="oz-sticky-product-name"><?php echo esc_html($product_name); ?></div>
+        <?php if ($current_color) : ?>
+        <div class="oz-sticky-color">
+          <span class="oz-sticky-color-dot" id="stickyColorDot"></span>
+          <span id="stickyColorName"><?php echo esc_html($current_color); ?></span>
+        </div>
+        <?php endif; ?>
       </div>
-      <?php endif; ?>
+      <div class="oz-sticky-price oz-sticky-price-mobile">
+        <span id="stickyPriceMobile"><?php echo esc_html($fmt_price($price)); ?></span>
+        <?php if (!empty($config['unitM2'])) : ?>
+        <span class="oz-sticky-price-unit">per <?php echo esc_html($config['unitM2']); ?>m²</span>
+        <?php endif; ?>
+      </div>
     </div>
-    <div class="oz-sticky-price">
-      <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span>
-      <?php if (!empty($config['unitM2'])) : ?>
-      <span class="oz-sticky-price-unit" id="stickyPriceUnit">per <?php echo esc_html($config['unitM2']); ?>m²</span>
-      <?php endif; ?>
+    <button class="oz-sticky-btn" id="stickyBtn">In winkelmand</button>
+  </div>
+
+  <!-- ── Desktop layout ── -->
+  <div class="oz-sticky-desktop">
+    <div class="oz-sticky-d-title"><?php echo esc_html($product_name); ?></div>
+    <div class="oz-sticky-d-color" id="stickyDColor"><?php echo esc_html($current_color ?: ''); ?></div>
+    <div class="oz-sticky-d-options" id="stickyDOptions"></div>
+    <div class="oz-sticky-d-right">
+      <span class="oz-sticky-d-price" id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span>
+      <span class="oz-sticky-d-qty" id="stickyDQty">1×</span>
+      <button class="oz-sticky-btn oz-sticky-d-btn" id="stickyDBtn">In winkelmand</button>
     </div>
   </div>
-  <!-- Desktop: selected options summary (hidden on mobile via CSS) -->
-  <div class="oz-sticky-summary" id="stickySummary"></div>
-  <button class="oz-sticky-btn" id="stickyBtn">In winkelmand</button>
+
 </div>
 
 <?php /* ═══ BOTTOM SHEET ═══ */ ?>
