@@ -617,13 +617,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- Short description — rendered as regular text at bottom of sidebar -->
       <?php
-      $short_desc = $product->get_short_description();
-      if (!empty($short_desc)) :
-      ?>
-        <div class="oz-product-short-desc">
-          <?php echo apply_filters('the_content', $short_desc); ?>
-        </div>
-      <?php endif; ?>
+      <?php /* Short description removed — client decision 2026-03-07 */ ?>
 
     </div><!-- .oz-product-summary -->
 
