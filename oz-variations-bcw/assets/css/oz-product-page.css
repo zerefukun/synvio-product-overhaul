@@ -1653,6 +1653,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-sticky-desktop {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 14px;
     width: 100%;
     min-width: 0;

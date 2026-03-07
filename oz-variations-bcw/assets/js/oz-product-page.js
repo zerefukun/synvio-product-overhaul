@@ -1210,8 +1210,22 @@
       if (existing) existing.remove();
     }, smoothScrollTo = function(el) {
       var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
-      var top = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
-      window.scrollTo({ top, behavior: "smooth" });
+      var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+      var startY = window.pageYOffset;
+      var diff = targetY - startY;
+      var duration = 600;
+      var start = null;
+      function easeInOutCubic(t) {
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        var elapsed = timestamp - start;
+        var progress = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + diff * easeInOutCubic(progress));
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     }, setupStickyBar = function() {
       if (!DOM.stickyBar) return;
       var target = DOM.addToCartBtn || DOM.optionsWidget;

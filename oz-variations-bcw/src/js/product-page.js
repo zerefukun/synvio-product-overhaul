@@ -1047,13 +1047,31 @@ function removeCartMsg() {
 /* ═══ SMOOTH SCROLL HELPER ═════════════════════════════════ */
 
 /**
- * Smooth scroll to an element, offsetting for the sticky bar height + 20px padding.
- * Uses window.scrollTo with behavior:'smooth' for reliable cross-browser animation.
+ * Smooth scroll to an element with manual eased animation.
+ * Offsets for sticky bar height + 20px padding.
+ * Duration ~600ms with easeInOutCubic for a natural feel.
  */
 function smoothScrollTo(el) {
   var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
-  var top = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
-  window.scrollTo({ top: top, behavior: 'smooth' });
+  var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+  var startY = window.pageYOffset;
+  var diff = targetY - startY;
+  var duration = 600;
+  var start = null;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    var elapsed = timestamp - start;
+    var progress = Math.min(elapsed / duration, 1);
+    window.scrollTo(0, startY + diff * easeInOutCubic(progress));
+    if (progress < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
 }
 
 
