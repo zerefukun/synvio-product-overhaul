@@ -1086,6 +1086,7 @@
         if (json.success) {
           if (S.sheetOpen) closeSheet();
           showCartSuccess(json.data);
+          document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
           if (typeof jQuery !== "undefined") {
             jQuery(document.body).trigger("wc_fragment_refresh");
           }

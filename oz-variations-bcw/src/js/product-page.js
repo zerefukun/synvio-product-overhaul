@@ -856,6 +856,9 @@ function submitCart() {
         // Show success feedback
         showCartSuccess(json.data);
 
+        // Notify cart drawer to open (custom event for our theme)
+        document.dispatchEvent(new CustomEvent('oz-added-to-cart'));
+
         // Update WC cart fragments if available
         if (typeof jQuery !== 'undefined') {
           jQuery(document.body).trigger('wc_fragment_refresh');
