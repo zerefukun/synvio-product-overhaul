@@ -9,18 +9,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  /* Animated hide/show for RAL/NCS mode switch */
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Animated show — height expands first, then opacity fades in (0.1s delay) */
   max-height: 500px;
   opacity: 1;
-  overflow: hidden;
+  overflow: visible;
+  margin-bottom: 0;
+  transition: max-height 0.3s var(--oz-ease), opacity 0.3s 0.1s, margin 0.3s;
 }
 
 .oz-color-swatches.hidden {
+  /* Animated hide — opacity fades first, then height collapses */
   max-height: 0;
   opacity: 0;
   overflow: hidden;
+  margin-bottom: 0;
+  transition: max-height 0.3s var(--oz-ease), opacity 0.2s, margin 0.3s;
 }
 
 .oz-color-swatch {
