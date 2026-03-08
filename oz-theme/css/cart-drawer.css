@@ -463,7 +463,8 @@ body.oz-drawer-open {
    ============================================ */
 .oz-drawer-upsells {
     padding: 16px 24px 12px;
-    max-height: min(20vh, 200px);
+    /* Enough height for 2 upsell cards + title (~160px), capped at 25vh */
+    max-height: min(25vh, 250px);
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -657,9 +658,9 @@ body.oz-drawer-open {
    STICKY FOOTER
    ============================================ */
 .oz-drawer-footer {
-    padding: 16px 24px 20px;
+    padding: 16px 24px 8px;
     /* iOS safe area inset for notch devices */
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
     border-top: 1px solid var(--oz-border, #E5E5E3);
     background: var(--oz-bg-page, white);
     flex-shrink: 0;
@@ -782,9 +783,9 @@ body.oz-drawer-open {
     .oz-cart-item-price { font-size: 13px; }
     .oz-cart-item-row { padding-top: 4px; }
 
-    /* Upsells — compact cards, less padding */
+    /* Upsells — compact cards, enough room for 2 items */
     .oz-drawer-upsells {
-        max-height: min(15vh, 140px);
+        max-height: min(20vh, 170px);
         padding: 8px 24px 6px;
     }
     .oz-drawer-upsells-title { margin-bottom: 6px; font-size: 10px; }
@@ -812,7 +813,7 @@ body.oz-drawer-open {
 /* Very short viewports — hide payment icons, minimal everything */
 @media (max-height: 650px) {
     .oz-drawer-payment-icons { display: none; }
-    .oz-drawer-upsells { max-height: min(12vh, 100px); padding: 6px 24px 4px; }
+    .oz-drawer-upsells { max-height: min(18vh, 140px); padding: 6px 24px 4px; }
     .oz-drawer-footer { padding: 8px 24px 10px; }
     .oz-drawer-footer-row.subtotal { margin-bottom: 6px; }
     .oz-checkout-btn { padding: 10px; }
