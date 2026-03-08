@@ -637,8 +637,13 @@ add_action('wp_ajax_nopriv_oz_cart_drawer_add', 'oz_cart_drawer_add');
  *
  * 3-step priority model:
  * 1. Scan cart — detect product lines via OZ_Product_Line_Config::detect()
- * 2. Cross-sells first — use WC cross-sell IDs from cart products
- * 3. Fill with fallback defaults — per-line fallback map if cross-sells < 3
+ * Smart 3-step upsell engine:
+ * 1. Enhanced cart scan — reads oz_line, oz_color_mode, and collects cross-sell IDs
+ * 2. Build candidate pool from completion rules (8-12 priority-ordered products per line)
+ *    - RAL/NCS bonus: injects RAL Kleurenwaaier at position 2 if customer uses RAL/NCS
+ *    - Multi-line carts: round-robin interleave from each line's list, deduplicating
+ * 3. Cross-sell boost + pick top 3 — WC cross-sell matches promoted to front, then
+ *    first 3 in-stock + purchasable candidates not already in cart are returned
  *
  * Rules: max 3, never suggest products already in cart, only in-stock + purchasable.
  *
@@ -646,24 +651,29 @@ add_action('wp_ajax_nopriv_oz_cart_drawer_add', 'oz_cart_drawer_add');
  * @return array
  */
 function oz_cart_drawer_get_upsells($cart) {
-    // Per-line fallback product IDs (tools, spaan, PU roller, etc.)
-    $fallback_map = [
-        'original'       => [11177, 11025, 11175],  // Gereedschapset K&K, Flexibele spaan, PU roller
-        'all-in-one'     => [11177, 11025, 11175],
-        'easyline'       => [11177, 11025, 11175],
-        'microcement'    => [11177, 11025, 11175],
-        'metallic'       => [11177, 11025, 11175],
-        'lavasteen'      => [25550, 11025, 11175],  // Gereedschapset Lavasteen, Flexibele spaan, PU roller
-        'betonlook-verf' => [11175, 11025],          // PU roller, Flexibele spaan
-        'stuco-paste'    => [11025, 11175],           // Flexibele spaan, PU roller
-        'pu-color'       => [11175],                  // PU roller
+    // Project-completion rules: priority-ordered product IDs per line (8-12 items each).
+    // The system walks down this list, skipping products already in cart,
+    // so there's always something relevant to suggest.
+    $completion_rules = [
+        'original'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'all-in-one'     => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'easyline'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'microcement'    => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'metallic'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'lavasteen'      => [25550, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'betonlook-verf' => [11015, 22997, 22996, 11175, 11025, 11022, 11164, 11018],
+        'stuco-paste'    => [11025, 22994, 11175, 11017, 11022, 11018],
+        'pu-color'       => [11175, 11022, 11164],
     ];
 
     $cart_product_ids = [];
     $cross_sell_ids   = [];
-    $detected_lines   = [];
+    $detected_lines   = [];  // Preserves insertion order (first line detected = first priority)
+    $has_ral_ncs      = false;
 
-    // Step 1+2: Scan cart, collect product IDs, cross-sells, and detected lines
+    // --- Step 1: Enhanced cart scan ---
+    // Reads oz_line (fast) and oz_color_mode from cart item meta.
+    // Falls back to OZ_Product_Line_Config::detect() if oz_line is missing.
     $can_detect = class_exists('OZ_Product_Line_Config');
 
     foreach ($cart->get_cart() as $cart_item) {
@@ -673,15 +683,21 @@ function oz_cart_drawer_get_upsells($cart) {
         $product = wc_get_product($pid);
         if (!$product) continue;
 
-        // Detect product line (if plugin is active)
-        if ($can_detect) {
+        // Detect product line — prefer oz_line meta (faster), fall back to class detection
+        $line = isset($cart_item['oz_line']) ? $cart_item['oz_line'] : null;
+        if (!$line && $can_detect) {
             $line = OZ_Product_Line_Config::detect($product);
-            if ($line) {
-                $detected_lines[$line] = true;
-            }
+        }
+        if ($line) {
+            $detected_lines[$line] = true;
         }
 
-        // Collect cross-sell IDs
+        // Check for RAL/NCS color mode — triggers RAL Kleurenwaaier bonus
+        if (!$has_ral_ncs && isset($cart_item['oz_color_mode']) && $cart_item['oz_color_mode'] === 'ral_ncs') {
+            $has_ral_ncs = true;
+        }
+
+        // Collect cross-sell IDs from WC product config
         $cs = $product->get_cross_sell_ids();
         foreach ($cs as $cs_id) {
             if (!isset($cart_product_ids[$cs_id])) {
@@ -690,48 +706,78 @@ function oz_cart_drawer_get_upsells($cart) {
         }
     }
 
-    $upsells = [];
+    // --- Step 2: Build candidate pool from completion rules ---
+    $candidates = [];
 
-    // Step 2: Add cross-sell products first (manual WC config takes priority)
-    foreach (array_keys($cross_sell_ids) as $cs_id) {
-        if (isset($cart_product_ids[$cs_id])) continue;
-
-        $formatted = oz_cart_drawer_format_upsell($cs_id);
-        if ($formatted) {
-            $upsells[] = $formatted;
+    if (count($detected_lines) === 1) {
+        // Single line: just use that line's list directly
+        $line_key = key($detected_lines);  // key() works on all PHP versions
+        if (isset($completion_rules[$line_key])) {
+            $candidates = $completion_rules[$line_key];
+        }
+    } elseif (count($detected_lines) > 1) {
+        // Multi-line cart: round-robin interleave from each line, deduplicating
+        $line_lists = [];
+        foreach (array_keys($detected_lines) as $line_key) {
+            if (isset($completion_rules[$line_key])) {
+                $line_lists[] = $completion_rules[$line_key];
+            }
         }
 
-        if (count($upsells) >= 3) break;
-    }
-
-    // Step 3: Fill remaining slots with per-line fallback defaults
-    if (count($upsells) < 3 && !empty($detected_lines)) {
-        // Collect all fallback IDs from detected lines, preserving order
-        $fallback_ids = [];
-        foreach (array_keys($detected_lines) as $line_key) {
-            if (isset($fallback_map[$line_key])) {
-                foreach ($fallback_map[$line_key] as $fid) {
-                    $fallback_ids[$fid] = true;
+        // Round-robin: take one from each list in turn, skip duplicates.
+        // Guard: if no lines matched completion rules, $line_lists is empty — skip to step 3.
+        if (!empty($line_lists)) {
+            $seen = [];
+            $max_len = max(array_map('count', $line_lists));
+            for ($i = 0; $i < $max_len; $i++) {
+                foreach ($line_lists as $list) {
+                    if ($i < count($list) && !isset($seen[$list[$i]])) {
+                        $candidates[] = $list[$i];
+                        $seen[$list[$i]] = true;
+                    }
                 }
             }
         }
+    }
 
-        // Track IDs already added as upsells
-        $already_added = [];
-        foreach ($upsells as $u) {
-            $already_added[$u['id']] = true;
-        }
+    // RAL/NCS bonus: inject RAL Kleurenwaaier (10998) at position 2 if customer uses RAL/NCS colors
+    if ($has_ral_ncs && !in_array(10998, $candidates, true)) {
+        array_splice($candidates, min(2, count($candidates)), 0, [10998]);
+    }
 
-        foreach (array_keys($fallback_ids) as $fid) {
-            if (count($upsells) >= 3) break;
-            if (isset($cart_product_ids[$fid])) continue;
-            if (isset($already_added[$fid])) continue;
-
-            $formatted = oz_cart_drawer_format_upsell($fid);
-            if ($formatted) {
-                $upsells[] = $formatted;
-                $already_added[$fid] = true;
+    // --- Step 3: Cross-sell boost + pick top 3 ---
+    // Candidates that also appear in WC cross-sell IDs get promoted to front.
+    // This respects manual cross-sell config while still using our priority ordering.
+    if (!empty($cross_sell_ids)) {
+        $boosted   = [];
+        $unboosted = [];
+        foreach ($candidates as $cid) {
+            if (isset($cross_sell_ids[$cid])) {
+                $boosted[] = $cid;
+            } else {
+                $unboosted[] = $cid;
             }
+        }
+        $candidates = array_merge($boosted, $unboosted);
+
+        // Also add any cross-sell IDs that aren't in our completion rules
+        // (e.g. manually configured cross-sells for specific products)
+        foreach (array_keys($cross_sell_ids) as $cs_id) {
+            if (!in_array($cs_id, $candidates, true)) {
+                $candidates[] = $cs_id;
+            }
+        }
+    }
+
+    // Pick top 3 candidates that aren't in cart and pass stock/purchasable checks
+    $upsells = [];
+    foreach ($candidates as $cid) {
+        if (count($upsells) >= 3) break;
+        if (isset($cart_product_ids[$cid])) continue;
+
+        $formatted = oz_cart_drawer_format_upsell($cid);
+        if ($formatted) {
+            $upsells[] = $formatted;
         }
     }
 
