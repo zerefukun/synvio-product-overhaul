@@ -167,12 +167,12 @@ export function buildToolSectionV2(sectionId) {
   section.appendChild(extrasWrap);
 
   // Smart nudge — lives outside extrasWrap so it can show in both set and individual mode
+  // Fixed 15m² threshold — rollers harden in ~2 hours, big projects need extras
   var nudge = document.createElement('div');
   nudge.className = 'oz-smart-nudge';
-  var nudgeM2 = (TC.nudgeQtyThreshold || 3) * (parseFloat(P.unitM2) || 5);
   nudge.innerHTML = NUDGE_ICON +
     '<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan ' +
-    nudgeM2 + 'm\u00b2 raden wij extra rollers aan.</span>';
+    '15m\u00b2 raden wij extra rollers aan.</span>';
   section.appendChild(nudge);
 
   // Individual tool list — for "Zelf samenstellen" mode
@@ -266,7 +266,7 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
   if (nudgeEl) {
     var m2PerUnit = parseFloat(P.unitM2) || 0;
     var totalM2 = qty * m2PerUnit;
-    var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5); // default 15m²
+    var m2Threshold = 15; // fixed 15m² — rollers harden in ~2 hours
     var showNudge = false;
     if (totalM2 >= m2Threshold) {
       if (toolMode === 'set') {

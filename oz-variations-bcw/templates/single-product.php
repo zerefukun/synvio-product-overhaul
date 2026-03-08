@@ -556,8 +556,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <!-- M² advice tip — below payment, above delivery -->
       <?php if ($config['unitM2'] > 0) : ?>
       <div class="oz-m2-advice">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path>
+        <!-- Filled info icon for visibility on tinted background -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
         </svg>
         <span>Tip van onze specialist: bestel altijd extra materiaal. Oneffenheden in de ondergrond, reparaties en verwerking vragen meer product dan de berekende vierkante meters. Tekort komen is geen optie!</span>
       </div>

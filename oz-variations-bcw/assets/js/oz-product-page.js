@@ -280,7 +280,7 @@
     return payload;
   }
   var CHECKMARK_SVG = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 4.5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var NUDGE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  var NUDGE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z"/></svg>';
 
   // src/js/dom.js
   var DOM = {};
@@ -453,8 +453,7 @@
     section.appendChild(extrasWrap);
     var nudge = document.createElement("div");
     nudge.className = "oz-smart-nudge";
-    var nudgeM2 = (TC.nudgeQtyThreshold || 3) * (parseFloat(P.unitM2) || 5);
-    nudge.innerHTML = NUDGE_ICON + "<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan " + nudgeM2 + "m\xB2 raden wij extra rollers aan.</span>";
+    nudge.innerHTML = NUDGE_ICON + "<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan 15m\xB2 raden wij extra rollers aan.</span>";
     section.appendChild(nudge);
     var indList = document.createElement("div");
     indList.className = "oz-tool-list";
@@ -520,7 +519,7 @@
     if (nudgeEl) {
       var m2PerUnit = parseFloat(P.unitM2) || 0;
       var totalM2 = qty * m2PerUnit;
-      var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5);
+      var m2Threshold = 15;
       var showNudge = false;
       if (totalM2 >= m2Threshold) {
         if (toolMode === "set") {
