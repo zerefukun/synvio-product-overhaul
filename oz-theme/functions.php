@@ -398,8 +398,43 @@ function oz_cart_drawer_get() {
         $product = $cart_item['data'];
         if (!$product) continue;
 
-        // Get product thumbnail URL
+        $item_pid = $product->get_id();
+
+        // --- Display name ---
+        // Strip color suffix from product name (same logic as single-product.php).
+        // "Microcement Sand 2" with _oz_color "Sand 2" → "Microcement"
+        $display_name = $product->get_name();
+        $current_color = get_post_meta($item_pid, '_oz_color', true);
+        if ($current_color) {
+            // Pattern 1: parenthesized color — "Beton Ciré Original (Stone White 1000)"
+            $stripped = preg_replace('/\s*\([^)]+\)\s*$/', '', $display_name);
+            // Pattern 2: suffix match — "Microcement Sand 2" with color "Sand 2"
+            if ($stripped === $display_name) {
+                $stripped = preg_replace('/\s+' . preg_quote($current_color, '/') . '\s*$/i', '', $display_name);
+            }
+            $display_name = trim($stripped);
+        }
+
+        // For RAL/NCS orders: append the custom color code to the base name
+        // e.g. "Microcement" → "Microcement RAL 7104"
+        $is_ral_ncs = isset($cart_item['oz_color_mode']) && $cart_item['oz_color_mode'] === 'ral_ncs';
+        if ($is_ral_ncs && !empty($cart_item['oz_custom_color'])) {
+            $display_name .= ' ' . $cart_item['oz_custom_color'];
+        }
+
+        // --- Thumbnail ---
+        // For RAL/NCS products: use the base (line) product image, not the color variant's.
+        // The variant's image shows a specific standard color which is misleading for RAL/NCS.
         $image_id = $product->get_image_id();
+        if ($is_ral_ncs && !empty($cart_item['oz_line']) && class_exists('OZ_Product_Line_Config')) {
+            $base_id = OZ_Product_Line_Config::get_base_product_id($cart_item['oz_line']);
+            if ($base_id) {
+                $base_product = wc_get_product($base_id);
+                if ($base_product) {
+                    $image_id = $base_product->get_image_id();
+                }
+            }
+        }
         $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
         // Build meta string from cart item data (color, options, etc.)
@@ -409,7 +444,7 @@ function oz_cart_drawer_get() {
         if (class_exists('OZ_Cart_Manager') && (isset($cart_item['oz_line']) || isset($cart_item['oz_page_mode']))) {
             // Pass product_id so generic addon groups can resolve labels
             $addon_data = $cart_item;
-            $addon_data['product_id'] = $product->get_id();
+            $addon_data['product_id'] = $item_pid;
             $meta_parts = OZ_Cart_Manager::get_addon_details($addon_data);
         }
 
@@ -419,7 +454,6 @@ function oz_cart_drawer_get() {
             11177 => 'Spaan, kwast, PU garde, 3× roller, tape, 2× verfbak, vachtroller',
             25550 => 'Spaan, kwast, garde, PU garde, 3× roller, tape, 2× verfbak, vachtroller',
         ];
-        $item_pid = $product->get_id();
         if (isset($kit_labels[$item_pid]) && empty($meta_parts)) {
             $meta_parts[] = $kit_labels[$item_pid];
         }
@@ -440,13 +474,13 @@ function oz_cart_drawer_get() {
 
         $items[] = [
             'key'        => $cart_key,
-            'name'       => $product->get_name(),
+            'name'       => $display_name,
             'price'      => floatval($product->get_price()),
             'qty'        => $cart_item['quantity'],
             'image'      => $image_url,
             'meta'       => implode(' · ', $meta_parts),
             'line_total' => floatval($cart_item['line_total']) + floatval($cart_item['line_tax']),
-            'product_id' => $product->get_id(),
+            'product_id' => $item_pid,
         ];
     }
 
