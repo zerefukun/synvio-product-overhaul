@@ -398,6 +398,63 @@
         return null;
     }
 
+    /** Build HTML for a regular (non-sized) upsell card */
+    function buildRegularCard(u) {
+        var imgHtml = u.image
+            ? '<img src="' + esc(u.image) + '" alt="' + esc(u.name) + '">'
+            : '';
+        return '<div class="oz-drawer-upsell-card" data-product-id="' + u.id + '">' +
+            '<div class="oz-drawer-upsell-img">' + imgHtml + '</div>' +
+            '<div class="oz-drawer-upsell-info">' +
+                '<div class="oz-drawer-upsell-name">' + esc(u.name) + '</div>' +
+                '<div class="oz-drawer-upsell-price">' + fmt(u.price) + '</div>' +
+            '</div>' +
+            '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
+                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+            '</button>' +
+        '</div>';
+    }
+
+    /** Build HTML for a sized upsell card (PU Roller, Verfbak, etc.) */
+    function buildSizedCard(u) {
+        var imgHtml = u.image
+            ? '<img src="' + esc(u.image) + '" alt="' + esc(u.name) + '">'
+            : '';
+
+        // Find first non-in-cart size as default selection
+        var defaultIdx = 0;
+        for (var k = 0; k < u.sizes.length; k++) {
+            if (!u.sizes[k].in_cart) { defaultIdx = k; break; }
+        }
+
+        // Build size pills
+        var pillsHtml = '<div class="oz-upsell-sizes">';
+        for (var s = 0; s < u.sizes.length; s++) {
+            var sz = u.sizes[s];
+            var active = s === defaultIdx ? ' active' : '';
+            var inCart = sz.in_cart ? ' in-cart' : '';
+            pillsHtml += '<button class="oz-upsell-size-pill' + active + inCart + '"' +
+                ' data-wc-id="' + sz.wcId + '"' +
+                ' data-price="' + sz.price + '"' +
+                ' data-idx="' + s + '">' +
+                esc(sz.label) +
+            '</button>';
+        }
+        pillsHtml += '</div>';
+
+        return '<div class="oz-drawer-upsell-card oz-sized-upsell" data-product-id="' + u.sizes[defaultIdx].wcId + '">' +
+            '<div class="oz-drawer-upsell-img">' + imgHtml + '</div>' +
+            '<div class="oz-drawer-upsell-info">' +
+                '<div class="oz-drawer-upsell-name">' + esc(u.name) + '</div>' +
+                pillsHtml +
+                '<div class="oz-drawer-upsell-price">' + fmt(u.sizes[defaultIdx].price) + '</div>' +
+            '</div>' +
+            '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
+                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+            '</button>' +
+        '</div>';
+    }
+
     /** Render upsell suggestions */
     function renderUpsells(upsells) {
         var show = upsells.length > 0 && S.items.length > 0;
@@ -407,34 +464,63 @@
         var html = '';
         for (var i = 0; i < upsells.length; i++) {
             var u = upsells[i];
-            var imgHtml = u.image
-                ? '<img src="' + esc(u.image) + '" alt="' + esc(u.name) + '">'
-                : '';
-            html +=
-                '<div class="oz-drawer-upsell-card" data-product-id="' + u.id + '">' +
-                    '<div class="oz-drawer-upsell-img">' + imgHtml + '</div>' +
-                    '<div class="oz-drawer-upsell-info">' +
-                        '<div class="oz-drawer-upsell-name">' + esc(u.name) + '</div>' +
-                        '<div class="oz-drawer-upsell-price">' + fmt(u.price) + '</div>' +
-                    '</div>' +
-                    '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
-                        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
-                    '</button>' +
-                '</div>';
+            if (u.type === 'sized') {
+                html += buildSizedCard(u);
+            } else {
+                html += buildRegularCard(u);
+            }
         }
         R.upsellList.innerHTML = html;
 
-        /* Bind upsell add buttons */
+        /* Bind size pill selection on sized cards */
+        var sizedCards = R.upsellList.querySelectorAll('.oz-sized-upsell');
+        for (var si = 0; si < sizedCards.length; si++) {
+            (function (card) {
+                var pills = card.querySelectorAll('.oz-upsell-size-pill');
+                var priceEl = card.querySelector('.oz-drawer-upsell-price');
+                for (var p = 0; p < pills.length; p++) {
+                    pills[p].addEventListener('click', function () {
+                        // Update active state
+                        for (var q = 0; q < pills.length; q++) pills[q].classList.remove('active');
+                        this.classList.add('active');
+                        // Update card's product ID and displayed price
+                        card.dataset.productId = this.dataset.wcId;
+                        priceEl.textContent = fmt(parseFloat(this.dataset.price));
+                    });
+                }
+            })(sizedCards[si]);
+        }
+
+        /* Bind upsell add buttons (works for both regular and sized cards) */
         var cards = R.upsellList.querySelectorAll('.oz-drawer-upsell-card');
         for (var j = 0; j < cards.length; j++) {
             (function (card) {
-                var prodId = parseInt(card.dataset.productId, 10);
                 var btn = card.querySelector('.oz-drawer-upsell-add');
+                var isSized = card.classList.contains('oz-sized-upsell');
                 btn.addEventListener('click', function () {
+                    var prodId = parseInt(card.dataset.productId, 10);
                     addUpsell(prodId, btn);
-                    /* Show checkmark after adding */
-                    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
-                    btn.classList.add('added');
+
+                    if (isSized) {
+                        /* Sized cards: brief checkmark, then reset — card stays for more sizes */
+                        var plusSvg = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>';
+                        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
+                        btn.classList.add('added');
+                        /* Mark the active pill as in-cart */
+                        var activePill = card.querySelector('.oz-upsell-size-pill.active');
+                        if (activePill) activePill.classList.add('in-cart');
+                        /* Reset button after 1.5s so customer can add another size */
+                        setTimeout(function () {
+                            btn.innerHTML = plusSvg;
+                            btn.classList.remove('added');
+                            btn.style.pointerEvents = '';
+                            btn.style.opacity = '';
+                        }, 1500);
+                    } else {
+                        /* Regular cards: show checkmark (card will be replaced on refresh) */
+                        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
+                        btn.classList.add('added');
+                    }
                 });
             })(cards[j]);
         }

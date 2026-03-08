@@ -1279,9 +1279,9 @@ class OZ_Product_Line_Config {
         'verfbak' => [
             'name' => 'Verfbak', 'price' => 2.95, 'wcId' => 11164,
             'sizes' => [
-                ['label' => '10cm', 'price' => 2.95, 'wcId' => 11164, 'wapoAddon' => null],
-                ['label' => '18cm', 'price' => 4.95, 'wcId' => 11164, 'wapoAddon' => '43-1'],
-                ['label' => '32cm', 'price' => 5.95, 'wcId' => 11164, 'wapoAddon' => '43-2'],
+                ['label' => '10cm', 'price' => 2.95, 'wcId' => 11164],
+                ['label' => '18cm', 'price' => 4.95, 'wcId' => 28234],  // Separate product: Verfbak 18cm
+                ['label' => '32cm', 'price' => 5.95, 'wcId' => 28235],  // Separate product: Verfbak 32cm
             ],
         ],
         'vachtroller' => [

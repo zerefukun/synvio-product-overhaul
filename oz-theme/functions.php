@@ -796,15 +796,99 @@ function oz_cart_drawer_get_upsells($cart) {
         }
     }
 
-    // Pick top 3 candidates that aren't in cart and pass stock/purchasable checks
+    // Sized product families: base product ID → all size variants.
+    // When a sized product appears as a candidate, we return a "sized" upsell card
+    // with all variant sizes so the customer can pick which size to add.
+    // These cards persist in the upsell section (customer may want multiple sizes).
+    $sized_families = [
+        11175 => [  // PU Roller — base ID triggers sized card
+            'name'  => 'PU Roller',
+            'sizes' => [
+                ['label' => '10cm', 'wcId' => 11175, 'price' => 2.50],
+                ['label' => '18cm', 'wcId' => 17360, 'price' => 9.95],
+                ['label' => '25cm', 'wcId' => 17361, 'price' => 12.95],
+                ['label' => '50cm', 'wcId' => 19705, 'price' => 17.50],
+            ],
+        ],
+        11164 => [  // Verfbak — base ID triggers sized card
+            'name'  => 'Verfbak',
+            'sizes' => [
+                ['label' => '10cm', 'wcId' => 11164, 'price' => 2.95],
+                ['label' => '18cm', 'wcId' => 28234, 'price' => 4.95],
+                ['label' => '32cm', 'wcId' => 28235, 'price' => 5.95],
+            ],
+        ],
+    ];
+
+    // Also build a reverse map: any size wcId → base ID (for deduplication)
+    $sized_member_to_base = [];
+    foreach ($sized_families as $base_id => $family) {
+        foreach ($family['sizes'] as $sz) {
+            $sized_member_to_base[$sz['wcId']] = $base_id;
+        }
+    }
+
+    // Pick top 3 candidates that aren't in cart and pass stock/purchasable checks.
+    // Sized products expand into a multi-size card and don't block their slot
+    // after adding (customer may want multiple sizes).
     $upsells = [];
+    $used_families = [];  // Track which sized families we've already added
+
     foreach ($candidates as $cid) {
         if (count($upsells) >= 3) break;
-        if (isset($cart_product_ids[$cid])) continue;
 
-        $formatted = oz_cart_drawer_format_upsell($cid);
-        if ($formatted) {
-            $upsells[] = $formatted;
+        // Check if this candidate belongs to a sized family
+        $base_id = isset($sized_member_to_base[$cid]) ? $sized_member_to_base[$cid] : null;
+
+        if ($base_id !== null && isset($sized_families[$base_id])) {
+            // Skip if we already added this sized family
+            if (isset($used_families[$base_id])) continue;
+
+            // For sized families: show the card if at least one size is NOT in cart
+            $family = $sized_families[$base_id];
+            $any_available = false;
+            foreach ($family['sizes'] as $sz) {
+                if (!isset($cart_product_ids[$sz['wcId']])) {
+                    $any_available = true;
+                    break;
+                }
+            }
+            if (!$any_available) continue;
+
+            // Get image from the base product
+            $base_product = wc_get_product($base_id);
+            if (!$base_product) continue;
+            $image_id  = $base_product->get_image_id();
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            // Build sizes array with in_cart flags
+            $size_data = [];
+            foreach ($family['sizes'] as $sz) {
+                $size_data[] = [
+                    'label'   => $sz['label'],
+                    'wcId'    => $sz['wcId'],
+                    'price'   => $sz['price'],
+                    'in_cart' => isset($cart_product_ids[$sz['wcId']]),
+                ];
+            }
+
+            $upsells[] = [
+                'id'      => $base_id,
+                'name'    => $family['name'],
+                'price'   => $family['sizes'][0]['price'],  // Base price (updates on size select)
+                'image'   => $image_url,
+                'type'    => 'sized',
+                'sizes'   => $size_data,
+            ];
+            $used_families[$base_id] = true;
+        } else {
+            // Regular (non-sized) product
+            if (isset($cart_product_ids[$cid])) continue;
+
+            $formatted = oz_cart_drawer_format_upsell($cid);
+            if ($formatted) {
+                $upsells[] = $formatted;
+            }
         }
     }
 
