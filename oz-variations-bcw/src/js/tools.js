@@ -164,16 +164,16 @@ export function buildToolSectionV2(sectionId) {
   });
   extrasWrap.appendChild(extrasList);
 
-  // Smart nudge — shown when qty >= threshold and no extra PU rollers
+  section.appendChild(extrasWrap);
+
+  // Smart nudge — lives outside extrasWrap so it can show in both set and individual mode
   var nudge = document.createElement('div');
   nudge.className = 'oz-smart-nudge';
   var nudgeM2 = (TC.nudgeQtyThreshold || 3) * (parseFloat(P.unitM2) || 5);
   nudge.innerHTML = NUDGE_ICON +
     '<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan ' +
     nudgeM2 + 'm\u00b2 raden wij extra rollers aan.</span>';
-  extrasWrap.appendChild(nudge);
-
-  section.appendChild(extrasWrap);
+  section.appendChild(nudge);
 
   // Individual tool list — for "Zelf samenstellen" mode
   var indList = document.createElement('div');
@@ -259,15 +259,27 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
     return st && st.on;
   });
 
-  // Smart nudge: show when total m² >= 15 AND no extra PU rollers added.
-  // Uses unitM2 to calculate actual coverage. Non-m² products (unitM2=0) never show nudge.
+  // Smart nudge: show when total m² >= threshold AND user has a PU roller but may need more.
+  // Works in both set mode (roller in extras) and individual mode (roller in tools).
+  // Non-m² products (unitM2=0) never show nudge.
   var nudgeEl = section.querySelector('.oz-smart-nudge');
   if (nudgeEl) {
-    var hasExtraRollers = extras['pu-roller'] && extras['pu-roller'].on;
     var m2PerUnit = parseFloat(P.unitM2) || 0;
     var totalM2 = qty * m2PerUnit;
     var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5); // default 15m²
-    nudgeEl.classList.toggle('visible', toolMode === 'set' && totalM2 >= m2Threshold && !hasExtraRollers);
+    var showNudge = false;
+    if (totalM2 >= m2Threshold) {
+      if (toolMode === 'set') {
+        // In set mode: show nudge if user hasn't added extra rollers on top of the set
+        var hasExtraRollers = extras['pu-roller'] && extras['pu-roller'].on;
+        showNudge = !hasExtraRollers;
+      } else if (toolMode === 'individual') {
+        // In individual mode: show nudge if user selected a PU roller (remind them they may need more)
+        var hasIndividualRoller = tools['pu-roller'] && tools['pu-roller'].on;
+        showNudge = hasIndividualRoller;
+      }
+    }
+    nudgeEl.classList.toggle('visible', showNudge);
   }
 
   // Show/hide individual list — only in 'individual' mode

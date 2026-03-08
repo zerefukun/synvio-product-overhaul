@@ -450,12 +450,12 @@
       ));
     });
     extrasWrap.appendChild(extrasList);
+    section.appendChild(extrasWrap);
     var nudge = document.createElement("div");
     nudge.className = "oz-smart-nudge";
     var nudgeM2 = (TC.nudgeQtyThreshold || 3) * (parseFloat(P.unitM2) || 5);
     nudge.innerHTML = NUDGE_ICON + "<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan " + nudgeM2 + "m\xB2 raden wij extra rollers aan.</span>";
-    extrasWrap.appendChild(nudge);
-    section.appendChild(extrasWrap);
+    section.appendChild(nudge);
     var indList = document.createElement("div");
     indList.className = "oz-tool-list";
     indList.dataset.listType = "individual";
@@ -518,11 +518,20 @@
     });
     var nudgeEl = section.querySelector(".oz-smart-nudge");
     if (nudgeEl) {
-      var hasExtraRollers = extras["pu-roller"] && extras["pu-roller"].on;
       var m2PerUnit = parseFloat(P.unitM2) || 0;
       var totalM2 = qty * m2PerUnit;
       var m2Threshold = (TC.nudgeQtyThreshold || 3) * (m2PerUnit || 5);
-      nudgeEl.classList.toggle("visible", toolMode === "set" && totalM2 >= m2Threshold && !hasExtraRollers);
+      var showNudge = false;
+      if (totalM2 >= m2Threshold) {
+        if (toolMode === "set") {
+          var hasExtraRollers = extras["pu-roller"] && extras["pu-roller"].on;
+          showNudge = !hasExtraRollers;
+        } else if (toolMode === "individual") {
+          var hasIndividualRoller = tools["pu-roller"] && tools["pu-roller"].on;
+          showNudge = hasIndividualRoller;
+        }
+      }
+      nudgeEl.classList.toggle("visible", showNudge);
     }
     var indList = section.querySelector('[data-list-type="individual"]');
     if (indList) indList.classList.toggle("hidden", toolMode !== "individual");
