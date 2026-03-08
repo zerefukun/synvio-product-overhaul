@@ -510,6 +510,17 @@ function oz_cart_drawer_get() {
             $meta_parts = OZ_Cart_Manager::get_addon_details($addon_data);
         }
 
+        // Kit contents label — show what's inside toolset products
+        // so customers know at a glance what they're getting
+        $kit_labels = [
+            11177 => 'Spaan, kwast, PU garde, 3× roller, tape, 2× verfbak, vachtroller',
+            25550 => 'Spaan, kwast, garde, PU garde, 3× roller, tape, 2× verfbak, vachtroller',
+        ];
+        $item_pid = $product->get_id();
+        if (isset($kit_labels[$item_pid]) && empty($meta_parts)) {
+            $meta_parts[] = $kit_labels[$item_pid];
+        }
+
         // Tool size label
         if (!empty($cart_item['oz_tool_size'])) {
             $meta_parts[] = 'Maat: ' . $cart_item['oz_tool_size'];
@@ -666,6 +677,14 @@ function oz_cart_drawer_get_upsells($cart) {
         'pu-color'       => [11175, 11022, 11164],
     ];
 
+    // Kit contents map: toolset product ID → array of individual product IDs inside it.
+    // When a kit is in cart, its contents are excluded from upsell candidates
+    // (no point suggesting items the customer already has inside their kit).
+    $kit_contents = [
+        11177 => [11025, 11022, 11020, 11175, 11018, 11164, 11015],  // Gereedschapset K&K
+        25550 => [11025, 11022, 11020, 11175, 11018, 11164, 11015],  // Gereedschapset Lavasteen (same tools + grote garde)
+    ];
+
     $cart_product_ids = [];
     $cross_sell_ids   = [];
     $detected_lines   = [];  // Preserves insertion order (first line detected = first priority)
@@ -679,6 +698,14 @@ function oz_cart_drawer_get_upsells($cart) {
     foreach ($cart->get_cart() as $cart_item) {
         $pid = $cart_item['product_id'];
         $cart_product_ids[$pid] = true;
+
+        // If this product is a kit, mark all its contents as "in cart" too
+        // so individual tools inside the kit won't be suggested as upsells
+        if (isset($kit_contents[$pid])) {
+            foreach ($kit_contents[$pid] as $kit_item_id) {
+                $cart_product_ids[$kit_item_id] = true;
+            }
+        }
 
         $product = wc_get_product($pid);
         if (!$product) continue;
