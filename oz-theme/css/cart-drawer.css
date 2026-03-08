@@ -763,12 +763,24 @@ body.oz-drawer-open {
    RESPONSIVE
    ============================================ */
 
-/* Short viewports (small laptops ~768px tall) — compact footer + upsells */
+/* Short viewports (small laptops ~768px tall) — compact everything */
 @media (max-height: 800px) {
     .oz-drawer-header { padding: 12px 24px; }
 
     .oz-shipping-bar { padding: 8px 24px; }
     .oz-shipping-text { margin-bottom: 4px; }
+
+    /* Cart items — smaller images, tighter spacing */
+    .oz-cart-item {
+        grid-template-columns: 52px 1fr;
+        gap: 10px;
+        padding: 10px 0;
+    }
+    .oz-cart-item-img { width: 52px; height: 52px; }
+    .oz-cart-item-name { font-size: 12px; }
+    .oz-cart-item-meta { font-size: 10px; }
+    .oz-cart-item-price { font-size: 13px; }
+    .oz-cart-item-row { padding-top: 4px; }
 
     .oz-drawer-upsells {
         max-height: min(15vh, 140px);
@@ -785,11 +797,18 @@ body.oz-drawer-open {
     .oz-drawer-payment-icons { margin-top: 8px; gap: 4px; }
 }
 
-/* Very short viewports — hide payment icons entirely, minimal spacing */
+/* Very short viewports — hide payment icons, extra compact items */
 @media (max-height: 650px) {
     .oz-drawer-payment-icons { display: none; }
     .oz-drawer-upsells { max-height: min(12vh, 100px); }
     .oz-drawer-footer { padding: 10px 24px 12px; }
+
+    .oz-cart-item {
+        grid-template-columns: 44px 1fr;
+        gap: 8px;
+        padding: 8px 0;
+    }
+    .oz-cart-item-img { width: 44px; height: 44px; }
 }
 
 @media (max-width: 900px) {
