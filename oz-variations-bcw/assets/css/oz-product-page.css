@@ -1460,12 +1460,10 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-tool-sizes {
   display: none;
-  flex-wrap: wrap;
   gap: 4px;
   margin-top: -4px;
   padding-left: 28px;
   flex-basis: 100%;
-  min-width: 0;
 }
 .oz-tool-sizes.visible {
   display: flex;
