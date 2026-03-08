@@ -5,6 +5,17 @@
  * @since 2.0.0
  */
 
+/* Small laptops — tighten spacing so the 2-column layout fits */
+@media (max-width: 1100px) {
+  .oz-product-page {
+    padding: 8px 24px 80px;
+  }
+
+  .oz-product-grid {
+    gap: 32px;
+  }
+}
+
 @media (max-width: 900px) {
   .oz-product-page {
     padding: 8px 16px 100px; /* room for sticky bar */

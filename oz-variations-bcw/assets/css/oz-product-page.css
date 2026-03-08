@@ -231,7 +231,7 @@
 }
 .oz-product-grid {
   display: grid;
-  grid-template-columns: 56% 44%;
+  grid-template-columns: 56fr 44fr;
   gap: 56px;
   align-items: start;
 }
@@ -2389,6 +2389,14 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
 }
 
 /* src/css/responsive.css */
+@media (max-width: 1100px) {
+  .oz-product-page {
+    padding: 8px 24px 80px;
+  }
+  .oz-product-grid {
+    gap: 32px;
+  }
+}
 @media (max-width: 900px) {
   .oz-product-page {
     padding: 8px 16px 100px;

@@ -36,7 +36,8 @@
 
 .oz-product-grid {
   display: grid;
-  grid-template-columns: 56% 44%;
+  /* fr units account for gap — percentages + gap = overflow on small screens */
+  grid-template-columns: 56fr 44fr;
   gap: 56px;
   align-items: start;
 }
