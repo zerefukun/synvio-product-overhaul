@@ -29,6 +29,9 @@ class OZ_Frontend_Display {
         // Base product redirect (before template loads)
         add_action('template_redirect', [__CLASS__, 'redirect_base_products']);
 
+        // SEO: exclude base products from Yoast sitemap (they 301 to variants)
+        add_filter('wpseo_exclude_from_sitemap_by_post_ids', [__CLASS__, 'exclude_base_products_from_sitemap']);
+
         // Override single-product template for BCW product lines
         // Priority 20 to run AFTER WC_Template_Loader::template_loader (priority 10)
         add_filter('template_include', [__CLASS__, 'override_product_template'], 20);
@@ -68,6 +71,25 @@ class OZ_Frontend_Display {
                 exit;
             }
         }
+    }
+
+    /**
+     * Exclude base products from the Yoast sitemap.
+     * Base products 301-redirect to their most-sold variant, so they should
+     * not appear in the sitemap — it wastes crawl budget and confuses Google.
+     *
+     * @param array $excluded_ids  Post IDs already excluded
+     * @return array
+     */
+    public static function exclude_base_products_from_sitemap($excluded_ids) {
+        // Collect all base_id values from product line configs
+        foreach (OZ_Product_Line_Config::get_all_lines() as $line_key) {
+            $base_id = OZ_Product_Line_Config::get_base_product_id($line_key);
+            if ($base_id) {
+                $excluded_ids[] = $base_id;
+            }
+        }
+        return $excluded_ids;
     }
 
     /**
