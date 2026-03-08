@@ -1382,6 +1382,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-tool-name {
   flex: 1;
+  min-width: 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--oz-text-primary);
@@ -2392,6 +2393,7 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
   .oz-product-summary {
     padding-left: 0;
     order: 2;
+    overflow-x: hidden;
   }
   .oz-sheet-overlay.open {
     display: block;

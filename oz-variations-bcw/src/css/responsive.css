@@ -18,6 +18,7 @@
   .oz-product-summary {
     padding-left: 0;
     order: 2;
+    overflow-x: hidden; /* prevent tool expansions from causing horizontal page scroll */
   }
 
   /* Activate bottom sheet on mobile (sticky bar is always in DOM now) */

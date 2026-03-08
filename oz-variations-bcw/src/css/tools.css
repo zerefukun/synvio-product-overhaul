@@ -126,6 +126,7 @@
 
 .oz-tool-name {
   flex: 1;
+  min-width: 0; /* allow name to shrink below content width on narrow screens */
   font-size: 13px;
   font-weight: 500;
   color: var(--oz-text-primary);
