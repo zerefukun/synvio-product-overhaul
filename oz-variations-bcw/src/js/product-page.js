@@ -24,6 +24,7 @@
 import { P, S, updateState, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
+import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
 if (!P) {
@@ -433,6 +434,7 @@ function closeUpsell() {
 
 /** Upsell: add the Kant & Klaar set and proceed to cart */
 function upsellAddSet() {
+  analytics.trackUpsellAccepted();
   updateState({ toolMode: 'set' });
   closeUpsell();
   syncUI();
@@ -441,6 +443,7 @@ function upsellAddSet() {
 
 /** Upsell: skip — go to cart without tools */
 function upsellSkip() {
+  analytics.trackUpsellSkipped();
   closeUpsell();
   submitCart();
 }
@@ -482,6 +485,7 @@ function handleClick(e) {
     var value = addonBtn.getAttribute('data-addon-value');
     if (key && value) {
       S.addons[key] = value;
+      analytics.trackAddonSelected(key, value);
       // Highlight selected button within this group
       var group = addonBtn.closest('.oz-option-group');
       if (group) {
@@ -499,15 +503,25 @@ function handleClick(e) {
   if (btn) {
     e.preventDefault();
     if (btn.hasAttribute('data-pu')) {
-      updateState({ puLayers: parseInt(btn.getAttribute('data-pu'), 10) });
+      var puVal = parseInt(btn.getAttribute('data-pu'), 10);
+      updateState({ puLayers: puVal });
+      analytics.trackOptionSelected('pu', puVal);
     } else if (btn.hasAttribute('data-primer')) {
-      updateState({ primer: btn.getAttribute('data-primer') });
+      var primerVal = btn.getAttribute('data-primer');
+      updateState({ primer: primerVal });
+      analytics.trackOptionSelected('primer', primerVal);
     } else if (btn.hasAttribute('data-colorfresh')) {
-      updateState({ colorfresh: btn.getAttribute('data-colorfresh') });
+      var cfVal = btn.getAttribute('data-colorfresh');
+      updateState({ colorfresh: cfVal });
+      analytics.trackOptionSelected('colorfresh', cfVal);
     } else if (btn.hasAttribute('data-toepassing')) {
-      updateState({ toepassing: btn.getAttribute('data-toepassing') });
+      var toeVal = btn.getAttribute('data-toepassing');
+      updateState({ toepassing: toeVal });
+      analytics.trackOptionSelected('toepassing', toeVal);
     } else if (btn.hasAttribute('data-pakket')) {
-      updateState({ pakket: btn.getAttribute('data-pakket') });
+      var pakVal = btn.getAttribute('data-pakket');
+      updateState({ pakket: pakVal });
+      analytics.trackOptionSelected('pakket', pakVal);
     }
     syncUI();
     return;
@@ -516,6 +530,7 @@ function handleClick(e) {
   // Gallery thumbnail click — switch main image with crossfade
   if (thumb) {
     e.preventDefault();
+    analytics.trackGalleryImage(thumb.getAttribute('data-index') || 0);
     switchGalleryImage(thumb);
     return;
   }
@@ -537,7 +552,9 @@ function handleClick(e) {
   // Color mode buttons (RAL/NCS vs swatch)
   if (modeBtn) {
     e.preventDefault();
-    updateState({ colorMode: modeBtn.getAttribute('data-mode') });
+    var newMode = modeBtn.getAttribute('data-mode');
+    updateState({ colorMode: newMode });
+    analytics.trackColorModeChanged(newMode);
     syncUI();
     return;
   }
@@ -545,6 +562,7 @@ function handleClick(e) {
   // Color swatch click — save tool state before navigating to new product
   var swatch = target.closest('.oz-color-swatch');
   if (swatch) {
+    analytics.trackColorSelected(swatch.getAttribute('data-color') || '');
     saveToolState();
     // Let the default link behavior proceed (page navigation)
     return;
@@ -667,6 +685,7 @@ function toggleInfoTooltip(btn) {
 function changeQty(delta) {
   var newQty = clampToolQty(S.qty, delta);
   updateState({ qty: newQty });
+  analytics.trackQtyChanged(newQty);
   if (DOM.qtyInput) DOM.qtyInput.value = newQty;
   syncUI();
 }
@@ -679,6 +698,7 @@ function handleQtyInput() {
   if (isNaN(val) || val < 1) val = 1;
   if (val > 99) val = 99;
   updateState({ qty: val });
+  analytics.trackQtyChanged(val);
   DOM.qtyInput.value = val;
   syncUI();
 }
@@ -756,6 +776,10 @@ function handleCustomColorInput(e) {
   if (isRal || isNcs) {
     input.classList.remove('invalid');
     input.classList.add('valid');
+    // Track valid custom color entry (only on blur to avoid spamming on keystrokes)
+    if (e.type === 'blur' || e.type === 'focusout') {
+      analytics.trackCustomColor(checkValue, isRal ? 'ral' : 'ncs');
+    }
     if (hint) {
       hint.textContent = isRal ? 'RAL kleurcode herkend' : 'NCS kleurcode herkend';
       hint.className = 'oz-custom-color-hint success';
@@ -861,6 +885,9 @@ var _sheetScrollY = 0;
 function openSheet() {
   if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
 
+  // Track sheet open for analytics
+  analytics.trackSheetOpened();
+
   // Remember scroll position so we can restore it on close
   _sheetScrollY = window.scrollY;
 
@@ -911,6 +938,7 @@ function addToCart() {
       var toolGroup = document.querySelector('[data-option="tools"]');
       if (toolGroup) toolGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+    analytics.trackAddToCartError(error);
     shakeButton();
     showCartError(error);
     return;
@@ -918,6 +946,7 @@ function addToCart() {
 
   // Upsell: if no tools selected at all and product has tools, show upsell modal
   if (P.hasTools && S.toolMode === 'none') {
+    analytics.trackUpsellShown();
     openUpsell();
     return;
   }
@@ -950,6 +979,9 @@ function submitCart() {
       setCartLoading(false);
 
       if (json.success) {
+        // Track successful add to cart
+        analytics.trackAddToCart(calculatePrices(P, S));
+
         // Close sheet if open
         if (S.sheetOpen) closeSheet();
 

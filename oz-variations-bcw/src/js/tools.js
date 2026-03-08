@@ -16,6 +16,7 @@
  */
 
 import { P, S, updateState, fmt, getItemPrice, clampToolQty, CHECKMARK_SVG, NUDGE_ICON } from './state.js';
+import * as analytics from './analytics.js';
 
 
 /* ═══ SYNC CALLBACK ═════════════════════════════════════════ */
@@ -298,6 +299,7 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
 /** Switch tool mode: 'none', 'set', or 'individual' */
 function setToolMode(mode) {
   updateState({ toolMode: mode });
+  analytics.trackToolModeChanged(mode);
   _onSync();
 }
 
@@ -327,6 +329,7 @@ function toggleTool(id) {
     }
   }
   S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size: size };
+  analytics.trackToolToggled(id, nowOn);
   _onSync();
 }
 

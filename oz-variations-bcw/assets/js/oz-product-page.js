@@ -336,6 +336,97 @@
     if (el) el.style.display = "none";
   }
 
+  // src/js/analytics.js
+  function push(eventName, params) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(Object.assign({
+      event: eventName,
+      oz_product_id: P.productId,
+      oz_product_name: P.productName,
+      oz_product_line: P.productLine || "none"
+    }, params || {}));
+  }
+  function trackColorSelected(colorName) {
+    push("oz_color_selected", {
+      oz_color: colorName,
+      oz_color_mode: "swatch"
+    });
+  }
+  function trackCustomColor(code, mode) {
+    push("oz_color_selected", {
+      oz_color: code,
+      oz_color_mode: mode
+      // 'ral_ncs'
+    });
+  }
+  function trackColorModeChanged(mode) {
+    push("oz_color_mode_changed", {
+      oz_color_mode: mode
+    });
+  }
+  function trackOptionSelected(optionType, value) {
+    push("oz_option_selected", {
+      oz_option_type: optionType,
+      // 'pu', 'primer', 'colorfresh', 'toepassing', 'pakket'
+      oz_option_value: String(value)
+    });
+  }
+  function trackToolModeChanged(mode) {
+    push("oz_tool_mode_changed", {
+      oz_tool_mode: mode
+      // 'none', 'set', 'individual'
+    });
+  }
+  function trackToolToggled(toolId, isOn) {
+    push("oz_tool_toggled", {
+      oz_tool_id: toolId,
+      oz_tool_action: isOn ? "selected" : "deselected"
+    });
+  }
+  function trackQtyChanged(qty) {
+    push("oz_qty_changed", {
+      oz_qty: qty
+    });
+  }
+  function trackAddToCart(prices) {
+    push("oz_add_to_cart", {
+      oz_total_price: prices.total,
+      oz_qty: S.qty,
+      oz_pu_layers: S.puLayers,
+      oz_primer: S.primer,
+      oz_tool_mode: S.toolMode,
+      oz_color: S.colorMode === "ral_ncs" ? S.customColor : P.currentColor
+    });
+  }
+  function trackAddToCartError(errorMsg) {
+    push("oz_add_to_cart_error", {
+      oz_error: errorMsg
+    });
+  }
+  function trackUpsellShown() {
+    push("oz_upsell_shown", {});
+  }
+  function trackUpsellAccepted() {
+    push("oz_upsell_accepted", {});
+  }
+  function trackUpsellSkipped() {
+    push("oz_upsell_skipped", {});
+  }
+  function trackSheetOpened() {
+    push("oz_sheet_opened", {});
+  }
+  function trackGalleryImage(imageIndex) {
+    push("oz_gallery_image", {
+      oz_image_index: imageIndex
+    });
+  }
+  function trackAddonSelected(addonKey, addonValue) {
+    push("oz_option_selected", {
+      oz_option_type: "addon_" + addonKey,
+      oz_option_value: addonValue
+    });
+  }
+
   // src/js/tools.js
   var _onSync = function() {
   };
@@ -540,6 +631,7 @@
   }
   function setToolMode(mode) {
     updateState({ toolMode: mode });
+    trackToolModeChanged(mode);
     _onSync();
   }
   function firstInStockSize(configItem) {
@@ -563,6 +655,7 @@
       }
     }
     S.tools[id] = { on: nowOn, qty: nowOn ? 1 : 0, size };
+    trackToolToggled(id, nowOn);
     _onSync();
   }
   function changeToolQty(id, delta) {
@@ -851,11 +944,13 @@
       document.body.style.overflow = "";
       renderUpsellModal();
     }, upsellAddSet = function() {
+      trackUpsellAccepted();
       updateState({ toolMode: "set" });
       closeUpsell();
       syncUI();
       submitCart();
     }, upsellSkip = function() {
+      trackUpsellSkipped();
       closeUpsell();
       submitCart();
     }, renderUpsellModal = function() {
@@ -885,6 +980,7 @@
         var value = addonBtn.getAttribute("data-addon-value");
         if (key && value) {
           S.addons[key] = value;
+          trackAddonSelected(key, value);
           var group = addonBtn.closest(".oz-option-group");
           if (group) {
             var groupBtns = group.querySelectorAll("[data-addon-key]");
@@ -899,21 +995,32 @@
       if (btn) {
         e.preventDefault();
         if (btn.hasAttribute("data-pu")) {
-          updateState({ puLayers: parseInt(btn.getAttribute("data-pu"), 10) });
+          var puVal = parseInt(btn.getAttribute("data-pu"), 10);
+          updateState({ puLayers: puVal });
+          trackOptionSelected("pu", puVal);
         } else if (btn.hasAttribute("data-primer")) {
-          updateState({ primer: btn.getAttribute("data-primer") });
+          var primerVal = btn.getAttribute("data-primer");
+          updateState({ primer: primerVal });
+          trackOptionSelected("primer", primerVal);
         } else if (btn.hasAttribute("data-colorfresh")) {
-          updateState({ colorfresh: btn.getAttribute("data-colorfresh") });
+          var cfVal = btn.getAttribute("data-colorfresh");
+          updateState({ colorfresh: cfVal });
+          trackOptionSelected("colorfresh", cfVal);
         } else if (btn.hasAttribute("data-toepassing")) {
-          updateState({ toepassing: btn.getAttribute("data-toepassing") });
+          var toeVal = btn.getAttribute("data-toepassing");
+          updateState({ toepassing: toeVal });
+          trackOptionSelected("toepassing", toeVal);
         } else if (btn.hasAttribute("data-pakket")) {
-          updateState({ pakket: btn.getAttribute("data-pakket") });
+          var pakVal = btn.getAttribute("data-pakket");
+          updateState({ pakket: pakVal });
+          trackOptionSelected("pakket", pakVal);
         }
         syncUI();
         return;
       }
       if (thumb) {
         e.preventDefault();
+        trackGalleryImage(thumb.getAttribute("data-index") || 0);
         switchGalleryImage(thumb);
         return;
       }
@@ -929,12 +1036,15 @@
       }
       if (modeBtn) {
         e.preventDefault();
-        updateState({ colorMode: modeBtn.getAttribute("data-mode") });
+        var newMode = modeBtn.getAttribute("data-mode");
+        updateState({ colorMode: newMode });
+        trackColorModeChanged(newMode);
         syncUI();
         return;
       }
       var swatch = target.closest(".oz-color-swatch");
       if (swatch) {
+        trackColorSelected(swatch.getAttribute("data-color") || "");
         saveToolState();
         return;
       }
@@ -1014,6 +1124,7 @@
     }, changeQty = function(delta) {
       var newQty = clampToolQty(S.qty, delta);
       updateState({ qty: newQty });
+      trackQtyChanged(newQty);
       if (DOM.qtyInput) DOM.qtyInput.value = newQty;
       syncUI();
     }, handleQtyInput = function() {
@@ -1021,6 +1132,7 @@
       if (isNaN(val) || val < 1) val = 1;
       if (val > 99) val = 99;
       updateState({ qty: val });
+      trackQtyChanged(val);
       DOM.qtyInput.value = val;
       syncUI();
     }, toggleReadMore = function() {
@@ -1063,6 +1175,9 @@
       if (isRal || isNcs) {
         input.classList.remove("invalid");
         input.classList.add("valid");
+        if (e.type === "blur" || e.type === "focusout") {
+          trackCustomColor(checkValue, isRal ? "ral" : "ncs");
+        }
         if (hint) {
           hint.textContent = isRal ? "RAL kleurcode herkend" : "NCS kleurcode herkend";
           hint.className = "oz-custom-color-hint success";
@@ -1122,6 +1237,7 @@
       }
     }, openSheet = function() {
       if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
+      trackSheetOpened();
       _sheetScrollY = window.scrollY;
       DOM.slotSheet.appendChild(DOM.optionsWidget);
       if (DOM.desktopHome) DOM.desktopHome.style.minHeight = "0";
@@ -1144,11 +1260,13 @@
           var toolGroup = document.querySelector('[data-option="tools"]');
           if (toolGroup) toolGroup.scrollIntoView({ behavior: "smooth", block: "center" });
         }
+        trackAddToCartError(error);
         shakeButton();
         showCartError(error);
         return;
       }
       if (P.hasTools && S.toolMode === "none") {
+        trackUpsellShown();
         openUpsell();
         return;
       }
@@ -1166,6 +1284,7 @@
       }).then(function(json) {
         setCartLoading(false);
         if (json.success) {
+          trackAddToCart(calculatePrices(P, S));
           if (S.sheetOpen) closeSheet();
           showCartSuccess(json.data);
           document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
