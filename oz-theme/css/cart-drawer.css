@@ -762,6 +762,36 @@ body.oz-drawer-open {
 /* ============================================
    RESPONSIVE
    ============================================ */
+
+/* Short viewports (small laptops ~768px tall) — compact footer + upsells */
+@media (max-height: 800px) {
+    .oz-drawer-header { padding: 12px 24px; }
+
+    .oz-shipping-bar { padding: 8px 24px; }
+    .oz-shipping-text { margin-bottom: 4px; }
+
+    .oz-drawer-upsells {
+        max-height: min(15vh, 140px);
+        padding: 10px 24px 8px;
+    }
+    .oz-drawer-upsells-title { margin-bottom: 8px; }
+
+    .oz-drawer-footer {
+        padding: 12px 24px 14px;
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
+    }
+    .oz-drawer-footer-row.subtotal { margin-bottom: 10px; }
+    .oz-checkout-btn { padding: 12px; }
+    .oz-drawer-payment-icons { margin-top: 8px; gap: 4px; }
+}
+
+/* Very short viewports — hide payment icons entirely, minimal spacing */
+@media (max-height: 650px) {
+    .oz-drawer-payment-icons { display: none; }
+    .oz-drawer-upsells { max-height: min(12vh, 100px); }
+    .oz-drawer-footer { padding: 10px 24px 12px; }
+}
+
 @media (max-width: 900px) {
     .oz-drawer {
         max-width: 100%;
