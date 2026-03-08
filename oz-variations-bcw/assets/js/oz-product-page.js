@@ -1243,11 +1243,25 @@
       if (!DOM.stickyBar) return;
       var target = DOM.addToCartBtn || DOM.optionsWidget;
       if (!target) return;
-      var observer = new IntersectionObserver(function(entries) {
-        var isVisible = entries[0].isIntersecting;
-        DOM.stickyBar.classList.toggle("visible", !isVisible);
+      var ctaOutOfView = false;
+      var optionsInView = false;
+      var isMobile = window.matchMedia("(max-width: 900px)");
+      function updateStickyVisibility() {
+        var show2 = ctaOutOfView && !(isMobile.matches && optionsInView);
+        DOM.stickyBar.classList.toggle("visible", show2);
+      }
+      var ctaObserver = new IntersectionObserver(function(entries) {
+        ctaOutOfView = !entries[0].isIntersecting;
+        updateStickyVisibility();
       }, { threshold: 0 });
-      observer.observe(target);
+      ctaObserver.observe(target);
+      if (DOM.optionsWidget) {
+        var optionsObserver = new IntersectionObserver(function(entries) {
+          optionsInView = entries[0].isIntersecting;
+          updateStickyVisibility();
+        }, { threshold: 0 });
+        optionsObserver.observe(DOM.optionsWidget);
+      }
     }, init = function() {
       cacheDom();
       setToolSyncCallback(syncUI);

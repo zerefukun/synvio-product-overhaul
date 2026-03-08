@@ -1089,6 +1089,8 @@ function smoothScrollTo(el) {
 /**
  * Setup IntersectionObserver to show/hide sticky bar.
  * Shows when the add-to-cart button scrolls out of view.
+ * On mobile: hides again when the options widget scrolls into view,
+ * since the user is actively configuring and the sticky bar just wastes space.
  */
 function setupStickyBar() {
   if (!DOM.stickyBar) return;
@@ -1097,12 +1099,32 @@ function setupStickyBar() {
   var target = DOM.addToCartBtn || DOM.optionsWidget;
   if (!target) return;
 
-  var observer = new IntersectionObserver(function (entries) {
-    var isVisible = entries[0].isIntersecting;
-    DOM.stickyBar.classList.toggle('visible', !isVisible);
-  }, { threshold: 0 });
+  // Track both states to decide visibility
+  var ctaOutOfView = false;
+  var optionsInView = false;
+  var isMobile = window.matchMedia('(max-width: 900px)');
 
-  observer.observe(target);
+  function updateStickyVisibility() {
+    // Show sticky bar when CTA is out of view, BUT hide on mobile when options are visible
+    var show = ctaOutOfView && !(isMobile.matches && optionsInView);
+    DOM.stickyBar.classList.toggle('visible', show);
+  }
+
+  // Observer 1: add-to-cart button — triggers sticky bar when scrolled past
+  var ctaObserver = new IntersectionObserver(function (entries) {
+    ctaOutOfView = !entries[0].isIntersecting;
+    updateStickyVisibility();
+  }, { threshold: 0 });
+  ctaObserver.observe(target);
+
+  // Observer 2: options widget — hide sticky on mobile when user reaches options
+  if (DOM.optionsWidget) {
+    var optionsObserver = new IntersectionObserver(function (entries) {
+      optionsInView = entries[0].isIntersecting;
+      updateStickyVisibility();
+    }, { threshold: 0 });
+    optionsObserver.observe(DOM.optionsWidget);
+  }
 }
 
 
