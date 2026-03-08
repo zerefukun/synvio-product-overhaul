@@ -782,26 +782,40 @@ body.oz-drawer-open {
     .oz-cart-item-price { font-size: 13px; }
     .oz-cart-item-row { padding-top: 4px; }
 
+    /* Upsells — compact cards, less padding */
     .oz-drawer-upsells {
         max-height: min(15vh, 140px);
-        padding: 10px 24px 8px;
+        padding: 8px 24px 6px;
     }
-    .oz-drawer-upsells-title { margin-bottom: 8px; }
+    .oz-drawer-upsells-title { margin-bottom: 6px; font-size: 10px; }
+    .oz-drawer-upsell-list { gap: 4px; }
+    .oz-drawer-upsell-card { padding: 6px 10px; gap: 10px; border-radius: 6px; }
+    .oz-drawer-upsell-img { width: 34px; height: 34px; }
+    .oz-drawer-upsell-name { font-size: 11px; }
+    .oz-drawer-upsell-price { font-size: 10px; }
+    .oz-drawer-upsell-add { width: 28px !important; height: 28px !important; }
 
+    /* Footer — tight spacing, smaller text */
     .oz-drawer-footer {
-        padding: 12px 24px 14px;
-        padding-bottom: max(14px, env(safe-area-inset-bottom));
+        padding: 10px 24px 12px;
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
     }
-    .oz-drawer-footer-row.subtotal { margin-bottom: 10px; }
-    .oz-checkout-btn { padding: 12px; }
-    .oz-drawer-payment-icons { margin-top: 8px; gap: 4px; }
+    .oz-drawer-footer-row { margin-bottom: 2px; }
+    .oz-drawer-footer-row.subtotal { margin-bottom: 8px; margin-top: 2px; }
+    .oz-drawer-footer-row.subtotal .oz-drawer-footer-label { font-size: 14px; }
+    .oz-drawer-footer-row.subtotal .oz-drawer-footer-value { font-size: 16px; }
+    .oz-checkout-btn { padding: 11px; font-size: 12px; }
+    .oz-drawer-payment-icons { margin-top: 6px; gap: 4px; }
+    .oz-drawer-payment-icon { width: 34px; height: 22px; }
 }
 
-/* Very short viewports — hide payment icons, extra compact items */
+/* Very short viewports — hide payment icons, minimal everything */
 @media (max-height: 650px) {
     .oz-drawer-payment-icons { display: none; }
-    .oz-drawer-upsells { max-height: min(12vh, 100px); }
-    .oz-drawer-footer { padding: 10px 24px 12px; }
+    .oz-drawer-upsells { max-height: min(12vh, 100px); padding: 6px 24px 4px; }
+    .oz-drawer-footer { padding: 8px 24px 10px; }
+    .oz-drawer-footer-row.subtotal { margin-bottom: 6px; }
+    .oz-checkout-btn { padding: 10px; }
 
     .oz-cart-item {
         grid-template-columns: 44px 1fr;
