@@ -86,6 +86,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s;
+  overflow: hidden; /* prevent expanded content from causing horizontal scroll */
 }
 
 .oz-tool-item:hover {
@@ -202,10 +203,12 @@
 
 .oz-tool-sizes {
   display: none;
+  flex-wrap: wrap; /* allow size buttons to wrap on narrow screens */
   gap: 4px;
   margin-top: -4px;
   padding-left: 28px; /* align with tool name past checkmark */
   flex-basis: 100%;
+  min-width: 0; /* prevent flex child from overflowing parent */
 }
 .oz-tool-sizes.visible {
   display: flex;
