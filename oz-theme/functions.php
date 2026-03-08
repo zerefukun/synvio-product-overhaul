@@ -19,62 +19,7 @@ function load_font_awesome() {
 add_action('wp_enqueue_scripts', 'load_font_awesome');
 add_action('admin_enqueue_scripts', 'load_font_awesome');
 
-function add_m2_calculator_meta_box() {
-    add_meta_box(
-        'm2_calculator_meta_box',
-        __('Enable m² Calculator', 'textdomain'),
-        'm2_calculator_meta_box_html',
-        'product',
-        'side',
-        'high'
-    );
-}
-
-add_action('add_meta_boxes', 'add_m2_calculator_meta_box');
-
-function m2_calculator_meta_box_html($post) {
-    $value = get_post_meta($post->ID, '_enable_m2', true);
-    ?>
-    <label for="enable_m2"><?php esc_html_e('Enable m² Calculator', 'textdomain'); ?></label>
-    <input type="checkbox" name="enable_m2" id="enable_m2" value="1" <?php checked($value, '1'); ?>>
-    <?php
-}
-
-function save_m2_calculator_meta_box_data($post_id) {
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!current_user_can('edit_post', $post_id)) return;
-
-    if (isset($_POST['enable_m2'])) {
-        update_post_meta($post_id, '_enable_m2', '1');
-    } else {
-        update_post_meta($post_id, '_enable_m2', '0');
-    }
-}
-
-add_action('save_post', 'save_m2_calculator_meta_box_data');
-
-function my_enqueue_product_scripts() {
-    if (is_product()) {
-        global $post;
-
-        if ( ! is_a( $post, 'WP_Post' ) ) {
-            return;
-        }
-
-        $product_id = $post->ID;
-        $enable_m2_calculator = get_post_meta($product_id, '_enable_m2', true);
-
-        // Only enqueue if m² calculator is enabled
-        if ('1' === $enable_m2_calculator) {
-            wp_enqueue_script('my-m2-calculator-script', get_stylesheet_directory_uri() . '/js/my-m2-calculator-script.js', array('jquery'), time(), true);
-            wp_localize_script('my-m2-calculator-script', 'M2CalculatorParams', array(
-                'isEnabled' => true
-            ));
-        }
-    }
-}
-
-add_action('wp_enqueue_scripts', 'my_enqueue_product_scripts');
+/* M² Calculator removed — Phase 4 cleanup (was dead code, no products use it) */
 
 function add_dynamic_content_meta_box() {
     add_meta_box(
@@ -245,49 +190,7 @@ function enqueue_custom_content_script() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_custom_content_script');
 
-function independent_function_to_process_data($data){
-    // Check if the data is not empty and is an array
-    if (empty($data) || !is_array($data)) {
-        return $data;
-    }
-
-    // Check if the order ID is set and is numeric
-    if (!isset($data['orderNR']) || !is_numeric($data['orderNR'])) {
-        return $data;
-    }
-
-    $order_id = $data['orderNR'];
-    $order = wc_get_order($order_id);
-
-    // Check if the order object is valid
-    if (!$order) {
-        return $data;
-    }
-
-    // Assuming the street name and house number are set as post meta
-    $streetname = $order->get_shipping_address_1();
-    $housenumber = $order->get_meta('shipping_housenumber');
-
-    // Check if both street name and house number are not empty
-    if (!empty($streetname) && !empty($housenumber)) {
-        // Concatenate street name and house number
-        $data['shipping_address']['address_1'] = trim($streetname . ' ' . $housenumber);
-    }
-
-    return $data;
-}
-add_action('parcelpro_format_order_data', 'independent_function_to_process_data');
-
-
-// function custom_checkout_field_update_order_meta($order_id){
-//     if(!empty($_POST['shipping_address_1'])){
-//         update_post_meta($order_id, 'shipping_address_1', sanitize_text_field($_POST['shipping_address_1']));
-//     }
-//     if(!empty($_POST['shipping_housenumber'])){
-//         update_post_meta($order_id, 'shipping_housenumber', sanitize_text_field($_POST['shipping_housenumber']));
-//     }
-// }
-// add_action('woocommerce_checkout_update_order_meta', 'custom_checkout_field_update_order_meta');
+/* Parcelpro hook + commented checkout code removed — Phase 4 cleanup (now using MyParcel) */
 
 ?>
 <?php
