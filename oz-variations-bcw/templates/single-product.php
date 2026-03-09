@@ -150,6 +150,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
+      <!-- Shared data override check — determine once, used by specs, FAQ and USPs -->
+      <?php
+      $has_variant_override = (!empty($config['base_id']) && $config['base_id'] !== $product_id)
+          ? get_post_meta($product_id, '_oz_override_shared', true) === 'yes'
+          : false;
+      ?>
+
       <!-- Specifications table — shared from base product across all colors -->
       <?php
       // Specs fallback: variant override (if enabled) → base product → line config → empty
@@ -228,9 +235,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
       // USPs fallback: variant override (if enabled) → base product → line config → empty
-      $has_variant_override = (!empty($config['base_id']) && $config['base_id'] !== $product_id)
-          ? get_post_meta($product_id, '_oz_override_shared', true) === 'yes'
-          : false;
       if ($has_variant_override) {
           $oz_usps = get_post_meta($product_id, '_oz_usps', true);
       } else {
