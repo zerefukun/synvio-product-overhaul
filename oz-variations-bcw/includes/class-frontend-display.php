@@ -3,7 +3,6 @@
  * Frontend Display for BCW
  *
  * Handles:
- * - Base product redirect to most-sold color variant
  * - Enqueueing product page CSS/JS
  * - Passing product config to JS via wp_localize_script
  *   (payload shape matches WAPO-PARITY-CONFIG.md §16 exactly)
@@ -26,11 +25,9 @@ class OZ_Frontend_Display {
      * Initialize frontend hooks.
      */
     public static function init() {
-        // Base product redirect (before template loads)
-        add_action('template_redirect', [__CLASS__, 'redirect_base_products']);
-
-        // SEO: exclude base products from Yoast sitemap (they 301 to variants)
-        add_filter('wpseo_exclude_from_sitemap_by_post_ids', [__CLASS__, 'exclude_base_products_from_sitemap']);
+        // NOTE: Base product redirect + sitemap exclusion removed (2026-03-09).
+        // Base products should load normally — no 301 to variants.
+        // They should also appear in the Yoast sitemap for SEO traffic.
 
         // Override single-product template for BCW product lines
         // Priority 20 to run AFTER WC_Template_Loader::template_loader (priority 10)
@@ -43,54 +40,9 @@ class OZ_Frontend_Display {
         add_action('wp_enqueue_scripts', [__CLASS__, 'localize_product_data'], 20);
     }
 
-    /**
-     * Redirect base products to their most popular color variant.
-     * Base products are landing pages — not directly purchasable.
-     */
-    public static function redirect_base_products() {
-        if (!is_product()) {
-            return;
-        }
-
-        // On template_redirect, global $product may be a string (slug), not a WC_Product.
-        // Always resolve from post ID to get a real WC_Product object.
-        $product = wc_get_product(get_the_ID());
-        if (!$product instanceof WC_Product) {
-            return;
-        }
-
-        if (!OZ_Product_Processor::is_base_product($product)) {
-            return;
-        }
-
-        $variant_id = OZ_Product_Processor::find_most_popular_variant($product->get_id());
-        if ($variant_id) {
-            $url = get_permalink($variant_id);
-            if ($url) {
-                wp_safe_redirect($url, 301);
-                exit;
-            }
-        }
-    }
-
-    /**
-     * Exclude base products from the Yoast sitemap.
-     * Base products 301-redirect to their most-sold variant, so they should
-     * not appear in the sitemap — it wastes crawl budget and confuses Google.
-     *
-     * @param array $excluded_ids  Post IDs already excluded
-     * @return array
-     */
-    public static function exclude_base_products_from_sitemap($excluded_ids) {
-        // Collect all base_id values from product line configs
-        foreach (OZ_Product_Line_Config::get_all_lines() as $line_key) {
-            $base_id = OZ_Product_Line_Config::get_base_product_id($line_key);
-            if ($base_id) {
-                $excluded_ids[] = $base_id;
-            }
-        }
-        return $excluded_ids;
-    }
+    // redirect_base_products() and exclude_base_products_from_sitemap() removed.
+    // Base products now load their own page instead of 301-ing to a variant.
+    // They also appear in the Yoast XML sitemap again.
 
     /**
      * Override single-product template for products with a page mode.
