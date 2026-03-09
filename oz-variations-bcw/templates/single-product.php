@@ -334,11 +334,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                     <?php echo OZ_Frontend_Display::render_color_swatches($product); ?>
                   <?php endif; ?>
 
-                  <?php /* "Gratis kleurstalen aanvragen" link — each line has its own page */ ?>
-                  <?php if (!empty($config['kleurstalen_url'])) : ?>
+                  <?php /* "Gratis kleurstalen aanvragen" link — each line has its own page.
+                         Lavasteen links to a paid product, so it uses custom text without "Gratis". */ ?>
+                  <?php if (!empty($config['kleurstalen_url'])) :
+                    $sample_text = !empty($config['kleurstalen_text'])
+                      ? $config['kleurstalen_text']
+                      : 'Gratis kleurstalen aanvragen';
+                  ?>
                     <a href="<?php echo esc_url($config['kleurstalen_url']); ?>"
                        class="oz-sample-link" target="_blank">
-                      Gratis kleurstalen aanvragen &rarr;
+                      <?php echo esc_html($sample_text); ?> &rarr;
                     </a>
                   <?php endif; ?>
                 </div>

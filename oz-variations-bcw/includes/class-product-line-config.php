@@ -371,7 +371,8 @@ class OZ_Product_Line_Config {
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'kleurstalen_url' => '/product/kleurenpakket/',
+            'kleurstalen_url'  => '/product/kleurenpakket/',
+            'kleurstalen_text' => 'Kleurstalen aanvragen',
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -561,10 +562,10 @@ class OZ_Product_Line_Config {
                 'type'     => 'select',
                 'required' => true,
                 'options'  => [
-                    ['Original',               0, true],
+                    ['Original',               0, false],
                     ['Beton Ciré Kant & Klaar', 0, false],
                     ['Microcement',             0, false],
-                    ['Lavasteen',               0, false],
+                    ['Lavasteen',               0, true],
                 ],
             ],
         ],
