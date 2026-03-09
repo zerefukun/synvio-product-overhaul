@@ -314,10 +314,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
         <?php
         // Render option sections — only for configured_line mode with options.
-        // Base products only show color swatches — no PU/primer/pakket/etc.
+        // Base products show ALL options (same as variant pages).
         if ($has_options && !empty($option_order)) :
           foreach ($option_order as $section) :
-            if ($is_base && $section !== 'color') { continue; }
             switch ($section) :
 
               /* ─── COLOR SWATCHES ─── */
@@ -490,15 +489,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         endif;
         ?>
 
-      <!-- Price Breakdown (hidden on base products — they show "from" price instead) -->
-      <?php if ($is_base) : ?>
-      <div class="oz-price-summary oz-base-price-summary" id="priceSummary">
-        <div class="oz-price-line">
-          <span>Vanaf</span>
-          <span><?php echo esc_html($fmt_price($price)); ?></span>
-        </div>
-      </div>
-      <?php else : ?>
+      <!-- Price Breakdown -->
       <div class="oz-price-summary" id="priceSummary">
         <div class="oz-price-line" id="priceBaseLine">
           <span id="priceBaseLabel"><?php echo esc_html($product_name); ?></span>
@@ -540,15 +531,8 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span>Totaal</span>
           <span id="priceTotal"><?php echo esc_html($fmt_price($price)); ?></span>
         </div>
-      </div>
-      <?php endif; ?>
 
-        <!-- Quantity + Add to Cart (hidden on base products — must pick a color first) -->
-        <?php if ($is_base) : ?>
-        <div class="oz-option-group oz-base-cta">
-          <p class="oz-choose-color-msg">Kies hierboven een kleur om te bestellen.</p>
-        </div>
-        <?php else : ?>
+        <!-- Quantity + Add to Cart -->
         <div class="oz-option-group">
           <div class="oz-option-header">
             Aantal
@@ -562,10 +546,10 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
               <input type="number" class="oz-qty-input" id="qtyInput" value="1" min="1" max="99">
               <button class="oz-qty-btn" data-qty-delta="1">+</button>
             </div>
-            <button class="oz-add-to-cart" id="addToCartBtn">In winkelmand</button>
+            <button class="oz-add-to-cart<?php echo $is_base ? ' oz-disabled' : ''; ?>" id="addToCartBtn"
+                    <?php if ($is_base) : ?>data-base-product="1"<?php endif; ?>>In winkelmand</button>
           </div>
         </div>
-        <?php endif; ?>
 
         <!-- Payment method icons — dynamically from WooCommerce active gateways -->
         <?php

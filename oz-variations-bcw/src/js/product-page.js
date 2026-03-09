@@ -27,9 +27,8 @@ import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './to
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
-// Base products are informational — no options, no cart, no JS init needed.
-if (!P || P.isBase) {
-  // No-op — not a product page or base product landing page
+if (!P) {
+  // No-op — not a product page, bail out
 } else {
 
 
@@ -938,6 +937,13 @@ function closeSheet() {
  * Validates state (pure), then delegates to submitCart for I/O.
  */
 function addToCart() {
+  // Base products can't be added to cart — must pick a color first
+  if (P.isBase) {
+    shakeButton();
+    showCartError('Kies eerst een kleur om te bestellen.');
+    return;
+  }
+
   // Pure validation — returns error string or null
   var error = validateCartState(P, S);
   if (error) {

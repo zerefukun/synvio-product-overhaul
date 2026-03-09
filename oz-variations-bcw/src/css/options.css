@@ -214,15 +214,8 @@
   margin: 28px 0;
 }
 
-/* Base product CTA — prompts user to pick a color */
-.oz-choose-color-msg {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--oz-text);
-  text-align: center;
-  padding: 16px 20px;
-  margin: 0;
-  background: #f0f6fc;
-  border: 2px dashed #2271b1;
-  border-radius: 8px;
+/* Base product — greyed-out add-to-cart button */
+.oz-add-to-cart.oz-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

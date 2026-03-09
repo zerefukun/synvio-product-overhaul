@@ -710,7 +710,7 @@
   }
 
   // src/js/product-page.js
-  if (!P || P.isBase) {
+  if (!P) {
   } else {
     let payloadToFormData = function(payload) {
       var data = new FormData();
@@ -1266,6 +1266,11 @@
       if (DOM.desktopHome) DOM.desktopHome.appendChild(DOM.optionsWidget);
       window.scrollTo(0, _sheetScrollY);
     }, addToCart = function() {
+      if (P.isBase) {
+        shakeButton();
+        showCartError("Kies eerst een kleur om te bestellen.");
+        return;
+      }
       var error = validateCartState(P, S);
       if (error) {
         if (error.indexOf("gereedschap") !== -1) {
