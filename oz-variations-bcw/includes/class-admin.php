@@ -507,55 +507,63 @@ class OZ_BCW_Admin {
             delete_post_meta($product_id, '_oz_override_shared');
         }
 
-        // USPs — save to variant (if override) or base product
-        $usps_target = ($is_variant && !$ovr_usps) ? $base_id : $product_id;
-        $usps = [];
-        if (isset($_POST['oz_usps']) && is_array($_POST['oz_usps'])) {
-            foreach ($_POST['oz_usps'] as $usp) {
-                $usps[] = sanitize_text_field($usp);
-            }
-        }
-        $has_usps = array_filter($usps, function($v) { return $v !== ''; });
-        if (!empty($has_usps)) {
-            update_post_meta($usps_target, '_oz_usps', $usps);
-        } else {
-            delete_post_meta($usps_target, '_oz_usps');
-        }
-
-        // Specs — save to variant (if override) or base product
-        $specs_target = ($is_variant && !$ovr_specs) ? $base_id : $product_id;
-        $specs = [];
-        $keys = isset($_POST['oz_spec_keys']) ? $_POST['oz_spec_keys'] : [];
-        $vals = isset($_POST['oz_spec_vals']) ? $_POST['oz_spec_vals'] : [];
-        for ($i = 0; $i < count($keys); $i++) {
-            $k = sanitize_text_field($keys[$i]);
-            $v = sanitize_text_field($vals[$i]);
-            if ($k !== '' && $v !== '') {
-                $specs[$k] = $v;
-            }
-        }
-        if (!empty($specs)) {
-            update_post_meta($specs_target, '_oz_specs', $specs);
-        } else {
-            delete_post_meta($specs_target, '_oz_specs');
-        }
-
-        // FAQ — save to variant (if override) or base product
-        $faq_target = ($is_variant && !$ovr_faq) ? $base_id : $product_id;
-        $faqs = [];
-        if (!empty($_POST['oz_faq_questions'])) {
-            foreach ($_POST['oz_faq_questions'] as $i => $q) {
-                $q = sanitize_text_field($q);
-                $a = sanitize_textarea_field($_POST['oz_faq_answers'][$i] ?? '');
-                if ($q && $a) {
-                    $faqs[] = ['q' => $q, 'a' => $a];
+        // USPs — save to variant (if override) or base product.
+        // When a variant turns OFF override, skip saving to avoid polluting the base product
+        // with variant-specific form data that was still in the inputs.
+        $usps_target = $ovr_usps ? $product_id : ($is_variant ? null : $product_id);
+        if ($usps_target !== null) {
+            $usps = [];
+            if (isset($_POST['oz_usps']) && is_array($_POST['oz_usps'])) {
+                foreach ($_POST['oz_usps'] as $usp) {
+                    $usps[] = sanitize_text_field($usp);
                 }
             }
+            $has_usps = array_filter($usps, function($v) { return $v !== ''; });
+            if (!empty($has_usps)) {
+                update_post_meta($usps_target, '_oz_usps', $usps);
+            } else {
+                delete_post_meta($usps_target, '_oz_usps');
+            }
         }
-        if (!empty($faqs)) {
-            update_post_meta($faq_target, '_oz_faq', $faqs);
-        } else {
-            delete_post_meta($faq_target, '_oz_faq');
+
+        // Specs — same logic: skip saving when variant turns off override
+        $specs_target = $ovr_specs ? $product_id : ($is_variant ? null : $product_id);
+        if ($specs_target !== null) {
+            $specs = [];
+            $keys = isset($_POST['oz_spec_keys']) ? $_POST['oz_spec_keys'] : [];
+            $vals = isset($_POST['oz_spec_vals']) ? $_POST['oz_spec_vals'] : [];
+            for ($i = 0; $i < count($keys); $i++) {
+                $k = sanitize_text_field($keys[$i]);
+                $v = sanitize_text_field($vals[$i]);
+                if ($k !== '' && $v !== '') {
+                    $specs[$k] = $v;
+                }
+            }
+            if (!empty($specs)) {
+                update_post_meta($specs_target, '_oz_specs', $specs);
+            } else {
+                delete_post_meta($specs_target, '_oz_specs');
+            }
+        }
+
+        // FAQ — same logic: skip saving when variant turns off override
+        $faq_target = $ovr_faq ? $product_id : ($is_variant ? null : $product_id);
+        if ($faq_target !== null) {
+            $faqs = [];
+            if (!empty($_POST['oz_faq_questions'])) {
+                foreach ($_POST['oz_faq_questions'] as $i => $q) {
+                    $q = sanitize_text_field($q);
+                    $a = sanitize_textarea_field($_POST['oz_faq_answers'][$i] ?? '');
+                    if ($q && $a) {
+                        $faqs[] = ['q' => $q, 'a' => $a];
+                    }
+                }
+            }
+            if (!empty($faqs)) {
+                update_post_meta($faq_target, '_oz_faq', $faqs);
+            } else {
+                delete_post_meta($faq_target, '_oz_faq');
+            }
         }
     }
 
