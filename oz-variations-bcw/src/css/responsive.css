@@ -22,7 +22,10 @@
   }
 
   .oz-product-grid {
-    grid-template-columns: 1fr;
+    /* minmax(0,1fr) forces track minimum to 0 — prevents large images
+       (e.g. 1024px base-product photos) from stretching the column
+       past the viewport when .oz-left-column is display:contents */
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
 

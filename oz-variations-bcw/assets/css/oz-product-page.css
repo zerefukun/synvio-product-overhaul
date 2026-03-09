@@ -2412,7 +2412,7 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
     padding: 8px 16px 100px;
   }
   .oz-product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
   .oz-product-summary {
