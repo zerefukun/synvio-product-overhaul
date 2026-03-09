@@ -325,9 +325,15 @@ class OZ_Cart_Manager {
             // (not scheduled/expired). We read from DB-backed methods
             // (not get_price()) to avoid stacking addon surcharges on
             // repeated calculate_totals calls.
-            $base_price = ($product->is_on_sale())
-                ? floatval($product->get_sale_price())
-                : floatval($product->get_regular_price());
+            $line_config = isset($cart_item['oz_line'])
+                ? OZ_Product_Line_Config::get_config($cart_item['oz_line'])
+                : false;
+
+            $base_price = !empty($line_config['base_price'])
+                ? floatval($line_config['base_price'])
+                : (($product->is_on_sale())
+                    ? floatval($product->get_sale_price())
+                    : floatval($product->get_regular_price()));
 
             // Set modified price (base + addons per unit, WooCommerce multiplies by qty)
             $product->set_price($base_price + $addon_total);
@@ -625,10 +631,21 @@ class OZ_Cart_Manager {
         }
 
         // PU layers
-        if (isset($data['oz_pu_layers']) && intval($data['oz_pu_layers']) > 0) {
+        if (isset($data['oz_pu_layers'])) {
             $layers = intval($data['oz_pu_layers']);
-            $label  = $layers === 1 ? '1 toplaag PU' : $layers . ' toplagen PU';
-            $details[] = $label;
+            if ($layers === 0) {
+                $line = isset($data['oz_line']) ? $data['oz_line'] : '';
+                if (abs(OZ_Product_Line_Config::get_pu_price($line, 0)) < 0.01) {
+                    $label = '';
+                } else {
+                    $label = 'Geen PU';
+                }
+            } else {
+                $label = $layers === 1 ? '1 toplaag PU' : $layers . ' toplagen PU';
+            }
+            if ($label !== '') {
+                $details[] = $label;
+            }
         }
 
         // Primer — skip "Geen" variants (no value to display)

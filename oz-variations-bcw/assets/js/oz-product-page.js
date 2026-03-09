@@ -68,6 +68,10 @@
     n = parseFloat(n) || 0;
     return "\u20AC" + n.toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+  function fmtDelta(n) {
+    n = parseFloat(n) || 0;
+    return n < 0 ? "-" + fmt(Math.abs(n)) : fmt(n);
+  }
   function getItemPrice(configItem, stateItem) {
     if (configItem.sizes && stateItem) return parseFloat(configItem.sizes[stateItem.size || 0].price) || 0;
     return parseFloat(configItem.price) || 0;
@@ -303,6 +307,7 @@
     DOM.slotSheet = document.getElementById("optionsSlotSheet");
     DOM.colorModeSlot = document.getElementById("colorModeSlot");
     DOM.colorLabel = document.getElementById("colorLabel");
+    DOM.displayBasePrice = document.getElementById("displayBasePrice");
     DOM.stickyDColor = document.getElementById("stickyDColor");
     DOM.stickyDOptions = document.getElementById("stickyDOptions");
     DOM.stickyDQty = document.getElementById("stickyDQty");
@@ -735,6 +740,7 @@
       renderBreakdown(prices);
       if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
       if (DOM.stickyPriceMobile) DOM.stickyPriceMobile.textContent = fmt(prices.total);
+      if (DOM.displayBasePrice) DOM.displayBasePrice.textContent = fmt(prices.unitTotal);
       renderStickySummary();
       if (DOM.sheetTotal) DOM.sheetTotal.textContent = fmt(prices.total);
       renderOptionHighlights();
@@ -782,16 +788,22 @@
       if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
       var lines = [
-        { line: DOM.pricePuLine, value: prices.puPrice, el: DOM.pricePu },
+        {
+          line: DOM.pricePuLine,
+          value: prices.puPrice,
+          el: DOM.pricePu,
+          labelEl: DOM.pricePuLabel,
+          label: S.puLayers === 0 ? "Geen PU" : "PU Toplaag"
+        },
         { line: DOM.pricePrimerLine, value: prices.primerPrice, el: DOM.pricePrimer, labelEl: DOM.pricePrimerLabel, label: "Primer: " + S.primer },
         { line: DOM.priceColorfreshLine, value: prices.colorfreshPrice, el: DOM.priceColorfresh }
       ];
       for (var i = 0; i < lines.length; i++) {
         var item = lines[i];
         if (!item.line) continue;
-        if (item.value > 0) {
+        if (item.value !== 0) {
           show(item.line);
-          if (item.el) item.el.textContent = fmt(item.value);
+          if (item.el) item.el.textContent = fmtDelta(item.value);
           if (item.labelEl && item.label) item.labelEl.textContent = item.label;
         } else {
           hide(item.line);
@@ -802,9 +814,9 @@
           var lineEl = document.getElementById("priceAddon_" + g.key + "Line");
           var priceEl = document.getElementById("priceAddon_" + g.key);
           if (lineEl && priceEl) {
-            if (prices.addonPrices[g.key] > 0) {
+            if (prices.addonPrices[g.key] !== 0) {
               show(lineEl);
-              priceEl.textContent = fmt(prices.addonPrices[g.key]);
+              priceEl.textContent = fmtDelta(prices.addonPrices[g.key]);
             } else {
               hide(lineEl);
             }

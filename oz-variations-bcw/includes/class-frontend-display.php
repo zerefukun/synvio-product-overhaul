@@ -218,7 +218,9 @@ class OZ_Frontend_Display {
             // Product identity
             'productId'    => $product->get_id(),
             'productName'  => $product->get_name(),
-            'basePrice'    => floatval($product->get_price()),
+            'basePrice'    => !empty($config['base_price'])
+                ? floatval($config['base_price'])
+                : floatval($product->get_price()),
             'productLine'  => $line_key ?: null,
 
             // Unit info

@@ -176,6 +176,7 @@ $resolve_tests = [
     ['original', ['oz_pu_layers' => 2, 'oz_primer' => 'Zuigende ondergrond', 'oz_colorfresh' => 'Met Colorfresh'], 80 + 12.50 + 15.00],
     ['original', ['oz_pu_layers' => 0, 'oz_primer' => 'Geen'], 0],
     ['metallic', ['oz_pu_layers' => 1, 'oz_primer' => 'Primer'], 39.99 + 5.99],
+    ['easyline', ['oz_pu_layers' => 0], -40],
     ['easyline', ['oz_pu_layers' => 3], 80],
     ['all-in-one', ['oz_pu_layers' => 2], 16],
     ['betonlook-verf', ['oz_primer' => 'Primer'], 6.00],
@@ -214,9 +215,13 @@ if (is_array($pu_opts) && !empty($pu_opts)) {
 $pu_bv = OZ_Product_Line_Config::get_pu_options('betonlook-verf');
 test('Betonlook Verf PU = false', $pu_bv === false);
 
-// Easyline has 3 PU options (no "Geen")
+// Easyline has 4 PU options including a negative "Geen PU" discount
 $pu_easy = OZ_Product_Line_Config::get_pu_options('easyline');
-test('Easyline PU has 3 options (no Geen)', is_array($pu_easy) && count($pu_easy) === 3);
+test('Easyline PU has 4 options', is_array($pu_easy) && count($pu_easy) === 4);
+if (is_array($pu_easy)) {
+    $defaults = array_filter($pu_easy, function($o) { return $o['default']; });
+    test('Easyline PU default = 1 toplaag', count($defaults) === 1 && reset($defaults)['layers'] === 1);
+}
 
 // Metallic defaults
 $pu_met = OZ_Product_Line_Config::get_pu_options('metallic');
@@ -248,6 +253,10 @@ test('Microcement has no pakket', $pakket_mc === false);
 $config_aio = OZ_Product_Line_Config::get_config('all-in-one');
 test('All-In-One has RAL/NCS', $config_aio['ral_ncs'] === true);
 test('All-In-One is NOT ral_ncs_only', $config_aio['ral_ncs_only'] === false);
+
+$config_easy = OZ_Product_Line_Config::get_config('easyline');
+test('Easyline base price override = 180', isset($config_easy['base_price']) && abs($config_easy['base_price'] - 180) < 0.01,
+    'got: ' . ($config_easy['base_price'] ?? 'unset'));
 
 $config_pu = OZ_Product_Line_Config::get_config('pu-color');
 test('PU Color has RAL/NCS', $config_pu['ral_ncs'] === true);
@@ -322,6 +331,10 @@ echo "--- 11. Config Defaults ---\n";
 $lav_defaults = OZ_Product_Line_Config::get_defaults('lavasteen');
 test('Lavasteen default PU = 1 layer', isset($lav_defaults['oz_pu_layers']) && $lav_defaults['oz_pu_layers'] === 1,
     'got: ' . ($lav_defaults['oz_pu_layers'] ?? 'unset'));
+
+$easy_defaults = OZ_Product_Line_Config::get_defaults('easyline');
+test('Easyline default PU = 1 layer', isset($easy_defaults['oz_pu_layers']) && $easy_defaults['oz_pu_layers'] === 1,
+    'got: ' . ($easy_defaults['oz_pu_layers'] ?? 'unset'));
 
 // Metallic defaults to 0 PU layers (Geen PU)
 $met_defaults = OZ_Product_Line_Config::get_defaults('metallic');

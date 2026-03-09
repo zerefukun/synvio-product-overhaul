@@ -40,6 +40,7 @@ export function cacheDom() {
   DOM.slotSheet      = document.getElementById('optionsSlotSheet');
   DOM.colorModeSlot  = document.getElementById('colorModeSlot');
   DOM.colorLabel     = document.getElementById('colorLabel');
+  DOM.displayBasePrice = document.getElementById('displayBasePrice');
 
   // Desktop sticky bar elements
   DOM.stickyDColor   = document.getElementById('stickyDColor');

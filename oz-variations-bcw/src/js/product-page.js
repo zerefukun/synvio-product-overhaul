@@ -21,7 +21,7 @@
  * @since 2.0.0
  */
 
-import { P, S, updateState, fmt, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
+import { P, S, updateState, fmt, fmtDelta, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
 import * as analytics from './analytics.js';
@@ -90,6 +90,7 @@ function syncUI() {
   // Update sticky bar — desktop price + mobile price + options summary
   if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
   if (DOM.stickyPriceMobile) DOM.stickyPriceMobile.textContent = fmt(prices.total);
+  if (DOM.displayBasePrice) DOM.displayBasePrice.textContent = fmt(prices.unitTotal);
   renderStickySummary();
 
   // Update sheet total
@@ -179,7 +180,13 @@ function renderBreakdown(prices) {
 
   // Each line: row element, value to check, price element, optional label element + text
   var lines = [
-    { line: DOM.pricePuLine,            value: prices.puPrice,         el: DOM.pricePu },
+    {
+      line: DOM.pricePuLine,
+      value: prices.puPrice,
+      el: DOM.pricePu,
+      labelEl: DOM.pricePuLabel,
+      label: S.puLayers === 0 ? 'Geen PU' : 'PU Toplaag'
+    },
     { line: DOM.pricePrimerLine,        value: prices.primerPrice,     el: DOM.pricePrimer,        labelEl: DOM.pricePrimerLabel,        label: 'Primer: ' + S.primer },
     { line: DOM.priceColorfreshLine,    value: prices.colorfreshPrice, el: DOM.priceColorfresh },
   ];
@@ -188,9 +195,9 @@ function renderBreakdown(prices) {
   for (var i = 0; i < lines.length; i++) {
     var item = lines[i];
     if (!item.line) continue;
-    if (item.value > 0) {
+    if (item.value !== 0) {
       show(item.line);
-      if (item.el) item.el.textContent = fmt(item.value);
+      if (item.el) item.el.textContent = fmtDelta(item.value);
       if (item.labelEl && item.label) item.labelEl.textContent = item.label;
     } else {
       hide(item.line);
@@ -203,9 +210,9 @@ function renderBreakdown(prices) {
       var lineEl = document.getElementById('priceAddon_' + g.key + 'Line');
       var priceEl = document.getElementById('priceAddon_' + g.key);
       if (lineEl && priceEl) {
-        if (prices.addonPrices[g.key] > 0) {
+        if (prices.addonPrices[g.key] !== 0) {
           show(lineEl);
-          priceEl.textContent = fmt(prices.addonPrices[g.key]);
+          priceEl.textContent = fmtDelta(prices.addonPrices[g.key]);
         } else {
           hide(lineEl);
         }

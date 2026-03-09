@@ -136,6 +136,17 @@ export function fmt(n) {
 }
 
 /**
+ * Format a price delta. Negative values render as discounts.
+ *
+ * @param {number} n
+ * @return {string}
+ */
+export function fmtDelta(n) {
+  n = parseFloat(n) || 0;
+  return n < 0 ? '-' + fmt(Math.abs(n)) : fmt(n);
+}
+
+/**
  * Get the active price for a tool/extra item — uses selected size if available.
  */
 export function getItemPrice(configItem, stateItem) {

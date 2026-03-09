@@ -28,7 +28,7 @@ class OZ_Product_Line_Config {
     private static $pu_prices = [
         'original'    => [0 => 0, 1 => 40,    2 => 80,    3 => 120],
         'all-in-one'  => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
-        'easyline'    => [1 => 0, 2 => 40,    3 => 80],  // no 0-layer option
+        'easyline'    => [0 => -40, 1 => 0,   2 => 40,   3 => 80],
         'microcement' => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
         'metallic'    => [0 => 0, 1 => 39.99, 2 => 79.99, 3 => 119.99],
         'lavasteen'   => [0 => 0, 1 => 40,    2 => 80,    3 => 120],
@@ -53,10 +53,10 @@ class OZ_Product_Line_Config {
             [0, 'Geen Beschermlaag',  false],
         ],
         'easyline' => [
-            // No "Geen" — minimum 1 layer (free, included in price)
-            [1, '1 toplaag',   false],
-            [2, '2 toplagen',  false],
-            [3, '3 toplagen',  false],
+            [1, '1 toplaag', true],
+            [2, '2 toplagen', false],
+            [3, '3 toplagen', false],
+            [0, 'Geen PU',    false],
         ],
         'microcement' => [
             [1, '1 toplaag',          false],
@@ -221,12 +221,12 @@ class OZ_Product_Line_Config {
         ],
 
         // ─── EASYLINE ────────────────────────────────────────────────
-        // 38 colors (K&K palette), PU 0/40/80 (no "Geen"), RAL/NCS, pakket
+        // 38 colors (K&K palette), 1 PU included, "Geen PU" = -40, RAL/NCS, pakket
         'easyline' => [
             'cats'           => [314],
             'usps'           => [
                 'Kant-en-klare pasta, direct klaar voor gebruik',
-                'Compleet pakket inclusief primer en 1 laag PU',
+                'Standaard inclusief primer en 1 laag PU',
                 'Over bestaande tegels aan te brengen',
             ],
             'specs'          => [
@@ -236,10 +236,11 @@ class OZ_Product_Line_Config {
                 'Geschikt voor'   => 'Wand, vloer, meubel, keuken, badkamer, trap',
                 'Waterdicht'      => 'Ja, met PU toplaag',
                 'Verbruik'        => '~1 kg per m² (2 lagen)',
-                'Inclusief'       => 'Primer + 1 laag PU',
+                'Inclusief'       => 'Primer + standaard 1 laag PU',
             ],
             'product_ids'    => [11001, 11002],  // loose emmers (cat 17 "Losse Materialen")
             'base_id'        => 11160,
+            'base_price'     => 180,
             'unit'           => '5m² pakket',  // corrected from 4m²
             'unitM2'         => 5,
             'has_pu'         => true,
@@ -504,7 +505,7 @@ class OZ_Product_Line_Config {
             ['5m2', 0, true],
         ],
         'easyline' => [
-            ['5m2 - 170,-', 0, true],
+            ['5m2', 0, true],
         ],
     ];
 
@@ -826,6 +827,7 @@ class OZ_Product_Line_Config {
             'usps'           => [],
             'specs'          => [],
             'base_id'        => null,
+            'base_price'     => null,
             'unit'           => 'stuk',
             'unitM2'         => 0,
             'has_pu'         => false,
@@ -1197,7 +1199,7 @@ class OZ_Product_Line_Config {
         $total = 0;
 
         // PU layers
-        if (isset($item_data['oz_pu_layers']) && $item_data['oz_pu_layers'] > 0) {
+        if (isset($item_data['oz_pu_layers']) && $item_data['oz_pu_layers'] !== '') {
             $total += self::get_pu_price($line_key, $item_data['oz_pu_layers']);
         }
 
