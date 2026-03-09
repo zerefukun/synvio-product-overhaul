@@ -231,11 +231,23 @@ class OZ_BCW_Admin {
             get_post_meta($product_id, '_oz_override_faq', true) === 'yes' || $legacy_override
         );
 
-        // Read from variant (if override) or base product (shared)
-        $override_usps = get_post_meta($ovr_usps ? $product_id : $base_id, '_oz_usps', true);
-        $override_specs = get_post_meta($ovr_specs ? $product_id : $base_id, '_oz_specs', true);
+        // For variants: prefer variant's own data if it exists (kept even when
+        // override is off), so re-checking the box shows the saved variant values.
+        // Fall back to base product data, then line config defaults.
+        if ($is_variant) {
+            $variant_usps  = get_post_meta($product_id, '_oz_usps', true);
+            $variant_specs = get_post_meta($product_id, '_oz_specs', true);
+            $base_usps     = get_post_meta($base_id, '_oz_usps', true);
+            $base_specs    = get_post_meta($base_id, '_oz_specs', true);
 
-        // Current values: override wins, fallback to defaults
+            $override_usps  = !empty($variant_usps) ? $variant_usps : $base_usps;
+            $override_specs = !empty($variant_specs) ? $variant_specs : $base_specs;
+        } else {
+            $override_usps = get_post_meta($product_id, '_oz_usps', true);
+            $override_specs = get_post_meta($product_id, '_oz_specs', true);
+        }
+
+        // Current values: override wins, fallback to line config defaults
         $usps = !empty($override_usps) ? $override_usps : $default_usps;
         $specs = !empty($override_specs) ? $override_specs : $default_specs;
 
@@ -377,10 +389,16 @@ class OZ_BCW_Admin {
 
         <!-- FAQ (Veelgestelde vragen) — repeating Q&A pairs -->
         <?php
-        // Read FAQ from variant (if override) or base product
-        $faq_source_id = $ovr_faq ? $product_id : $base_id;
-        $oz_faq = get_post_meta($faq_source_id, '_oz_faq', true);
-        if (!is_array($oz_faq)) $oz_faq = [];
+        // Read FAQ — prefer variant's own data if it exists, else base product
+        if ($is_variant) {
+            $variant_faq = get_post_meta($product_id, '_oz_faq', true);
+            $base_faq    = get_post_meta($base_id, '_oz_faq', true);
+            $oz_faq = (!empty($variant_faq) && is_array($variant_faq)) ? $variant_faq
+                    : (is_array($base_faq) ? $base_faq : []);
+        } else {
+            $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+            if (!is_array($oz_faq)) $oz_faq = [];
+        }
         // Pre-fill with line defaults if no FAQ exists
         $default_faq = ($config && isset($config['faq'])) ? $config['faq'] : [];
         $effective_faq = !empty($oz_faq) ? $oz_faq : $default_faq;
