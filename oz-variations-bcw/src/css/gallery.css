@@ -5,6 +5,12 @@
  * @since 2.0.0
  */
 
+/* Prevent large images from blowing out the grid on mobile
+   (where .oz-left-column is display:contents, so its min-width:0 doesn't help) */
+.oz-product-gallery {
+  min-width: 0;
+}
+
 .oz-gallery-main {
   width: 100%;
   aspect-ratio: 1;

@@ -259,6 +259,9 @@
 }
 
 /* src/css/gallery.css */
+.oz-product-gallery {
+  min-width: 0;
+}
 .oz-gallery-main {
   width: 100%;
   aspect-ratio: 1;
