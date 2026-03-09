@@ -166,6 +166,7 @@ class OZ_Frontend_Display {
         $js_data = [
             // Page mode — JS can branch on this
             'pageMode'     => $page_mode,
+            'isBase'       => OZ_Product_Processor::is_base_product($product),
 
             // Product identity
             'productId'    => $product->get_id(),
@@ -241,23 +242,35 @@ class OZ_Frontend_Display {
     public static function render_color_swatches($product) {
         $current_id    = $product->get_id();
         $current_color = get_post_meta($current_id, '_oz_color', true);
-        $variants      = OZ_Product_Processor::get_variant_display_data($current_id);
+        $is_base       = OZ_Product_Processor::is_base_product($product);
+
+        // For base products, fetch all variants from the line's categories.
+        // For color variants, use the stored _oz_variants meta (bidirectional links).
+        if ($is_base) {
+            $variants = self::get_base_product_variants($product);
+        } else {
+            $variants = OZ_Product_Processor::get_variant_display_data($current_id);
+        }
 
         if (empty($variants)) {
             return '';
         }
 
-        // Build a unified list: current product + all variants, keyed by product ID
-        $current_image = get_post_thumbnail_id($current_id)
-            ? wp_get_attachment_image_url(get_post_thumbnail_id($current_id), 'thumbnail')
-            : '';
-
+        // Build swatch list. Base products have no "current" swatch —
+        // all swatches are links to color variants (none selected).
         $all_swatches = [];
-        $all_swatches[$current_id] = [
-            'color' => $current_color,
-            'url'   => get_permalink($current_id),
-            'image' => $current_image,
-        ];
+
+        if (!$is_base && $current_color) {
+            // Add current product to list (only for variant pages)
+            $current_image = get_post_thumbnail_id($current_id)
+                ? wp_get_attachment_image_url(get_post_thumbnail_id($current_id), 'thumbnail')
+                : '';
+            $all_swatches[$current_id] = [
+                'color' => $current_color,
+                'url'   => get_permalink($current_id),
+                'image' => $current_image,
+            ];
+        }
 
         foreach ($variants as $vid => $v) {
             $all_swatches[$vid] = $v;
@@ -285,6 +298,59 @@ class OZ_Frontend_Display {
 
         $html .= '</div>';
         return $html;
+    }
+
+    /**
+     * Get all color variants for a base product by querying the line's categories.
+     * Returns the same format as OZ_Product_Processor::get_variant_display_data().
+     *
+     * @param WC_Product $product  The base product
+     * @return array  [product_id => ['color' => ..., 'url' => ..., 'image' => ...]]
+     */
+    private static function get_base_product_variants($product) {
+        $line_info = OZ_Product_Line_Config::for_product($product);
+        if (!$line_info['config'] || empty($line_info['config']['cats'])) {
+            return [];
+        }
+
+        // Query all published products in this line's categories that have _oz_color
+        $args = [
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'posts_per_page' => 200,
+            'post__not_in'   => [$product->get_id()],
+            'fields'         => 'ids',
+            'tax_query'      => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => $line_info['config']['cats'],
+            ]],
+            'meta_query'     => [[
+                'key'     => '_oz_color',
+                'compare' => 'EXISTS',
+            ]],
+        ];
+
+        $ids = get_posts($args);
+        $variants = [];
+
+        foreach ($ids as $vid) {
+            $color = get_post_meta($vid, '_oz_color', true);
+            if (empty($color)) {
+                continue;
+            }
+
+            $image_id  = get_post_thumbnail_id($vid);
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $variants[$vid] = [
+                'color' => $color,
+                'url'   => get_permalink($vid),
+                'image' => $image_url,
+            ];
+        }
+
+        return $variants;
     }
 
 }

@@ -62,6 +62,10 @@ $main_image_url = $main_image_id ? wp_get_attachment_image_url($main_image_id, '
 $main_image_full = $main_image_id ? wp_get_attachment_image_url($main_image_id, 'full') : '';
 $gallery_ids    = $product->get_gallery_image_ids();
 
+// Is this a base (main) product? Base products are not purchasable —
+// visitors must pick a color variant first.
+$is_base = OZ_Product_Processor::is_base_product($product);
+
 // Option data — only populated for configured_line mode
 $has_options = ($page_mode === 'configured_line' && $line_key);
 if ($has_options) {
@@ -309,9 +313,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         ?>
 
         <?php
-        // Render option sections — only for configured_line mode with options
+        // Render option sections — only for configured_line mode with options.
+        // Base products only show color swatches — no PU/primer/pakket/etc.
         if ($has_options && !empty($option_order)) :
           foreach ($option_order as $section) :
+            if ($is_base && $section !== 'color') { continue; }
             switch ($section) :
 
               /* ─── COLOR SWATCHES ─── */
@@ -484,7 +490,15 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         endif;
         ?>
 
-      <!-- Price Breakdown -->
+      <!-- Price Breakdown (hidden on base products — they show "from" price instead) -->
+      <?php if ($is_base) : ?>
+      <div class="oz-price-summary oz-base-price-summary" id="priceSummary">
+        <div class="oz-price-line">
+          <span>Vanaf</span>
+          <span><?php echo esc_html($fmt_price($price)); ?></span>
+        </div>
+      </div>
+      <?php else : ?>
       <div class="oz-price-summary" id="priceSummary">
         <div class="oz-price-line" id="priceBaseLine">
           <span id="priceBaseLabel"><?php echo esc_html($product_name); ?></span>
@@ -526,9 +540,15 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <span>Totaal</span>
           <span id="priceTotal"><?php echo esc_html($fmt_price($price)); ?></span>
         </div>
+      </div>
+      <?php endif; ?>
 
-
-        <!-- Quantity + Add to Cart -->
+        <!-- Quantity + Add to Cart (hidden on base products — must pick a color first) -->
+        <?php if ($is_base) : ?>
+        <div class="oz-option-group oz-base-cta">
+          <p class="oz-choose-color-msg">Kies hierboven een kleur om te bestellen.</p>
+        </div>
+        <?php else : ?>
         <div class="oz-option-group">
           <div class="oz-option-header">
             Aantal
@@ -545,6 +565,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             <button class="oz-add-to-cart" id="addToCartBtn">In winkelmand</button>
           </div>
         </div>
+        <?php endif; ?>
 
         <!-- Payment method icons — dynamically from WooCommerce active gateways -->
         <?php

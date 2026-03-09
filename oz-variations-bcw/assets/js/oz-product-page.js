@@ -710,7 +710,7 @@
   }
 
   // src/js/product-page.js
-  if (!P) {
+  if (!P || P.isBase) {
   } else {
     let payloadToFormData = function(payload) {
       var data = new FormData();

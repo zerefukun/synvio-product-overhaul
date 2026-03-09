@@ -783,6 +783,17 @@ details.oz-faq-item[open] .oz-faq-question::after {
   background: var(--oz-border);
   margin: 28px 0;
 }
+.oz-choose-color-msg {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--oz-text);
+  text-align: center;
+  padding: 16px 20px;
+  margin: 0;
+  background: #f0f6fc;
+  border: 2px dashed #2271b1;
+  border-radius: 8px;
+}
 
 /* src/css/color.css */
 .oz-color-swatches {

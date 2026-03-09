@@ -27,8 +27,9 @@ import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './to
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
-if (!P) {
-  // No-op — not a product page, bail out of the IIFE
+// Base products are informational — no options, no cart, no JS init needed.
+if (!P || P.isBase) {
+  // No-op — not a product page or base product landing page
 } else {
 
 
