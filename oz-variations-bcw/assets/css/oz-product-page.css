@@ -235,6 +235,9 @@
   gap: 56px;
   align-items: start;
 }
+.oz-left-column {
+  min-width: 0;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

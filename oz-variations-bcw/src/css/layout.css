@@ -42,6 +42,12 @@
   align-items: start;
 }
 
+/* Prevent large images from blowing out the grid column.
+   Grid items default to min-width:auto which respects content intrinsic size. */
+.oz-left-column {
+  min-width: 0;
+}
+
 /* Page-load animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
