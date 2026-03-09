@@ -111,8 +111,8 @@ class OZ_Product_Line_Config {
             ['Geen',   0, false],
         ],
         'microcement' => [
-            ['Primer', 0, true],
-            ['Geen',   0, false],
+            ['Geen',   0,     true],
+            ['Primer', 12.50, false],
         ],
         'lavasteen' => [
             ['Primer', 0, true],
