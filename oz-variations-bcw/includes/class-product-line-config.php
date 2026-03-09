@@ -594,6 +594,32 @@ class OZ_Product_Line_Config {
                 ],
             ],
         ],
+
+        // Gereedschapset Lavasteen / 2K Epoxystone (product 25550)
+        // Same roller + troffels options as Kant & Klaar and Zelf Mengen
+        25550 => [
+            [
+                'key'      => 'formaat_roller',
+                'label'    => 'Formaat Roller',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Roller 10cm', 0,     true],
+                    ['Roller 18cm', 10,    false],
+                    ['Roller 25cm', 14.99, false],
+                ],
+            ],
+            [
+                'key'      => 'troffels',
+                'label'    => 'Troffels?',
+                'type'     => 'select',
+                'required' => false,
+                'options'  => [
+                    ['Nee, Ik heb voldoende gereedschap', 0,  true],
+                    ['Ja, Ik wil alle troffels erbij',    45, false],
+                ],
+            ],
+        ],
     ];
 
     /* ══════════════════════════════════════════════════════════════════
@@ -647,11 +673,13 @@ class OZ_Product_Line_Config {
                 'Compleet gereedschapspakket voor Lavasteen',
                 'Geschikt voor alle 2K Epoxystone toepassingen',
                 'Spaan, PU rollers, kwast, verfbakken en meer',
+                'Optioneel uitbreidbaar met troffels',
             ],
             'specs' => [
                 'Geschikt voor'     => '2K Epoxystone / Lavasteen',
                 'Inhoud'            => 'Spaan, 3x PU roller, kwast, PU garde, tape, 2x verfbak, vachtroller',
                 'Rollerformaat'     => '10cm (standaard), 18cm of 25cm',
+                'Optioneel'         => 'Troffelset (+€45)',
             ],
         ],
 
