@@ -150,7 +150,6 @@ class OZ_Product_Line_Config {
                 'Waterdicht bij gebruik van PU toplaag',
             ],
             'specs'          => [
-                'Dekking'         => '5 m² per pakket',
                 'Type'            => 'Zelf te mengen mortel + pigment',
                 'Lagen'           => '2 lagen (RAW + FINE)',
                 'Droogtijd'       => '24 uur per laag',
@@ -190,7 +189,6 @@ class OZ_Product_Line_Config {
                 'Geschikt voor robuust én rustig betoneffect',
             ],
             'specs'          => [
-                'Dekking'         => '1 m² per emmer (2 lagen)',
                 'Type'            => 'Voorgemengde pasta op kleur',
                 'Lagen'           => '2 lagen',
                 'Droogtijd'       => '24 uur per laag',
@@ -232,7 +230,6 @@ class OZ_Product_Line_Config {
                 'Over bestaande tegels aan te brengen',
             ],
             'specs'          => [
-                'Dekking'         => '5 m² per pakket',
                 'Type'            => 'Voorgemengde kant-en-klare pasta',
                 'Lagen'           => '2 lagen (RAW + FINE)',
                 'Droogtijd'       => '24 uur per laag',
@@ -274,7 +271,6 @@ class OZ_Product_Line_Config {
                 'Beschikbaar per 1 m² voor exacte hoeveelheid',
             ],
             'specs'          => [
-                'Dekking'         => '1 m² per stuk (2 lagen)',
                 'Type'            => 'Microcement pasta op kleur',
                 'Laagdikte'       => '1-2 mm',
                 'Lagen'           => '2 lagen',
@@ -315,7 +311,7 @@ class OZ_Product_Line_Config {
                 'Geschikt voor wanden, meubels en objecten',
             ],
             'specs'          => [
-                'Dekking'         => '4 m² per pakket',
+                'Verbruik'        => '4 m² per pakket',
                 'Type'            => 'Metallic stuc velvet',
                 'Effect'          => 'Parelmoer / velvet',
                 'Lagen'           => '2 lagen',
@@ -355,7 +351,7 @@ class OZ_Product_Line_Config {
                 'Waterdicht tot in de kern',
             ],
             'specs'          => [
-                'Dekking'         => '5 m² per pakket',
+                'Verbruik'        => '5 m² per pakket',
                 'Type'            => 'Mineraal gebonden lavasteen',
                 'Bindmiddel'      => '2-componenten epoxy',
                 'Lagen'           => '2 lagen',
