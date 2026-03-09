@@ -150,9 +150,14 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- Specifications table — from product line config, with per-product override -->
+      <!-- Specifications & FAQ — DISABLED (kept for future re-enable) -->
       <?php
-      // Specs fallback chain: _oz_specs meta → product content config → line config → empty
+      // Specs + FAQ disabled — set to empty so sticky nav links also hide
+      $oz_specs = [];
+      $oz_faq  = [];
+      ?>
+      <?php /* --- Specifications table (disabled) ---
+      <?php
       $oz_specs = get_post_meta($product_id, '_oz_specs', true);
       if (empty($oz_specs) || !is_array($oz_specs)) {
           $pc_specs = OZ_Product_Line_Config::get_product_content($product_id);
@@ -175,7 +180,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- FAQ accordion — fallback chain: product meta → product line config → nothing -->
+      <!-- FAQ accordion -->
       <?php
       $oz_faq = get_post_meta($product_id, '_oz_faq', true);
       if (empty($oz_faq) || !is_array($oz_faq)) {
@@ -194,6 +199,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       </div>
       <?php endif; ?>
+      --- end disabled Specs & FAQ */ ?>
 
     </div><!-- .oz-left-column -->
 
