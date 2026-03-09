@@ -278,14 +278,14 @@ class OZ_BCW_Admin {
         <!-- USPs -->
         <div class="oz-meta-section">
             <h4>USPs (3 verkooppunten)</h4>
-            <p class="description">Laat leeg om de standaard productlijn USPs te gebruiken. Vul alle 3 in om te overschrijven.</p>
+            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
 
             <?php for ($i = 0; $i < 3; $i++) : ?>
                 <p>
                     <input type="text"
                            name="oz_usps[<?php echo $i; ?>]"
-                           value="<?php echo esc_attr(isset($override_usps[$i]) ? $override_usps[$i] : ''); ?>"
-                           placeholder="<?php echo esc_attr(isset($default_usps[$i]) ? $default_usps[$i] : 'USP ' . ($i + 1)); ?>"
+                           value="<?php echo esc_attr(isset($usps[$i]) ? $usps[$i] : ''); ?>"
+                           placeholder="USP <?php echo $i + 1; ?>"
                            style="width:100%;">
                 </p>
             <?php endfor; ?>
@@ -294,7 +294,7 @@ class OZ_BCW_Admin {
         <!-- Specs -->
         <div class="oz-meta-section">
             <h4>Specificaties (tabel)</h4>
-            <p class="description">Laat leeg om de standaard productlijn specs te gebruiken. Key + waarde paren, max 10 rijen.</p>
+            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
 
             <table class="oz-meta-table" id="oz-specs-table">
                 <thead>
@@ -305,33 +305,28 @@ class OZ_BCW_Admin {
                 </thead>
                 <tbody>
                     <?php
-                    // Show existing overrides or empty rows
-                    $rows = !empty($override_specs) ? $override_specs : [];
-                    // Always show at least as many rows as defaults, + 2 empty
-                    $min_rows = max(count($default_specs) + 2, count($rows) + 2);
-                    $min_rows = min($min_rows, 10);
-
+                    // Pre-fill with effective values (override if exists, else defaults)
+                    $rows = !empty($override_specs) ? $override_specs : $default_specs;
+                    // Add 2 empty rows for new entries
                     $spec_keys = array_keys($rows);
-                    $default_keys = array_keys($default_specs);
+                    $total_rows = min(count($spec_keys) + 2, 10);
 
-                    for ($i = 0; $i < $min_rows; $i++) :
+                    for ($i = 0; $i < $total_rows; $i++) :
                         $key = isset($spec_keys[$i]) ? $spec_keys[$i] : '';
                         $val = $key ? ($rows[$key] ?? '') : '';
-                        $placeholder_key = isset($default_keys[$i]) ? $default_keys[$i] : '';
-                        $placeholder_val = $placeholder_key ? ($default_specs[$placeholder_key] ?? '') : '';
                     ?>
                     <tr>
                         <td class="oz-spec-key">
                             <input type="text"
                                    name="oz_spec_keys[]"
                                    value="<?php echo esc_attr($key); ?>"
-                                   placeholder="<?php echo esc_attr($placeholder_key); ?>">
+                                   placeholder="Kenmerk">
                         </td>
                         <td>
                             <input type="text"
                                    name="oz_spec_vals[]"
                                    value="<?php echo esc_attr($val); ?>"
-                                   placeholder="<?php echo esc_attr($placeholder_val); ?>">
+                                   placeholder="Waarde">
                         </td>
                     </tr>
                     <?php endfor; ?>
@@ -345,15 +340,18 @@ class OZ_BCW_Admin {
         <?php
         $oz_faq = get_post_meta($product_id, '_oz_faq', true);
         if (!is_array($oz_faq)) $oz_faq = [];
+        // Pre-fill with line defaults if no per-product FAQ exists
+        $default_faq = ($config && isset($config['faq'])) ? $config['faq'] : [];
+        $effective_faq = !empty($oz_faq) ? $oz_faq : $default_faq;
         ?>
         <div class="oz-meta-section">
             <h4>Veelgestelde vragen (FAQ)</h4>
-            <p class="description">Voeg vraag/antwoord paren toe. Verschijnt als accordion onder Specificaties.</p>
+            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
 
             <div id="oz-faq-rows">
                 <?php
-                // Show existing FAQs + 1 empty row
-                $faq_rows = !empty($oz_faq) ? $oz_faq : [];
+                // Pre-fill with effective FAQs + 1 empty row
+                $faq_rows = !empty($effective_faq) ? $effective_faq : [];
                 $faq_rows[] = ['q' => '', 'a' => '']; // always one empty row at the end
                 foreach ($faq_rows as $fi => $faq_item) :
                 ?>
