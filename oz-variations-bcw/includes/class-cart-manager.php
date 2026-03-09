@@ -325,15 +325,9 @@ class OZ_Cart_Manager {
             // (not scheduled/expired). We read from DB-backed methods
             // (not get_price()) to avoid stacking addon surcharges on
             // repeated calculate_totals calls.
-            $line_config = isset($cart_item['oz_line'])
-                ? OZ_Product_Line_Config::get_config($cart_item['oz_line'])
-                : false;
-
-            $base_price = !empty($line_config['base_price'])
-                ? floatval($line_config['base_price'])
-                : (($product->is_on_sale())
-                    ? floatval($product->get_sale_price())
-                    : floatval($product->get_regular_price()));
+            $base_price = ($product->is_on_sale())
+                ? floatval($product->get_sale_price())
+                : floatval($product->get_regular_price());
 
             // Set modified price (base + addons per unit, WooCommerce multiplies by qty)
             $product->set_price($base_price + $addon_total);

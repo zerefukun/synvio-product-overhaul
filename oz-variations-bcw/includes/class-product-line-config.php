@@ -240,7 +240,6 @@ class OZ_Product_Line_Config {
             ],
             'product_ids'    => [11001, 11002],  // loose emmers (cat 17 "Losse Materialen")
             'base_id'        => 11160,
-            'base_price'     => 180,
             'unit'           => '5m² pakket',  // corrected from 4m²
             'unitM2'         => 5,
             'has_pu'         => true,
@@ -827,7 +826,7 @@ class OZ_Product_Line_Config {
             'usps'           => [],
             'specs'          => [],
             'base_id'        => null,
-            'base_price'     => null,
+
             'unit'           => 'stuk',
             'unitM2'         => 0,
             'has_pu'         => false,

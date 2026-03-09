@@ -50,12 +50,11 @@ if ($current_color && $product_name === $product_name_full) {
     $product_name = preg_replace('/\s+' . preg_quote($current_color, '/') . '\s*$/i', '', $product_name_full);
 }
 $product_name = trim($product_name);
-// Some lines use a fixed commercial base price that should override imported
-// Woo variant prices at runtime.
-$has_price_override = !empty($config['base_price']);
-$price         = $has_price_override ? floatval($config['base_price']) : floatval($product->get_price());
-$regular_price = $has_price_override ? $price : floatval($product->get_regular_price());
-$on_sale       = !$has_price_override && $product->is_on_sale();
+// WC stores prices incl-tax (woocommerce_prices_include_tax = yes)
+// get_price() already returns the incl-tax amount
+$price         = floatval($product->get_price());
+$regular_price = floatval($product->get_regular_price());
+$on_sale       = $product->is_on_sale();
 
 // Gallery images
 $main_image_id  = get_post_thumbnail_id($product_id);
