@@ -552,6 +552,23 @@ class OZ_Product_Line_Config {
             ],
         ],
 
+        // Kleurenstalen pakket (product 13718)
+        // 4 product line choices — no price difference, just selection
+        13718 => [
+            [
+                'key'      => 'type',
+                'label'    => 'Type',
+                'type'     => 'select',
+                'required' => true,
+                'options'  => [
+                    ['Original',               0, true],
+                    ['Beton Ciré Kant & Klaar', 0, false],
+                    ['Microcement',             0, false],
+                    ['Lavasteen',               0, false],
+                ],
+            ],
+        ],
+
         // Gereedschapset Zelf Mengen (product 11163)
         // Same YITH Block #14 — identical addons
         11163 => [
