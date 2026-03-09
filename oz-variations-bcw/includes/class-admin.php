@@ -212,11 +212,17 @@ class OZ_BCW_Admin {
         $default_specs = ($config && isset($config['specs'])) ? $config['specs'] : [];
 
         // For configured lines: USPs/specs/FAQ are shared via base product.
-        // All colors read from and save to the base product's meta.
-        $shared_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
-        $is_variant = ($shared_id !== $product_id);
+        // Variants can override with their own data (per-variant checkbox).
+        $base_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
+        $is_variant = ($base_id !== $product_id);
 
-        // Get overrides from the shared source (base product for lines, self for others)
+        // Check if this variant has its own override enabled
+        $has_override = $is_variant && get_post_meta($product_id, '_oz_override_shared', true) === 'yes';
+
+        // Determine which product ID to read/write USPs/specs/FAQ from
+        $shared_id = ($is_variant && !$has_override) ? $base_id : $product_id;
+
+        // Get overrides from the source (base or variant if override is on)
         $override_usps = get_post_meta($shared_id, '_oz_usps', true);
         $override_specs = get_post_meta($shared_id, '_oz_specs', true);
 
@@ -273,15 +279,36 @@ class OZ_BCW_Admin {
         <hr style="margin: 16px 0;">
 
         <p>
-            <?php if ($line_key && $is_variant) : ?>
-                USPs, specificaties en FAQ worden gedeeld via het hoofdproduct.
-                Wijzigingen hier gelden automatisch voor alle kleuren in deze lijn.
+            <?php if ($line_key && $is_variant && !$has_override) : ?>
+                USPs, specificaties en FAQ worden overgenomen van het hoofdproduct.
+                Wijzigingen hier gelden voor alle kleuren in deze lijn.
+            <?php elseif ($line_key && $is_variant && $has_override) : ?>
+                <strong style="color:#b45309;">Dit product heeft eigen waarden.</strong>
+                Wijzigingen gelden alleen voor dit product, niet voor andere kleuren.
             <?php elseif ($line_key) : ?>
                 Dit is het hoofdproduct. USPs, specificaties en FAQ worden hier beheerd voor alle kleuren.
             <?php else : ?>
                 Vul hieronder USPs en specificaties in voor dit product. Als deze leeg zijn worden de WooCommerce beschrijving en korte beschrijving gebruikt.
             <?php endif; ?>
         </p>
+
+        <?php if ($is_variant) : ?>
+        <!-- Toggle for per-variant override -->
+        <div class="oz-meta-section" style="margin-bottom:12px;">
+            <label>
+                <input type="checkbox"
+                       name="oz_override_shared"
+                       value="yes"
+                       <?php checked($has_override); ?>
+                       onchange="document.getElementById('oz-override-note').style.display = this.checked ? 'block' : 'none';">
+                <strong>Afwijkende waarden voor dit product</strong>
+            </label>
+            <p id="oz-override-note" class="description" style="display:<?php echo $has_override ? 'block' : 'none'; ?>; color:#b45309;">
+                Let op: bij opslaan worden de waarden hieronder opgeslagen voor alleen dit product.
+                Schakel uit om weer het hoofdproduct te volgen.
+            </p>
+        </div>
+        <?php endif; ?>
 
         <!-- USPs -->
         <div class="oz-meta-section">
@@ -428,12 +455,30 @@ class OZ_BCW_Admin {
             }
         }
 
-        // For configured lines: USPs/specs/FAQ save to the base product
-        // so all colors in the line share the same data.
+        // For configured lines: USPs/specs/FAQ save to the base product by default.
+        // If the "override" checkbox is on, save to this variant's own meta instead.
         $cat_ids = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
         $line_key = OZ_Product_Line_Config::detect_from_data($product_id, $cat_ids ?: []);
         $config = $line_key ? OZ_Product_Line_Config::get_config($line_key) : null;
-        $shared_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
+        $base_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
+        $is_variant = ($base_id !== $product_id);
+
+        // Handle per-variant override toggle
+        $wants_override = isset($_POST['oz_override_shared']) && $_POST['oz_override_shared'] === 'yes';
+        if ($is_variant) {
+            if ($wants_override) {
+                update_post_meta($product_id, '_oz_override_shared', 'yes');
+            } else {
+                delete_post_meta($product_id, '_oz_override_shared');
+                // Clean up any leftover variant-specific meta when switching back to shared
+                delete_post_meta($product_id, '_oz_usps');
+                delete_post_meta($product_id, '_oz_specs');
+                delete_post_meta($product_id, '_oz_faq');
+            }
+        }
+
+        // Save to variant (if override) or base product (shared)
+        $shared_id = ($is_variant && !$wants_override) ? $base_id : $product_id;
 
         // Save USPs — only if at least one is filled
         $usps = [];

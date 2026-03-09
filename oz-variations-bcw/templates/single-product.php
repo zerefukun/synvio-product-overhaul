@@ -152,9 +152,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- Specifications table — shared from base product across all colors -->
       <?php
-      // Specs fallback: base product meta → line config → empty
-      $specs_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
-      $oz_specs = get_post_meta($specs_source_id, '_oz_specs', true);
+      // Specs fallback: variant override (if enabled) → base product → line config → empty
+      if ($has_variant_override) {
+          $oz_specs = get_post_meta($product_id, '_oz_specs', true);
+      } else {
+          $specs_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+          $oz_specs = get_post_meta($specs_source, '_oz_specs', true);
+      }
       if (empty($oz_specs) || !is_array($oz_specs)) {
           $oz_specs = isset($config['specs']) ? $config['specs'] : [];
       }
@@ -177,9 +181,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- FAQ accordion — shared from base product across all colors -->
       <?php
-      // FAQ fallback: base product meta → line config → empty
-      $faq_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
-      $oz_faq = get_post_meta($faq_source_id, '_oz_faq', true);
+      // FAQ fallback: variant override (if enabled) → base product → line config → empty
+      if ($has_variant_override) {
+          $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+      } else {
+          $faq_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+          $oz_faq = get_post_meta($faq_source, '_oz_faq', true);
+      }
       if (empty($oz_faq) || !is_array($oz_faq)) {
           $oz_faq = isset($config['faq']) ? $config['faq'] : [];
       }
@@ -219,10 +227,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
-      // USPs fallback chain: base product meta → line config → empty
-      // All colors in a line share USPs from the base product, so you edit once.
-      $usps_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
-      $oz_usps = get_post_meta($usps_source_id, '_oz_usps', true);
+      // USPs fallback: variant override (if enabled) → base product → line config → empty
+      $has_variant_override = (!empty($config['base_id']) && $config['base_id'] !== $product_id)
+          ? get_post_meta($product_id, '_oz_override_shared', true) === 'yes'
+          : false;
+      if ($has_variant_override) {
+          $oz_usps = get_post_meta($product_id, '_oz_usps', true);
+      } else {
+          $usps_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+          $oz_usps = get_post_meta($usps_source, '_oz_usps', true);
+      }
       if (empty($oz_usps) || !array_filter($oz_usps)) {
           $oz_usps = isset($config['usps']) ? $config['usps'] : [];
       }
