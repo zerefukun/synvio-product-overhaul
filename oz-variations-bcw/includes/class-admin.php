@@ -211,20 +211,29 @@ class OZ_BCW_Admin {
         $default_usps = ($config && isset($config['usps'])) ? $config['usps'] : [];
         $default_specs = ($config && isset($config['specs'])) ? $config['specs'] : [];
 
-        // For configured lines: USPs/specs/FAQ are shared via base product.
-        // Variants can override with their own data (per-variant checkbox).
+        // For configured lines: USPs/specs/FAQ are shared via the base product.
+        // Variants can override each section independently.
         $base_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
         $is_variant = ($base_id !== $product_id);
 
-        // Check if this variant has its own override enabled
-        $has_override = $is_variant && get_post_meta($product_id, '_oz_override_shared', true) === 'yes';
+        // Legacy shared override still exists on older products; treat it as
+        // "all sections overridden" until the product is saved with new flags.
+        $legacy_override = $is_variant && get_post_meta($product_id, '_oz_override_shared', true) === 'yes';
 
-        // Determine which product ID to read/write USPs/specs/FAQ from
-        $shared_id = ($is_variant && !$has_override) ? $base_id : $product_id;
+        // Per-section override flags — each section can independently use variant data.
+        $ovr_usps  = $is_variant && (
+            get_post_meta($product_id, '_oz_override_usps', true) === 'yes' || $legacy_override
+        );
+        $ovr_specs = $is_variant && (
+            get_post_meta($product_id, '_oz_override_specs', true) === 'yes' || $legacy_override
+        );
+        $ovr_faq   = $is_variant && (
+            get_post_meta($product_id, '_oz_override_faq', true) === 'yes' || $legacy_override
+        );
 
-        // Get overrides from the source (base or variant if override is on)
-        $override_usps = get_post_meta($shared_id, '_oz_usps', true);
-        $override_specs = get_post_meta($shared_id, '_oz_specs', true);
+        // Read from variant (if override) or base product (shared)
+        $override_usps = get_post_meta($ovr_usps ? $product_id : $base_id, '_oz_usps', true);
+        $override_specs = get_post_meta($ovr_specs ? $product_id : $base_id, '_oz_specs', true);
 
         // Current values: override wins, fallback to defaults
         $usps = !empty($override_usps) ? $override_usps : $default_usps;
@@ -279,12 +288,9 @@ class OZ_BCW_Admin {
         <hr style="margin: 16px 0;">
 
         <p>
-            <?php if ($line_key && $is_variant && !$has_override) : ?>
-                USPs, specificaties en FAQ worden overgenomen van het hoofdproduct.
-                Wijzigingen hier gelden voor alle kleuren in deze lijn.
-            <?php elseif ($line_key && $is_variant && $has_override) : ?>
-                <strong style="color:#b45309;">Dit product heeft eigen waarden.</strong>
-                Wijzigingen gelden alleen voor dit product, niet voor andere kleuren.
+            <?php if ($line_key && $is_variant) : ?>
+                Standaard worden USPs, specificaties en FAQ overgenomen van het hoofdproduct.
+                Vink een sectie aan om alleen voor dit product af te wijken.
             <?php elseif ($line_key) : ?>
                 Dit is het hoofdproduct. USPs, specificaties en FAQ worden hier beheerd voor alle kleuren.
             <?php else : ?>
@@ -292,28 +298,18 @@ class OZ_BCW_Admin {
             <?php endif; ?>
         </p>
 
-        <?php if ($is_variant) : ?>
-        <!-- Toggle for per-variant override -->
-        <div class="oz-meta-section" style="margin-bottom:12px;">
-            <label>
-                <input type="checkbox"
-                       name="oz_override_shared"
-                       value="yes"
-                       <?php checked($has_override); ?>
-                       onchange="document.getElementById('oz-override-note').style.display = this.checked ? 'block' : 'none';">
-                <strong>Afwijkende waarden voor dit product</strong>
-            </label>
-            <p id="oz-override-note" class="description" style="display:<?php echo $has_override ? 'block' : 'none'; ?>; color:#b45309;">
-                Let op: bij opslaan worden de waarden hieronder opgeslagen voor alleen dit product.
-                Schakel uit om weer het hoofdproduct te volgen.
-            </p>
-        </div>
-        <?php endif; ?>
-
         <!-- USPs -->
         <div class="oz-meta-section">
             <h4>USPs (3 verkooppunten)</h4>
-            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
+            <?php if ($is_variant) : ?>
+            <label style="display:block; margin-bottom:6px;">
+                <input type="checkbox" name="oz_override_usps" value="yes" <?php checked($ovr_usps); ?>>
+                <strong>Afwijkend voor dit product</strong>
+            </label>
+            <p class="description">Uitgevinkt = je bewerkt het hoofdproduct. Aangevinkt = alleen deze kleur.</p>
+            <?php else : ?>
+            <p class="description">Deze waarden gelden voor alle kleuren binnen deze productlijn.</p>
+            <?php endif; ?>
 
             <?php for ($i = 0; $i < 3; $i++) : ?>
                 <p>
@@ -329,7 +325,15 @@ class OZ_BCW_Admin {
         <!-- Specs -->
         <div class="oz-meta-section">
             <h4>Specificaties (tabel)</h4>
-            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
+            <?php if ($is_variant) : ?>
+            <label style="display:block; margin-bottom:6px;">
+                <input type="checkbox" name="oz_override_specs" value="yes" <?php checked($ovr_specs); ?>>
+                <strong>Afwijkend voor dit product</strong>
+            </label>
+            <p class="description">Uitgevinkt = je bewerkt het hoofdproduct. Aangevinkt = alleen deze kleur.</p>
+            <?php else : ?>
+            <p class="description">Deze waarden gelden voor alle kleuren binnen deze productlijn.</p>
+            <?php endif; ?>
 
             <table class="oz-meta-table" id="oz-specs-table">
                 <thead>
@@ -373,16 +377,25 @@ class OZ_BCW_Admin {
 
         <!-- FAQ (Veelgestelde vragen) — repeating Q&A pairs -->
         <?php
-        // Read FAQ from shared source (base product for lines)
-        $oz_faq = get_post_meta($shared_id, '_oz_faq', true);
+        // Read FAQ from variant (if override) or base product
+        $faq_source_id = $ovr_faq ? $product_id : $base_id;
+        $oz_faq = get_post_meta($faq_source_id, '_oz_faq', true);
         if (!is_array($oz_faq)) $oz_faq = [];
-        // Pre-fill with line defaults if no FAQ exists on base product
+        // Pre-fill with line defaults if no FAQ exists
         $default_faq = ($config && isset($config['faq'])) ? $config['faq'] : [];
         $effective_faq = !empty($oz_faq) ? $oz_faq : $default_faq;
         ?>
         <div class="oz-meta-section">
             <h4>Veelgestelde vragen (FAQ)</h4>
-            <p class="description">Waarden worden voorgevuld vanuit de productlijn. Pas aan waar nodig.</p>
+            <?php if ($is_variant) : ?>
+            <label style="display:block; margin-bottom:6px;">
+                <input type="checkbox" name="oz_override_faq" value="yes" <?php checked($ovr_faq); ?>>
+                <strong>Afwijkend voor dit product</strong>
+            </label>
+            <p class="description">Uitgevinkt = je bewerkt het hoofdproduct. Aangevinkt = alleen deze kleur.</p>
+            <?php else : ?>
+            <p class="description">Deze waarden gelden voor alle kleuren binnen deze productlijn.</p>
+            <?php endif; ?>
 
             <div id="oz-faq-rows">
                 <?php
@@ -456,46 +469,61 @@ class OZ_BCW_Admin {
         }
 
         // For configured lines: USPs/specs/FAQ save to the base product by default.
-        // If the "override" checkbox is on, save to this variant's own meta instead.
+        // Variants can save each section to their own meta when that section is overridden.
         $cat_ids = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
         $line_key = OZ_Product_Line_Config::detect_from_data($product_id, $cat_ids ?: []);
         $config = $line_key ? OZ_Product_Line_Config::get_config($line_key) : null;
         $base_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
         $is_variant = ($base_id !== $product_id);
 
-        // Handle per-variant override toggle
-        $wants_override = isset($_POST['oz_override_shared']) && $_POST['oz_override_shared'] === 'yes';
+        // Per-section override toggles — each section saves independently
+        $ovr_usps  = isset($_POST['oz_override_usps'])  && $_POST['oz_override_usps']  === 'yes';
+        $ovr_specs = isset($_POST['oz_override_specs']) && $_POST['oz_override_specs'] === 'yes';
+        $ovr_faq   = isset($_POST['oz_override_faq'])   && $_POST['oz_override_faq']   === 'yes';
+
         if ($is_variant) {
-            if ($wants_override) {
-                update_post_meta($product_id, '_oz_override_shared', 'yes');
+            // USPs override flag
+            if ($ovr_usps) {
+                update_post_meta($product_id, '_oz_override_usps', 'yes');
             } else {
-                delete_post_meta($product_id, '_oz_override_shared');
-                // Clean up any leftover variant-specific meta when switching back to shared
+                delete_post_meta($product_id, '_oz_override_usps');
                 delete_post_meta($product_id, '_oz_usps');
+            }
+            // Specs override flag
+            if ($ovr_specs) {
+                update_post_meta($product_id, '_oz_override_specs', 'yes');
+            } else {
+                delete_post_meta($product_id, '_oz_override_specs');
                 delete_post_meta($product_id, '_oz_specs');
+            }
+            // FAQ override flag
+            if ($ovr_faq) {
+                update_post_meta($product_id, '_oz_override_faq', 'yes');
+            } else {
+                delete_post_meta($product_id, '_oz_override_faq');
                 delete_post_meta($product_id, '_oz_faq');
             }
+            // Clean up old single-flag if it exists
+            delete_post_meta($product_id, '_oz_override_shared');
         }
 
-        // Save to variant (if override) or base product (shared)
-        $shared_id = ($is_variant && !$wants_override) ? $base_id : $product_id;
-
-        // Save USPs — only if at least one is filled
+        // USPs — save to variant (if override) or base product
+        $usps_target = ($is_variant && !$ovr_usps) ? $base_id : $product_id;
         $usps = [];
         if (isset($_POST['oz_usps']) && is_array($_POST['oz_usps'])) {
             foreach ($_POST['oz_usps'] as $usp) {
                 $usps[] = sanitize_text_field($usp);
             }
         }
-        // Only save if at least one non-empty USP
         $has_usps = array_filter($usps, function($v) { return $v !== ''; });
         if (!empty($has_usps)) {
-            update_post_meta($shared_id, '_oz_usps', $usps);
+            update_post_meta($usps_target, '_oz_usps', $usps);
         } else {
-            delete_post_meta($shared_id, '_oz_usps');
+            delete_post_meta($usps_target, '_oz_usps');
         }
 
-        // Save Specs — key/value pairs, only if at least one pair is filled
+        // Specs — save to variant (if override) or base product
+        $specs_target = ($is_variant && !$ovr_specs) ? $base_id : $product_id;
         $specs = [];
         $keys = isset($_POST['oz_spec_keys']) ? $_POST['oz_spec_keys'] : [];
         $vals = isset($_POST['oz_spec_vals']) ? $_POST['oz_spec_vals'] : [];
@@ -507,12 +535,13 @@ class OZ_BCW_Admin {
             }
         }
         if (!empty($specs)) {
-            update_post_meta($shared_id, '_oz_specs', $specs);
+            update_post_meta($specs_target, '_oz_specs', $specs);
         } else {
-            delete_post_meta($shared_id, '_oz_specs');
+            delete_post_meta($specs_target, '_oz_specs');
         }
 
-        // Save FAQs — question/answer pairs
+        // FAQ — save to variant (if override) or base product
+        $faq_target = ($is_variant && !$ovr_faq) ? $base_id : $product_id;
         $faqs = [];
         if (!empty($_POST['oz_faq_questions'])) {
             foreach ($_POST['oz_faq_questions'] as $i => $q) {
@@ -524,9 +553,9 @@ class OZ_BCW_Admin {
             }
         }
         if (!empty($faqs)) {
-            update_post_meta($shared_id, '_oz_faq', $faqs);
+            update_post_meta($faq_target, '_oz_faq', $faqs);
         } else {
-            delete_post_meta($shared_id, '_oz_faq');
+            delete_post_meta($faq_target, '_oz_faq');
         }
     }
 

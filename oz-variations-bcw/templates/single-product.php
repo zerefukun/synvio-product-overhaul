@@ -150,17 +150,25 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- Shared data override check — determine once, used by specs, FAQ and USPs -->
+      <!-- Per-section override flags — legacy shared override remains a fallback -->
       <?php
-      $has_variant_override = (!empty($config['base_id']) && $config['base_id'] !== $product_id)
-          ? get_post_meta($product_id, '_oz_override_shared', true) === 'yes'
-          : false;
+      $is_line_variant = !empty($config['base_id']) && $config['base_id'] !== $product_id;
+      $legacy_override = $is_line_variant && get_post_meta($product_id, '_oz_override_shared', true) === 'yes';
+      $ovr_usps  = $is_line_variant && (
+          get_post_meta($product_id, '_oz_override_usps', true) === 'yes' || $legacy_override
+      );
+      $ovr_specs = $is_line_variant && (
+          get_post_meta($product_id, '_oz_override_specs', true) === 'yes' || $legacy_override
+      );
+      $ovr_faq   = $is_line_variant && (
+          get_post_meta($product_id, '_oz_override_faq', true) === 'yes' || $legacy_override
+      );
       ?>
 
       <!-- Specifications table — shared from base product across all colors -->
       <?php
       // Specs fallback: variant override (if enabled) → base product → line config → empty
-      if ($has_variant_override) {
+      if ($ovr_specs) {
           $oz_specs = get_post_meta($product_id, '_oz_specs', true);
       } else {
           $specs_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
@@ -189,7 +197,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <!-- FAQ accordion — shared from base product across all colors -->
       <?php
       // FAQ fallback: variant override (if enabled) → base product → line config → empty
-      if ($has_variant_override) {
+      if ($ovr_faq) {
           $oz_faq = get_post_meta($product_id, '_oz_faq', true);
       } else {
           $faq_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
@@ -235,7 +243,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
       // USPs fallback: variant override (if enabled) → base product → line config → empty
-      if ($has_variant_override) {
+      if ($ovr_usps) {
           $oz_usps = get_post_meta($product_id, '_oz_usps', true);
       } else {
           $usps_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
