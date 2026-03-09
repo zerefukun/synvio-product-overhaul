@@ -158,10 +158,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       ?>
       <?php /* --- Specifications table (disabled) ---
       <?php
-      $oz_specs = get_post_meta($product_id, '_oz_specs', true);
+      // Specs fallback: base product meta → line config → empty
+      $specs_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+      $oz_specs = get_post_meta($specs_source_id, '_oz_specs', true);
       if (empty($oz_specs) || !is_array($oz_specs)) {
-          $pc_specs = OZ_Product_Line_Config::get_product_content($product_id);
-          $oz_specs = ($pc_specs && !empty($pc_specs['specs'])) ? $pc_specs['specs'] : (isset($config['specs']) ? $config['specs'] : []);
+          $oz_specs = isset($config['specs']) ? $config['specs'] : [];
       }
       ?>
       <?php if (!empty($oz_specs)) : ?>
@@ -182,7 +183,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- FAQ accordion -->
       <?php
-      $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+      // FAQ fallback: base product meta → line config → empty
+      $faq_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+      $oz_faq = get_post_meta($faq_source_id, '_oz_faq', true);
       if (empty($oz_faq) || !is_array($oz_faq)) {
           $oz_faq = isset($config['faq']) ? $config['faq'] : [];
       }
@@ -223,11 +226,12 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- USP chips — from config, per-product override, or WC short description -->
       <?php
-      // USPs fallback chain: _oz_usps meta → product content config → line config → empty
-      $oz_usps = get_post_meta($product_id, '_oz_usps', true);
+      // USPs fallback chain: base product meta → line config → empty
+      // All colors in a line share USPs from the base product, so you edit once.
+      $usps_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
+      $oz_usps = get_post_meta($usps_source_id, '_oz_usps', true);
       if (empty($oz_usps) || !array_filter($oz_usps)) {
-          $pc = OZ_Product_Line_Config::get_product_content($product_id);
-          $oz_usps = ($pc && !empty($pc['usps'])) ? $pc['usps'] : (isset($config['usps']) ? $config['usps'] : []);
+          $oz_usps = isset($config['usps']) ? $config['usps'] : [];
       }
       ?>
       <?php if (!empty($oz_usps) && array_filter($oz_usps)) : ?>
