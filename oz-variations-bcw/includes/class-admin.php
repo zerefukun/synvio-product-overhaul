@@ -482,27 +482,15 @@ class OZ_BCW_Admin {
         $ovr_faq   = isset($_POST['oz_override_faq'])   && $_POST['oz_override_faq']   === 'yes';
 
         if ($is_variant) {
-            // USPs override flag
-            if ($ovr_usps) {
-                update_post_meta($product_id, '_oz_override_usps', 'yes');
-            } else {
-                delete_post_meta($product_id, '_oz_override_usps');
-                delete_post_meta($product_id, '_oz_usps');
-            }
-            // Specs override flag
-            if ($ovr_specs) {
-                update_post_meta($product_id, '_oz_override_specs', 'yes');
-            } else {
-                delete_post_meta($product_id, '_oz_override_specs');
-                delete_post_meta($product_id, '_oz_specs');
-            }
-            // FAQ override flag
-            if ($ovr_faq) {
-                update_post_meta($product_id, '_oz_override_faq', 'yes');
-            } else {
-                delete_post_meta($product_id, '_oz_override_faq');
-                delete_post_meta($product_id, '_oz_faq');
-            }
+            // Toggle override flags — data is kept in the database even when
+            // override is off, so re-enabling brings back the variant values.
+            $ovr_usps  ? update_post_meta($product_id, '_oz_override_usps', 'yes')
+                       : delete_post_meta($product_id, '_oz_override_usps');
+            $ovr_specs ? update_post_meta($product_id, '_oz_override_specs', 'yes')
+                       : delete_post_meta($product_id, '_oz_override_specs');
+            $ovr_faq   ? update_post_meta($product_id, '_oz_override_faq', 'yes')
+                       : delete_post_meta($product_id, '_oz_override_faq');
+
             // Clean up old single-flag if it exists
             delete_post_meta($product_id, '_oz_override_shared');
         }
