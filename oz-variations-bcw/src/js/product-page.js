@@ -608,17 +608,25 @@ function handleClick(e) {
     return;
   }
 
-  // Mobile sticky button — opens bottom sheet
+  // Mobile sticky button — base products scroll to colors, others open bottom sheet
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
-    openSheet();
+    if (P.isBase) {
+      scrollToColors();
+    } else {
+      openSheet();
+    }
     return;
   }
 
-  // Desktop sticky button — adds to cart directly
+  // Desktop sticky button — base products scroll to colors, others add to cart
   if (target === DOM.stickyDBtn || target.closest('#stickyDBtn')) {
     e.preventDefault();
-    addToCart();
+    if (P.isBase) {
+      scrollToColors();
+    } else {
+      addToCart();
+    }
     return;
   }
 
@@ -824,6 +832,7 @@ function saveToolState() {
       toepassing: S.toepassing,
       pakket: S.pakket,
       qty: S.qty,
+      sheetOpen: S.sheetOpen,  // Preserve bottom sheet state across color switches
       timestamp: Date.now(),
     };
     sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
@@ -874,6 +883,12 @@ function restoreToolState() {
 
     // Update qty input to match restored state
     if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
+
+    // Re-open bottom sheet if it was open during color switch
+    if (data.sheetOpen) {
+      // Small delay to let the DOM settle after init
+      setTimeout(function() { openSheet(); }, 100);
+    }
   } catch (e) {
     // Parse error or sessionStorage unavailable — silently ignore
   }
@@ -927,6 +942,70 @@ function closeSheet() {
 
   // Restore scroll position
   window.scrollTo(0, _sheetScrollY);
+}
+
+
+/**
+ * Setup swipe-to-dismiss on the bottom sheet.
+ * User can drag the sheet handle (or top area) downward to close.
+ * Threshold: 80px of downward drag closes the sheet.
+ */
+function setupSheetSwipe() {
+  if (!DOM.bottomSheet) return;
+
+  var startY = 0;
+  var currentY = 0;
+  var isDragging = false;
+
+  // Only allow drag from the handle area (top 60px of sheet)
+  function isInHandleZone(e) {
+    var touch = e.touches[0];
+    var rect = DOM.bottomSheet.getBoundingClientRect();
+    return (touch.clientY - rect.top) < 60;
+  }
+
+  DOM.bottomSheet.addEventListener('touchstart', function(e) {
+    // Only start drag if touching the handle zone or sheet is scrolled to top
+    if (isInHandleZone(e) || DOM.bottomSheet.scrollTop === 0) {
+      startY = e.touches[0].clientY;
+      currentY = startY;
+      isDragging = true;
+      // Disable transition during drag for smooth tracking
+      DOM.bottomSheet.style.transition = 'none';
+    }
+  }, { passive: true });
+
+  DOM.bottomSheet.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    var deltaY = currentY - startY;
+
+    // Only track downward drags (positive delta)
+    if (deltaY > 0) {
+      // Apply rubber-band transform — sheet follows finger
+      DOM.bottomSheet.style.transform = 'translateY(' + deltaY + 'px)';
+      // Prevent scroll while dragging down
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  DOM.bottomSheet.addEventListener('touchend', function() {
+    if (!isDragging) return;
+    isDragging = false;
+
+    var deltaY = currentY - startY;
+    // Restore transition for snap animation
+    DOM.bottomSheet.style.transition = '';
+
+    if (deltaY > 80) {
+      // Threshold exceeded — close the sheet
+      DOM.bottomSheet.style.transform = '';
+      closeSheet();
+    } else {
+      // Snap back to open position
+      DOM.bottomSheet.style.transform = 'translateY(0)';
+    }
+  }, { passive: true });
 }
 
 
@@ -1137,6 +1216,21 @@ function smoothScrollTo(el) {
 }
 
 
+/**
+ * Scroll to the color swatches section.
+ * Used by sticky bar on base products — guides user to pick a color.
+ */
+function scrollToColors() {
+  var colorSection = document.querySelector('[data-option="color"]');
+  if (colorSection) {
+    smoothScrollTo(colorSection);
+    // Brief pulse effect to draw attention to the swatches
+    colorSection.classList.add('oz-pulse');
+    setTimeout(function() { colorSection.classList.remove('oz-pulse'); }, 1500);
+  }
+}
+
+
 /* ═══ MOBILE STICKY BAR ════════════════════════════════════ */
 
 /**
@@ -1220,6 +1314,9 @@ function init() {
       handleCustomColorInput(e);
     }
   });
+
+  // Sheet swipe-to-dismiss (touch gesture on the handle area)
+  setupSheetSwipe();
 
   // Sheet overlay close
   if (DOM.sheetOverlay) {

@@ -1086,12 +1086,20 @@
       }
       if (target === DOM.stickyBtn || target.closest("#stickyBtn")) {
         e.preventDefault();
-        openSheet();
+        if (P.isBase) {
+          scrollToColors();
+        } else {
+          openSheet();
+        }
         return;
       }
       if (target === DOM.stickyDBtn || target.closest("#stickyDBtn")) {
         e.preventDefault();
-        addToCart();
+        if (P.isBase) {
+          scrollToColors();
+        } else {
+          addToCart();
+        }
         return;
       }
       var navLink = target.closest(".oz-sticky-d-link");
@@ -1215,6 +1223,8 @@
           toepassing: S.toepassing,
           pakket: S.pakket,
           qty: S.qty,
+          sheetOpen: S.sheetOpen,
+          // Preserve bottom sheet state across color switches
           timestamp: Date.now()
         };
         sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
@@ -1245,6 +1255,11 @@
           });
         }
         if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
+        if (data.sheetOpen) {
+          setTimeout(function() {
+            openSheet();
+          }, 100);
+        }
       } catch (e) {
       }
     }, openSheet = function() {
@@ -1265,6 +1280,45 @@
       document.body.style.overflow = "";
       if (DOM.desktopHome) DOM.desktopHome.appendChild(DOM.optionsWidget);
       window.scrollTo(0, _sheetScrollY);
+    }, setupSheetSwipe = function() {
+      if (!DOM.bottomSheet) return;
+      var startY = 0;
+      var currentY = 0;
+      var isDragging = false;
+      function isInHandleZone(e) {
+        var touch = e.touches[0];
+        var rect = DOM.bottomSheet.getBoundingClientRect();
+        return touch.clientY - rect.top < 60;
+      }
+      DOM.bottomSheet.addEventListener("touchstart", function(e) {
+        if (isInHandleZone(e) || DOM.bottomSheet.scrollTop === 0) {
+          startY = e.touches[0].clientY;
+          currentY = startY;
+          isDragging = true;
+          DOM.bottomSheet.style.transition = "none";
+        }
+      }, { passive: true });
+      DOM.bottomSheet.addEventListener("touchmove", function(e) {
+        if (!isDragging) return;
+        currentY = e.touches[0].clientY;
+        var deltaY = currentY - startY;
+        if (deltaY > 0) {
+          DOM.bottomSheet.style.transform = "translateY(" + deltaY + "px)";
+          e.preventDefault();
+        }
+      }, { passive: false });
+      DOM.bottomSheet.addEventListener("touchend", function() {
+        if (!isDragging) return;
+        isDragging = false;
+        var deltaY = currentY - startY;
+        DOM.bottomSheet.style.transition = "";
+        if (deltaY > 80) {
+          DOM.bottomSheet.style.transform = "";
+          closeSheet();
+        } else {
+          DOM.bottomSheet.style.transform = "translateY(0)";
+        }
+      }, { passive: true });
     }, addToCart = function() {
       if (P.isBase) {
         shakeButton();
@@ -1382,6 +1436,15 @@
         if (progress < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
+    }, scrollToColors = function() {
+      var colorSection = document.querySelector('[data-option="color"]');
+      if (colorSection) {
+        smoothScrollTo(colorSection);
+        colorSection.classList.add("oz-pulse");
+        setTimeout(function() {
+          colorSection.classList.remove("oz-pulse");
+        }, 1500);
+      }
     }, setupStickyBar = function() {
       if (!DOM.stickyBar) return;
       var target = DOM.addToCartBtn || DOM.optionsWidget;
@@ -1426,6 +1489,7 @@
           handleCustomColorInput(e);
         }
       });
+      setupSheetSwipe();
       if (DOM.sheetOverlay) {
         DOM.sheetOverlay.addEventListener("click", closeSheet);
         window.addEventListener("beforeunload", function() {

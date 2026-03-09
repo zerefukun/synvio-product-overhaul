@@ -17,6 +17,21 @@
 }
 
 
+/* ═══ PULSE ANIMATION — draws attention to a section ══════════ */
+/* Used when sticky bar scrolls to color section on base products */
+
+@keyframes oz-pulse-border {
+  0%   { box-shadow: 0 0 0 0 rgba(42, 157, 143, 0.4); }
+  50%  { box-shadow: 0 0 0 8px rgba(42, 157, 143, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(42, 157, 143, 0); }
+}
+
+.oz-pulse {
+  animation: oz-pulse-border 0.75s ease 2;
+  border-radius: 8px;
+}
+
+
 /* ═══ RECAPTCHA BADGE — always hidden on product pages ════════ */
 /* These overlap with sticky bar and bottom sheet on mobile */
 

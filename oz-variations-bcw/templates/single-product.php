@@ -702,7 +702,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <?php endif; ?>
       </div>
     </div>
-    <button class="oz-sticky-btn" id="stickyBtn">In winkelmand</button>
+    <button class="oz-sticky-btn" id="stickyBtn"><?php echo $is_base ? 'Kies kleur' : 'In winkelmand'; ?></button>
   </div>
 
   <!-- ── Desktop layout: [Nav links] [Name · Options] [Price+Qty+CTA] ── -->
@@ -734,7 +734,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <span id="stickyPrice"><?php echo esc_html($fmt_price($price)); ?></span><?php if (!empty($config['unitM2'])) : ?><sup class="oz-sticky-d-unit"><?php echo esc_html($config['unitM2']); ?>m²</sup><?php endif; ?>
       </span>
       <span class="oz-sticky-d-qty" id="stickyDQty">1×</span>
-      <button class="oz-sticky-d-btn<?php echo $is_base ? ' oz-disabled' : ''; ?>" id="stickyDBtn">In winkelmand</button>
+      <button class="oz-sticky-d-btn" id="stickyDBtn"><?php echo $is_base ? 'Kies kleur' : 'In winkelmand'; ?></button>
     </div>
 
   </div>
