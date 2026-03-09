@@ -784,7 +784,7 @@
       }
     }, renderBreakdown = function(prices) {
       var isM2 = (parseFloat(P.unitM2) || 0) > 0;
-      var perUnit = S.qty > 1 && isM2 ? " (per m\xB2)" : "";
+      var perUnit = S.qty > 1 && isM2 ? " (per " + P.unit + ")" : "";
       if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
       if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
       var lines = [

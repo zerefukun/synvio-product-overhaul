@@ -171,10 +171,10 @@ function renderToolDetails(prices, anchor, lineClass) {
  * One generic loop replaces 6 repetitions of show/hide + setText.
  */
 function renderBreakdown(prices) {
-  // Desktop base price — annotate with "per m²" when qty > 1 and product is m²-based
+  // Desktop base price — annotate with unit when qty > 1 and product is m²-based
   // Helps customer understand the breakdown lines are per-unit, not total
   var isM2 = (parseFloat(P.unitM2) || 0) > 0;
-  var perUnit = (S.qty > 1 && isM2) ? ' (per m²)' : '';
+  var perUnit = (S.qty > 1 && isM2) ? ' (per ' + P.unit + ')' : '';
   if (DOM.priceBaseLabel) DOM.priceBaseLabel.textContent = P.productName + perUnit;
   if (DOM.priceBase) DOM.priceBase.textContent = fmt(prices.base);
 
