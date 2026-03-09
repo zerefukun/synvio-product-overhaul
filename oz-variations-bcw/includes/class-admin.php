@@ -211,9 +211,14 @@ class OZ_BCW_Admin {
         $default_usps = ($config && isset($config['usps'])) ? $config['usps'] : [];
         $default_specs = ($config && isset($config['specs'])) ? $config['specs'] : [];
 
-        // Get per-product overrides (if any)
-        $override_usps = get_post_meta($product_id, '_oz_usps', true);
-        $override_specs = get_post_meta($product_id, '_oz_specs', true);
+        // For configured lines: USPs/specs/FAQ are shared via base product.
+        // All colors read from and save to the base product's meta.
+        $shared_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
+        $is_variant = ($shared_id !== $product_id);
+
+        // Get overrides from the shared source (base product for lines, self for others)
+        $override_usps = get_post_meta($shared_id, '_oz_usps', true);
+        $override_specs = get_post_meta($shared_id, '_oz_specs', true);
 
         // Current values: override wins, fallback to defaults
         $usps = !empty($override_usps) ? $override_usps : $default_usps;
@@ -268,8 +273,11 @@ class OZ_BCW_Admin {
         <hr style="margin: 16px 0;">
 
         <p>
-            <?php if ($line_key) : ?>
-                Standaard waarden worden uit de productlijn geladen. Vul hieronder in om per product te overschrijven.
+            <?php if ($line_key && $is_variant) : ?>
+                USPs, specificaties en FAQ worden gedeeld via het hoofdproduct.
+                Wijzigingen hier gelden automatisch voor alle kleuren in deze lijn.
+            <?php elseif ($line_key) : ?>
+                Dit is het hoofdproduct. USPs, specificaties en FAQ worden hier beheerd voor alle kleuren.
             <?php else : ?>
                 Vul hieronder USPs en specificaties in voor dit product. Als deze leeg zijn worden de WooCommerce beschrijving en korte beschrijving gebruikt.
             <?php endif; ?>
@@ -338,9 +346,10 @@ class OZ_BCW_Admin {
 
         <!-- FAQ (Veelgestelde vragen) — repeating Q&A pairs -->
         <?php
-        $oz_faq = get_post_meta($product_id, '_oz_faq', true);
+        // Read FAQ from shared source (base product for lines)
+        $oz_faq = get_post_meta($shared_id, '_oz_faq', true);
         if (!is_array($oz_faq)) $oz_faq = [];
-        // Pre-fill with line defaults if no per-product FAQ exists
+        // Pre-fill with line defaults if no FAQ exists on base product
         $default_faq = ($config && isset($config['faq'])) ? $config['faq'] : [];
         $effective_faq = !empty($oz_faq) ? $oz_faq : $default_faq;
         ?>
@@ -419,6 +428,13 @@ class OZ_BCW_Admin {
             }
         }
 
+        // For configured lines: USPs/specs/FAQ save to the base product
+        // so all colors in the line share the same data.
+        $cat_ids = wp_get_post_terms($product_id, 'product_cat', ['fields' => 'ids']);
+        $line_key = OZ_Product_Line_Config::detect_from_data($product_id, $cat_ids ?: []);
+        $config = $line_key ? OZ_Product_Line_Config::get_config($line_key) : null;
+        $shared_id = (!empty($config['base_id'])) ? $config['base_id'] : $product_id;
+
         // Save USPs — only if at least one is filled
         $usps = [];
         if (isset($_POST['oz_usps']) && is_array($_POST['oz_usps'])) {
@@ -429,9 +445,9 @@ class OZ_BCW_Admin {
         // Only save if at least one non-empty USP
         $has_usps = array_filter($usps, function($v) { return $v !== ''; });
         if (!empty($has_usps)) {
-            update_post_meta($product_id, '_oz_usps', $usps);
+            update_post_meta($shared_id, '_oz_usps', $usps);
         } else {
-            delete_post_meta($product_id, '_oz_usps');
+            delete_post_meta($shared_id, '_oz_usps');
         }
 
         // Save Specs — key/value pairs, only if at least one pair is filled
@@ -446,9 +462,9 @@ class OZ_BCW_Admin {
             }
         }
         if (!empty($specs)) {
-            update_post_meta($product_id, '_oz_specs', $specs);
+            update_post_meta($shared_id, '_oz_specs', $specs);
         } else {
-            delete_post_meta($product_id, '_oz_specs');
+            delete_post_meta($shared_id, '_oz_specs');
         }
 
         // Save FAQs — question/answer pairs
@@ -463,9 +479,9 @@ class OZ_BCW_Admin {
             }
         }
         if (!empty($faqs)) {
-            update_post_meta($product_id, '_oz_faq', $faqs);
+            update_post_meta($shared_id, '_oz_faq', $faqs);
         } else {
-            delete_post_meta($product_id, '_oz_faq');
+            delete_post_meta($shared_id, '_oz_faq');
         }
     }
 

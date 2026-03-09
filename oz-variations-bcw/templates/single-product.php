@@ -150,13 +150,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- Specifications & FAQ — DISABLED (kept for future re-enable) -->
-      <?php
-      // Specs + FAQ disabled — set to empty so sticky nav links also hide
-      $oz_specs = [];
-      $oz_faq  = [];
-      ?>
-      <?php /* --- Specifications table (disabled) ---
+      <!-- Specifications table — shared from base product across all colors -->
       <?php
       // Specs fallback: base product meta → line config → empty
       $specs_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
@@ -181,7 +175,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
-      <!-- FAQ accordion -->
+      <!-- FAQ accordion — shared from base product across all colors -->
       <?php
       // FAQ fallback: base product meta → line config → empty
       $faq_source_id = !empty($config['base_id']) ? $config['base_id'] : $product_id;
@@ -202,7 +196,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       </div>
       <?php endif; ?>
-      --- end disabled Specs & FAQ */ ?>
 
     </div><!-- .oz-left-column -->
 
