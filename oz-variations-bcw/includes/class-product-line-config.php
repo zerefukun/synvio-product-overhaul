@@ -101,22 +101,22 @@ class OZ_Product_Line_Config {
             ['Nee', 0,     false],
             ['Ja',  16.00, false],
         ],
-        // Beton Ciré lines — simple yes/no primer
+        // Beton Ciré lines — primer included in base price, no price change either way
         'all-in-one' => [
-            ['Geen',   0,     true],
-            ['Primer', 12.50, false],
+            ['Primer', 0, true],
+            ['Geen',   0, false],
         ],
         'easyline' => [
-            ['Geen',   0,     true],
-            ['Primer', 12.50, false],
+            ['Primer', 0, true],
+            ['Geen',   0, false],
         ],
         'microcement' => [
-            ['Geen',   0,     true],
-            ['Primer', 12.50, false],
+            ['Primer', 0, true],
+            ['Geen',   0, false],
         ],
         'lavasteen' => [
-            ['Geen',   0,     true],
-            ['Primer', 12.50, false],
+            ['Primer', 0, true],
+            ['Geen',   0, false],
         ],
     ];
 
