@@ -297,6 +297,19 @@ class OZ_BCW_Admin {
             <?php endif; ?>
         </div>
 
+        <?php if ($line_key && $is_variant && $base_id) : ?>
+        <!-- Quick link to base product editor — saves time navigating -->
+        <div style="margin: 12px 0; padding: 10px 14px; background: #f0f6fc; border-left: 4px solid #2271b1; border-radius: 3px;">
+            <strong>Hoofdproduct:</strong>
+            <?php echo esc_html(get_the_title($base_id)); ?>
+            <a href="<?php echo esc_url(get_edit_post_link($base_id)); ?>"
+               class="button button-small"
+               style="margin-left: 8px; vertical-align: middle;">
+                ✎ Bewerk hoofdproduct
+            </a>
+        </div>
+        <?php endif; ?>
+
         <hr style="margin: 16px 0;">
 
         <p>
