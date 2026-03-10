@@ -67,6 +67,10 @@ export var S = P ? {
   // Custom RAL/NCS code entered by user
   customColor: '',
 
+  // Selected color name for static/shared color swatches (e.g. Betonlook Verf)
+  // Empty string = no color selected yet
+  selectedColor: '',
+
   // Is the bottom sheet open?
   sheetOpen: false,
 
@@ -349,6 +353,10 @@ export function validateCartState(config, state) {
       return 'Ongeldige RAL of NCS kleurcode.';
     }
   }
+  // Static/shared color validation — must pick a color before adding to cart
+  if (config.hasStaticColors && state.colorMode === 'swatch' && !state.selectedColor) {
+    return 'Kies een kleur.';
+  }
   // Tool validation — individual mode must have at least 1 tool selected
   if (config.hasTools && state.toolMode === 'individual' && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
     return 'Kies minimaal 1 gereedschap of kies een andere optie.';
@@ -415,6 +423,10 @@ export function buildCartPayload(config, state) {
   payload.oz_color_mode = state.colorMode;
   if (state.colorMode === 'ral_ncs') {
     payload.oz_custom_color = state.customColor;
+  }
+  // Static/shared color swatch selection (single-product lines like Betonlook Verf)
+  if (state.colorMode === 'swatch' && state.selectedColor) {
+    payload.oz_selected_color = state.selectedColor;
   }
 
   // Tool data — nested keys need special handling when converting to FormData

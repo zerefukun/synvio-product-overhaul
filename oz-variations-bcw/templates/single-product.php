@@ -230,8 +230,14 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <?php /* ═══ RIGHT COLUMN: SUMMARY SIDEBAR ═══ */ ?>
     <div class="oz-product-summary">
 
-      <?php if ($current_color) : ?>
-        <div class="oz-color-label" id="colorLabel"><?php echo esc_html($current_color); ?></div>
+      <?php
+      // Color label above title — shown for color variants and shared-color products.
+      // For shared colors (e.g. Betonlook Verf), initially hidden — JS shows it on swatch pick.
+      $has_shared_colors = !empty($config['share_colors_from']);
+      if ($current_color || $has_shared_colors) : ?>
+        <div class="oz-color-label" id="colorLabel"
+             <?php if (!$current_color && $has_shared_colors) echo 'style="display:none"'; ?>
+        ><?php echo esc_html($current_color ?: ''); ?></div>
       <?php endif; ?>
 
       <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
@@ -693,10 +699,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
            alt="">
       <div class="oz-sticky-details">
         <div class="oz-sticky-product-name"><?php echo esc_html($product_name); ?></div>
-        <?php if ($current_color) : ?>
-        <div class="oz-sticky-color">
+        <?php if ($current_color || $has_shared_colors) : ?>
+        <div class="oz-sticky-color" id="stickyColorWrap"
+             <?php if (!$current_color && $has_shared_colors) echo 'style="display:none"'; ?>>
           <span class="oz-sticky-color-dot" id="stickyColorDot"></span>
-          <span id="stickyColorName"><?php echo esc_html($current_color); ?></span>
+          <span id="stickyColorName"><?php echo esc_html($current_color ?: ''); ?></span>
         </div>
         <?php endif; ?>
       </div>

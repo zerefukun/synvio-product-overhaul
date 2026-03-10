@@ -201,6 +201,7 @@ class OZ_Frontend_Display {
                 'pakket'        => OZ_Product_Line_Config::get_pakket_options($line_key),
                 'hasRalNcs'     => (bool) $config['ral_ncs'],
                 'ralNcsOnly'    => (bool) $config['ral_ncs_only'],
+                'hasStaticColors' => !empty($config['share_colors_from']),
                 'optionOrder'   => $config['option_order'],
                 'crossSells'    => $product->get_cross_sell_ids(),
                 'hasTools'      => !empty($config['has_tools']),
@@ -244,6 +245,16 @@ class OZ_Frontend_Display {
         $current_id    = $product->get_id();
         $current_color = get_post_meta($current_id, '_oz_color', true);
         $is_base       = OZ_Product_Processor::is_base_product($product);
+
+        // Check for shared colors (e.g. Betonlook Verf borrows All-in-One's palette)
+        $line_info = OZ_Product_Line_Config::for_product($product);
+        $config    = $line_info['config'];
+        $shared    = !empty($config['share_colors_from']);
+
+        if ($shared) {
+            // Fetch color variants from the source line's categories
+            return self::render_shared_color_swatches($config['share_colors_from']);
+        }
 
         // For base products, fetch all variants from the line's categories.
         // For color variants, use the stored _oz_variants meta (bidirectional links).
@@ -290,6 +301,83 @@ class OZ_Frontend_Display {
                 . '</a>',
                 esc_url($s['url']),
                 $is_current ? ' selected' : '',
+                esc_attr($s['color']),
+                esc_attr($s['color']),
+                esc_url($s['image']),
+                esc_attr($s['color'])
+            );
+        }
+
+        $html .= '</div>';
+        return $html;
+    }
+
+    /**
+     * Render static (non-navigating) color swatches borrowed from another line.
+     * Clicking these sets the color in JS state instead of navigating to a new product.
+     *
+     * @param string $source_line_key  Line key to borrow colors from (e.g. 'all-in-one')
+     * @return string  HTML
+     */
+    private static function render_shared_color_swatches($source_line_key) {
+        $source_config = OZ_Product_Line_Config::get_config($source_line_key);
+        if (!$source_config || empty($source_config['cats'])) {
+            return '';
+        }
+
+        // Query all color variants from the source line's categories
+        $args = [
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'posts_per_page' => 200,
+            'fields'         => 'ids',
+            'tax_query'      => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => $source_config['cats'],
+            ]],
+            'meta_query'     => [[
+                'key'     => '_oz_color',
+                'compare' => 'EXISTS',
+            ]],
+        ];
+
+        $ids = get_posts($args);
+        if (empty($ids)) {
+            return '';
+        }
+
+        // Collect color data — deduplicate by color name (source line may have
+        // multiple sizes per color, we only need one swatch per color)
+        $seen_colors = [];
+        $swatches    = [];
+
+        foreach ($ids as $vid) {
+            $color = get_post_meta($vid, '_oz_color', true);
+            if (empty($color) || isset($seen_colors[$color])) {
+                continue;
+            }
+            $seen_colors[$color] = true;
+
+            $image_id  = get_post_thumbnail_id($vid);
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $swatches[$vid] = [
+                'color' => $color,
+                'image' => $image_url,
+            ];
+        }
+
+        ksort($swatches);
+
+        // Render as static swatches — data-static="1" tells JS not to navigate
+        $html = '<div class="oz-color-swatches">';
+
+        foreach ($swatches as $pid => $s) {
+            $html .= sprintf(
+                '<a href="#" class="oz-color-swatch" data-color="%s" data-static="1" title="%s">'
+                . '<img src="%s" alt="%s" width="46" height="46" loading="eager">'
+                . '</a>',
                 esc_attr($s['color']),
                 esc_attr($s['color']),
                 esc_url($s['image']),

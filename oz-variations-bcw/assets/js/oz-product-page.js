@@ -27,6 +27,9 @@
     colorMode: P.ralNcsOnly ? "ral_ncs" : "swatch",
     // Custom RAL/NCS code entered by user
     customColor: "",
+    // Selected color name for static/shared color swatches (e.g. Betonlook Verf)
+    // Empty string = no color selected yet
+    selectedColor: "",
     // Is the bottom sheet open?
     sheetOpen: false,
     // Tool mode: 'none' (default), 'set' (complete set), 'individual' (pick items)
@@ -204,6 +207,9 @@
         return "Ongeldige RAL of NCS kleurcode.";
       }
     }
+    if (config.hasStaticColors && state.colorMode === "swatch" && !state.selectedColor) {
+      return "Kies een kleur.";
+    }
     if (config.hasTools && state.toolMode === "individual" && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
       return "Kies minimaal 1 gereedschap of kies een andere optie.";
     }
@@ -251,6 +257,9 @@
     payload.oz_color_mode = state.colorMode;
     if (state.colorMode === "ral_ncs") {
       payload.oz_custom_color = state.customColor;
+    }
+    if (state.colorMode === "swatch" && state.selectedColor) {
+      payload.oz_selected_color = state.selectedColor;
     }
     if (config.hasTools) {
       payload.oz_tool_mode = state.toolMode;
@@ -873,8 +882,21 @@
       if (colorLabel) {
         if (S.colorMode === "ral_ncs" && S.customColor) {
           colorLabel.textContent = S.customColor;
+        } else if (S.selectedColor) {
+          colorLabel.textContent = S.selectedColor;
         } else if (P.currentColor) {
           colorLabel.textContent = P.currentColor;
+        }
+      }
+      if (DOM.colorLabel) {
+        if (S.colorMode === "ral_ncs" && S.customColor) {
+          DOM.colorLabel.textContent = S.customColor;
+          DOM.colorLabel.style.display = "";
+        } else if (S.selectedColor) {
+          DOM.colorLabel.textContent = S.selectedColor;
+          DOM.colorLabel.style.display = "";
+        } else if (!P.currentColor && P.hasStaticColors) {
+          DOM.colorLabel.style.display = "none";
         }
       }
     }, renderStickySummary = function() {
@@ -882,8 +904,26 @@
       if (DOM.stickyDColor) {
         if (S.colorMode === "ral_ncs" && S.customColor) {
           DOM.stickyDColor.textContent = S.customColor;
+        } else if (S.selectedColor) {
+          DOM.stickyDColor.textContent = S.selectedColor;
         } else {
           DOM.stickyDColor.textContent = P.currentColor || "";
+        }
+      }
+      var stickyColorName = document.getElementById("stickyColorName");
+      var stickyColorWrap = document.getElementById("stickyColorWrap");
+      if (stickyColorName) {
+        var mobileColor = "";
+        if (S.colorMode === "ral_ncs" && S.customColor) {
+          mobileColor = S.customColor;
+        } else if (S.selectedColor) {
+          mobileColor = S.selectedColor;
+        } else {
+          mobileColor = P.currentColor || "";
+        }
+        stickyColorName.textContent = mobileColor;
+        if (stickyColorWrap) {
+          stickyColorWrap.style.display = mobileColor ? "" : "none";
         }
       }
       if (DOM.stickyDOptions) {
@@ -1065,7 +1105,18 @@
       }
       var swatch = target.closest(".oz-color-swatch");
       if (swatch) {
-        trackColorSelected(swatch.getAttribute("data-color") || "");
+        var colorName = swatch.getAttribute("data-color") || "";
+        trackColorSelected(colorName);
+        if (swatch.hasAttribute("data-static")) {
+          e.preventDefault();
+          updateState({ selectedColor: colorName });
+          var allSwatches = swatch.parentNode.querySelectorAll(".oz-color-swatch");
+          for (var si = 0; si < allSwatches.length; si++) {
+            allSwatches[si].classList.toggle("selected", allSwatches[si] === swatch);
+          }
+          syncUI();
+          return;
+        }
         saveToolState();
         return;
       }

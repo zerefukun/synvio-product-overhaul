@@ -281,13 +281,29 @@ function renderSelectedLabels() {
     tpLabel.textContent = S.toepassing;
   }
 
-  // Color label in header
+  // Color label in header — shows selected static color, RAL/NCS code, or product color
   var colorLabel = document.getElementById('selectedColorLabel');
   if (colorLabel) {
     if (S.colorMode === 'ral_ncs' && S.customColor) {
       colorLabel.textContent = S.customColor;
+    } else if (S.selectedColor) {
+      colorLabel.textContent = S.selectedColor;
     } else if (P.currentColor) {
       colorLabel.textContent = P.currentColor;
+    }
+  }
+
+  // Big color label above product title (for shared-color products)
+  if (DOM.colorLabel) {
+    if (S.colorMode === 'ral_ncs' && S.customColor) {
+      DOM.colorLabel.textContent = S.customColor;
+      DOM.colorLabel.style.display = '';
+    } else if (S.selectedColor) {
+      DOM.colorLabel.textContent = S.selectedColor;
+      DOM.colorLabel.style.display = '';
+    } else if (!P.currentColor && P.hasStaticColors) {
+      // No color picked yet — hide the empty label
+      DOM.colorLabel.style.display = 'none';
     }
   }
 }
@@ -299,12 +315,33 @@ function renderSelectedLabels() {
 function renderStickySummary() {
   var sep = '<span class="oz-sep">&middot;</span>';
 
-  // Update color text
+  // Update color text — static selected color, RAL/NCS, or product color
   if (DOM.stickyDColor) {
     if (S.colorMode === 'ral_ncs' && S.customColor) {
       DOM.stickyDColor.textContent = S.customColor;
+    } else if (S.selectedColor) {
+      DOM.stickyDColor.textContent = S.selectedColor;
     } else {
       DOM.stickyDColor.textContent = P.currentColor || '';
+    }
+  }
+
+  // Mobile sticky color name — update when static color selected
+  var stickyColorName = document.getElementById('stickyColorName');
+  var stickyColorWrap = document.getElementById('stickyColorWrap');
+  if (stickyColorName) {
+    var mobileColor = '';
+    if (S.colorMode === 'ral_ncs' && S.customColor) {
+      mobileColor = S.customColor;
+    } else if (S.selectedColor) {
+      mobileColor = S.selectedColor;
+    } else {
+      mobileColor = P.currentColor || '';
+    }
+    stickyColorName.textContent = mobileColor;
+    // Show/hide the wrap for shared-color products
+    if (stickyColorWrap) {
+      stickyColorWrap.style.display = mobileColor ? '' : 'none';
     }
   }
 
@@ -566,10 +603,27 @@ function handleClick(e) {
     return;
   }
 
-  // Color swatch click — save tool state before navigating to new product
+  // Color swatch click — static swatches set state, normal swatches navigate
   var swatch = target.closest('.oz-color-swatch');
   if (swatch) {
-    analytics.trackColorSelected(swatch.getAttribute('data-color') || '');
+    var colorName = swatch.getAttribute('data-color') || '';
+    analytics.trackColorSelected(colorName);
+
+    // Static swatch (shared colors, e.g. Betonlook Verf) — no navigation
+    if (swatch.hasAttribute('data-static')) {
+      e.preventDefault();
+      // Update state with selected color
+      updateState({ selectedColor: colorName });
+      // Update swatch highlight — remove from siblings, add to clicked
+      var allSwatches = swatch.parentNode.querySelectorAll('.oz-color-swatch');
+      for (var si = 0; si < allSwatches.length; si++) {
+        allSwatches[si].classList.toggle('selected', allSwatches[si] === swatch);
+      }
+      syncUI();
+      return;
+    }
+
+    // Normal swatch — save tool state before navigating to new product
     saveToolState();
     // Let the default link behavior proceed (page navigation)
     return;

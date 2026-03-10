@@ -385,9 +385,12 @@ class OZ_Product_Line_Config {
         ],
 
         // ─── BETONLOOK VERF ─────────────────────────────────────────
-        // 38 colors (K&K palette), primer 6.00, RAL/NCS
+        // Single product (no color variants of its own).
+        // Borrows the All-in-One color palette via share_colors_from.
+        // Primer 6.00, RAL/NCS
         'betonlook-verf' => [
             'cats'           => [],
+            'share_colors_from' => 'all-in-one',  // borrow color swatches from All-in-One K&K
             'usps'           => [
                 'Eenvoudig betonlook effect met verf',
                 'Snel aan te brengen, geen speciale kennis nodig',
