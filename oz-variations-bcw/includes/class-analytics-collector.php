@@ -50,6 +50,7 @@ class OZ_Analytics_Collector {
         'oz_cart_qty_input',
         'oz_cart_upsell_added',
         'oz_cart_upsell_size_selected',
+        'oz_cart_upsell_option_selected',
         'oz_cart_checkout_clicked',
         'oz_cart_continue_shopping',
         'oz_cart_free_shipping_reached',

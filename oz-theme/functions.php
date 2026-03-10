@@ -557,12 +557,38 @@ function oz_cart_drawer_add() {
         return;
     }
 
+    // Optional cart item meta — used by option families (e.g. Stuco Paste with primer).
+    // Only allow known meta keys to prevent arbitrary data injection.
+    $allowed_meta_keys = ['oz_line', 'oz_primer'];
+    $cart_item_meta = [];
+    foreach ($allowed_meta_keys as $meta_key) {
+        if (isset($_POST[$meta_key]) && $_POST[$meta_key] !== '') {
+            $cart_item_meta[$meta_key] = sanitize_text_field($_POST[$meta_key]);
+        }
+    }
+
     $cart = WC()->cart;
 
-    // Check if this product is already in the cart (any line item with same product_id).
-    // If found, bump its qty instead of creating a duplicate.
+    // Check if this product is already in the cart with matching meta.
+    // Meta must match exactly — "Stuco Paste without primer" and "with primer"
+    // are different line items because calculate_addon_prices() reads oz_primer.
     foreach ($cart->get_cart() as $cart_key => $cart_item) {
-        if ($cart_item['product_id'] === $product_id && empty($cart_item['variation_id'])) {
+        if ($cart_item['product_id'] !== $product_id || !empty($cart_item['variation_id'])) {
+            continue;
+        }
+
+        // Compare meta: both must have same oz_line and oz_primer values
+        $meta_match = true;
+        foreach ($allowed_meta_keys as $meta_key) {
+            $cart_val = isset($cart_item[$meta_key]) ? $cart_item[$meta_key] : '';
+            $new_val  = isset($cart_item_meta[$meta_key]) ? $cart_item_meta[$meta_key] : '';
+            if ($cart_val !== $new_val) {
+                $meta_match = false;
+                break;
+            }
+        }
+
+        if ($meta_match) {
             $new_qty = $cart_item['quantity'] + $qty;
             $cart->set_quantity($cart_key, $new_qty);
             wp_send_json_success(['cart_key' => $cart_key, 'merged' => true]);
@@ -570,8 +596,10 @@ function oz_cart_drawer_add() {
         }
     }
 
-    // Product not in cart yet — add fresh
-    $result = $cart->add_to_cart($product_id, $qty);
+    // Product not in cart yet (or different meta) — add fresh.
+    // Pass cart_item_meta as 3rd-party data so WC stores it on the line item.
+    // This is picked up by calculate_addon_prices() for price adjustments.
+    $result = $cart->add_to_cart($product_id, $qty, 0, [], $cart_item_meta);
     if ($result) {
         wp_send_json_success(['cart_key' => $result]);
     } else {
@@ -604,12 +632,12 @@ function oz_cart_drawer_get_upsells($cart) {
     // The system walks down this list, skipping products already in cart,
     // so there's always something relevant to suggest.
     $completion_rules = [
-        'original'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
-        'all-in-one'     => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
-        'easyline'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
-        'microcement'    => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
-        'metallic'       => [11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
-        'lavasteen'      => [25550, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'original'       => [22436, 11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'all-in-one'     => [22436, 11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'easyline'       => [22436, 11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'microcement'    => [22436, 11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'metallic'       => [22436, 11177, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
+        'lavasteen'      => [22436, 25550, 11025, 11175, 11018, 11020, 11164, 11022, 11015, 11017, 11023, 11016],
         'betonlook-verf' => [11015, 22997, 22996, 11175, 11025, 11022, 11164, 11018],
         'stuco-paste'    => [11025, 22994, 11175, 11017, 11022, 11018],
         'pu-color'       => [11175, 11022, 11164],
@@ -758,6 +786,28 @@ function oz_cart_drawer_get_upsells($cart) {
         ],
     ];
 
+    // Option families: same product ID but with addon meta (e.g. primer Ja/Nee).
+    // Unlike sized families (different WC product IDs per pill), option families
+    // use the same product ID and pass cart item meta to control pricing.
+    // The oz_cart_drawer_add AJAX handler passes these meta values to add_to_cart().
+    $option_families = [
+        22436 => [  // Stuco Paste — primer is an addon, not a separate product
+            'name'    => 'Stuco Paste',
+            'options' => [
+                [
+                    'label' => 'Zonder primer',
+                    'price' => 59.95,
+                    'meta'  => ['oz_line' => 'stuco-paste', 'oz_primer' => 'Nee'],
+                ],
+                [
+                    'label' => 'Met primer',
+                    'price' => 75.95,  // 59.95 + 16.00 primer addon
+                    'meta'  => ['oz_line' => 'stuco-paste', 'oz_primer' => 'Ja'],
+                ],
+            ],
+        ],
+    ];
+
     // Also build a reverse map: any size wcId → base ID (for deduplication)
     $sized_member_to_base = [];
     foreach ($sized_families as $base_id => $family) {
@@ -774,6 +824,34 @@ function oz_cart_drawer_get_upsells($cart) {
 
     foreach ($candidates as $cid) {
         if (count($upsells) >= 3) break;
+
+        // Check if this candidate belongs to an option family (e.g. Stuco Paste with primer)
+        if (isset($option_families[$cid])) {
+            if (isset($used_families['opt_' . $cid])) continue;
+
+            // Option families: same product ID, different meta. Show card if product not in cart.
+            // (Unlike sized families, option families have one product ID — if it's in cart
+            // with any option, we skip it since customer already has it.)
+            if (isset($cart_product_ids[$cid])) continue;
+
+            $family = $option_families[$cid];
+            $product = wc_get_product($cid);
+            if (!$product || !$product->is_purchasable() || !$product->is_in_stock()) continue;
+
+            $image_id  = $product->get_image_id();
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $upsells[] = [
+                'id'      => $cid,
+                'name'    => $family['name'],
+                'price'   => $family['options'][0]['price'],  // Default option price
+                'image'   => $image_url,
+                'type'    => 'option',
+                'options' => $family['options'],
+            ];
+            $used_families['opt_' . $cid] = true;
+            continue;
+        }
 
         // Check if this candidate belongs to a sized family
         $base_id = isset($sized_member_to_base[$cid]) ? $sized_member_to_base[$cid] : null;

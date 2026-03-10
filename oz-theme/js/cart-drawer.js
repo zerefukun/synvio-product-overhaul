@@ -227,10 +227,26 @@
         );
     }
 
-    /** Add upsell product to WC cart */
-    function addUpsell(productId, btn) {
+    /** Add upsell product to WC cart.
+     *  @param {number} productId - WC product ID
+     *  @param {HTMLElement} btn - the add button (disabled during request)
+     *  @param {Object} [meta] - optional cart item meta (e.g. {oz_line: 'stuco-paste', oz_primer: 'Ja'})
+     */
+    function addUpsell(productId, btn, meta) {
         btn.style.pointerEvents = 'none';
         btn.style.opacity = '0.5';
+
+        // Build POST body — include optional meta fields for option-type upsells
+        var body = 'action=oz_cart_drawer_add&nonce=' + encodeURIComponent(ozCartDrawer.nonce) +
+            '&product_id=' + productId +
+            '&qty=1';
+        if (meta) {
+            for (var key in meta) {
+                if (meta.hasOwnProperty(key)) {
+                    body += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(meta[key]);
+                }
+            }
+        }
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', ozCartDrawer.ajaxUrl, true);
@@ -242,11 +258,7 @@
                 updateFlatsomeMiniCart();
             });
         };
-        xhr.send(
-            'action=oz_cart_drawer_add&nonce=' + encodeURIComponent(ozCartDrawer.nonce) +
-            '&product_id=' + productId +
-            '&qty=1'
-        );
+        xhr.send(body);
     }
 
     /** Trigger Flatsome mini-cart fragment refresh */
@@ -532,6 +544,42 @@
         '</div>';
     }
 
+    /** Build HTML for an option upsell card (Stuco Paste with primer Ja/Nee pills).
+     *  Same product ID, but different cart item meta per option.
+     *  Similar to sized cards but pills control meta instead of product ID. */
+    function buildOptionCard(u) {
+        var imgHtml = u.image
+            ? '<img src="' + esc(u.image) + '" alt="' + esc(u.name) + '">'
+            : '';
+
+        // Build option pills — first option is default active
+        var pillsHtml = '<div class="oz-upsell-options">';
+        for (var o = 0; o < u.options.length; o++) {
+            var opt = u.options[o];
+            var active = o === 0 ? ' active' : '';
+            // Store meta as JSON in data attribute for easy retrieval on add
+            pillsHtml += '<button class="oz-upsell-option-pill' + active + '"' +
+                ' data-price="' + opt.price + '"' +
+                ' data-meta=\'' + JSON.stringify(opt.meta).replace(/'/g, '&#39;') + '\'' +
+                ' data-idx="' + o + '">' +
+                esc(opt.label) +
+            '</button>';
+        }
+        pillsHtml += '</div>';
+
+        return '<div class="oz-drawer-upsell-card oz-option-upsell" data-product-id="' + u.id + '">' +
+            '<div class="oz-drawer-upsell-img">' + imgHtml + '</div>' +
+            '<div class="oz-drawer-upsell-info">' +
+                '<div class="oz-drawer-upsell-name">' + esc(u.name) + '</div>' +
+                pillsHtml +
+                '<div class="oz-drawer-upsell-price">' + fmt(u.options[0].price) + '</div>' +
+            '</div>' +
+            '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
+                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+            '</button>' +
+        '</div>';
+    }
+
     /** Render upsell suggestions */
     function renderUpsells(upsells) {
         var show = upsells.length > 0 && S.items.length > 0;
@@ -543,6 +591,8 @@
             var u = upsells[i];
             if (u.type === 'sized') {
                 html += buildSizedCard(u);
+            } else if (u.type === 'option') {
+                html += buildOptionCard(u);
             } else {
                 html += buildRegularCard(u);
             }
@@ -575,31 +625,70 @@
             })(sizedCards[si]);
         }
 
-        /* Bind upsell add buttons (works for both regular and sized cards) */
+        /* Bind option pill selection on option cards (e.g. Stuco Paste primer Ja/Nee) */
+        var optionCards = R.upsellList.querySelectorAll('.oz-option-upsell');
+        for (var oi = 0; oi < optionCards.length; oi++) {
+            (function (card) {
+                var pills = card.querySelectorAll('.oz-upsell-option-pill');
+                var priceEl = card.querySelector('.oz-drawer-upsell-price');
+                for (var p = 0; p < pills.length; p++) {
+                    pills[p].addEventListener('click', function () {
+                        // Update active state
+                        for (var q = 0; q < pills.length; q++) pills[q].classList.remove('active');
+                        this.classList.add('active');
+                        // Update displayed price
+                        priceEl.textContent = fmt(parseFloat(this.dataset.price));
+                        // Track option pill selection
+                        var upsellName = card.querySelector('.oz-drawer-upsell-name');
+                        dlPush('oz_cart_upsell_option_selected', {
+                            oz_upsell_name: upsellName ? upsellName.textContent : '',
+                            oz_upsell_option: this.textContent,
+                            oz_upsell_price: parseFloat(this.dataset.price),
+                        });
+                    });
+                }
+            })(optionCards[oi]);
+        }
+
+        /* Bind upsell add buttons (works for regular, sized, and option cards) */
         var cards = R.upsellList.querySelectorAll('.oz-drawer-upsell-card');
         for (var j = 0; j < cards.length; j++) {
             (function (card) {
                 var btn = card.querySelector('.oz-drawer-upsell-add');
                 var isSized = card.classList.contains('oz-sized-upsell');
+                var isOption = card.classList.contains('oz-option-upsell');
                 btn.addEventListener('click', function () {
                     var prodId = parseInt(card.dataset.productId, 10);
                     var upsellName = card.querySelector('.oz-drawer-upsell-name');
                     var upsellPrice = card.querySelector('.oz-drawer-upsell-price');
 
-                    /* Track upsell added — includes size label for sized cards */
+                    /* Track upsell added — includes size/option label */
                     var trackParams = {
                         oz_upsell_id: prodId,
                         oz_upsell_name: upsellName ? upsellName.textContent : '',
                         oz_upsell_price: upsellPrice ? upsellPrice.textContent : '',
-                        oz_upsell_type: isSized ? 'sized' : 'regular',
+                        oz_upsell_type: isSized ? 'sized' : isOption ? 'option' : 'regular',
                     };
                     if (isSized) {
                         var activePillForTrack = card.querySelector('.oz-upsell-size-pill.active');
                         trackParams.oz_upsell_size = activePillForTrack ? activePillForTrack.textContent : '';
                     }
+                    if (isOption) {
+                        var activeOptForTrack = card.querySelector('.oz-upsell-option-pill.active');
+                        trackParams.oz_upsell_option = activeOptForTrack ? activeOptForTrack.textContent : '';
+                    }
                     dlPush('oz_cart_upsell_added', trackParams);
 
-                    addUpsell(prodId, btn);
+                    /* Build meta from active option pill (if option card) */
+                    var meta = null;
+                    if (isOption) {
+                        var activeOpt = card.querySelector('.oz-upsell-option-pill.active');
+                        if (activeOpt && activeOpt.dataset.meta) {
+                            try { meta = JSON.parse(activeOpt.dataset.meta); } catch (e) { /* ignore */ }
+                        }
+                    }
+
+                    addUpsell(prodId, btn, meta);
 
                     if (isSized) {
                         /* Sized cards: brief checkmark, then reset — card stays for more sizes */
@@ -617,7 +706,7 @@
                             btn.style.opacity = '';
                         }, 1500);
                     } else {
-                        /* Regular cards: show checkmark (card will be replaced on refresh) */
+                        /* Regular + option cards: show checkmark (card will be replaced on refresh) */
                         btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
                         btn.classList.add('added');
                     }

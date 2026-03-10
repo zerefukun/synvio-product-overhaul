@@ -649,6 +649,44 @@ body.oz-drawer-open {
 
 /* (Size pill styles moved to .oz-drawer scoped rules near the button reset) */
 
+/* Option upsell cards — option pills for Stuco Paste primer Ja/Nee, etc. */
+.oz-upsell-options {
+    display: flex;
+    gap: 4px;
+    margin-top: 3px;
+}
+
+/* Option pills — same visual style as size pills, scoped to .oz-drawer */
+.oz-drawer .oz-upsell-option-pill {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    background: white !important;
+    color: #333 !important;
+    cursor: pointer !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+    transition: all 0.15s ease;
+}
+.oz-drawer .oz-upsell-option-pill:hover {
+    border-color: var(--oz-accent, #135350) !important;
+    color: var(--oz-accent, #135350) !important;
+    background: #f0f0f0 !important;
+}
+.oz-drawer .oz-upsell-option-pill.active {
+    background: var(--oz-accent, #135350) !important;
+    color: white !important;
+    border-color: var(--oz-accent, #135350) !important;
+}
+
 /* Sized cards keep their add button clickable after adding (customer may want more sizes) */
 .oz-sized-upsell .oz-drawer-upsell-add.added {
     pointer-events: auto;
@@ -853,6 +891,8 @@ body.oz-drawer-open {
     .oz-drawer-upsell-add { width: 28px !important; height: 28px !important; }
     .oz-upsell-size-pill { font-size: 9px !important; padding: 1px 4px !important; }
     .oz-upsell-sizes { gap: 3px; margin-top: 2px; }
+    .oz-upsell-option-pill { font-size: 9px !important; padding: 1px 4px !important; }
+    .oz-upsell-options { gap: 3px; margin-top: 2px; }
 
     /* Footer — tight spacing, smaller text */
     .oz-drawer-footer {
