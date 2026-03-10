@@ -614,8 +614,9 @@ class OZ_Cart_Manager {
         }
 
         // Standard swatch color (single-product lines like Betonlook Verf)
+        // JS sends color_mode as 'swatch', accept both 'swatch' and 'standard'
         if (!empty($data['oz_selected_color']) &&
-            (!isset($data['oz_color_mode']) || $data['oz_color_mode'] === 'standard')) {
+            (!isset($data['oz_color_mode']) || $data['oz_color_mode'] === 'standard' || $data['oz_color_mode'] === 'swatch')) {
             $details[] = 'Kleur: ' . $data['oz_selected_color'];
         }
 

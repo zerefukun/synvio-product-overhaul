@@ -361,6 +361,9 @@ class OZ_Frontend_Display {
 
             $image_id  = get_post_thumbnail_id($vid);
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+            if (empty($image_url)) {
+                continue; // Skip colors without a thumbnail — avoids broken img src=""
+            }
 
             $swatches[$vid] = [
                 'color' => $color,
