@@ -138,9 +138,11 @@ class OZ_Analytics_Reporter {
 
         if (self::is_hpos_active()) {
             // HPOS: query wc_orders table directly
+            // Subtract shipping to match WC Analytics "Totale verkoop"
             $table = $wpdb->prefix . 'wc_orders';
             $row = $wpdb->get_row($wpdb->prepare(
-                "SELECT COUNT(*) AS orders, COALESCE(SUM(total_amount), 0) AS revenue
+                "SELECT COUNT(*) AS orders,
+                    COALESCE(SUM(total_amount - shipping_total - shipping_tax), 0) AS revenue
                  FROM {$table}
                  WHERE status IN ('wc-completed', 'wc-processing')
                  AND date_created_gmt >= %s AND date_created_gmt < %s",
@@ -148,10 +150,18 @@ class OZ_Analytics_Reporter {
             ), ARRAY_A);
         } else {
             // Legacy: query posts + postmeta
+            // Subtract shipping + shipping tax to match WC Analytics "Totale verkoop"
             $row = $wpdb->get_row($wpdb->prepare(
-                "SELECT COUNT(*) AS orders, COALESCE(SUM(pm.meta_value), 0) AS revenue
+                "SELECT COUNT(*) AS orders,
+                    COALESCE(SUM(
+                        pm.meta_value
+                        - COALESCE(pm_ship.meta_value, 0)
+                        - COALESCE(pm_stax.meta_value, 0)
+                    ), 0) AS revenue
                  FROM {$wpdb->posts} p
                  JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_order_total'
+                 LEFT JOIN {$wpdb->postmeta} pm_ship ON p.ID = pm_ship.post_id AND pm_ship.meta_key = '_order_shipping'
+                 LEFT JOIN {$wpdb->postmeta} pm_stax ON p.ID = pm_stax.post_id AND pm_stax.meta_key = '_order_shipping_tax'
                  WHERE p.post_type = 'shop_order'
                  AND p.post_status IN ('wc-completed', 'wc-processing')
                  AND p.post_date >= %s AND p.post_date < %s",
@@ -574,9 +584,15 @@ class OZ_Analytics_Reporter {
 
     /**
      * Helper: calculate the "since" datetime string for $days ago.
-     * Uses current_time() to match the timezone used in Store::insert().
+     * Uses calendar dates (midnight) not rolling hours.
+     * "Vandaag" (1 day) = midnight today. "7 dagen" = midnight 7 days ago.
+     * This matches WC Analytics' date behavior.
      */
     private static function since_date($days) {
-        return date('Y-m-d H:i:s', current_time('timestamp') - (absint($days) * DAY_IN_SECONDS));
+        // Start of today in WP timezone, then subtract ($days - 1) full days
+        // For "Vandaag" ($days=1): returns midnight today
+        // For "7 dagen" ($days=7): returns midnight 6 days ago (= 7 calendar days incl. today)
+        $days_back = max(0, absint($days) - 1);
+        return date('Y-m-d 00:00:00', current_time('timestamp') - ($days_back * DAY_IN_SECONDS));
     }
 }
