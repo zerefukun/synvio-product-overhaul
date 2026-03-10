@@ -285,8 +285,10 @@
         if (progress.qualified) {
             R.shippingText.textContent = 'Je bestelling wordt gratis verzonden!';
             R.shippingText.className = 'oz-shipping-text qualified';
-            /* Fire once per drawer open when threshold is reached */
-            if (!_shippingTracked) {
+            /* Fire once per drawer open when threshold is reached.
+             * Skip when threshold is 0 (free shipping not configured) — otherwise
+             * every cart open would falsely trigger this event. */
+            if (!_shippingTracked && FREE_SHIP_THRESHOLD > 0) {
                 _shippingTracked = true;
                 dlPush('oz_cart_free_shipping_reached', {
                     oz_subtotal: S.subtotal,

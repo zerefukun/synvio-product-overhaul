@@ -2,7 +2,11 @@
 /**
  * Analytics Dashboard — WP Admin page renderer
  *
- * Registers a submenu page under WooCommerce and renders the analytics UI.
+ * Three sections:
+ * 1. Shop Performance — WC order data (revenue, orders, AOV, top products)
+ * 2. Overhaul Impact  — before/after comparison proving ROI of our changes
+ * 3. Behavior Analytics — beacon event data (funnels, top colors, upsells)
+ *
  * Reads data from OZ_Analytics_Reporter (plain arrays), contains zero SQL.
  * Self-contained CSS via inline <style> block.
  *
@@ -28,12 +32,12 @@ class OZ_Analytics_Dashboard {
      */
     public static function add_menu_page() {
         add_submenu_page(
-            'woocommerce',                  // Parent slug
-            'BCW Analytics',                // Page title
-            'BCW Analytics',                // Menu title
-            'manage_woocommerce',           // Capability
-            'oz-bcw-analytics',             // Menu slug
-            [__CLASS__, 'render']           // Callback
+            'woocommerce',
+            'BCW Analytics',
+            'BCW Analytics',
+            'manage_woocommerce',
+            'oz-bcw-analytics',
+            [__CLASS__, 'render']
         );
     }
 
@@ -43,11 +47,20 @@ class OZ_Analytics_Dashboard {
     public static function render() {
         // Date range from query string (default: 7 days)
         $range = isset($_GET['range']) ? absint($_GET['range']) : 7;
-        if (!in_array($range, [1, 7, 30], true)) {
+        if (!in_array($range, [1, 7, 30, 90], true)) {
             $range = 7;
         }
 
-        // Fetch all data from Reporter
+        // ── Section 1: Shop Performance (WC orders) ──
+        $orders       = OZ_Analytics_Reporter::order_summary($range);
+        $items_avg    = OZ_Analytics_Reporter::avg_items_per_order($range);
+        $top_products = OZ_Analytics_Reporter::top_products($range, 10);
+        $by_line      = OZ_Analytics_Reporter::sales_by_line($range);
+
+        // ── Section 2: Overhaul Impact (before/after) ──
+        $comparison = OZ_Analytics_Reporter::order_comparison();
+
+        // ── Section 3: Behavior Analytics (beacon events) ──
         $summary  = OZ_Analytics_Reporter::summary($range);
         $product  = OZ_Analytics_Reporter::by_source('product', $range);
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
@@ -55,90 +68,77 @@ class OZ_Analytics_Dashboard {
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
         $upsells  = OZ_Analytics_Reporter::top_values('oz_cart_upsell_added', 'oz_upsell_name', $range, 10);
 
-        // Build page URL for range links
         $base_url = admin_url('admin.php?page=oz-bcw-analytics');
 
+        self::render_styles();
         ?>
-        <style>
-            /* ── Dashboard layout ── */
-            .oz-analytics { max-width: 1100px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-            .oz-analytics h1 { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-
-            /* ── Range tabs ── */
-            .oz-range-tabs { display: flex; gap: 4px; margin-left: auto; }
-            .oz-range-tabs a {
-                padding: 6px 14px; border-radius: 4px; text-decoration: none;
-                font-size: 13px; font-weight: 500; color: #50575e; background: #f0f0f1;
-                transition: background 0.15s;
-            }
-            .oz-range-tabs a:hover { background: #e0e0e1; }
-            .oz-range-tabs a.active { background: #2271b1; color: #fff; }
-
-            /* ── Summary cards ── */
-            .oz-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-            .oz-card {
-                background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;
-                padding: 16px 20px; text-align: center;
-            }
-            .oz-card-value { font-size: 28px; font-weight: 700; color: #1d2327; line-height: 1.2; }
-            .oz-card-label { font-size: 13px; color: #646970; margin-top: 4px; }
-
-            /* ── Two-column grid ── */
-            .oz-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-            .oz-panel {
-                background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 16px 20px;
-            }
-            .oz-panel h3 { margin: 0 0 12px; font-size: 14px; color: #1d2327; }
-
-            /* ── Bar charts (pure CSS) ── */
-            .oz-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
-            .oz-bar-label { min-width: 180px; color: #50575e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-            .oz-bar-track { flex: 1; height: 18px; background: #f0f0f1; border-radius: 3px; overflow: hidden; }
-            .oz-bar-fill { height: 100%; background: #2271b1; border-radius: 3px; min-width: 2px; transition: width 0.3s; }
-            .oz-bar-count { min-width: 36px; text-align: right; font-weight: 600; color: #1d2327; font-variant-numeric: tabular-nums; }
-
-            /* ── Funnel ── */
-            .oz-funnel { margin-bottom: 24px; }
-            .oz-funnel .oz-bar-fill { background: #135e96; }
-            .oz-funnel .oz-bar-row:nth-child(2) .oz-bar-fill { background: #2271b1; }
-            .oz-funnel .oz-bar-row:nth-child(3) .oz-bar-fill { background: #72aee6; }
-
-            /* ── Top lists ── */
-            .oz-top-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px solid #f0f0f1; }
-            .oz-top-item:last-child { border-bottom: none; }
-            .oz-top-rank { width: 20px; font-weight: 700; color: #2271b1; text-align: center; }
-            .oz-top-name { flex: 1; color: #1d2327; }
-            .oz-top-count { font-weight: 600; color: #50575e; font-variant-numeric: tabular-nums; }
-
-            /* ── Empty state ── */
-            .oz-empty { color: #646970; font-style: italic; font-size: 13px; padding: 12px 0; }
-
-            /* ── Responsive ── */
-            @media (max-width: 960px) {
-                .oz-cards { grid-template-columns: repeat(2, 1fr); }
-                .oz-columns { grid-template-columns: 1fr; }
-            }
-        </style>
 
         <div class="wrap oz-analytics">
             <h1>
                 BCW Analytics
                 <div class="oz-range-tabs">
-                    <a href="<?php echo esc_url(add_query_arg('range', 1, $base_url)); ?>"
-                       class="<?php echo $range === 1 ? 'active' : ''; ?>">Vandaag</a>
-                    <a href="<?php echo esc_url(add_query_arg('range', 7, $base_url)); ?>"
-                       class="<?php echo $range === 7 ? 'active' : ''; ?>">7 dagen</a>
-                    <a href="<?php echo esc_url(add_query_arg('range', 30, $base_url)); ?>"
-                       class="<?php echo $range === 30 ? 'active' : ''; ?>">30 dagen</a>
+                    <?php
+                    $ranges = [1 => 'Vandaag', 7 => '7 dagen', 30 => '30 dagen', 90 => '90 dagen'];
+                    foreach ($ranges as $val => $label) {
+                        printf(
+                            '<a href="%s" class="%s">%s</a>',
+                            esc_url(add_query_arg('range', $val, $base_url)),
+                            $range === $val ? 'active' : '',
+                            esc_html($label)
+                        );
+                    }
+                    ?>
                 </div>
             </h1>
 
-            <?php
-            // Summary cards
-            self::render_cards($summary);
-            ?>
+            <!-- ═══ SECTION 1: Shop Performance ═══ -->
+            <div class="oz-section-title">Shop Performance</div>
 
-            <!-- Event breakdown by source -->
+            <div class="oz-cards">
+                <?php
+                self::render_card('&euro;' . number_format($orders['revenue'], 2, ',', '.'), 'Omzet');
+                self::render_card(number_format($orders['orders']), 'Orders');
+                self::render_card('&euro;' . number_format($orders['aov'], 2, ',', '.'), 'Gem. Orderwaarde');
+                self::render_card($items_avg, 'Items / Order');
+                ?>
+            </div>
+
+            <div class="oz-columns">
+                <div class="oz-panel">
+                    <h3>Omzet per Productlijn</h3>
+                    <?php self::render_revenue_bars($by_line); ?>
+                </div>
+                <div class="oz-panel">
+                    <h3>Top Producten (omzet)</h3>
+                    <?php self::render_product_list($top_products); ?>
+                </div>
+            </div>
+
+            <!-- ═══ SECTION 2: Overhaul Impact ═══ -->
+            <div class="oz-section-title">
+                Overhaul Impact
+                <span class="oz-section-subtitle">
+                    Vergelijking: <?php echo intval($comparison['days']); ?> dagen voor vs. na lancering (<?php echo esc_html($comparison['launch_date']); ?>)
+                </span>
+            </div>
+
+            <?php self::render_comparison($comparison); ?>
+
+            <!-- ═══ SECTION 3: Behavior Analytics ═══ -->
+            <div class="oz-section-title">
+                Gedrag Analytics
+                <span class="oz-section-subtitle">Beacon events — data groeit naarmate bezoekers interacteren</span>
+            </div>
+
+            <div class="oz-cards">
+                <?php
+                self::render_card(number_format($summary['total']), 'Events');
+                self::render_card(number_format($summary['sessions']), 'Sessies');
+                self::render_card(number_format($summary['add_to_carts']), 'Add to Cart');
+                self::render_card(number_format($summary['checkouts']), 'Checkout Clicks');
+                ?>
+            </div>
+
             <div class="oz-columns">
                 <div class="oz-panel">
                     <h3>Productpagina Events</h3>
@@ -171,34 +171,133 @@ class OZ_Analytics_Dashboard {
         <?php
     }
 
+    /* ══════════════════════════════════════════════════════════
+     * RENDER HELPERS
+     * ══════════════════════════════════════════════════════════ */
+
     /**
-     * Render 4 summary cards.
-     *
-     * @param array $summary  From Reporter::summary()
+     * Render a single summary card.
      */
-    private static function render_cards($summary) {
-        $cards = [
-            ['value' => number_format($summary['total']),        'label' => 'Events'],
-            ['value' => number_format($summary['sessions']),     'label' => 'Sessies'],
-            ['value' => number_format($summary['add_to_carts']), 'label' => 'Add to Cart'],
-            ['value' => number_format($summary['checkouts']),    'label' => 'Checkout Clicks'],
+    private static function render_card($value, $label) {
+        printf(
+            '<div class="oz-card"><div class="oz-card-value">%s</div><div class="oz-card-label">%s</div></div>',
+            $value, // Already escaped or formatted before calling
+            esc_html($label)
+        );
+    }
+
+    /**
+     * Render the before/after comparison table.
+     */
+    private static function render_comparison($comparison) {
+        $b = $comparison['before'];
+        $a = $comparison['after'];
+
+        $metrics = [
+            ['label' => 'Omzet / dag',       'before' => '&euro;' . number_format($b['revenue_day'], 0, ',', '.'), 'after' => '&euro;' . number_format($a['revenue_day'], 0, ',', '.'), 'before_raw' => $b['revenue_day'], 'after_raw' => $a['revenue_day']],
+            ['label' => 'Orders / dag',       'before' => $b['orders_day'],  'after' => $a['orders_day'],  'before_raw' => $b['orders_day'],  'after_raw' => $a['orders_day']],
+            ['label' => 'Gem. orderwaarde',   'before' => '&euro;' . number_format($b['aov'], 2, ',', '.'), 'after' => '&euro;' . number_format($a['aov'], 2, ',', '.'), 'before_raw' => $b['aov'], 'after_raw' => $a['aov']],
+            ['label' => 'Items per order',    'before' => $b['items_per_order'], 'after' => $a['items_per_order'], 'before_raw' => $b['items_per_order'], 'after_raw' => $a['items_per_order']],
+            ['label' => 'Upsell attach rate', 'before' => $b['upsell_rate'] . '%', 'after' => $a['upsell_rate'] . '%', 'before_raw' => $b['upsell_rate'], 'after_raw' => $a['upsell_rate']],
         ];
 
-        echo '<div class="oz-cards">';
-        foreach ($cards as $card) {
+        echo '<div class="oz-panel oz-comparison">';
+        echo '<table class="oz-comp-table">';
+        echo '<thead><tr><th>Metric</th><th>Voor</th><th>Na</th><th>Verschil</th></tr></thead>';
+        echo '<tbody>';
+
+        foreach ($metrics as $m) {
+            // Calculate percentage change
+            $change_pct = '';
+            $change_class = '';
+            if ($m['before_raw'] > 0) {
+                $pct = round((($m['after_raw'] - $m['before_raw']) / $m['before_raw']) * 100, 1);
+                $change_class = $pct >= 0 ? 'positive' : 'negative';
+                $arrow = $pct >= 0 ? '&#9650;' : '&#9660;';
+                $change_pct = sprintf('<span class="oz-change %s">%s%s%% %s</span>', $change_class, $pct >= 0 ? '+' : '', $pct, $arrow);
+            } elseif ($m['after_raw'] > 0) {
+                $change_pct = '<span class="oz-change positive">nieuw</span>';
+            } else {
+                $change_pct = '<span class="oz-change">—</span>';
+            }
+
             printf(
-                '<div class="oz-card"><div class="oz-card-value">%s</div><div class="oz-card-label">%s</div></div>',
-                esc_html($card['value']),
-                esc_html($card['label'])
+                '<tr><td class="oz-comp-label">%s</td><td class="oz-comp-val">%s</td><td class="oz-comp-val">%s</td><td class="oz-comp-change">%s</td></tr>',
+                esc_html($m['label']),
+                $m['before'],
+                $m['after'],
+                $change_pct
             );
         }
+
+        echo '</tbody></table>';
+
+        // Total revenue comparison
+        printf(
+            '<div class="oz-comp-totals">Totale omzet voor: <strong>&euro;%s</strong> &mdash; Totale omzet na: <strong>&euro;%s</strong> (%s dagen vergeleken)</div>',
+            number_format($b['revenue'], 2, ',', '.'),
+            number_format($a['revenue'], 2, ',', '.'),
+            intval($comparison['days'])
+        );
+
         echo '</div>';
     }
 
     /**
+     * Render revenue bars for product lines.
+     */
+    private static function render_revenue_bars($lines) {
+        if (empty($lines)) {
+            echo '<div class="oz-empty">Nog geen orderdata in deze periode.</div>';
+            return;
+        }
+
+        $max = 1;
+        foreach ($lines as $row) {
+            if ($row['revenue'] > $max) $max = $row['revenue'];
+        }
+
+        foreach ($lines as $row) {
+            $pct = round(($row['revenue'] / $max) * 100);
+            printf(
+                '<div class="oz-bar-row">'
+                . '<span class="oz-bar-label">%s</span>'
+                . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%"></div></div>'
+                . '<span class="oz-bar-count">&euro;%s</span>'
+                . '</div>',
+                esc_html($row['line']),
+                $pct,
+                number_format($row['revenue'], 0, ',', '.')
+            );
+        }
+    }
+
+    /**
+     * Render top products list with revenue.
+     */
+    private static function render_product_list($products) {
+        if (empty($products)) {
+            echo '<div class="oz-empty">Nog geen orderdata in deze periode.</div>';
+            return;
+        }
+
+        foreach ($products as $i => $row) {
+            printf(
+                '<div class="oz-top-item">'
+                . '<span class="oz-top-rank">%d.</span>'
+                . '<span class="oz-top-name">%s <span class="oz-top-qty">(%s&times;)</span></span>'
+                . '<span class="oz-top-count">&euro;%s</span>'
+                . '</div>',
+                $i + 1,
+                esc_html($row['name']),
+                number_format($row['qty']),
+                number_format($row['revenue'], 0, ',', '.')
+            );
+        }
+    }
+
+    /**
      * Render a horizontal bar chart from event counts.
-     *
-     * @param array $rows   [['event_name' => string, 'count' => int], ...]
      */
     private static function render_bar_chart($rows) {
         if (empty($rows)) {
@@ -206,7 +305,6 @@ class OZ_Analytics_Dashboard {
             return;
         }
 
-        // Find max count for scaling bars
         $max = 1;
         foreach ($rows as $row) {
             if (intval($row['count']) > $max) $max = intval($row['count']);
@@ -230,8 +328,6 @@ class OZ_Analytics_Dashboard {
 
     /**
      * Render conversion funnel bars.
-     *
-     * @param array $funnel  From Reporter::funnel()
      */
     private static function render_funnel($funnel) {
         $steps = [
@@ -240,7 +336,6 @@ class OZ_Analytics_Dashboard {
             ['label' => 'Naar afrekenen',  'count' => $funnel['checkout']],
         ];
 
-        // Max is the first step (widest bar)
         $max = max($funnel['color_selected'], 1);
 
         foreach ($steps as $step) {
@@ -260,8 +355,6 @@ class OZ_Analytics_Dashboard {
 
     /**
      * Render a ranked top-N list.
-     *
-     * @param array $rows  [['value' => string, 'count' => int], ...]
      */
     private static function render_top_list($rows) {
         if (empty($rows)) {
@@ -281,5 +374,104 @@ class OZ_Analytics_Dashboard {
                 number_format(intval($row['count']))
             );
         }
+    }
+
+    /**
+     * Output all dashboard CSS.
+     */
+    private static function render_styles() {
+        ?>
+        <style>
+            /* ── Dashboard layout ── */
+            .oz-analytics { max-width: 1100px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+            .oz-analytics h1 { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+
+            /* ── Section titles ── */
+            .oz-section-title {
+                font-size: 16px; font-weight: 700; color: #1d2327;
+                margin: 32px 0 16px; padding-bottom: 8px;
+                border-bottom: 2px solid #2271b1; display: flex; align-items: baseline; gap: 12px;
+            }
+            .oz-section-title:first-of-type { margin-top: 8px; }
+            .oz-section-subtitle { font-size: 12px; font-weight: 400; color: #646970; }
+
+            /* ── Range tabs ── */
+            .oz-range-tabs { display: flex; gap: 4px; margin-left: auto; }
+            .oz-range-tabs a {
+                padding: 6px 14px; border-radius: 4px; text-decoration: none;
+                font-size: 13px; font-weight: 500; color: #50575e; background: #f0f0f1;
+                transition: background 0.15s;
+            }
+            .oz-range-tabs a:hover { background: #e0e0e1; }
+            .oz-range-tabs a.active { background: #2271b1; color: #fff; }
+
+            /* ── Summary cards ── */
+            .oz-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+            .oz-card {
+                background: #fff; border: 1px solid #c3c4c7; border-radius: 4px;
+                padding: 16px 20px; text-align: center;
+            }
+            .oz-card-value { font-size: 28px; font-weight: 700; color: #1d2327; line-height: 1.2; }
+            .oz-card-label { font-size: 13px; color: #646970; margin-top: 4px; }
+
+            /* ── Two-column grid ── */
+            .oz-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+            .oz-panel {
+                background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 16px 20px;
+            }
+            .oz-panel h3 { margin: 0 0 12px; font-size: 14px; color: #1d2327; }
+
+            /* ── Bar charts (pure CSS) ── */
+            .oz-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
+            .oz-bar-label { min-width: 180px; color: #50575e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .oz-bar-track { flex: 1; height: 18px; background: #f0f0f1; border-radius: 3px; overflow: hidden; }
+            .oz-bar-fill { height: 100%; background: #2271b1; border-radius: 3px; min-width: 2px; transition: width 0.3s; }
+            .oz-bar-count { min-width: 50px; text-align: right; font-weight: 600; color: #1d2327; font-variant-numeric: tabular-nums; }
+
+            /* ── Funnel ── */
+            .oz-funnel { margin-bottom: 24px; }
+            .oz-funnel .oz-bar-fill { background: #135e96; }
+            .oz-funnel .oz-bar-row:nth-child(2) .oz-bar-fill { background: #2271b1; }
+            .oz-funnel .oz-bar-row:nth-child(3) .oz-bar-fill { background: #72aee6; }
+
+            /* ── Top lists ── */
+            .oz-top-item { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 13px; border-bottom: 1px solid #f0f0f1; }
+            .oz-top-item:last-child { border-bottom: none; }
+            .oz-top-rank { width: 20px; font-weight: 700; color: #2271b1; text-align: center; }
+            .oz-top-name { flex: 1; color: #1d2327; }
+            .oz-top-qty { color: #646970; font-weight: 400; }
+            .oz-top-count { font-weight: 600; color: #50575e; font-variant-numeric: tabular-nums; }
+
+            /* ── Comparison table ── */
+            .oz-comparison { margin-bottom: 24px; padding: 20px; }
+            .oz-comp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+            .oz-comp-table th {
+                text-align: left; padding: 8px 12px; font-weight: 600; color: #50575e;
+                border-bottom: 2px solid #c3c4c7; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+            }
+            .oz-comp-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f1; }
+            .oz-comp-label { font-weight: 500; color: #1d2327; }
+            .oz-comp-val { color: #50575e; font-variant-numeric: tabular-nums; }
+            .oz-comp-change { text-align: right; }
+
+            .oz-change { font-weight: 700; font-size: 13px; padding: 2px 8px; border-radius: 3px; }
+            .oz-change.positive { color: #00a32a; background: #edfaef; }
+            .oz-change.negative { color: #d63638; background: #fcf0f1; }
+
+            .oz-comp-totals {
+                margin-top: 16px; padding-top: 12px; border-top: 1px solid #c3c4c7;
+                font-size: 13px; color: #50575e;
+            }
+
+            /* ── Empty state ── */
+            .oz-empty { color: #646970; font-style: italic; font-size: 13px; padding: 12px 0; }
+
+            /* ── Responsive ── */
+            @media (max-width: 960px) {
+                .oz-cards { grid-template-columns: repeat(2, 1fr); }
+                .oz-columns { grid-template-columns: 1fr; }
+            }
+        </style>
+        <?php
     }
 }
