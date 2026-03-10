@@ -554,6 +554,20 @@ class OZ_Analytics_Reporter {
     }
 
 
+    /**
+     * Get the date of the earliest beacon event stored.
+     * Used to show when tracking started on the dashboard.
+     *
+     * @return string|null  Date string (Y-m-d) or null if no events
+     */
+    public static function earliest_event_date() {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $date = $wpdb->get_var("SELECT MIN(DATE(created_at)) FROM {$table}");
+        return $date ?: null;
+    }
+
+
     /* ══════════════════════════════════════════════════════════
      * HELPERS
      * ══════════════════════════════════════════════════════════ */

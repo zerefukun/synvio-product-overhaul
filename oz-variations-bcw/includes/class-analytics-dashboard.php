@@ -61,6 +61,7 @@ class OZ_Analytics_Dashboard {
         $comparison = OZ_Analytics_Reporter::order_comparison();
 
         // ── Section 3: Behavior Analytics (beacon events) ──
+        $beacon_start = OZ_Analytics_Reporter::earliest_event_date();
         $summary  = OZ_Analytics_Reporter::summary($range);
         $product  = OZ_Analytics_Reporter::by_source('product', $range);
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
@@ -122,12 +123,27 @@ class OZ_Analytics_Dashboard {
                 </span>
             </div>
 
-            <?php self::render_comparison($comparison); ?>
+            <?php
+            // Show warning when comparison period is too short to be reliable
+            if ($comparison['days'] < 14) {
+                printf(
+                    '<div class="oz-notice oz-notice-warning">Nog te vroeg voor betrouwbare vergelijking — pas %d van minimaal 14 dagen data. Cijfers kunnen sterk schommelen door individuele orders.</div>',
+                    intval($comparison['days'])
+                );
+            }
+            self::render_comparison($comparison);
+            ?>
 
             <!-- ═══ SECTION 3: Behavior Analytics ═══ -->
             <div class="oz-section-title">
                 Gedrag Analytics
-                <span class="oz-section-subtitle">Beacon events — data groeit naarmate bezoekers interacteren</span>
+                <span class="oz-section-subtitle">
+                    <?php if ($beacon_start): ?>
+                        Tracking sinds <?php echo esc_html($beacon_start); ?> — datumfilter werkt alleen over beschikbare data
+                    <?php else: ?>
+                        Beacon events — data groeit naarmate bezoekers interacteren
+                    <?php endif; ?>
+                </span>
             </div>
 
             <div class="oz-cards">
@@ -462,6 +478,10 @@ class OZ_Analytics_Dashboard {
                 margin-top: 16px; padding-top: 12px; border-top: 1px solid #c3c4c7;
                 font-size: 13px; color: #50575e;
             }
+
+            /* ── Warning notice ── */
+            .oz-notice { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; border-left: 4px solid; }
+            .oz-notice-warning { background: #fcf9e8; border-color: #dba617; color: #6e4e00; }
 
             /* ── Empty state ── */
             .oz-empty { color: #646970; font-style: italic; font-size: 13px; padding: 12px 0; }
