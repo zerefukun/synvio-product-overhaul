@@ -80,43 +80,44 @@ class OZ_Product_Line_Config {
 
     /**
      * Primer price tables per line.
-     * Each entry: [label, price, default]
+     * Each entry: [label, price, default, recommended]
+     * 4th element (recommended) controls "Advies" badge display.
      * Matches WAPO-PARITY-CONFIG.md §4.
      */
     private static $primer_options = [
         'original' => [
-            ['Geen',                     0,     false],
-            ['Zuigende ondergrond',      12.50, false],
-            ['Niet zuigende ondergrond', 12.50, false],
+            ['Geen',                     0,     false, false],
+            ['Zuigende ondergrond',      12.50, false, true],   // Advies
+            ['Niet zuigende ondergrond', 12.50, false, true],   // Advies
         ],
         'metallic' => [
-            ['Geen',   0,    true],   // default = yes in WAPO
-            ['Primer', 5.99, false],
+            ['Geen',   0,    true,  false],
+            ['Primer', 5.99, false, true],   // Advies
         ],
         'betonlook-verf' => [
-            ['Geen Primer', 0,    true],  // default = yes in WAPO
-            ['Primer',      6.00, false],
+            ['Geen Primer', 0,    true,  false],
+            ['Primer',      6.00, false, true],   // Advies
         ],
         'stuco-paste' => [
-            ['Nee', 0,     false],
-            ['Ja',  16.00, false],
+            ['Nee', 0,     false, false],
+            ['Ja',  16.00, false, true],   // Advies
         ],
         // Beton Ciré lines — primer included in base price, no price change either way
         'all-in-one' => [
-            ['Primer', 0, true],
-            ['Geen',   0, false],
+            ['Primer', 0, true,  true],   // Advies (already default + included)
+            ['Geen',   0, false, false],
         ],
         'easyline' => [
-            ['Primer', 0, true],
-            ['Geen',   0, false],
+            ['Primer', 0, true,  true],   // Advies
+            ['Geen',   0, false, false],
         ],
         'microcement' => [
-            ['Primer', 0, true],
-            ['Geen',   0, false],
+            ['Primer', 0, true,  true],   // Advies
+            ['Geen',   0, false, false],
         ],
         'lavasteen' => [
-            ['Primer', 0, true],
-            ['Geen',   0, false],
+            ['Primer', 0, true,  true],   // Advies
+            ['Geen',   0, false, false],
         ],
     ];
 
@@ -1018,11 +1019,12 @@ class OZ_Product_Line_Config {
         }
 
         $options = [];
-        foreach (self::$primer_options[$line_key] as list($label, $price, $default)) {
+        foreach (self::$primer_options[$line_key] as $opt) {
             $options[] = [
-                'label'   => $label,
-                'price'   => $price,
-                'default' => $default,
+                'label'       => $opt[0],
+                'price'       => $opt[1],
+                'default'     => $opt[2],
+                'recommended' => isset($opt[3]) ? $opt[3] : false,
             ];
         }
         return $options;

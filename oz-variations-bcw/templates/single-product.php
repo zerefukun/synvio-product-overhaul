@@ -404,7 +404,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                         <?php if (!empty($opt['price'])) : ?>
                           <span class="oz-price-add"><?php echo esc_html(($opt['price'] > 0 ? '+' : '-') . $fmt_price(abs($opt['price']))); ?></span>
                         <?php endif; ?>
-                        <?php if (!empty($opt['layers']) && $opt['layers'] == 2) : ?>
+                        <?php if (!empty($opt['recommended'])) : ?>
                           <span class="oz-recommended">Advies</span>
                         <?php endif; ?>
                       </button>
