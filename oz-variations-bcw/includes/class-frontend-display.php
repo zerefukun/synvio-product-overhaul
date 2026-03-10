@@ -187,7 +187,8 @@ class OZ_Frontend_Display {
             'ajaxUrl'     => admin_url('admin-ajax.php'),
             'cartUrl'     => wc_get_cart_url(),
             'checkoutUrl' => wc_get_checkout_url(),
-            'nonce'       => wp_create_nonce('oz_bcw_cart'),
+            'nonce'          => wp_create_nonce('oz_bcw_cart'),
+            'analyticsNonce' => wp_create_nonce('oz_analytics'),
         ];
 
         // Configured line mode — full addon options

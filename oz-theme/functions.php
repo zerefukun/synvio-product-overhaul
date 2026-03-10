@@ -361,6 +361,7 @@ function oz_cart_drawer_enqueue() {
     wp_localize_script('oz-cart-drawer', 'ozCartDrawer', [
         'ajaxUrl'           => admin_url('admin-ajax.php'),
         'nonce'             => wp_create_nonce('oz_cart_drawer'),
+        'analyticsNonce'    => wp_create_nonce('oz_analytics'),
         'isCartOrCheckout'  => (is_cart() || is_checkout()) ? '1' : '0',
         'freeShipThreshold' => oz_get_free_shipping_threshold(),
     ]);

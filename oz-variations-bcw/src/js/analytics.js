@@ -27,23 +27,43 @@
 import { P, S } from './state.js';
 
 
+/* ═══ BEACON — fire-and-forget POST to server ═════════════ */
+/* Separate from dataLayer push: these are two independent concerns.
+ * dataLayer → GA4/GTM pickup (client-side).
+ * beacon    → server-side storage for our WP admin dashboard. */
+
+function beacon(eventName, payload) {
+  if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
+  var fd = new FormData();
+  fd.append('action', 'oz_track_event');
+  fd.append('nonce', P.analyticsNonce);
+  fd.append('event_name', eventName);
+  fd.append('event_data', JSON.stringify(payload));
+  fd.append('source', 'product');
+  navigator.sendBeacon(P.ajaxUrl, fd);
+}
+
+
 /* ═══ DATALAYER HELPER ═════════════════════════════════════ */
 
 /**
- * Push an event to dataLayer. Safe — silently no-ops if dataLayer
- * doesn't exist (e.g. GTM not loaded, ad blocker, etc.)
+ * Push an event to dataLayer AND beacon to server.
+ * Safe — silently no-ops if dataLayer doesn't exist
+ * (e.g. GTM not loaded, ad blocker, etc.)
  *
  * @param {string} eventName  GA4 event name (oz_ prefixed)
  * @param {Object} params     Event parameters
  */
 function push(eventName, params) {
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(Object.assign({
+  var payload = Object.assign({
     event: eventName,
     oz_product_id: P.productId,
     oz_product_name: P.productName,
     oz_product_line: P.productLine || 'none',
-  }, params || {}));
+  }, params || {});
+  window.dataLayer.push(payload);  // GA4 concern
+  beacon(eventName, payload);       // Server logging concern
 }
 
 

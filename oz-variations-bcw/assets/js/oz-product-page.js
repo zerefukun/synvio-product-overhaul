@@ -342,14 +342,26 @@
   }
 
   // src/js/analytics.js
+  function beacon(eventName, payload) {
+    if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
+    var fd = new FormData();
+    fd.append("action", "oz_track_event");
+    fd.append("nonce", P.analyticsNonce);
+    fd.append("event_name", eventName);
+    fd.append("event_data", JSON.stringify(payload));
+    fd.append("source", "product");
+    navigator.sendBeacon(P.ajaxUrl, fd);
+  }
   function push(eventName, params) {
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(Object.assign({
+    var payload = Object.assign({
       event: eventName,
       oz_product_id: P.productId,
       oz_product_name: P.productName,
       oz_product_line: P.productLine || "none"
-    }, params || {}));
+    }, params || {});
+    window.dataLayer.push(payload);
+    beacon(eventName, payload);
   }
   function trackColorSelected(colorName) {
     push("oz_color_selected", {

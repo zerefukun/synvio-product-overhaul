@@ -52,6 +52,7 @@ class OZ_Variations_BCW {
 
     private function __construct() {
         register_activation_hook(__FILE__, [$this, 'activate']);
+        register_deactivation_hook(__FILE__, [$this, 'deactivate']);
         add_action('plugins_loaded', [$this, 'init']);
     }
 
@@ -63,7 +64,20 @@ class OZ_Variations_BCW {
             deactivate_plugins(plugin_basename(__FILE__));
             wp_die('OZ Variations BCW requires WooCommerce to be active.');
         }
+
+        // Create analytics table on activation
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-store.php';
+        OZ_Analytics_Store::create_table();
+
         update_option('oz_bcw_version', OZ_BCW_VERSION);
+    }
+
+    /**
+     * Plugin deactivation — clean up cron schedules.
+     */
+    public function deactivate() {
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-collector.php';
+        OZ_Analytics_Collector::unschedule_cron();
     }
 
     /**
@@ -101,6 +115,12 @@ class OZ_Variations_BCW {
 
         // Admin settings — depends on processor for reprocess
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-admin.php';
+
+        // Analytics — server-side event storage and dashboard (4 classes)
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-store.php';
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-collector.php';
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-reporter.php';
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-dashboard.php';
     }
 
     /**
@@ -122,6 +142,22 @@ class OZ_Variations_BCW {
         // Admin interface (settings page with reprocess button)
         if (is_admin()) {
             OZ_BCW_Admin::init();
+        }
+
+        // Analytics — event collection (AJAX, runs on all requests)
+        OZ_Analytics_Collector::init();
+
+        // Analytics dashboard (admin only)
+        if (is_admin()) {
+            OZ_Analytics_Dashboard::init();
+        }
+
+        // DB version check — create analytics table for existing installs
+        // (new installs get it via activate(), but existing ones need this)
+        $stored_version = get_option('oz_bcw_analytics_db_version', '0');
+        if (version_compare($stored_version, '1.0', '<')) {
+            OZ_Analytics_Store::create_table();
+            update_option('oz_bcw_analytics_db_version', '1.0');
         }
     }
 

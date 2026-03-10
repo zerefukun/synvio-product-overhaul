@@ -7,6 +7,19 @@
  * - syncUI() composes all renderers from a single state read
  * - AJAX calls mutate WC cart, then refresh state
  *
+ * GA4 dataLayer events tracked (oz_cart_ prefix):
+ * - oz_cart_opened              (drawer opened, with trigger source)
+ * - oz_cart_closed              (drawer closed, with trigger source)
+ * - oz_cart_qty_increased       (+ button clicked)
+ * - oz_cart_qty_decreased       (− button clicked)
+ * - oz_cart_item_removed        (bin icon clicked at qty=1)
+ * - oz_cart_qty_input           (qty typed directly)
+ * - oz_cart_upsell_added        (upsell product added, regular or sized)
+ * - oz_cart_upsell_size_selected (size pill clicked on sized upsell)
+ * - oz_cart_checkout_clicked    (proceed to checkout)
+ * - oz_cart_continue_shopping   (empty state shop button)
+ * - oz_cart_free_shipping_reached (subtotal crosses free shipping threshold)
+ *
  * @package OzTheme
  */
 (function () {
@@ -16,6 +29,36 @@
        CONFIG — threshold from WC free shipping settings (0 = not configured)
        ============================================ */
     var FREE_SHIP_THRESHOLD = parseFloat(ozCartDrawer.freeShipThreshold) || 0;
+
+    /* ============================================
+       BEACON — fire-and-forget POST to server
+       Separate from dataLayer push: these are two independent concerns.
+       dataLayer → GA4/GTM pickup (client-side).
+       beacon    → server-side storage for WP admin dashboard.
+       ============================================ */
+    function beacon(eventName, payload) {
+        if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
+        var fd = new FormData();
+        fd.append('action', 'oz_track_event');
+        fd.append('nonce', ozCartDrawer.analyticsNonce);
+        fd.append('event_name', eventName);
+        fd.append('event_data', JSON.stringify(payload));
+        fd.append('source', 'cart');
+        navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
+    }
+
+    /* ============================================
+       DATALAYER — GA4 event tracking for cart drawer
+       Mirrors oz-variations-bcw analytics.js pattern.
+       All events prefixed with "oz_cart_" for filtering.
+       Now also beacons to server for internal analytics.
+       ============================================ */
+    function dlPush(eventName, params) {
+        window.dataLayer = window.dataLayer || [];
+        var payload = Object.assign({ event: eventName }, params || {});
+        window.dataLayer.push(payload);  // GA4 concern
+        beacon(eventName, payload);       // Server logging concern
+    }
 
     /* ============================================
        DOM REFS — collected once on DOMContentLoaded
@@ -234,12 +277,24 @@
         }
     }
 
+    /* Track free shipping only once per drawer session */
+    var _shippingTracked = false;
+
     /** Render free shipping bar */
     function renderShipping(progress) {
         if (progress.qualified) {
             R.shippingText.textContent = 'Je bestelling wordt gratis verzonden!';
             R.shippingText.className = 'oz-shipping-text qualified';
+            /* Fire once per drawer open when threshold is reached */
+            if (!_shippingTracked) {
+                _shippingTracked = true;
+                dlPush('oz_cart_free_shipping_reached', {
+                    oz_subtotal: S.subtotal,
+                    oz_threshold: FREE_SHIP_THRESHOLD,
+                });
+            }
         } else {
+            _shippingTracked = false; /* Reset when below threshold */
             R.shippingText.innerHTML = 'Nog <strong>' + fmt(progress.remaining) + '</strong> voor gratis verzending';
             R.shippingText.className = 'oz-shipping-text';
         }
@@ -338,13 +393,29 @@
         el.querySelector('.dec').addEventListener('click', function () {
             var current = findItem(cartKey);
             if (current && current.qty <= 1) {
+                /* Removing item (qty goes to 0) */
+                dlPush('oz_cart_item_removed', {
+                    oz_item_name: item.name,
+                    oz_item_price: item.line_total,
+                    oz_item_qty: 1,
+                });
                 removeItem(cartKey);
             } else {
+                dlPush('oz_cart_qty_decreased', {
+                    oz_item_name: item.name,
+                    oz_from_qty: current ? current.qty : 1,
+                    oz_to_qty: (current ? current.qty : 1) - 1,
+                });
                 updateQty(cartKey, (current ? current.qty : 1) - 1);
             }
         });
         el.querySelector('.inc').addEventListener('click', function () {
             var current = findItem(cartKey);
+            dlPush('oz_cart_qty_increased', {
+                oz_item_name: item.name,
+                oz_from_qty: current ? current.qty : 1,
+                oz_to_qty: (current ? current.qty : 1) + 1,
+            });
             updateQty(cartKey, (current ? current.qty : 1) + 1);
         });
 
@@ -354,6 +425,10 @@
             if (isNaN(val) || val < 1) val = 1;
             if (val > 99) val = 99;
             qtyInput.value = val;
+            dlPush('oz_cart_qty_input', {
+                oz_item_name: item.name,
+                oz_to_qty: val,
+            });
             updateQty(cartKey, val);
         });
 
@@ -486,6 +561,13 @@
                         // Update card's product ID and displayed price
                         card.dataset.productId = this.dataset.wcId;
                         priceEl.textContent = fmt(parseFloat(this.dataset.price));
+                        // Track size pill selection
+                        var upsellName = card.querySelector('.oz-drawer-upsell-name');
+                        dlPush('oz_cart_upsell_size_selected', {
+                            oz_upsell_name: upsellName ? upsellName.textContent : '',
+                            oz_upsell_size: this.textContent,
+                            oz_upsell_price: parseFloat(this.dataset.price),
+                        });
                     });
                 }
             })(sizedCards[si]);
@@ -499,6 +581,22 @@
                 var isSized = card.classList.contains('oz-sized-upsell');
                 btn.addEventListener('click', function () {
                     var prodId = parseInt(card.dataset.productId, 10);
+                    var upsellName = card.querySelector('.oz-drawer-upsell-name');
+                    var upsellPrice = card.querySelector('.oz-drawer-upsell-price');
+
+                    /* Track upsell added — includes size label for sized cards */
+                    var trackParams = {
+                        oz_upsell_id: prodId,
+                        oz_upsell_name: upsellName ? upsellName.textContent : '',
+                        oz_upsell_price: upsellPrice ? upsellPrice.textContent : '',
+                        oz_upsell_type: isSized ? 'sized' : 'regular',
+                    };
+                    if (isSized) {
+                        var activePillForTrack = card.querySelector('.oz-upsell-size-pill.active');
+                        trackParams.oz_upsell_size = activePillForTrack ? activePillForTrack.textContent : '';
+                    }
+                    dlPush('oz_cart_upsell_added', trackParams);
+
                     addUpsell(prodId, btn);
 
                     if (isSized) {
@@ -569,7 +667,7 @@
     /* ============================================
        DRAWER OPEN / CLOSE
        ============================================ */
-    function openDrawer() {
+    function openDrawer(trigger) {
         /* Don't open drawer on cart or checkout pages — let WC handle it */
         if (ozCartDrawer.isCartOrCheckout === '1') return;
 
@@ -577,6 +675,12 @@
         _triggerEl = document.activeElement;
 
         S.open = true;
+
+        /* Track drawer open with trigger source */
+        dlPush('oz_cart_opened', {
+            oz_trigger: trigger || 'unknown',
+            oz_item_count: S.count,
+        });
         /* Always refresh cart when opening */
         S.loading = true;
         fetchCart(function () {
@@ -587,7 +691,14 @@
         syncUI();
     }
 
-    function closeDrawer() {
+    function closeDrawer(trigger) {
+        /* Track drawer close with trigger source */
+        dlPush('oz_cart_closed', {
+            oz_trigger: trigger || 'unknown',
+            oz_item_count: S.count,
+            oz_subtotal: S.subtotal,
+        });
+
         S.open = false;
         syncUI();
 
@@ -603,17 +714,28 @@
        ============================================ */
     function bindEvents() {
         /* Close drawer: button, overlay, ESC */
-        R.drawerClose.addEventListener('click', closeDrawer);
-        R.overlay.addEventListener('click', closeDrawer);
+        R.drawerClose.addEventListener('click', function () { closeDrawer('close_button'); });
+        R.overlay.addEventListener('click', function () { closeDrawer('overlay'); });
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && S.open) closeDrawer();
+            if (e.key === 'Escape' && S.open) closeDrawer('esc_key');
         });
 
         /* Focus trap — keep Tab cycling inside the drawer */
         document.addEventListener('keydown', handleFocusTrap);
 
         /* Empty state shop button */
-        R.emptyShopBtn.addEventListener('click', closeDrawer);
+        R.emptyShopBtn.addEventListener('click', function () {
+            dlPush('oz_cart_continue_shopping', {});
+            closeDrawer('continue_shopping');
+        });
+
+        /* Checkout button — track before navigating */
+        R.checkoutBtn.addEventListener('click', function () {
+            dlPush('oz_cart_checkout_clicked', {
+                oz_item_count: S.count,
+                oz_subtotal: S.subtotal,
+            });
+        });
 
         /* Flatsome header cart icon — open drawer instead of going to cart page */
         var cartLinks = document.querySelectorAll('.header-cart-link, .cart-icon, a[href*="cart"]');
@@ -623,7 +745,7 @@
                 cartLinks[i].addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    openDrawer();
+                    openDrawer('cart_icon');
                 });
             }
         }
@@ -635,13 +757,13 @@
          */
         if (typeof jQuery !== 'undefined') {
             jQuery(document.body).on('added_to_cart', function () {
-                openDrawer();
+                openDrawer('wc_add_to_cart');
             });
         }
 
         /* Custom event from our oz-variations-bcw plugin */
         document.addEventListener('oz-added-to-cart', function () {
-            openDrawer();
+            openDrawer('oz_add_to_cart');
         });
     }
 
