@@ -420,9 +420,6 @@
       oz_error: errorMsg
     });
   }
-  function trackUpsellShown() {
-    push("oz_upsell_shown", {});
-  }
   function trackUpsellAccepted() {
     push("oz_upsell_accepted", {});
   }
@@ -1346,11 +1343,6 @@
         trackAddToCartError(error);
         shakeButton();
         showCartError(error);
-        return;
-      }
-      if (P.hasTools && S.toolMode === "none") {
-        trackUpsellShown();
-        openUpsell();
         return;
       }
       submitCart();

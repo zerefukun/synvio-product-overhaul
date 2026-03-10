@@ -1037,12 +1037,9 @@ function addToCart() {
     return;
   }
 
-  // Upsell: if no tools selected at all and product has tools, show upsell modal
-  if (P.hasTools && S.toolMode === 'none') {
-    analytics.trackUpsellShown();
-    openUpsell();
-    return;
-  }
+  // Tool upsell modal disabled — customers who skip tools have made
+  // a deliberate choice. The cart drawer upsells handle tool suggestions
+  // after add-to-cart instead (less intrusive, higher conversion).
 
   // Proceed to actually submit
   submitCart();
