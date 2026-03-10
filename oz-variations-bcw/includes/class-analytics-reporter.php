@@ -4,7 +4,8 @@
  *
  * Two data sources:
  * 1. oz_analytics_events table — beacon events from product pages and cart drawer
- * 2. WooCommerce HPOS tables — order revenue, product sales, before/after comparison
+ * 2. WooCommerce order tables — order revenue, product sales, before/after comparison
+ *    Supports both HPOS (wc_orders) and legacy (posts + postmeta) storage.
  *
  * Returns plain associative arrays. No HTML, no formatting, no HTTP.
  * The Dashboard class consumes these arrays for rendering.
@@ -27,12 +28,6 @@ class OZ_Analytics_Reporter {
     const LAUNCH_DATE = '2026-03-06';
 
     /**
-     * WC order statuses that count as "paid" orders.
-     * Processing = paid but not shipped. Completed = shipped.
-     */
-    const PAID_STATUSES = "('wc-completed', 'wc-processing')";
-
-    /**
      * Product IDs considered "upsell/accessory" products.
      * These are tools, rollers, verfbakken — items cross-sold via our cart drawer.
      * Used to calculate upsell attach rate.
@@ -52,9 +47,32 @@ class OZ_Analytics_Reporter {
         22997, 22996, 22994,        // Betonlook/stuco accessories
     ];
 
+    /**
+     * Detect whether HPOS (custom order tables) is active.
+     * If the wc_orders table has rows, use HPOS. Otherwise use legacy posts.
+     *
+     * @return bool  True if HPOS is active and has data
+     */
+    private static function is_hpos_active() {
+        // Cache the result for the request
+        static $result = null;
+        if ($result !== null) return $result;
+
+        // Check if WC OrderUtil says HPOS is enabled
+        if (class_exists('Automattic\WooCommerce\Utilities\OrderUtil')
+            && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled()) {
+            $result = true;
+            return true;
+        }
+
+        $result = false;
+        return false;
+    }
+
 
     /* ══════════════════════════════════════════════════════════
-     * SECTION 1: WooCommerce Order Data (HPOS tables)
+     * SECTION 1: WooCommerce Order Data
+     * Supports both HPOS (wc_orders) and legacy (posts + postmeta)
      * ══════════════════════════════════════════════════════════ */
 
     /**
@@ -64,26 +82,8 @@ class OZ_Analytics_Reporter {
      * @return array  ['revenue' => float, 'orders' => int, 'aov' => float]
      */
     public static function order_summary($days) {
-        global $wpdb;
-        $table = $wpdb->prefix . 'wc_orders';
         $since = self::since_date($days);
-
-        $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT COUNT(*) AS orders, COALESCE(SUM(total_amount), 0) AS revenue
-             FROM {$table}
-             WHERE status IN ('wc-completed', 'wc-processing')
-             AND date_created_gmt >= %s",
-            $since
-        ), ARRAY_A);
-
-        $orders  = intval($row['orders']);
-        $revenue = floatval($row['revenue']);
-
-        return [
-            'revenue' => $revenue,
-            'orders'  => $orders,
-            'aov'     => $orders > 0 ? round($revenue / $orders, 2) : 0,
-        ];
+        return self::period_stats($since, current_time('Y-m-d H:i:s'));
     }
 
     /**
@@ -93,13 +93,10 @@ class OZ_Analytics_Reporter {
      * @return array  ['before' => [...], 'after' => [...], 'days' => int, 'launch_date' => string]
      */
     public static function order_comparison() {
-        global $wpdb;
-        $table = $wpdb->prefix . 'wc_orders';
-
         // Calculate period lengths
         $launch    = self::LAUNCH_DATE;
         $now       = current_time('Y-m-d');
-        $after_days = max(1, (strtotime($now) - strtotime($launch)) / DAY_IN_SECONDS);
+        $after_days = max(1, floor((strtotime($now) - strtotime($launch)) / DAY_IN_SECONDS));
         $before_start = date('Y-m-d', strtotime($launch) - ($after_days * DAY_IN_SECONDS));
 
         // Query both periods
@@ -130,22 +127,37 @@ class OZ_Analytics_Reporter {
 
     /**
      * Revenue + order count for a specific date range.
+     * Auto-detects HPOS vs legacy storage.
      *
-     * @param string $from  Start date (Y-m-d)
-     * @param string $to    End date (Y-m-d)
+     * @param string $from  Start date (Y-m-d or Y-m-d H:i:s)
+     * @param string $to    End date (Y-m-d or Y-m-d H:i:s)
      * @return array  ['revenue' => float, 'orders' => int, 'aov' => float]
      */
     private static function period_stats($from, $to) {
         global $wpdb;
-        $table = $wpdb->prefix . 'wc_orders';
 
-        $row = $wpdb->get_row($wpdb->prepare(
-            "SELECT COUNT(*) AS orders, COALESCE(SUM(total_amount), 0) AS revenue
-             FROM {$table}
-             WHERE status IN ('wc-completed', 'wc-processing')
-             AND date_created_gmt >= %s AND date_created_gmt < %s",
-            $from, $to
-        ), ARRAY_A);
+        if (self::is_hpos_active()) {
+            // HPOS: query wc_orders table directly
+            $table = $wpdb->prefix . 'wc_orders';
+            $row = $wpdb->get_row($wpdb->prepare(
+                "SELECT COUNT(*) AS orders, COALESCE(SUM(total_amount), 0) AS revenue
+                 FROM {$table}
+                 WHERE status IN ('wc-completed', 'wc-processing')
+                 AND date_created_gmt >= %s AND date_created_gmt < %s",
+                $from, $to
+            ), ARRAY_A);
+        } else {
+            // Legacy: query posts + postmeta
+            $row = $wpdb->get_row($wpdb->prepare(
+                "SELECT COUNT(*) AS orders, COALESCE(SUM(pm.meta_value), 0) AS revenue
+                 FROM {$wpdb->posts} p
+                 JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_order_total'
+                 WHERE p.post_type = 'shop_order'
+                 AND p.post_status IN ('wc-completed', 'wc-processing')
+                 AND p.post_date >= %s AND p.post_date < %s",
+                $from, $to
+            ), ARRAY_A);
+        }
 
         $orders  = intval($row['orders']);
         $revenue = floatval($row['revenue']);
@@ -166,11 +178,24 @@ class OZ_Analytics_Reporter {
      */
     public static function top_products($days, $limit = 10) {
         global $wpdb;
-        $orders_table = $wpdb->prefix . 'wc_orders';
-        $items_table  = $wpdb->prefix . 'woocommerce_order_items';
-        $meta_table   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $items_table = $wpdb->prefix . 'woocommerce_order_items';
+        $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
         $since = self::since_date($days);
 
+        // Order items table is the same for HPOS and legacy.
+        // We just need to join with the correct orders source for date filtering.
+        if (self::is_hpos_active()) {
+            $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
+                            AND o.status IN ('wc-completed', 'wc-processing')
+                            AND o.date_created_gmt >= %s";
+        } else {
+            $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
+                            AND o.post_type = 'shop_order'
+                            AND o.post_status IN ('wc-completed', 'wc-processing')
+                            AND o.post_date >= %s";
+        }
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT
                 oim_pid.meta_value AS product_id,
@@ -181,10 +206,8 @@ class OZ_Analytics_Reporter {
              JOIN {$meta_table} oim_total ON oi.order_item_id = oim_total.order_item_id AND oim_total.meta_key = '_line_total'
              JOIN {$meta_table} oim_tax ON oi.order_item_id = oim_tax.order_item_id AND oim_tax.meta_key = '_line_tax'
              JOIN {$meta_table} oim_qty ON oi.order_item_id = oim_qty.order_item_id AND oim_qty.meta_key = '_qty'
-             JOIN {$orders_table} o ON oi.order_id = o.id
-             WHERE o.status IN ('wc-completed', 'wc-processing')
-             AND o.date_created_gmt >= %s
-             AND oi.order_item_type = 'line_item'
+             {$orders_join}
+             WHERE oi.order_item_type = 'line_item'
              GROUP BY product_id
              ORDER BY revenue DESC
              LIMIT %d",
@@ -208,16 +231,27 @@ class OZ_Analytics_Reporter {
      * Maps products to lines via their WC category assignments.
      *
      * @param int $days
-     * @return array  [['line' => string, 'revenue' => float, 'orders' => int], ...]
+     * @return array  [['line' => string, 'revenue' => float], ...]
      */
     public static function sales_by_line($days) {
         global $wpdb;
-        $orders_table = $wpdb->prefix . 'wc_orders';
-        $items_table  = $wpdb->prefix . 'woocommerce_order_items';
-        $meta_table   = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $items_table = $wpdb->prefix . 'woocommerce_order_items';
+        $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
         $since = self::since_date($days);
 
+        if (self::is_hpos_active()) {
+            $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
+                            AND o.status IN ('wc-completed', 'wc-processing')
+                            AND o.date_created_gmt >= %s";
+        } else {
+            $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
+                            AND o.post_type = 'shop_order'
+                            AND o.post_status IN ('wc-completed', 'wc-processing')
+                            AND o.post_date >= %s";
+        }
+
         // Get all order items with product IDs and revenue
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $items = $wpdb->get_results($wpdb->prepare(
             "SELECT
                 oim_pid.meta_value AS product_id,
@@ -226,10 +260,8 @@ class OZ_Analytics_Reporter {
              JOIN {$meta_table} oim_pid ON oi.order_item_id = oim_pid.order_item_id AND oim_pid.meta_key = '_product_id'
              JOIN {$meta_table} oim_total ON oi.order_item_id = oim_total.order_item_id AND oim_total.meta_key = '_line_total'
              JOIN {$meta_table} oim_tax ON oi.order_item_id = oim_tax.order_item_id AND oim_tax.meta_key = '_line_tax'
-             JOIN {$orders_table} o ON oi.order_id = o.id
-             WHERE o.status IN ('wc-completed', 'wc-processing')
-             AND o.date_created_gmt >= %s
-             AND oi.order_item_type = 'line_item'
+             {$orders_join}
+             WHERE oi.order_item_type = 'line_item'
              GROUP BY product_id",
             $since
         ), ARRAY_A);
@@ -273,26 +305,41 @@ class OZ_Analytics_Reporter {
     /**
      * Average items per order for a date range.
      *
-     * @param string $from  Start date (Y-m-d)
-     * @param string $to    End date (Y-m-d)
+     * @param string $from  Start date
+     * @param string $to    End date
      * @return float
      */
     private static function avg_items_per_order_period($from, $to) {
         global $wpdb;
-        $orders_table = $wpdb->prefix . 'wc_orders';
-        $items_table  = $wpdb->prefix . 'woocommerce_order_items';
+        $items_table = $wpdb->prefix . 'woocommerce_order_items';
 
-        $result = $wpdb->get_var($wpdb->prepare(
-            "SELECT AVG(item_count) FROM (
-                SELECT o.id, COUNT(oi.order_item_id) AS item_count
-                FROM {$orders_table} o
-                JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
-                WHERE o.status IN ('wc-completed', 'wc-processing')
-                AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
-                GROUP BY o.id
-            ) sub",
-            $from, $to
-        ));
+        if (self::is_hpos_active()) {
+            $orders_table = $wpdb->prefix . 'wc_orders';
+            $result = $wpdb->get_var($wpdb->prepare(
+                "SELECT AVG(item_count) FROM (
+                    SELECT o.id, COUNT(oi.order_item_id) AS item_count
+                    FROM {$orders_table} o
+                    JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
+                    WHERE o.status IN ('wc-completed', 'wc-processing')
+                    AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
+                    GROUP BY o.id
+                ) sub",
+                $from, $to
+            ));
+        } else {
+            $result = $wpdb->get_var($wpdb->prepare(
+                "SELECT AVG(item_count) FROM (
+                    SELECT p.ID, COUNT(oi.order_item_id) AS item_count
+                    FROM {$wpdb->posts} p
+                    JOIN {$items_table} oi ON oi.order_id = p.ID AND oi.order_item_type = 'line_item'
+                    WHERE p.post_type = 'shop_order'
+                    AND p.post_status IN ('wc-completed', 'wc-processing')
+                    AND p.post_date >= %s AND p.post_date < %s
+                    GROUP BY p.ID
+                ) sub",
+                $from, $to
+            ));
+        }
 
         return round(floatval($result), 1);
     }
@@ -301,40 +348,65 @@ class OZ_Analytics_Reporter {
      * Upsell attach rate for a date range.
      * = % of orders that contain at least one upsell/accessory product.
      *
-     * @param string $from  Start date (Y-m-d)
-     * @param string $to    End date (Y-m-d)
+     * @param string $from  Start date
+     * @param string $to    End date
      * @return float  Percentage (0-100)
      */
     private static function upsell_attach_rate_period($from, $to) {
         global $wpdb;
-        $orders_table = $wpdb->prefix . 'wc_orders';
-        $items_table  = $wpdb->prefix . 'woocommerce_order_items';
-        $meta_table   = $wpdb->prefix . 'woocommerce_order_itemmeta';
-
-        // Total paid orders in period
-        $total_orders = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$orders_table}
-             WHERE status IN ('wc-completed', 'wc-processing')
-             AND date_created_gmt >= %s AND date_created_gmt < %s",
-            $from, $to
-        ));
-
-        if (intval($total_orders) === 0) return 0;
+        $items_table = $wpdb->prefix . 'woocommerce_order_items';
+        $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
 
         // Build IN clause for upsell product IDs
         $ids_placeholder = implode(',', array_map('intval', self::$upsell_product_ids));
 
-        // Orders containing at least one upsell product
-        $upsell_orders = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(DISTINCT o.id)
-             FROM {$orders_table} o
-             JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
-             JOIN {$meta_table} oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
-             WHERE o.status IN ('wc-completed', 'wc-processing')
-             AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
-             AND oim.meta_value IN ({$ids_placeholder})",
-            $from, $to
-        ));
+        if (self::is_hpos_active()) {
+            $orders_table = $wpdb->prefix . 'wc_orders';
+
+            $total_orders = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$orders_table}
+                 WHERE status IN ('wc-completed', 'wc-processing')
+                 AND date_created_gmt >= %s AND date_created_gmt < %s",
+                $from, $to
+            ));
+
+            if (intval($total_orders) === 0) return 0;
+
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $upsell_orders = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(DISTINCT o.id)
+                 FROM {$orders_table} o
+                 JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
+                 JOIN {$meta_table} oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
+                 WHERE o.status IN ('wc-completed', 'wc-processing')
+                 AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
+                 AND oim.meta_value IN ({$ids_placeholder})",
+                $from, $to
+            ));
+        } else {
+            $total_orders = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->posts}
+                 WHERE post_type = 'shop_order'
+                 AND post_status IN ('wc-completed', 'wc-processing')
+                 AND post_date >= %s AND post_date < %s",
+                $from, $to
+            ));
+
+            if (intval($total_orders) === 0) return 0;
+
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $upsell_orders = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(DISTINCT p.ID)
+                 FROM {$wpdb->posts} p
+                 JOIN {$items_table} oi ON oi.order_id = p.ID AND oi.order_item_type = 'line_item'
+                 JOIN {$meta_table} oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
+                 WHERE p.post_type = 'shop_order'
+                 AND p.post_status IN ('wc-completed', 'wc-processing')
+                 AND p.post_date >= %s AND p.post_date < %s
+                 AND oim.meta_value IN ({$ids_placeholder})",
+                $from, $to
+            ));
+        }
 
         return round((intval($upsell_orders) / intval($total_orders)) * 100, 1);
     }
@@ -367,20 +439,17 @@ class OZ_Analytics_Reporter {
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
 
-        // Total events + unique sessions in one query
         $row = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) AS total, COUNT(DISTINCT session_id) AS sessions
              FROM {$table} WHERE created_at >= %s",
             $since
         ), ARRAY_A);
 
-        // Add-to-cart count
         $atc = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_add_to_cart' AND created_at >= %s",
             $since
         ));
 
-        // Checkout clicks
         $checkout = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_cart_checkout_clicked' AND created_at >= %s",
             $since
@@ -396,10 +465,6 @@ class OZ_Analytics_Reporter {
 
     /**
      * Event counts grouped by event_name, filtered by source.
-     *
-     * @param string $source  'product' or 'cart'
-     * @param int $days
-     * @return array  [['event_name' => string, 'count' => int], ...]
      */
     public static function by_source($source, $days) {
         global $wpdb;
@@ -419,22 +484,12 @@ class OZ_Analytics_Reporter {
 
     /**
      * Top values for a specific JSON key within an event's event_data.
-     * E.g. top colors: top_values('oz_color_selected', 'oz_color', 30, 10)
-     *
-     * Uses JSON_UNQUOTE + JSON_EXTRACT for MySQL 5.7+ / MariaDB 10.2+.
-     *
-     * @param string $event_name  Event to filter on
-     * @param string $json_key    Key inside event_data JSON
-     * @param int $days
-     * @param int $limit          Max results (default 10)
-     * @return array  [['value' => string, 'count' => int], ...]
      */
     public static function top_values($event_name, $json_key, $days, $limit = 10) {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
 
-        // Build JSON path: $.oz_color → extracts "Sand 2" from {"oz_color":"Sand 2"}
         $json_path = '$.' . $json_key;
 
         $results = $wpdb->get_results($wpdb->prepare(
@@ -456,17 +511,12 @@ class OZ_Analytics_Reporter {
 
     /**
      * Conversion funnel: color_selected → add_to_cart → checkout_clicked.
-     * Returns counts for each stage.
-     *
-     * @param int $days
-     * @return array  ['color_selected' => int, 'add_to_cart' => int, 'checkout' => int]
      */
     public static function funnel($days) {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
 
-        // Single query with conditional counts
         $row = $wpdb->get_row($wpdb->prepare(
             "SELECT
                 SUM(CASE WHEN event_name = 'oz_color_selected' THEN 1 ELSE 0 END) AS color_selected,
@@ -487,9 +537,6 @@ class OZ_Analytics_Reporter {
     /**
      * Daily event trend for the given period.
      * @todo Add a sparkline/trend chart to the Dashboard in a future iteration.
-     *
-     * @param int $days
-     * @return array  [['date' => 'YYYY-MM-DD', 'count' => int], ...]
      */
     public static function daily_trend($days) {
         global $wpdb;
@@ -514,9 +561,6 @@ class OZ_Analytics_Reporter {
     /**
      * Helper: calculate the "since" datetime string for $days ago.
      * Uses current_time() to match the timezone used in Store::insert().
-     *
-     * @param int $days
-     * @return string  MySQL datetime string
      */
     private static function since_date($days) {
         return date('Y-m-d H:i:s', current_time('timestamp') - (absint($days) * DAY_IN_SECONDS));
