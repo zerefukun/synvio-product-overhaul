@@ -561,9 +561,9 @@ class OZ_Analytics_Dashboard {
     }
 
     /**
-     * Render traffic sources with clear two-line layout.
-     * Line 1: Source name (Google, Instagram, Direct)
-     * Line 2: Channel description (via organisch zoeken, via betaalde advertentie)
+     * Render traffic sources with brand-colored dots and a channel legend.
+     * Dot + bar use the platform's brand color (Google blue, Instagram pink, etc.).
+     * A small legend at the bottom shows the channel type (betaald, organisch, etc.).
      */
     private static function render_traffic_sources($rows) {
         if (empty($rows)) {
@@ -571,15 +571,21 @@ class OZ_Analytics_Dashboard {
             return;
         }
 
-        /* Color map for channel categories */
-        $channel_colors = [
-            'organic'  => '#00a32a',
-            'direct'   => '#2271b1',
-            'social'   => '#e65100',
-            'referral' => '#7b1fa2',
-            'email'    => '#c62828',
-            'cpc'      => '#d4a017',
-            'unknown'  => '#646970',
+        /* Brand colors for platforms */
+        $brand_colors = [
+            'google'     => '#4285F4',
+            'bing'       => '#008373',
+            'yahoo'      => '#6001D2',
+            'duckduckgo' => '#DE5833',
+            'ecosia'     => '#36A93E',
+            'facebook'   => '#1877F2',
+            'instagram'  => '#E4405F',
+            'pinterest'  => '#BD081C',
+            'youtube'    => '#FF0000',
+            'tiktok'     => '#000000',
+            'linkedin'   => '#0A66C2',
+            'twitter'    => '#1DA1F2',
+            'direct'     => '#50575e',
         ];
 
         /* Friendly source names */
@@ -599,28 +605,40 @@ class OZ_Analytics_Dashboard {
             'direct'     => 'Direct',
         ];
 
-        /* Channel descriptions in Dutch — what the user actually understands */
-        $channel_descriptions = [
-            'organic'  => 'via organisch zoeken',
-            'cpc'      => 'via betaalde advertentie',
-            'social'   => 'via social media',
-            'referral' => 'via andere website',
-            'email'    => 'via e-mail',
-            'direct'   => 'direct bezoek (URL ingetypt)',
-            'unknown'  => 'onbekend kanaal',
+        /* Channel colors for the legend */
+        $channel_colors = [
+            'organic'  => '#00a32a',
+            'cpc'      => '#d4a017',
+            'social'   => '#e65100',
+            'direct'   => '#50575e',
+            'referral' => '#7b1fa2',
+            'email'    => '#c62828',
+        ];
+
+        /* Dutch channel labels for the legend */
+        $channel_labels = [
+            'organic'  => 'Organisch',
+            'cpc'      => 'Betaald',
+            'social'   => 'Social',
+            'direct'   => 'Direct',
+            'referral' => 'Verwijzing',
+            'email'    => 'E-mail',
         ];
 
         /**
-         * Classify a raw source+medium into clean source label + channel category.
+         * Classify raw source+medium into clean label + channel category.
          */
         $classify = function ($raw_source, $raw_medium) use ($source_labels) {
             /* Source label — Meta ads special case */
             if ($raw_source === 'facebook' && strpos($raw_medium, 'instagram') !== false) {
                 $label = 'Instagram';
+                $brand_key = 'instagram';
             } elseif (isset($source_labels[$raw_source])) {
                 $label = $source_labels[$raw_source];
+                $brand_key = $raw_source;
             } else {
                 $label = ucfirst($raw_source);
+                $brand_key = $raw_source;
             }
 
             /* Channel category from medium */
@@ -637,13 +655,16 @@ class OZ_Analytics_Dashboard {
                 $cat = 'unknown';
             }
 
-            return ['label' => $label, 'cat' => $cat];
+            return ['label' => $label, 'brand_key' => $brand_key, 'cat' => $cat];
         };
 
         $max = 1;
         foreach ($rows as $row) {
             if (intval($row['count']) > $max) $max = intval($row['count']);
         }
+
+        /* Track which channels appear so we only show relevant legend items */
+        $seen_channels = [];
 
         foreach ($rows as $row) {
             $count  = intval($row['count']);
@@ -652,29 +673,47 @@ class OZ_Analytics_Dashboard {
             $raw_medium = strtolower(trim($row['medium']));
 
             $info = $classify($raw_source, $raw_medium);
-            $color = isset($channel_colors[$info['cat']]) ? $channel_colors[$info['cat']] : $channel_colors['unknown'];
-            $desc  = isset($channel_descriptions[$info['cat']]) ? $channel_descriptions[$info['cat']] : $raw_medium;
+            $brand_color = isset($brand_colors[$info['brand_key']]) ? $brand_colors[$info['brand_key']] : '#646970';
+            $channel_color = isset($channel_colors[$info['cat']]) ? $channel_colors[$info['cat']] : '#646970';
+            $channel_label = isset($channel_labels[$info['cat']]) ? $channel_labels[$info['cat']] : $info['cat'];
+
+            $seen_channels[$info['cat']] = true;
 
             printf(
                 '<div class="oz-traffic-row">'
                 . '<div class="oz-traffic-label">'
                 .   '<span class="oz-traffic-dot" style="background:%s"></span>'
-                .   '<div class="oz-traffic-text">'
-                .     '<span class="oz-traffic-source">%s</span>'
-                .     '<span class="oz-traffic-channel">%s</span>'
-                .   '</div>'
+                .   '<span class="oz-traffic-source" style="color:%s">%s</span>'
                 . '</div>'
                 . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%;background:%s"></div></div>'
                 . '<span class="oz-bar-count">%s</span>'
+                . '<span class="oz-traffic-channel-tag" style="color:%s">%s</span>'
                 . '</div>',
-                esc_attr($color),
+                esc_attr($brand_color),
+                esc_attr($brand_color),
                 esc_html($info['label']),
-                esc_html($desc),
                 $pct,
-                esc_attr($color),
-                number_format($count)
+                esc_attr($brand_color),
+                number_format($count),
+                esc_attr($channel_color),
+                esc_html($channel_label)
             );
         }
+
+        /* Legend at the bottom — only channels that appear in the data */
+        echo '<div class="oz-traffic-legend">';
+        foreach ($seen_channels as $cat => $_) {
+            if (isset($channel_labels[$cat]) && isset($channel_colors[$cat])) {
+                printf(
+                    '<span class="oz-traffic-legend-item">'
+                    . '<span class="oz-traffic-legend-line" style="background:%s"></span>'
+                    . '%s</span>',
+                    esc_attr($channel_colors[$cat]),
+                    esc_html($channel_labels[$cat])
+                );
+            }
+        }
+        echo '</div>';
     }
 
     /**
@@ -853,18 +892,32 @@ class OZ_Analytics_Dashboard {
             /* ── Traffic source rows ── */
             .oz-traffic-row {
                 display: flex; align-items: center; gap: 8px;
-                margin-bottom: 8px; font-size: 13px;
+                margin-bottom: 6px; font-size: 13px;
             }
             .oz-traffic-label {
                 display: flex; align-items: center; gap: 8px;
-                min-width: 200px; flex-shrink: 0;
+                min-width: 140px; flex-shrink: 0;
             }
             .oz-traffic-dot {
                 width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
             }
-            .oz-traffic-text { display: flex; flex-direction: column; line-height: 1.3; }
-            .oz-traffic-source { font-weight: 600; color: #1d2327; font-size: 13px; }
-            .oz-traffic-channel { font-size: 11px; color: #646970; }
+            .oz-traffic-source { font-weight: 700; font-size: 13px; }
+            .oz-traffic-channel-tag {
+                font-size: 10px; font-weight: 600; white-space: nowrap;
+                min-width: 60px; text-align: right;
+            }
+            /* Legend bar at the bottom of the traffic chart */
+            .oz-traffic-legend {
+                display: flex; gap: 16px; margin-top: 14px;
+                padding-top: 10px; border-top: 1px solid #f0f0f1;
+            }
+            .oz-traffic-legend-item {
+                display: flex; align-items: center; gap: 5px;
+                font-size: 11px; color: #646970;
+            }
+            .oz-traffic-legend-line {
+                width: 14px; height: 3px; border-radius: 2px; display: inline-block;
+            }
 
             /* ── Section titles ── */
             .oz-section-title {
