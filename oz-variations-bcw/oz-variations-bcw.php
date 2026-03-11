@@ -65,9 +65,10 @@ class OZ_Variations_BCW {
             wp_die('OZ Variations BCW requires WooCommerce to be active.');
         }
 
-        // Create analytics table on activation
+        // Create analytics tables on activation
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-store.php';
         OZ_Analytics_Store::create_table();
+        OZ_Analytics_Store::create_sessions_table();
 
         update_option('oz_bcw_version', OZ_BCW_VERSION);
     }
@@ -152,12 +153,13 @@ class OZ_Variations_BCW {
             OZ_Analytics_Dashboard::init();
         }
 
-        // DB version check — create analytics table for existing installs
+        // DB version check — create analytics tables for existing installs
         // (new installs get it via activate(), but existing ones need this)
         $stored_version = get_option('oz_bcw_analytics_db_version', '0');
-        if (version_compare($stored_version, '1.0', '<')) {
+        if (version_compare($stored_version, '1.1', '<')) {
             OZ_Analytics_Store::create_table();
-            update_option('oz_bcw_analytics_db_version', '1.0');
+            OZ_Analytics_Store::create_sessions_table();
+            update_option('oz_bcw_analytics_db_version', '1.1');
         }
     }
 

@@ -906,4 +906,23 @@
     } else {
         init();
     }
+
+    /* ============================================
+       HEARTBEAT — Ping server every 30s so the analytics
+       dashboard can show live active session count.
+       Stops automatically when the tab is closed/navigated away.
+       ============================================ */
+    function sendHeartbeat() {
+        if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
+        var fd = new FormData();
+        fd.append('action', 'oz_heartbeat');
+        fd.append('nonce', ozCartDrawer.analyticsNonce);
+        fd.append('page_url', window.location.pathname);
+        navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
+    }
+
+    /* Send first heartbeat immediately, then every 30 seconds */
+    sendHeartbeat();
+    setInterval(sendHeartbeat, 30000);
+
 })();

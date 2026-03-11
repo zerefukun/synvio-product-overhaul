@@ -64,6 +64,13 @@ class OZ_Analytics_Collector {
         add_action('wp_ajax_oz_track_event', [__CLASS__, 'ajax_track_event']);
         add_action('wp_ajax_nopriv_oz_track_event', [__CLASS__, 'ajax_track_event']);
 
+        // Heartbeat endpoint — both logged-in and guest users
+        add_action('wp_ajax_oz_heartbeat', [__CLASS__, 'ajax_heartbeat']);
+        add_action('wp_ajax_nopriv_oz_heartbeat', [__CLASS__, 'ajax_heartbeat']);
+
+        // Active sessions count — admin only (for dashboard polling)
+        add_action('wp_ajax_oz_active_sessions', [__CLASS__, 'ajax_active_sessions']);
+
         // Daily cleanup cron
         add_action(self::CRON_HOOK, [__CLASS__, 'run_cleanup']);
 
@@ -126,6 +133,41 @@ class OZ_Analytics_Collector {
         OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id);
 
         wp_send_json_success();
+    }
+
+    /**
+     * AJAX handler: receive heartbeat ping from browser.
+     * Lightweight — just updates last_seen for this session.
+     * Uses same nonce as event tracking for simplicity.
+     */
+    public static function ajax_heartbeat() {
+        if (!check_ajax_referer('oz_analytics', 'nonce', false)) {
+            wp_send_json_error('Invalid nonce', 403);
+            return;
+        }
+
+        $session_id = self::get_session_id();
+        $page_url   = isset($_POST['page_url']) ? esc_url_raw($_POST['page_url']) : '';
+
+        OZ_Analytics_Store::update_heartbeat($session_id, $page_url);
+
+        wp_send_json_success();
+    }
+
+    /**
+     * AJAX handler: return active session count for dashboard.
+     * Admin-only (registered on wp_ajax_ only, not nopriv).
+     */
+    public static function ajax_active_sessions() {
+        check_ajax_referer('oz_active_sessions');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error('Unauthorized', 403);
+            return;
+        }
+
+        $count = OZ_Analytics_Store::count_active(60);
+        wp_send_json_success(['active' => $count]);
     }
 
     /**

@@ -20,6 +20,9 @@ class OZ_Analytics_Store {
     /** Table name (without prefix) */
     const TABLE = 'oz_analytics_events';
 
+    /** Active sessions table (without prefix) */
+    const SESSIONS_TABLE = 'oz_active_sessions';
+
     /**
      * Get the full prefixed table name.
      *
@@ -28,6 +31,16 @@ class OZ_Analytics_Store {
     public static function table_name() {
         global $wpdb;
         return $wpdb->prefix . self::TABLE;
+    }
+
+    /**
+     * Get the full prefixed sessions table name.
+     *
+     * @return string
+     */
+    public static function sessions_table_name() {
+        global $wpdb;
+        return $wpdb->prefix . self::SESSIONS_TABLE;
     }
 
     /**
@@ -109,5 +122,77 @@ class OZ_Analytics_Store {
                 $days_int
             )
         );
+    }
+
+    /* ══════════════════════════════════════════════════════════
+     * ACTIVE SESSIONS (heartbeat tracking)
+     * Tiny table: session_id (PK) + last_seen + page_url.
+     * JS pings every 30s, sessions expire after 60s of silence.
+     * ══════════════════════════════════════════════════════════ */
+
+    /**
+     * Create the active sessions table.
+     * Only holds currently-active rows — never grows beyond ~100 rows.
+     */
+    public static function create_sessions_table() {
+        global $wpdb;
+
+        $table   = self::sessions_table_name();
+        $charset = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE {$table} (
+            session_id VARCHAR(50) NOT NULL,
+            last_seen DATETIME NOT NULL,
+            page_url VARCHAR(255) NOT NULL DEFAULT '',
+            PRIMARY KEY  (session_id),
+            KEY idx_last_seen (last_seen)
+        ) {$charset};";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
+    }
+
+    /**
+     * Update heartbeat for a session.
+     * INSERT on first visit, UPDATE last_seen on subsequent pings.
+     *
+     * @param string $session_id  Browser session identifier
+     * @param string $page_url    Current page URL
+     */
+    public static function update_heartbeat($session_id, $page_url = '') {
+        global $wpdb;
+
+        $table = self::sessions_table_name();
+        $now   = current_time('mysql');
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query($wpdb->prepare(
+            "INSERT INTO {$table} (session_id, last_seen, page_url)
+             VALUES (%s, %s, %s)
+             ON DUPLICATE KEY UPDATE last_seen = %s, page_url = %s",
+            $session_id, $now, $page_url, $now, $page_url
+        ));
+
+        // Cleanup stale sessions older than 5 minutes (piggyback on heartbeat)
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("DELETE FROM {$table} WHERE last_seen < DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
+    }
+
+    /**
+     * Count sessions active within the last $seconds seconds.
+     *
+     * @param int $seconds  Lookback window (default 60)
+     * @return int  Number of active sessions
+     */
+    public static function count_active($seconds = 60) {
+        global $wpdb;
+
+        $table = self::sessions_table_name();
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        return (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table} WHERE last_seen >= DATE_SUB(NOW(), INTERVAL %d SECOND)",
+            absint($seconds)
+        ));
     }
 }

@@ -86,6 +86,10 @@ class OZ_Analytics_Dashboard {
         <div class="wrap oz-analytics">
             <h1>
                 BCW Analytics
+                <span class="oz-live-counter" id="ozLiveCounter" title="Actieve sessies (laatste 60 seconden)">
+                    <span class="oz-live-dot"></span>
+                    <span id="ozLiveCount">-</span> live
+                </span>
                 <div class="oz-range-tabs">
                     <?php
                     $ranges = [1 => 'Vandaag', 'yesterday' => 'Gisteren', 7 => '7 dagen', 30 => '30 dagen', 90 => '90 dagen'];
@@ -193,6 +197,40 @@ class OZ_Analytics_Dashboard {
                 </div>
             </div>
         </div>
+
+        <!-- Live session counter: polls every 10 seconds -->
+        <script>
+        (function() {
+            var countEl = document.getElementById('ozLiveCount');
+            var dotEl = document.querySelector('.oz-live-dot');
+            if (!countEl) return;
+
+            function poll() {
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?php echo esc_js(admin_url('admin-ajax.php')); ?>');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    try {
+                        var resp = JSON.parse(xhr.responseText);
+                        if (resp.success && typeof resp.data.active !== 'undefined') {
+                            countEl.textContent = resp.data.active;
+                            /* Pulse the dot green when there are active sessions */
+                            if (resp.data.active > 0) {
+                                dotEl.classList.add('active');
+                            } else {
+                                dotEl.classList.remove('active');
+                            }
+                        }
+                    } catch (e) {}
+                };
+                xhr.send('action=oz_active_sessions&_ajax_nonce=<?php echo wp_create_nonce('oz_active_sessions'); ?>');
+            }
+
+            /* Poll immediately, then every 10 seconds */
+            poll();
+            setInterval(poll, 10000);
+        })();
+        </script>
         <?php
     }
 
@@ -410,6 +448,27 @@ class OZ_Analytics_Dashboard {
             /* ── Dashboard layout ── */
             .oz-analytics { max-width: 1100px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
             .oz-analytics h1 { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+
+            /* ── Live counter ── */
+            .oz-live-counter {
+                display: inline-flex; align-items: center; gap: 6px;
+                font-size: 13px; font-weight: 500; color: #646970;
+                background: #f6f7f7; border: 1px solid #dcdcde;
+                padding: 4px 12px; border-radius: 16px;
+            }
+            .oz-live-dot {
+                width: 8px; height: 8px; border-radius: 50%;
+                background: #dcdcde; display: inline-block;
+                transition: background 0.3s;
+            }
+            .oz-live-dot.active {
+                background: #00a32a;
+                animation: oz-pulse 1.5s ease infinite;
+            }
+            @keyframes oz-pulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(0, 163, 42, 0.4); }
+                50% { box-shadow: 0 0 0 4px rgba(0, 163, 42, 0); }
+            }
 
             /* ── Section titles ── */
             .oz-section-title {
