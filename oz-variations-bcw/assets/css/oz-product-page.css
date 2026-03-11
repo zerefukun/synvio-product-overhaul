@@ -796,8 +796,8 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 /* src/css/color.css */
 .oz-color-swatches {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
   column-gap: 2px;
   row-gap: 6px;
   max-height: 1200px;
@@ -820,7 +820,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
     margin 0.3s;
 }
 .oz-color-swatch {
-  width: 62px;
   display: flex;
   flex-direction: column;
   align-items: center;

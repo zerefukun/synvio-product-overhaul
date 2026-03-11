@@ -6,9 +6,9 @@
  */
 
 .oz-color-swatches {
-  display: flex;
-  flex-wrap: wrap;
-  /* Row gap larger than column gap so name clearly belongs to swatch above */
+  /* CSS Grid auto-fill: fit as many swatches per row as the container allows */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
   column-gap: 2px;
   row-gap: 6px;
   /* Animated show — height expands first, then opacity fades in (0.1s delay) */
@@ -31,7 +31,6 @@
 /* Each swatch is a flex-column: image on top, color name below.
  * padding-bottom creates visual separation so name stays close to its swatch */
 .oz-color-swatch {
-  width: 62px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,7 +42,7 @@
   padding-bottom: 2px;
 }
 
-/* Image wrapper — holds the square swatch thumbnail */
+/* Image wrapper — square swatch thumbnail, responsive within grid cell */
 .oz-color-swatch .oz-swatch-img {
   width: 56px;
   height: 56px;
