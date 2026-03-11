@@ -689,17 +689,37 @@ class OZ_Analytics_Reporter {
             $until
         ), ARRAY_A);
 
+        // Same normalization as traffic_sources() so clicks match
+        $source_aliases = [
+            'ig' => 'instagram', 'fb' => 'facebook', 'yt' => 'youtube', 'x' => 'twitter',
+        ];
+        $classify_medium = function ($raw) {
+            $m = strtolower($raw);
+            if ($m === 'organic') return 'organic';
+            if ($m === 'none' || $m === 'direct' || $m === '') return 'none';
+            if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
+            if (in_array($m, ['social', 'referral', 'email'], true)) return $m;
+            if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
+            if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false) return 'email';
+            return $m;
+        };
+
         $results = [];
         foreach ($rows as $row) {
             $data = json_decode($row['event_data'], true);
             if (!$data) continue;
 
-            $row_source = isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : '';
+            $row_source = strtolower(isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : '');
             $row_medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : '';
 
-            // Case-insensitive match (UTM params may have mixed case)
-            if (strtolower($row_source) !== strtolower($source)) continue;
-            if (strtolower($row_medium) !== strtolower($medium)) continue;
+            // Apply same normalization as traffic_sources()
+            if (isset($source_aliases[$row_source])) $row_source = $source_aliases[$row_source];
+            if ($row_source === 'facebook' && stripos($row_medium, 'instagram') !== false) $row_source = 'instagram';
+            $row_channel = $classify_medium($row_medium);
+
+            // Match against normalized source + channel
+            if ($row_source !== strtolower($source)) continue;
+            if ($row_channel !== strtolower($medium)) continue;
 
             $results[] = [
                 'landing_page' => isset($data['oz_landing_page']) ? $data['oz_landing_page'] : '/',
