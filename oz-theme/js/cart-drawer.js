@@ -499,7 +499,7 @@
                 '<div class="oz-drawer-upsell-price">' + fmt(u.price) + '</div>' +
             '</div>' +
             '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
-                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
             '</button>' +
         '</div>';
     }
@@ -539,7 +539,7 @@
                 '<div class="oz-drawer-upsell-price">' + fmt(u.sizes[defaultIdx].price) + '</div>' +
             '</div>' +
             '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
-                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
             '</button>' +
         '</div>';
     }
@@ -575,7 +575,7 @@
                 '<div class="oz-drawer-upsell-price">' + fmt(u.options[0].price) + '</div>' +
             '</div>' +
             '<button class="oz-drawer-upsell-add" aria-label="Toevoegen">' +
-                '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 2v10M2 7h10"/></svg>' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
             '</button>' +
         '</div>';
     }
