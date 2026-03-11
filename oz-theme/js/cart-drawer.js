@@ -950,13 +950,17 @@
             sessionStorage.setItem('oz_session_tracked', '1');
         } catch (e) { return; } // Private browsing may throw
 
-        /* Parse UTM params from URL */
+        /* Parse UTM params + ad click IDs from URL */
         var params = {};
+        var hasGclid = false;   // Google Ads click ID
+        var hasFbclid = false;  // Facebook click ID
         try {
             var qs = new URLSearchParams(window.location.search);
             ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) {
                 if (qs.has(k)) params[k] = qs.get(k);
             });
+            hasGclid = qs.has('gclid');
+            hasFbclid = qs.has('fbclid');
         } catch (e) {}
 
         /* Classify the referrer into a traffic source channel */
@@ -968,6 +972,14 @@
             /* UTM params take priority — advertiser controls the label */
             source = params.utm_source;
             medium = params.utm_medium || 'unknown';
+        } else if (hasGclid) {
+            /* Google Ads click — gclid present but no UTM (common with auto-tagging) */
+            source = 'google';
+            medium = 'cpc';
+        } else if (hasFbclid && !ref) {
+            /* Facebook/Meta click — fbclid present but referrer stripped */
+            source = 'facebook';
+            medium = 'social';
         } else if (ref) {
             try {
                 var host = new URL(ref).hostname.toLowerCase();
