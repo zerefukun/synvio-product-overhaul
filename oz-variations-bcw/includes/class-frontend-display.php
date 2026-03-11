@@ -288,9 +288,11 @@ class OZ_Frontend_Display {
             $all_swatches[$vid] = $v;
         }
 
-        // Sort alphabetically by color name (natural sort so Cement 1 < Cement 2 < Cement 10)
+        // Sort by name length (short first), then natural alpha as tiebreaker.
+        // Keeps compact names like "Sand 1" up front, long names at the end.
         uasort($all_swatches, function ($a, $b) {
-            return strnatcasecmp($a['color'], $b['color']);
+            $diff = mb_strlen($a['color']) - mb_strlen($b['color']);
+            return $diff !== 0 ? $diff : strnatcasecmp($a['color'], $b['color']);
         });
 
         $html = '<div class="oz-color-swatches">';
@@ -375,9 +377,10 @@ class OZ_Frontend_Display {
             ];
         }
 
-        // Sort alphabetically by color name (natural sort)
+        // Sort by name length (short first), then natural alpha as tiebreaker
         uasort($swatches, function ($a, $b) {
-            return strnatcasecmp($a['color'], $b['color']);
+            $diff = mb_strlen($a['color']) - mb_strlen($b['color']);
+            return $diff !== 0 ? $diff : strnatcasecmp($a['color'], $b['color']);
         });
 
         // Render as static swatches — data-static="1" tells JS not to navigate
