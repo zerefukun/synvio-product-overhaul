@@ -710,7 +710,7 @@ class OZ_Analytics_Dashboard {
             return;
         }
 
-        /* Brand colors for platforms */
+        /* Brand colors for platforms (including common UTM aliases) */
         $brand_colors = [
             'google'     => '#4285F4',
             'bing'       => '#008373',
@@ -718,16 +718,20 @@ class OZ_Analytics_Dashboard {
             'duckduckgo' => '#DE5833',
             'ecosia'     => '#36A93E',
             'facebook'   => '#1877F2',
+            'fb'         => '#1877F2',
             'instagram'  => '#E4405F',
+            'ig'         => '#E4405F',
             'pinterest'  => '#BD081C',
             'youtube'    => '#FF0000',
+            'yt'         => '#FF0000',
             'tiktok'     => '#000000',
             'linkedin'   => '#0A66C2',
             'twitter'    => '#1DA1F2',
+            'x'          => '#1DA1F2',
             'direct'     => '#50575e',
         ];
 
-        /* Friendly source names */
+        /* Friendly source names (including common UTM aliases) */
         $source_labels = [
             'google'     => 'Google',
             'bing'       => 'Bing',
@@ -735,12 +739,16 @@ class OZ_Analytics_Dashboard {
             'duckduckgo' => 'DuckDuckGo',
             'ecosia'     => 'Ecosia',
             'facebook'   => 'Facebook',
+            'fb'         => 'Facebook',
             'instagram'  => 'Instagram',
+            'ig'         => 'Instagram',
             'pinterest'  => 'Pinterest',
             'youtube'    => 'YouTube',
+            'yt'         => 'YouTube',
             'tiktok'     => 'TikTok',
             'linkedin'   => 'LinkedIn',
             'twitter'    => 'Twitter / X',
+            'x'          => 'Twitter / X',
             'direct'     => 'Direct',
         ];
 
@@ -768,8 +776,8 @@ class OZ_Analytics_Dashboard {
          * Classify raw source+medium into clean label + channel category.
          */
         $classify = function ($raw_source, $raw_medium) use ($source_labels) {
-            /* Source label — Meta ads special case */
-            if ($raw_source === 'facebook' && strpos($raw_medium, 'instagram') !== false) {
+            /* Source label — Meta ads special case: source=Facebook but medium says Instagram */
+            if (($raw_source === 'facebook' || $raw_source === 'fb') && strpos($raw_medium, 'instagram') !== false) {
                 $label = 'Instagram';
                 $brand_key = 'instagram';
             } elseif (isset($source_labels[$raw_source])) {
