@@ -630,6 +630,57 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * Landing pages filtered by a specific traffic source+medium.
+     * Returns individual visits with timestamps (not aggregated).
+     *
+     * @param string $source  Traffic source (e.g. 'google')
+     * @param string $medium  Traffic medium (e.g. 'organic')
+     * @param int    $days    Date range
+     * @param int    $limit   Max rows
+     * @return array  [['landing_page' => string, 'created_at' => string, 'campaign' => string], ...]
+     */
+    public static function landings_by_source($source, $medium, $days, $limit = 50) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        // Fetch all session_start events in range, filter in PHP (MariaDB JSON bug)
+        $rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT event_data, created_at
+             FROM {$table}
+             WHERE event_name = 'oz_session_start'
+             AND created_at >= %s AND created_at < %s
+             ORDER BY created_at DESC",
+            $since,
+            $until
+        ), ARRAY_A);
+
+        $results = [];
+        foreach ($rows as $row) {
+            $data = json_decode($row['event_data'], true);
+            if (!$data) continue;
+
+            $row_source = isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : '';
+            $row_medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : '';
+
+            // Case-insensitive match (UTM params may have mixed case)
+            if (strtolower($row_source) !== strtolower($source)) continue;
+            if (strtolower($row_medium) !== strtolower($medium)) continue;
+
+            $results[] = [
+                'landing_page' => isset($data['oz_landing_page']) ? $data['oz_landing_page'] : '/',
+                'created_at'   => $row['created_at'],
+                'campaign'     => isset($data['oz_utm_campaign']) ? $data['oz_utm_campaign'] : '',
+            ];
+
+            if (count($results) >= $limit) break;
+        }
+
+        return $results;
+    }
+
+    /**
      * Daily event trend for the given period.
      * @todo Add a sparkline/trend chart to the Dashboard in a future iteration.
      */

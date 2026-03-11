@@ -73,6 +73,9 @@ class OZ_Analytics_Collector {
         // Active sessions count — admin only (for dashboard polling)
         add_action('wp_ajax_oz_active_sessions', [__CLASS__, 'ajax_active_sessions']);
 
+        // Traffic source landing pages — admin only
+        add_action('wp_ajax_oz_traffic_landings', [__CLASS__, 'ajax_traffic_landings']);
+
         // Daily cleanup cron
         add_action(self::CRON_HOOK, [__CLASS__, 'run_cleanup']);
 
@@ -181,6 +184,48 @@ class OZ_Analytics_Collector {
             'sessions'        => $sessions,
             'events'          => $events,
             'filter_session'  => $filter_session,
+        ]);
+    }
+
+    /**
+     * AJAX handler: return landing pages for a specific traffic source.
+     * Admin-only. Used when clicking a traffic source row in the dashboard.
+     */
+    public static function ajax_traffic_landings() {
+        check_ajax_referer('oz_traffic_landings');
+
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error('Unauthorized', 403);
+            return;
+        }
+
+        $source = isset($_POST['source']) ? sanitize_text_field($_POST['source']) : '';
+        $medium = isset($_POST['medium']) ? sanitize_text_field($_POST['medium']) : '';
+        $range  = isset($_POST['range'])  ? sanitize_text_field($_POST['range'])  : '7';
+
+        if (!$source) {
+            wp_send_json_error('Missing source', 400);
+            return;
+        }
+
+        // Set the range for the reporter (needed for until_date)
+        if ($range === 'yesterday') {
+            OZ_Analytics_Reporter::set_range('yesterday');
+        } else {
+            OZ_Analytics_Reporter::set_range(absint($range));
+        }
+
+        $landings = OZ_Analytics_Reporter::landings_by_source(
+            $source,
+            $medium,
+            $range === 'yesterday' ? 'yesterday' : absint($range),
+            50
+        );
+
+        wp_send_json_success([
+            'source'   => $source,
+            'medium'   => $medium,
+            'landings' => $landings,
         ]);
     }
 

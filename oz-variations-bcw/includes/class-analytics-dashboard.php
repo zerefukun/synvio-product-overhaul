@@ -192,11 +192,15 @@ class OZ_Analytics_Dashboard {
             <div class="oz-columns">
                 <div class="oz-panel">
                     <h3>Verkeersbronnen</h3>
-                    <?php self::render_traffic_sources($traffic); ?>
+                    <div id="ozTrafficSources">
+                        <?php self::render_traffic_sources($traffic); ?>
+                    </div>
                 </div>
                 <div class="oz-panel">
-                    <h3>Top Landingspagina's</h3>
-                    <?php self::render_top_list($landings); ?>
+                    <h3 id="ozLandingsTitle">Top Landingspagina's</h3>
+                    <div id="ozLandingsContent">
+                        <?php self::render_top_list($landings); ?>
+                    </div>
                 </div>
             </div>
 
@@ -400,6 +404,141 @@ class OZ_Analytics_Dashboard {
             /* Poll immediately, then every 10 seconds */
             poll();
             setInterval(poll, 10000);
+        })();
+
+        /* ── Traffic source click → filtered landing pages ── */
+        (function() {
+            var sourcesEl = document.getElementById('ozTrafficSources');
+            var landingsTitle = document.getElementById('ozLandingsTitle');
+            var landingsContent = document.getElementById('ozLandingsContent');
+            if (!sourcesEl || !landingsContent) return;
+
+            /* Store original content for "show all" reset */
+            var originalTitle = landingsTitle.textContent;
+            var originalContent = landingsContent.innerHTML;
+            var activeSource = '';
+
+            /* Format landing page path into readable name */
+            function formatPage(path) {
+                path = path.replace(/^\/|\/$/g, '');
+                if (!path) return 'Homepage';
+                /* Strip common prefixes */
+                var prefixes = ['producten/', 'product/', 'bestel/', 'product-categorie/'];
+                for (var i = 0; i < prefixes.length; i++) {
+                    if (path.indexOf(prefixes[i]) === 0) {
+                        path = path.substring(prefixes[i].length);
+                        break;
+                    }
+                }
+                path = path.replace(/\/$/, '');
+                /* Slug to readable: dashes to spaces, capitalize */
+                var readable = path.replace(/-/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+                return readable.length > 50 ? readable.substring(0, 47) + '...' : readable;
+            }
+
+            /* Format datetime as "HH:MM — d mrt" */
+            function fmtDateTime(str) {
+                var d = new Date(str.replace(' ', 'T'));
+                var h = ('0' + d.getHours()).slice(-2);
+                var m = ('0' + d.getMinutes()).slice(-2);
+                var months = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+                return h + ':' + m + ' — ' + d.getDate() + ' ' + months[d.getMonth()];
+            }
+
+            /* Render filtered landing pages with timestamps */
+            function renderLandings(data) {
+                var label = data.source;
+                /* Capitalize known sources */
+                var labels = {google:'Google',bing:'Bing',facebook:'Facebook',instagram:'Instagram',
+                    direct:'Direct',pinterest:'Pinterest',youtube:'YouTube',tiktok:'TikTok'};
+                var key = data.source.toLowerCase();
+                if (labels[key]) label = labels[key];
+
+                landingsTitle.innerHTML = 'Landingspagina\'s via <strong>' + label + '</strong> '
+                    + '<span class="oz-feed-clear" id="ozLandingsClear">&times; Toon alles</span>';
+
+                if (!data.landings || !data.landings.length) {
+                    landingsContent.innerHTML = '<div class="oz-empty">Geen bezoeken van deze bron.</div>';
+                    return;
+                }
+
+                var html = '';
+                for (var i = 0; i < data.landings.length; i++) {
+                    var l = data.landings[i];
+                    html += '<div class="oz-landing-item">'
+                        + '<span class="oz-landing-time">' + fmtDateTime(l.created_at) + '</span>'
+                        + '<span class="oz-landing-page">' + formatPage(l.landing_page) + '</span>'
+                        + (l.campaign ? '<span class="oz-landing-campaign">' + l.campaign + '</span>' : '')
+                        + '</div>';
+                }
+                landingsContent.innerHTML = html;
+            }
+
+            /* Click on a traffic source row */
+            sourcesEl.addEventListener('click', function(e) {
+                var row = e.target.closest('.oz-traffic-row');
+                if (!row) return;
+
+                var source = row.getAttribute('data-source');
+                var medium = row.getAttribute('data-medium');
+                if (!source) return;
+
+                /* Toggle: click same source again = show all */
+                var key = source + '|' + medium;
+                if (activeSource === key) {
+                    activeSource = '';
+                    landingsTitle.textContent = originalTitle;
+                    landingsContent.innerHTML = originalContent;
+                    sourcesEl.querySelectorAll('.oz-traffic-row').forEach(function(r) {
+                        r.classList.remove('selected');
+                    });
+                    return;
+                }
+                activeSource = key;
+
+                /* Highlight selected row */
+                sourcesEl.querySelectorAll('.oz-traffic-row').forEach(function(r) {
+                    r.classList.remove('selected');
+                });
+                row.classList.add('selected');
+
+                /* Show loading */
+                landingsContent.innerHTML = '<div class="oz-empty">Laden...</div>';
+
+                /* Get current range from URL */
+                var urlParams = new URLSearchParams(window.location.search);
+                var range = urlParams.get('range') || '7';
+
+                /* Fetch filtered landing pages */
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?php echo esc_js(admin_url('admin-ajax.php')); ?>');
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    try {
+                        var resp = JSON.parse(xhr.responseText);
+                        if (resp.success) {
+                            renderLandings(resp.data);
+                        }
+                    } catch(e) {}
+                };
+                xhr.send('action=oz_traffic_landings'
+                    + '&_ajax_nonce=<?php echo wp_create_nonce('oz_traffic_landings'); ?>'
+                    + '&source=' + encodeURIComponent(source)
+                    + '&medium=' + encodeURIComponent(medium)
+                    + '&range=' + encodeURIComponent(range));
+            });
+
+            /* Clear filter — show all landing pages again */
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'ozLandingsClear') {
+                    activeSource = '';
+                    landingsTitle.textContent = originalTitle;
+                    landingsContent.innerHTML = originalContent;
+                    sourcesEl.querySelectorAll('.oz-traffic-row').forEach(function(r) {
+                        r.classList.remove('selected');
+                    });
+                }
+            });
         })();
         </script>
         <?php
@@ -680,7 +819,7 @@ class OZ_Analytics_Dashboard {
             $seen_channels[$info['cat']] = true;
 
             printf(
-                '<div class="oz-traffic-row">'
+                '<div class="oz-traffic-row" data-source="%s" data-medium="%s">'
                 . '<div class="oz-traffic-label">'
                 .   '<span class="oz-traffic-dot" style="background:%s"></span>'
                 .   '<span class="oz-traffic-source" style="color:%s">%s</span>'
@@ -689,6 +828,8 @@ class OZ_Analytics_Dashboard {
                 . '<span class="oz-bar-count">%s</span>'
                 . '<span class="oz-traffic-channel-tag" style="color:%s">%s</span>'
                 . '</div>',
+                esc_attr($row['source']),
+                esc_attr($row['medium']),
                 esc_attr($brand_color),
                 esc_attr($brand_color),
                 esc_html($info['label']),
@@ -902,9 +1043,29 @@ class OZ_Analytics_Dashboard {
                 width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
             }
             .oz-traffic-source { font-weight: 700; font-size: 13px; }
+            .oz-traffic-row { cursor: pointer; border-radius: 4px; padding: 4px 6px; transition: background 0.15s; }
+            .oz-traffic-row:hover { background: #f6f7f7; }
+            .oz-traffic-row.selected { background: #e8f0fe; }
             .oz-traffic-channel-tag {
                 font-size: 10px; font-weight: 600; white-space: nowrap;
                 min-width: 60px; text-align: right;
+            }
+            /* Landing page items with timestamps */
+            .oz-landing-item {
+                display: flex; align-items: baseline; gap: 10px;
+                padding: 6px 0; border-bottom: 1px solid #f0f0f1;
+                font-size: 13px;
+            }
+            .oz-landing-item:last-child { border-bottom: none; }
+            .oz-landing-time {
+                font-size: 11px; color: #999; white-space: nowrap;
+                min-width: 100px; flex-shrink: 0;
+            }
+            .oz-landing-page { color: #1d2327; font-weight: 500; flex: 1; }
+            .oz-landing-campaign {
+                font-size: 10px; color: #646970; background: #f0f0f1;
+                padding: 1px 6px; border-radius: 3px; white-space: nowrap;
+                max-width: 200px; overflow: hidden; text-overflow: ellipsis;
             }
             /* Legend bar at the bottom of the traffic chart */
             .oz-traffic-legend {
