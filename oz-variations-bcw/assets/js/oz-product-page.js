@@ -1212,7 +1212,6 @@
       if (isNaN(val) || val < 1) val = 1;
       if (val > 99) val = 99;
       updateState({ qty: val });
-      trackQtyChanged(val);
       DOM.qtyInput.value = val;
       syncUI();
     }, toggleReadMore = function() {
@@ -1531,8 +1530,11 @@
       syncUI();
       document.addEventListener("click", handleClick);
       if (DOM.qtyInput) {
-        DOM.qtyInput.addEventListener("change", handleQtyInput);
         DOM.qtyInput.addEventListener("input", handleQtyInput);
+        DOM.qtyInput.addEventListener("change", function() {
+          handleQtyInput();
+          trackQtyChanged(S.qty);
+        });
       }
       document.addEventListener("input", function(e) {
         if (e.target.id === "customColorInput") {

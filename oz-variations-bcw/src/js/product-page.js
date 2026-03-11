@@ -767,7 +767,7 @@ function handleQtyInput() {
   if (isNaN(val) || val < 1) val = 1;
   if (val > 99) val = 99;
   updateState({ qty: val });
-  analytics.trackQtyChanged(val);
+  // Analytics tracking moved to 'change' event only — see event binding below
   DOM.qtyInput.value = val;
   syncUI();
 }
@@ -1347,9 +1347,14 @@ function init() {
   document.addEventListener('click', handleClick);
 
   // Quantity input direct editing
+  // 'input' fires on every keystroke/spinner tick — updates UI live
+  // 'change' fires once on blur/commit — triggers analytics to avoid spam
   if (DOM.qtyInput) {
-    DOM.qtyInput.addEventListener('change', handleQtyInput);
     DOM.qtyInput.addEventListener('input', handleQtyInput);
+    DOM.qtyInput.addEventListener('change', function() {
+      handleQtyInput();
+      analytics.trackQtyChanged(S.qty);
+    });
   }
 
   // Custom color input (delegated since it's built dynamically)
