@@ -870,6 +870,18 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-swatch-tooltip {
   display: none;
 }
+.oz-option-group.oz-highlight {
+  animation: oz-pulse-highlight 0.6s ease 2;
+}
+@keyframes oz-pulse-highlight {
+  0%, 100% {
+    box-shadow: none;
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.3);
+    border-radius: 8px;
+  }
+}
 .oz-color-mode-buttons {
   display: flex;
   gap: 8px;

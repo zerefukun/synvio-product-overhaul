@@ -1070,8 +1070,16 @@ function setupSheetSwipe() {
  * Validates state (pure), then delegates to submitCart for I/O.
  */
 function addToCart() {
-  // Base products can't be added to cart — must pick a color first
+  // Base products can't be added to cart — must pick a color first.
+  // Scroll to color section so user knows what to do.
   if (P.isBase) {
+    var colorGroup = document.querySelector('[data-option="color"]');
+    if (colorGroup) {
+      colorGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Briefly highlight the color section to draw attention
+      colorGroup.classList.add('oz-highlight');
+      setTimeout(function() { colorGroup.classList.remove('oz-highlight'); }, 1500);
+    }
     shakeButton();
     showCartError('Kies eerst een kleur om te bestellen.');
     return;

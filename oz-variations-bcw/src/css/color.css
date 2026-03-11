@@ -93,6 +93,16 @@
   display: none;
 }
 
+/* Highlight pulse when user clicks add-to-cart without selecting a color */
+.oz-option-group.oz-highlight {
+  animation: oz-pulse-highlight 0.6s ease 2;
+}
+
+@keyframes oz-pulse-highlight {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 3px rgba(19,83,80,0.3); border-radius: 8px; }
+}
+
 
 /* ─── RAL/NCS color mode ─── */
 

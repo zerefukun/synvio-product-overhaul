@@ -329,7 +329,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
               case 'color': ?>
                 <div class="oz-option-group" data-option="color">
                   <div class="oz-option-header">
-                    Kleur: <span class="oz-selected-value" id="selectedColorLabel"><?php echo esc_html($current_color ?: ''); ?></span>
+                    Kleur: <span class="oz-selected-value" id="selectedColorLabel"><?php echo esc_html($current_color ?: 'Kies eerst uw kleur'); ?></span>
                   </div>
 
                   <?php if ($has_ral_ncs) : ?>

@@ -1380,6 +1380,14 @@
       }, { passive: true });
     }, addToCart = function() {
       if (P.isBase) {
+        var colorGroup = document.querySelector('[data-option="color"]');
+        if (colorGroup) {
+          colorGroup.scrollIntoView({ behavior: "smooth", block: "center" });
+          colorGroup.classList.add("oz-highlight");
+          setTimeout(function() {
+            colorGroup.classList.remove("oz-highlight");
+          }, 1500);
+        }
         shakeButton();
         showCartError("Kies eerst een kleur om te bestellen.");
         return;
