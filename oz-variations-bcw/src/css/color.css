@@ -245,17 +245,25 @@
 
 /* ─── Kleurstalen link ─── */
 
+/* Styled as a pill chip — same look as USP pills in .oz-short-desc li */
 .oz-sample-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 10px;
+  padding: 6px 14px;
+  background: var(--oz-accent-light);
+  border-radius: 20px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--oz-accent);
   text-decoration: none;
-  transition: color 0.2s var(--oz-ease);
+  line-height: 1.5;
+  transition: background 0.2s var(--oz-ease), color 0.2s var(--oz-ease);
 }
 
 .oz-sample-link:hover {
-  color: var(--oz-accent-hover);
-  text-decoration: underline;
+  background: var(--oz-accent);
+  color: #fff;
+  text-decoration: none;
 }
