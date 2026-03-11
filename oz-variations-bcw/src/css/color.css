@@ -8,9 +8,11 @@
 .oz-color-swatches {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  /* Row gap larger than column gap so name clearly belongs to swatch above */
+  column-gap: 2px;
+  row-gap: 6px;
   /* Animated show — height expands first, then opacity fades in (0.1s delay) */
-  max-height: 600px;
+  max-height: 1200px;
   opacity: 1;
   overflow: visible;
   margin-bottom: 0;
@@ -26,7 +28,8 @@
   transition: max-height 0.3s var(--oz-ease), opacity 0.2s, margin 0.3s;
 }
 
-/* Each swatch is a flex-column: image on top, color name below */
+/* Each swatch is a flex-column: image on top, color name below.
+ * padding-bottom creates visual separation so name stays close to its swatch */
 .oz-color-swatch {
   width: 62px;
   display: flex;
@@ -37,6 +40,7 @@
   text-decoration: none;
   position: relative;
   text-align: center;
+  padding-bottom: 2px;
 }
 
 /* Image wrapper — holds the square swatch thumbnail */
