@@ -41,9 +41,9 @@
   padding-bottom: 0;
 }
 
-/* Image wrapper — fills grid cell width, stays square via aspect-ratio */
+/* Image wrapper — slightly smaller than grid cell for visual spacing */
 .oz-color-swatch .oz-swatch-img {
-  width: 100%;
+  width: calc(100% - 4px);
   aspect-ratio: 1;
   border-radius: 6px;
   border: 2px solid var(--oz-border);
