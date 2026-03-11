@@ -676,7 +676,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <span class="oz-trust-check">&#10003; Vandaag besteld, morgen stucen</span>
         <span class="oz-trust-check">&#10003; Achteraf betalen</span>
         <span class="oz-trust-check">&#10003; 420.000+ m² aangebracht door klanten</span>
-        <span class="oz-trust-check">&#10003; Gratis workshop bij je bestelling</span>
+        <span class="oz-trust-check">&#10003; Gratis workshop mogelijk bij bestelling</span>
       </div>
 
       <?php /* Short description removed — client decision 2026-03-07 */ ?>
