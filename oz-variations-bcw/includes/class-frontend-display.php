@@ -295,16 +295,18 @@ class OZ_Frontend_Display {
 
         foreach ($all_swatches as $pid => $s) {
             $is_current = ($pid === $current_id);
+            // Each swatch is wrapped in a labeled container: image + color name below
             $html .= sprintf(
-                '<a href="%s" class="oz-color-swatch%s" data-color="%s" title="%s">'
-                . '<img src="%s" alt="%s" width="46" height="46" loading="eager">'
+                '<a href="%s" class="oz-color-swatch%s" data-color="%s">'
+                . '<span class="oz-swatch-img"><img src="%s" alt="%s" width="46" height="46" loading="eager"></span>'
+                . '<span class="oz-swatch-name">%s</span>'
                 . '</a>',
                 esc_url($s['url']),
                 $is_current ? ' selected' : '',
                 esc_attr($s['color']),
-                esc_attr($s['color']),
                 esc_url($s['image']),
-                esc_attr($s['color'])
+                esc_attr($s['color']),
+                esc_html($s['color'])
             );
         }
 
@@ -378,13 +380,14 @@ class OZ_Frontend_Display {
 
         foreach ($swatches as $pid => $s) {
             $html .= sprintf(
-                '<a href="#" class="oz-color-swatch" data-color="%s" data-static="1" title="%s">'
-                . '<img src="%s" alt="%s" width="46" height="46" loading="eager">'
+                '<a href="#" class="oz-color-swatch" data-color="%s" data-static="1">'
+                . '<span class="oz-swatch-img"><img src="%s" alt="%s" width="46" height="46" loading="eager"></span>'
+                . '<span class="oz-swatch-name">%s</span>'
                 . '</a>',
                 esc_attr($s['color']),
-                esc_attr($s['color']),
                 esc_url($s['image']),
-                esc_attr($s['color'])
+                esc_attr($s['color']),
+                esc_html($s['color'])
             );
         }
 
