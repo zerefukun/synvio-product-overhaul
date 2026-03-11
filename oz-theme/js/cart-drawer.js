@@ -936,4 +936,85 @@
     sendHeartbeat();
     setInterval(sendHeartbeat, 30000);
 
+    /* ============================================
+       SESSION START — Track traffic source once per browser session.
+       Fires oz_session_start with classified referrer + UTM params.
+       Uses sessionStorage to deduplicate (clears on tab close).
+       ============================================ */
+    (function trackSessionStart() {
+        if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
+
+        /* Only fire once per browser session */
+        try {
+            if (sessionStorage.getItem('oz_session_tracked')) return;
+            sessionStorage.setItem('oz_session_tracked', '1');
+        } catch (e) { return; } // Private browsing may throw
+
+        /* Parse UTM params from URL */
+        var params = {};
+        try {
+            var qs = new URLSearchParams(window.location.search);
+            ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) {
+                if (qs.has(k)) params[k] = qs.get(k);
+            });
+        } catch (e) {}
+
+        /* Classify the referrer into a traffic source channel */
+        var ref = document.referrer || '';
+        var source = 'direct';
+        var medium = 'none';
+
+        if (params.utm_source) {
+            /* UTM params take priority — advertiser controls the label */
+            source = params.utm_source;
+            medium = params.utm_medium || 'unknown';
+        } else if (ref) {
+            try {
+                var host = new URL(ref).hostname.toLowerCase();
+
+                /* Skip self-referrals (same domain = internal navigation) */
+                if (host === window.location.hostname) {
+                    return; // Not a new visit, don't track
+                }
+
+                /* Search engines */
+                if (/google\./i.test(host))       { source = 'google';    medium = 'organic'; }
+                else if (/bing\./i.test(host))     { source = 'bing';      medium = 'organic'; }
+                else if (/yahoo\./i.test(host))    { source = 'yahoo';     medium = 'organic'; }
+                else if (/duckduckgo/i.test(host)) { source = 'duckduckgo'; medium = 'organic'; }
+                else if (/ecosia/i.test(host))     { source = 'ecosia';    medium = 'organic'; }
+                /* Social media */
+                else if (/facebook\.|fb\./i.test(host))    { source = 'facebook';  medium = 'social'; }
+                else if (/instagram/i.test(host))           { source = 'instagram'; medium = 'social'; }
+                else if (/pinterest/i.test(host))           { source = 'pinterest'; medium = 'social'; }
+                else if (/youtube/i.test(host))             { source = 'youtube';   medium = 'social'; }
+                else if (/tiktok/i.test(host))              { source = 'tiktok';    medium = 'social'; }
+                else if (/linkedin/i.test(host))            { source = 'linkedin';  medium = 'social'; }
+                else if (/twitter\.|x\.com/i.test(host))    { source = 'twitter';   medium = 'social'; }
+                /* Email providers (common webmail) */
+                else if (/mail\.|outlook\.|gmail/i.test(host)) { source = host; medium = 'email'; }
+                /* Everything else = referral from another website */
+                else { source = host; medium = 'referral'; }
+            } catch (e) {
+                source = 'unknown';
+                medium = 'referral';
+            }
+        }
+
+        /* Fire the session start event directly (not via beacon() which hardcodes source='cart') */
+        var fd = new FormData();
+        fd.append('action', 'oz_track_event');
+        fd.append('nonce', ozCartDrawer.analyticsNonce);
+        fd.append('event_name', 'oz_session_start');
+        fd.append('event_data', JSON.stringify({
+            oz_traffic_source:   source,
+            oz_traffic_medium:   medium,
+            oz_landing_page:     window.location.pathname,
+            oz_utm_campaign:     params.utm_campaign || '',
+            oz_referrer:         ref ? ref.substring(0, 200) : '',
+        }));
+        fd.append('source', 'session');
+        navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
+    })();
+
 })();

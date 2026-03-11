@@ -561,6 +561,51 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * Traffic sources: where sessions originated (from oz_session_start events).
+     * Groups by oz_traffic_source extracted from event_data JSON.
+     *
+     * @param int $days  Number of days to look back
+     * @param int $limit Max rows to return
+     * @return array  [['source' => string, 'medium' => string, 'count' => int], ...]
+     */
+    public static function traffic_sources($days, $limit = 15) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        // Group by source + medium for a more complete picture
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT
+                JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_traffic_source')) AS source,
+                JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_traffic_medium')) AS medium,
+                COUNT(*) AS count
+             FROM {$table}
+             WHERE event_name = 'oz_session_start'
+             AND created_at >= %s AND created_at < %s
+             GROUP BY source, medium
+             ORDER BY count DESC
+             LIMIT %d",
+            $since,
+            $until,
+            $limit
+        ), ARRAY_A);
+
+        return $results ?: [];
+    }
+
+    /**
+     * Top landing pages from oz_session_start events.
+     *
+     * @param int $days
+     * @param int $limit
+     * @return array  [['value' => string, 'count' => int], ...]
+     */
+    public static function top_landing_pages($days, $limit = 10) {
+        return self::top_values('oz_session_start', 'oz_landing_page', $days, $limit);
+    }
+
+    /**
      * Daily event trend for the given period.
      * @todo Add a sparkline/trend chart to the Dashboard in a future iteration.
      */

@@ -27,6 +27,8 @@ class OZ_Analytics_Collector {
      * Keeps the DB clean — only known events get stored.
      */
     private static $valid_events = [
+        // Session tracking (1)
+        'oz_session_start',
         // Product page events (13)
         'oz_color_selected',
         'oz_color_mode_changed',
@@ -117,7 +119,7 @@ class OZ_Analytics_Collector {
         }
 
         // Validate source
-        if (!in_array($source, ['product', 'cart'], true)) {
+        if (!in_array($source, ['product', 'cart', 'session'], true)) {
             wp_send_json_error('Invalid source', 400);
             return;
         }

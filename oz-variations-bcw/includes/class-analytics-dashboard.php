@@ -77,6 +77,8 @@ class OZ_Analytics_Dashboard {
         $funnel   = OZ_Analytics_Reporter::funnel($range);
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
         $upsells  = OZ_Analytics_Reporter::top_values('oz_cart_upsell_added', 'oz_upsell_name', $range, 10);
+        $traffic  = OZ_Analytics_Reporter::traffic_sources($range);
+        $landings = OZ_Analytics_Reporter::top_landing_pages($range, 10);
 
         $base_url = admin_url('admin.php?page=oz-bcw-analytics');
 
@@ -186,6 +188,18 @@ class OZ_Analytics_Dashboard {
                 ?>
             </div>
 
+            <!-- ═══ Traffic Sources ═══ -->
+            <div class="oz-columns">
+                <div class="oz-panel">
+                    <h3>Verkeersbronnen</h3>
+                    <?php self::render_traffic_sources($traffic); ?>
+                </div>
+                <div class="oz-panel">
+                    <h3>Top Landingspagina's</h3>
+                    <?php self::render_top_list($landings); ?>
+                </div>
+            </div>
+
             <div class="oz-columns">
                 <div class="oz-panel">
                     <h3>Productpagina Events</h3>
@@ -231,6 +245,7 @@ class OZ_Analytics_Dashboard {
 
             /* Human-readable event labels */
             var labels = {
+                oz_session_start: 'Sessie gestart',
                 oz_color_selected: 'Kleur gekozen',
                 oz_color_mode_changed: 'Kleurmodus',
                 oz_option_selected: 'Optie gekozen',
@@ -256,6 +271,8 @@ class OZ_Analytics_Dashboard {
                     /* oz_color_selected has both oz_color + oz_color_mode;
                        oz_color_mode_changed has only oz_color_mode.
                        Check oz_color first — if present, show color name. Otherwise show mode. */
+                    /* Session start: show traffic source + medium */
+                    if (d.oz_traffic_source) return d.oz_traffic_source + ' (' + (d.oz_traffic_medium || '') + ')';
                     if (d.oz_color) return d.oz_color;
                     if (d.oz_color_mode) return d.oz_color_mode === 'ral_ncs' ? 'RAL / NCS' : d.oz_color_mode;
                     /* oz_option_selected sends oz_option_type (pu/primer/etc) + oz_option_value */
@@ -544,6 +561,54 @@ class OZ_Analytics_Dashboard {
     }
 
     /**
+     * Render traffic sources with colored medium badges.
+     * Each row: "source" badge(medium) — bar — count
+     */
+    private static function render_traffic_sources($rows) {
+        if (empty($rows)) {
+            echo '<div class="oz-empty">Nog geen sessie-data. Tracking begint na deploy.</div>';
+            return;
+        }
+
+        /* Color map for medium badges */
+        $medium_colors = [
+            'organic'  => '#00a32a',  // Green — search engines
+            'direct'   => '#2271b1',  // Blue — typed URL
+            'social'   => '#e65100',  // Orange — social media
+            'referral' => '#7b1fa2',  // Purple — other websites
+            'email'    => '#c62828',  // Red — email clicks
+            'cpc'      => '#f9a825',  // Yellow — paid ads
+            'unknown'  => '#646970',  // Grey
+        ];
+
+        $max = 1;
+        foreach ($rows as $row) {
+            if (intval($row['count']) > $max) $max = intval($row['count']);
+        }
+
+        foreach ($rows as $row) {
+            $count  = intval($row['count']);
+            $pct    = round(($count / $max) * 100);
+            $medium = $row['medium'] ?: 'unknown';
+            $color  = isset($medium_colors[$medium]) ? $medium_colors[$medium] : $medium_colors['unknown'];
+
+            printf(
+                '<div class="oz-bar-row">'
+                . '<span class="oz-bar-label">%s <span class="oz-traffic-badge" style="background:%s">%s</span></span>'
+                . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%;background:%s"></div></div>'
+                . '<span class="oz-bar-count">%s</span>'
+                . '</div>',
+                esc_html($row['source']),
+                esc_attr($color),
+                esc_html($medium),
+                $pct,
+                esc_attr($color),
+                number_format($count)
+            );
+        }
+    }
+
+    /**
      * Render conversion funnel bars.
      */
     private static function render_funnel($funnel) {
@@ -664,6 +729,13 @@ class OZ_Analytics_Dashboard {
             .oz-live-event-name.cart { background: #fce8e6; color: #c5221f; }
             .oz-live-event-detail { color: #646970; font-size: 11px; }
             @keyframes oz-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+            /* ── Traffic source badges ── */
+            .oz-traffic-badge {
+                display: inline-block; font-size: 9px; font-weight: 600; color: #fff;
+                padding: 1px 5px; border-radius: 3px; vertical-align: middle;
+                margin-left: 4px; text-transform: uppercase; letter-spacing: 0.3px;
+            }
 
             /* ── Section titles ── */
             .oz-section-title {
