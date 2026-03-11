@@ -168,12 +168,17 @@ class OZ_Analytics_Collector {
         }
 
         $sessions = OZ_Analytics_Store::get_active_sessions(60);
-        $events   = OZ_Analytics_Store::recent_events(20);
+
+        // Optional session filter for viewing one session's journey
+        $filter_session = isset($_POST['session_id']) ? sanitize_text_field($_POST['session_id']) : '';
+        $limit = $filter_session ? 50 : 20;
+        $events = OZ_Analytics_Store::recent_events($limit, $filter_session);
 
         wp_send_json_success([
-            'active'   => count($sessions),
-            'sessions' => $sessions,
-            'events'   => $events,
+            'active'          => count($sessions),
+            'sessions'        => $sessions,
+            'events'          => $events,
+            'filter_session'  => $filter_session,
         ]);
     }
 

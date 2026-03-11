@@ -223,7 +223,11 @@ class OZ_Analytics_Dashboard {
             var dotEl = document.querySelector('.oz-live-dot');
             var sessionsEl = document.getElementById('ozLiveSessions');
             var feedEl = document.getElementById('ozLiveFeed');
+            var feedTitle = feedEl ? feedEl.previousElementSibling : null;
             if (!countEl) return;
+
+            /* Currently selected session (empty = show all) */
+            var selectedSession = '';
 
             /* Human-readable event labels */
             var labels = {
@@ -270,7 +274,7 @@ class OZ_Analytics_Dashboard {
             /* Shorten session ID for display */
             function shortId(id) { return id ? id.substring(0, 8) : ''; }
 
-            /* Render active sessions */
+            /* Render active sessions — clickable to filter event feed */
             function renderSessions(sessions) {
                 if (!sessions || !sessions.length) {
                     sessionsEl.innerHTML = '<div class="oz-empty">Geen actieve sessies</div>';
@@ -279,7 +283,8 @@ class OZ_Analytics_Dashboard {
                 var html = '';
                 for (var i = 0; i < sessions.length; i++) {
                     var s = sessions[i];
-                    html += '<div class="oz-live-session">'
+                    var active = (s.session_id === selectedSession) ? ' selected' : '';
+                    html += '<div class="oz-live-session' + active + '" data-sid="' + s.session_id + '">'
                         + '<span class="oz-live-session-dot"></span>'
                         + '<span class="oz-live-session-id">' + shortId(s.session_id) + '</span>'
                         + '<span class="oz-live-session-url">' + (s.page_url || '/') + '</span>'
@@ -289,10 +294,33 @@ class OZ_Analytics_Dashboard {
                 sessionsEl.innerHTML = html;
             }
 
-            /* Render event feed */
-            function renderFeed(events) {
+            /* Click handler for sessions — toggle filter */
+            sessionsEl.addEventListener('click', function(e) {
+                var row = e.target.closest('.oz-live-session');
+                if (!row) return;
+                var sid = row.getAttribute('data-sid');
+                if (selectedSession === sid) {
+                    /* Deselect — show all events again */
+                    selectedSession = '';
+                } else {
+                    selectedSession = sid;
+                }
+                /* Immediately poll with new filter */
+                poll();
+            });
+
+            /* Render event feed — shows session's journey when filtered */
+            function renderFeed(events, filterSession) {
+                /* Update feed title */
+                if (feedTitle) {
+                    if (filterSession) {
+                        feedTitle.innerHTML = 'Sessie ' + shortId(filterSession) + ' Journey <span class="oz-feed-clear" id="ozFeedClear">&times; Toon alles</span>';
+                    } else {
+                        feedTitle.textContent = 'Live Event Feed';
+                    }
+                }
                 if (!events || !events.length) {
-                    feedEl.innerHTML = '<div class="oz-empty">Nog geen events</div>';
+                    feedEl.innerHTML = '<div class="oz-empty">' + (filterSession ? 'Geen events voor deze sessie' : 'Nog geen events') + '</div>';
                     return;
                 }
                 var html = '';
@@ -308,6 +336,14 @@ class OZ_Analytics_Dashboard {
                 }
                 feedEl.innerHTML = html;
             }
+
+            /* Clear filter button in feed title */
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'ozFeedClear') {
+                    selectedSession = '';
+                    poll();
+                }
+            });
 
             function poll() {
                 var xhr = new XMLHttpRequest();
@@ -326,11 +362,13 @@ class OZ_Analytics_Dashboard {
                             }
                             /* Update live panels */
                             renderSessions(resp.data.sessions);
-                            renderFeed(resp.data.events);
+                            renderFeed(resp.data.events, resp.data.filter_session);
                         }
                     } catch (e) {}
                 };
-                xhr.send('action=oz_active_sessions&_ajax_nonce=<?php echo wp_create_nonce('oz_active_sessions'); ?>');
+                var params = 'action=oz_active_sessions&_ajax_nonce=<?php echo wp_create_nonce('oz_active_sessions'); ?>';
+                if (selectedSession) params += '&session_id=' + encodeURIComponent(selectedSession);
+                xhr.send(params);
             }
 
             /* Poll immediately, then every 10 seconds */
@@ -590,7 +628,15 @@ class OZ_Analytics_Dashboard {
                 padding: 6px 8px; border-bottom: 1px solid #f0f0f1;
             }
             .oz-live-session:last-child { border-bottom: none; }
+            .oz-live-session { cursor: pointer; border-radius: 4px; transition: background 0.15s; }
+            .oz-live-session:hover { background: #f6f7f7; }
+            .oz-live-session.selected { background: #e8f0fe; }
             .oz-live-session-dot { width: 6px; height: 6px; border-radius: 50%; background: #00a32a; flex-shrink: 0; }
+            .oz-feed-clear {
+                font-size: 11px; font-weight: 400; color: #2271b1; cursor: pointer;
+                margin-left: 8px;
+            }
+            .oz-feed-clear:hover { text-decoration: underline; }
             .oz-live-session-url { color: #2271b1; word-break: break-all; }
             .oz-live-session-time { margin-left: auto; color: #999; white-space: nowrap; font-size: 11px; }
             .oz-live-session-id { color: #999; font-family: monospace; font-size: 10px; }

@@ -219,15 +219,29 @@ class OZ_Analytics_Store {
 
     /**
      * Get recent events for the live feed.
-     * Returns the last N events from the analytics events table.
+     * Optionally filter by session_id to see one session's full journey.
      *
-     * @param int $limit  Number of events to return (default 20)
+     * @param int    $limit       Number of events to return (default 20)
+     * @param string $session_id  Optional session filter (empty = all sessions)
      * @return array  Recent events with session_id, event_name, event_data, created_at
      */
-    public static function recent_events($limit = 20) {
+    public static function recent_events($limit = 20, $session_id = '') {
         global $wpdb;
 
         $table = self::table_name();
+
+        if ($session_id) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            return $wpdb->get_results($wpdb->prepare(
+                "SELECT session_id, event_name, event_data, source, created_at
+                 FROM {$table}
+                 WHERE session_id = %s
+                 ORDER BY id DESC
+                 LIMIT %d",
+                $session_id,
+                absint($limit)
+            ), ARRAY_A);
+        }
 
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->get_results($wpdb->prepare(
