@@ -235,6 +235,40 @@ class OZ_Frontend_Display {
     }
 
     /**
+     * Sort swatches by fixed color-group order.
+     * Groups: Cement (1) > Blue (2) > Nude (3) > Sand (4) > Green (5)
+     * Unrecognised names go last, sorted by name length then alphabetically.
+     * Within each group, natural sort (Cement 1, Cement 2, Cement 10).
+     */
+    private static function sort_swatches($a, $b) {
+        // Fixed group order — add more as needed
+        $groups = ['cement' => 1, 'blue' => 2, 'nude' => 3, 'sand' => 4, 'green' => 5];
+
+        $ga = self::swatch_group($a['color'], $groups);
+        $gb = self::swatch_group($b['color'], $groups);
+
+        // Different groups → sort by group rank
+        if ($ga !== $gb) return $ga - $gb;
+
+        // Same group → natural sort by full name (Cement 1 < Cement 2)
+        return strnatcasecmp($a['color'], $b['color']);
+    }
+
+    /**
+     * Get numeric group rank for a color name.
+     * Returns the group rank if the name starts with a known prefix,
+     * or 999 + name length to push unknowns to the end by length.
+     */
+    private static function swatch_group($color, $groups) {
+        $lower = mb_strtolower($color);
+        foreach ($groups as $prefix => $rank) {
+            if (strpos($lower, $prefix) === 0) return $rank;
+        }
+        // Unknown group — push to end, sorted by name length
+        return 999 + mb_strlen($color);
+    }
+
+    /**
      * Render color swatches HTML for a product.
      * Used by the product page template.
      *
@@ -288,12 +322,8 @@ class OZ_Frontend_Display {
             $all_swatches[$vid] = $v;
         }
 
-        // Sort by name length (short first), then natural alpha as tiebreaker.
-        // Keeps compact names like "Sand 1" up front, long names at the end.
-        uasort($all_swatches, function ($a, $b) {
-            $diff = mb_strlen($a['color']) - mb_strlen($b['color']);
-            return $diff !== 0 ? $diff : strnatcasecmp($a['color'], $b['color']);
-        });
+        // Sort by fixed group order: Cement > Blue > Nude > Sand > Green > rest by length
+        uasort($all_swatches, [__CLASS__, 'sort_swatches']);
 
         $html = '<div class="oz-color-swatches">';
 
@@ -377,11 +407,8 @@ class OZ_Frontend_Display {
             ];
         }
 
-        // Sort by name length (short first), then natural alpha as tiebreaker
-        uasort($swatches, function ($a, $b) {
-            $diff = mb_strlen($a['color']) - mb_strlen($b['color']);
-            return $diff !== 0 ? $diff : strnatcasecmp($a['color'], $b['color']);
-        });
+        // Sort by fixed group order: Cement > Blue > Nude > Sand > Green > rest by length
+        uasort($swatches, [__CLASS__, 'sort_swatches']);
 
         // Render as static swatches — data-static="1" tells JS not to navigate
         $html = '<div class="oz-color-swatches">';
