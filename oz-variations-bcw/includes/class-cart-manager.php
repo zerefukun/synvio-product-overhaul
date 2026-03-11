@@ -74,6 +74,11 @@ class OZ_Cart_Manager {
 
         // Hide raw meta keys from cart display
         add_filter('woocommerce_get_item_data', [__CLASS__, 'hide_raw_meta'], 10, 2);
+
+        // Expose tool size on order documents (invoices, pakbonnen)
+        // WooCommerce hides meta keys starting with '_' by default,
+        // so we re-label _oz_tool_size to show "Maat: 10cm" on PDF packing slips.
+        add_filter('woocommerce_order_item_get_formatted_meta_data', [__CLASS__, 'expose_tool_size_meta'], 10, 2);
     }
 
     /**
@@ -456,6 +461,31 @@ class OZ_Cart_Manager {
             if (in_array($d['key'], ['oz_page_mode', 'oz_tool_price', 'oz_tool_size', 'oz_wapo_addon'], true)) return false;
             return true;
         });
+    }
+
+    /**
+     * Expose _oz_tool_size as visible meta on order documents.
+     *
+     * WooCommerce hides meta keys starting with '_' from invoices/pakbonnen.
+     * This filter injects the tool size back with a readable label so
+     * packing slip plugins (e.g. WPO WCPDF) display "Maat: 10cm".
+     *
+     * @param array          $formatted_meta
+     * @param WC_Order_Item  $item
+     * @return array
+     */
+    public static function expose_tool_size_meta($formatted_meta, $item) {
+        $tool_size = $item->get_meta('_oz_tool_size');
+        if ($tool_size !== '' && $tool_size !== null) {
+            // Add tool size as visible meta with readable label
+            $formatted_meta['oz_tool_size'] = (object) [
+                'key'           => '_oz_tool_size',
+                'value'         => $tool_size,
+                'display_key'   => 'Maat',
+                'display_value' => esc_html($tool_size),
+            ];
+        }
+        return $formatted_meta;
     }
 
 
