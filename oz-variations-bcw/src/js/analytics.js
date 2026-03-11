@@ -30,10 +30,24 @@ import { P, S } from './state.js';
 /* ═══ BEACON — fire-and-forget POST to server ═════════════ */
 /* Separate from dataLayer push: these are two independent concerns.
  * dataLayer → GA4/GTM pickup (client-side).
- * beacon    → server-side storage for our WP admin dashboard. */
+ * beacon    → server-side storage for our WP admin dashboard.
+ *
+ * Deduplication: same event+key data within 1.5s is ignored.
+ * Prevents double-clicks and rapid re-fires from polluting data. */
+
+var _lastBeacon = '';
+var _lastBeaconTime = 0;
 
 function beacon(eventName, payload) {
   if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
+
+  // Deduplicate: skip if same event fired within 1.5 seconds
+  var key = eventName + '|' + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || '');
+  var now = Date.now();
+  if (key === _lastBeacon && (now - _lastBeaconTime) < 1500) return;
+  _lastBeacon = key;
+  _lastBeaconTime = now;
+
   var fd = new FormData();
   fd.append('action', 'oz_track_event');
   fd.append('nonce', P.analyticsNonce);

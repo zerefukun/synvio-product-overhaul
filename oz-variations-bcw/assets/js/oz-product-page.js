@@ -351,8 +351,15 @@
   }
 
   // src/js/analytics.js
+  var _lastBeacon = "";
+  var _lastBeaconTime = 0;
   function beacon(eventName, payload) {
     if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
+    var key = eventName + "|" + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || "");
+    var now = Date.now();
+    if (key === _lastBeacon && now - _lastBeaconTime < 1500) return;
+    _lastBeacon = key;
+    _lastBeaconTime = now;
     var fd = new FormData();
     fd.append("action", "oz_track_event");
     fd.append("nonce", P.analyticsNonce);

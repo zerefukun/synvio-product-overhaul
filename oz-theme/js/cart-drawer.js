@@ -36,8 +36,19 @@
        dataLayer → GA4/GTM pickup (client-side).
        beacon    → server-side storage for WP admin dashboard.
        ============================================ */
+    var _lastBeacon = '';
+    var _lastBeaconTime = 0;
+
     function beacon(eventName, payload) {
         if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
+
+        /* Deduplicate: skip if same event fired within 1.5 seconds */
+        var key = eventName + '|' + (payload.oz_trigger || payload.oz_upsell_name || '');
+        var now = Date.now();
+        if (key === _lastBeacon && (now - _lastBeaconTime) < 1500) return;
+        _lastBeacon = key;
+        _lastBeaconTime = now;
+
         var fd = new FormData();
         fd.append('action', 'oz_track_event');
         fd.append('nonce', ozCartDrawer.analyticsNonce);
