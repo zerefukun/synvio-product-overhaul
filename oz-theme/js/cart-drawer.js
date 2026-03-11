@@ -828,17 +828,25 @@
             });
         });
 
-        /* Flatsome header cart icon — open drawer instead of going to cart page */
-        var cartLinks = document.querySelectorAll('.header-cart-link, .cart-icon, a[href*="cart"]');
-        for (var i = 0; i < cartLinks.length; i++) {
-            /* Only intercept Flatsome cart icon links, not all cart links */
-            if (cartLinks[i].closest('.header-cart') || cartLinks[i].classList.contains('header-cart-link')) {
-                cartLinks[i].addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    openDrawer('cart_icon');
-                });
-            }
+        /* Flatsome header cart icon — open our drawer instead of navigating to cart page.
+         * Flatsome uses .off-canvas-toggle + data-open="#cart-popup" on the <a>.
+         * We must: (1) remove those attrs so Flatsome's JS ignores it,
+         *          (2) bind our own click handler on the <a> elements,
+         *          (3) use capture phase to beat any delegated handlers. */
+        var cartAnchors = document.querySelectorAll('a.header-cart-link');
+        for (var i = 0; i < cartAnchors.length; i++) {
+            /* Strip Flatsome off-canvas attributes so its JS won't fire */
+            cartAnchors[i].classList.remove('off-canvas-toggle');
+            cartAnchors[i].removeAttribute('data-open');
+            cartAnchors[i].removeAttribute('data-class');
+            cartAnchors[i].removeAttribute('data-pos');
+
+            /* Open our drawer on click (capture phase = fires first) */
+            cartAnchors[i].addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openDrawer('cart_icon');
+            }, true);
         }
 
         /**
