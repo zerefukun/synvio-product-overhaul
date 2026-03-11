@@ -105,6 +105,24 @@ class OZ_Analytics_Dashboard {
                 </div>
             </h1>
 
+            <!-- ═══ LIVE PANEL ═══ -->
+            <div class="oz-live-panel" id="ozLivePanel">
+                <div class="oz-live-sections">
+                    <div class="oz-live-sessions">
+                        <h3>Actieve Sessies</h3>
+                        <div id="ozLiveSessions" class="oz-live-list">
+                            <div class="oz-empty">Laden...</div>
+                        </div>
+                    </div>
+                    <div class="oz-live-feed">
+                        <h3>Live Event Feed</h3>
+                        <div id="ozLiveFeed" class="oz-live-list">
+                            <div class="oz-empty">Laden...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ═══ SECTION 1: Shop Performance ═══ -->
             <div class="oz-section-title">Shop Performance</div>
 
@@ -198,12 +216,98 @@ class OZ_Analytics_Dashboard {
             </div>
         </div>
 
-        <!-- Live session counter: polls every 10 seconds -->
+        <!-- Live session counter + feed: polls every 10 seconds -->
         <script>
         (function() {
             var countEl = document.getElementById('ozLiveCount');
             var dotEl = document.querySelector('.oz-live-dot');
+            var sessionsEl = document.getElementById('ozLiveSessions');
+            var feedEl = document.getElementById('ozLiveFeed');
             if (!countEl) return;
+
+            /* Human-readable event labels */
+            var labels = {
+                oz_color_selected: 'Kleur gekozen',
+                oz_color_mode_changed: 'Kleurmodus',
+                oz_option_selected: 'Optie gekozen',
+                oz_tool_mode_changed: 'Gereedschap modus',
+                oz_tool_toggled: 'Gereedschap aan/uit',
+                oz_qty_changed: 'Aantal gewijzigd',
+                oz_add_to_cart: 'In winkelmand',
+                oz_add_to_cart_error: 'Cart fout',
+                oz_gallery_image: 'Galerij bekeken',
+                oz_cart_opened: 'Cart geopend',
+                oz_cart_closed: 'Cart gesloten',
+                oz_cart_checkout_clicked: 'Naar afrekenen',
+                oz_cart_upsell_added: 'Upsell toegevoegd',
+                oz_cart_upsell_size_selected: 'Upsell maat',
+                oz_cart_upsell_option_selected: 'Upsell optie',
+                oz_cart_continue_shopping: 'Verder winkelen'
+            };
+
+            /* Extract a useful detail from event_data JSON */
+            function getDetail(name, data) {
+                try {
+                    var d = JSON.parse(data);
+                    if (d.oz_color) return d.oz_color;
+                    if (d.oz_option_label) return d.oz_option_label + ': ' + (d.oz_option_value || '');
+                    if (d.oz_upsell_name) return d.oz_upsell_name;
+                    if (d.oz_trigger) return d.oz_trigger;
+                    if (d.oz_qty) return 'qty: ' + d.oz_qty;
+                } catch(e) {}
+                return '';
+            }
+
+            /* Format time as HH:MM:SS */
+            function fmtTime(dateStr) {
+                var d = new Date(dateStr.replace(' ', 'T'));
+                var h = ('0' + d.getHours()).slice(-2);
+                var m = ('0' + d.getMinutes()).slice(-2);
+                var s = ('0' + d.getSeconds()).slice(-2);
+                return h + ':' + m + ':' + s;
+            }
+
+            /* Shorten session ID for display */
+            function shortId(id) { return id ? id.substring(0, 8) : ''; }
+
+            /* Render active sessions */
+            function renderSessions(sessions) {
+                if (!sessions || !sessions.length) {
+                    sessionsEl.innerHTML = '<div class="oz-empty">Geen actieve sessies</div>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < sessions.length; i++) {
+                    var s = sessions[i];
+                    html += '<div class="oz-live-session">'
+                        + '<span class="oz-live-session-dot"></span>'
+                        + '<span class="oz-live-session-id">' + shortId(s.session_id) + '</span>'
+                        + '<span class="oz-live-session-url">' + (s.page_url || '/') + '</span>'
+                        + '<span class="oz-live-session-time">' + fmtTime(s.last_seen) + '</span>'
+                        + '</div>';
+                }
+                sessionsEl.innerHTML = html;
+            }
+
+            /* Render event feed */
+            function renderFeed(events) {
+                if (!events || !events.length) {
+                    feedEl.innerHTML = '<div class="oz-empty">Nog geen events</div>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < events.length; i++) {
+                    var ev = events[i];
+                    var detail = getDetail(ev.event_name, ev.event_data);
+                    var cls = ev.source === 'cart' ? 'cart' : 'product';
+                    html += '<div class="oz-live-event">'
+                        + '<span class="oz-live-event-time">' + fmtTime(ev.created_at) + '</span>'
+                        + '<span class="oz-live-event-name ' + cls + '">' + (labels[ev.event_name] || ev.event_name) + '</span>'
+                        + (detail ? '<span class="oz-live-event-detail">' + detail + '</span>' : '')
+                        + '</div>';
+                }
+                feedEl.innerHTML = html;
+            }
 
             function poll() {
                 var xhr = new XMLHttpRequest();
@@ -212,14 +316,17 @@ class OZ_Analytics_Dashboard {
                 xhr.onload = function() {
                     try {
                         var resp = JSON.parse(xhr.responseText);
-                        if (resp.success && typeof resp.data.active !== 'undefined') {
+                        if (resp.success) {
+                            /* Update counter */
                             countEl.textContent = resp.data.active;
-                            /* Pulse the dot green when there are active sessions */
                             if (resp.data.active > 0) {
                                 dotEl.classList.add('active');
                             } else {
                                 dotEl.classList.remove('active');
                             }
+                            /* Update live panels */
+                            renderSessions(resp.data.sessions);
+                            renderFeed(resp.data.events);
                         }
                     } catch (e) {}
                 };
@@ -469,6 +576,39 @@ class OZ_Analytics_Dashboard {
                 0%, 100% { box-shadow: 0 0 0 0 rgba(0, 163, 42, 0.4); }
                 50% { box-shadow: 0 0 0 4px rgba(0, 163, 42, 0); }
             }
+
+            /* ── Live panel ── */
+            .oz-live-panel {
+                background: #fff; border: 1px solid #dcdcde; border-radius: 8px;
+                padding: 16px; margin-bottom: 24px;
+            }
+            .oz-live-sections { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+            .oz-live-sections h3 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: #1d2327; }
+            .oz-live-list { max-height: 300px; overflow-y: auto; font-size: 12px; }
+            .oz-live-session {
+                display: flex; align-items: center; gap: 8px;
+                padding: 6px 8px; border-bottom: 1px solid #f0f0f1;
+            }
+            .oz-live-session:last-child { border-bottom: none; }
+            .oz-live-session-dot { width: 6px; height: 6px; border-radius: 50%; background: #00a32a; flex-shrink: 0; }
+            .oz-live-session-url { color: #2271b1; word-break: break-all; }
+            .oz-live-session-time { margin-left: auto; color: #999; white-space: nowrap; font-size: 11px; }
+            .oz-live-session-id { color: #999; font-family: monospace; font-size: 10px; }
+            .oz-live-event {
+                display: flex; align-items: baseline; gap: 8px;
+                padding: 5px 8px; border-bottom: 1px solid #f0f0f1;
+                animation: oz-fade-in 0.3s ease;
+            }
+            .oz-live-event:last-child { border-bottom: none; }
+            .oz-live-event-time { color: #999; font-size: 11px; white-space: nowrap; }
+            .oz-live-event-name {
+                font-weight: 600; color: #1d2327;
+                background: #f0f0f1; padding: 1px 6px; border-radius: 3px; font-size: 11px;
+            }
+            .oz-live-event-name.product { background: #e8f0fe; color: #174ea6; }
+            .oz-live-event-name.cart { background: #fce8e6; color: #c5221f; }
+            .oz-live-event-detail { color: #646970; font-size: 11px; }
+            @keyframes oz-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
             /* ── Section titles ── */
             .oz-section-title {

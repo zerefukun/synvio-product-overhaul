@@ -195,4 +195,47 @@ class OZ_Analytics_Store {
             absint($seconds)
         ));
     }
+
+    /**
+     * Get all active sessions with their current page.
+     *
+     * @param int $seconds  Lookback window (default 60)
+     * @return array  [['session_id' => '...', 'page_url' => '...', 'last_seen' => '...'], ...]
+     */
+    public static function get_active_sessions($seconds = 60) {
+        global $wpdb;
+
+        $table = self::sessions_table_name();
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT session_id, page_url, last_seen
+             FROM {$table}
+             WHERE last_seen >= DATE_SUB(NOW(), INTERVAL %d SECOND)
+             ORDER BY last_seen DESC",
+            absint($seconds)
+        ), ARRAY_A);
+    }
+
+    /**
+     * Get recent events for the live feed.
+     * Returns the last N events from the analytics events table.
+     *
+     * @param int $limit  Number of events to return (default 20)
+     * @return array  Recent events with session_id, event_name, event_data, created_at
+     */
+    public static function recent_events($limit = 20) {
+        global $wpdb;
+
+        $table = self::table_name();
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT session_id, event_name, event_data, source, created_at
+             FROM {$table}
+             ORDER BY id DESC
+             LIMIT %d",
+            absint($limit)
+        ), ARRAY_A);
+    }
 }

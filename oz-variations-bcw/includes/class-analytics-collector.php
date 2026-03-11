@@ -155,7 +155,8 @@ class OZ_Analytics_Collector {
     }
 
     /**
-     * AJAX handler: return active session count for dashboard.
+     * AJAX handler: return live dashboard data.
+     * Returns active session count, session details, and recent events.
      * Admin-only (registered on wp_ajax_ only, not nopriv).
      */
     public static function ajax_active_sessions() {
@@ -166,8 +167,14 @@ class OZ_Analytics_Collector {
             return;
         }
 
-        $count = OZ_Analytics_Store::count_active(60);
-        wp_send_json_success(['active' => $count]);
+        $sessions = OZ_Analytics_Store::get_active_sessions(60);
+        $events   = OZ_Analytics_Store::recent_events(20);
+
+        wp_send_json_success([
+            'active'   => count($sessions),
+            'sessions' => $sessions,
+            'events'   => $events,
+        ]);
     }
 
     /**
