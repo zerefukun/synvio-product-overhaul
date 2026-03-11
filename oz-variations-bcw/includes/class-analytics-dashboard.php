@@ -46,10 +46,19 @@ class OZ_Analytics_Dashboard {
      */
     public static function render() {
         // Date range from query string (default: 7 days)
-        $range = isset($_GET['range']) ? absint($_GET['range']) : 7;
-        if (!in_array($range, [1, 7, 30, 90], true)) {
-            $range = 7;
+        // Support both numeric ranges and special string ranges like 'yesterday'
+        $raw_range = isset($_GET['range']) ? sanitize_text_field($_GET['range']) : '7';
+        if ($raw_range === 'yesterday') {
+            $range = 'yesterday';
+        } else {
+            $range = absint($raw_range);
+            if (!in_array($range, [1, 7, 30, 90], true)) {
+                $range = 7;
+            }
         }
+
+        // Tell reporter which range we're using (for until_date ceiling)
+        OZ_Analytics_Reporter::set_range($range);
 
         // ── Section 1: Shop Performance (WC orders) ──
         $orders       = OZ_Analytics_Reporter::order_summary($range);
@@ -79,7 +88,7 @@ class OZ_Analytics_Dashboard {
                 BCW Analytics
                 <div class="oz-range-tabs">
                     <?php
-                    $ranges = [1 => 'Vandaag', 7 => '7 dagen', 30 => '30 dagen', 90 => '90 dagen'];
+                    $ranges = [1 => 'Vandaag', 'yesterday' => 'Gisteren', 7 => '7 dagen', 30 => '30 dagen', 90 => '90 dagen'];
                     foreach ($ranges as $val => $label) {
                         printf(
                             '<a href="%s" class="%s">%s</a>',

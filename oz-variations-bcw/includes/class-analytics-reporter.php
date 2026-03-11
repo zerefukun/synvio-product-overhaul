@@ -28,6 +28,12 @@ class OZ_Analytics_Reporter {
     const LAUNCH_DATE = '2026-03-06';
 
     /**
+     * Current active range — set by dashboard before calling methods.
+     * Used by until_date() to know if we need a ceiling (e.g. "yesterday").
+     */
+    private static $active_range = 7;
+
+    /**
      * Product IDs considered "upsell/accessory" products.
      * These are tools, rollers, verfbakken — items cross-sold via our cart drawer.
      * Used to calculate upsell attach rate.
@@ -83,7 +89,7 @@ class OZ_Analytics_Reporter {
      */
     public static function order_summary($days) {
         $since = self::since_date($days);
-        return self::period_stats($since, current_time('Y-m-d H:i:s'));
+        return self::period_stats($since, self::until_date($days));
     }
 
     /**
@@ -191,18 +197,19 @@ class OZ_Analytics_Reporter {
         $items_table = $wpdb->prefix . 'woocommerce_order_items';
         $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         // Order items table is the same for HPOS and legacy.
         // We just need to join with the correct orders source for date filtering.
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_gmt >= %s";
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
                             AND o.post_status IN ('wc-completed', 'wc-processing')
-                            AND o.post_date >= %s";
+                            AND o.post_date >= %s AND o.post_date < %s";
         }
 
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -222,6 +229,7 @@ class OZ_Analytics_Reporter {
              ORDER BY revenue DESC
              LIMIT %d",
             $since,
+            $until,
             $limit
         ), ARRAY_A);
 
@@ -248,16 +256,17 @@ class OZ_Analytics_Reporter {
         $items_table = $wpdb->prefix . 'woocommerce_order_items';
         $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_gmt >= %s";
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
                             AND o.post_status IN ('wc-completed', 'wc-processing')
-                            AND o.post_date >= %s";
+                            AND o.post_date >= %s AND o.post_date < %s";
         }
 
         // Get all order items with product IDs and revenue
@@ -273,7 +282,8 @@ class OZ_Analytics_Reporter {
              {$orders_join}
              WHERE oi.order_item_type = 'line_item'
              GROUP BY product_id",
-            $since
+            $since,
+            $until
         ), ARRAY_A);
 
         // Map each product to its line using OZ_Product_Line_Config
@@ -429,8 +439,8 @@ class OZ_Analytics_Reporter {
      */
     public static function avg_items_per_order($days) {
         $since = self::since_date($days);
-        $now   = current_time('Y-m-d H:i:s');
-        return self::avg_items_per_order_period($since, $now);
+        $until = self::until_date($days);
+        return self::avg_items_per_order_period($since, $until);
     }
 
 
@@ -448,21 +458,22 @@ class OZ_Analytics_Reporter {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         $row = $wpdb->get_row($wpdb->prepare(
             "SELECT COUNT(*) AS total, COUNT(DISTINCT session_id) AS sessions
-             FROM {$table} WHERE created_at >= %s",
-            $since
+             FROM {$table} WHERE created_at >= %s AND created_at < %s",
+            $since, $until
         ), ARRAY_A);
 
         $atc = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_add_to_cart' AND created_at >= %s",
-            $since
+            "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_add_to_cart' AND created_at >= %s AND created_at < %s",
+            $since, $until
         ));
 
         $checkout = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_cart_checkout_clicked' AND created_at >= %s",
-            $since
+            "SELECT COUNT(*) FROM {$table} WHERE event_name = 'oz_cart_checkout_clicked' AND created_at >= %s AND created_at < %s",
+            $since, $until
         ));
 
         return [
@@ -480,15 +491,17 @@ class OZ_Analytics_Reporter {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         return $wpdb->get_results($wpdb->prepare(
             "SELECT event_name, COUNT(*) AS count
              FROM {$table}
-             WHERE source = %s AND created_at >= %s
+             WHERE source = %s AND created_at >= %s AND created_at < %s
              GROUP BY event_name
              ORDER BY count DESC",
             $source,
-            $since
+            $since,
+            $until
         ), ARRAY_A);
     }
 
@@ -499,13 +512,14 @@ class OZ_Analytics_Reporter {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         $json_path = '$.' . $json_key;
 
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT JSON_UNQUOTE(JSON_EXTRACT(event_data, %s)) AS value, COUNT(*) AS count
              FROM {$table}
-             WHERE event_name = %s AND created_at >= %s
+             WHERE event_name = %s AND created_at >= %s AND created_at < %s
              GROUP BY value
              HAVING value IS NOT NULL AND value != 'null'
              ORDER BY count DESC
@@ -513,6 +527,7 @@ class OZ_Analytics_Reporter {
             $json_path,
             $event_name,
             $since,
+            $until,
             $limit
         ), ARRAY_A);
 
@@ -526,6 +541,7 @@ class OZ_Analytics_Reporter {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         $row = $wpdb->get_row($wpdb->prepare(
             "SELECT
@@ -533,8 +549,8 @@ class OZ_Analytics_Reporter {
                 SUM(CASE WHEN event_name = 'oz_add_to_cart' THEN 1 ELSE 0 END) AS add_to_cart,
                 SUM(CASE WHEN event_name = 'oz_cart_checkout_clicked' THEN 1 ELSE 0 END) AS checkout
              FROM {$table}
-             WHERE created_at >= %s",
-            $since
+             WHERE created_at >= %s AND created_at < %s",
+            $since, $until
         ), ARRAY_A);
 
         return [
@@ -552,14 +568,15 @@ class OZ_Analytics_Reporter {
         global $wpdb;
         $table = OZ_Analytics_Store::table_name();
         $since = self::since_date($days);
+        $until = self::until_date($days);
 
         return $wpdb->get_results($wpdb->prepare(
             "SELECT DATE(created_at) AS date, COUNT(*) AS count
              FROM {$table}
-             WHERE created_at >= %s
+             WHERE created_at >= %s AND created_at < %s
              GROUP BY DATE(created_at)
              ORDER BY date ASC",
-            $since
+            $since, $until
         ), ARRAY_A);
     }
 
@@ -589,10 +606,34 @@ class OZ_Analytics_Reporter {
      * This matches WC Analytics' date behavior.
      */
     private static function since_date($days) {
+        // Special case: 'yesterday' returns yesterday midnight
+        if ($days === 'yesterday') {
+            return date('Y-m-d 00:00:00', current_time('timestamp') - DAY_IN_SECONDS);
+        }
         // Start of today in WP timezone, then subtract ($days - 1) full days
         // For "Vandaag" ($days=1): returns midnight today
         // For "7 dagen" ($days=7): returns midnight 6 days ago (= 7 calendar days incl. today)
         $days_back = max(0, absint($days) - 1);
         return date('Y-m-d 00:00:00', current_time('timestamp') - ($days_back * DAY_IN_SECONDS));
+    }
+
+    /**
+     * Set the active range before calling reporter methods.
+     * Call this once from the dashboard so all methods know the ceiling.
+     */
+    public static function set_range($range) {
+        self::$active_range = $range;
+    }
+
+    /**
+     * Helper: "until" date for the active range.
+     * Most ranges go to "now". Yesterday ends at midnight today.
+     */
+    private static function until_date($days = null) {
+        $r = $days !== null ? $days : self::$active_range;
+        if ($r === 'yesterday') {
+            return date('Y-m-d 00:00:00', current_time('timestamp'));
+        }
+        return current_time('Y-m-d H:i:s');
     }
 }
