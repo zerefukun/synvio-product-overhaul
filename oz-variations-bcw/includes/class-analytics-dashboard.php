@@ -562,7 +562,7 @@ class OZ_Analytics_Dashboard {
 
     /**
      * Render traffic sources with colored medium badges.
-     * Each row: "source" badge(medium) — bar — count
+     * Cleans up raw UTM values into readable labels.
      */
     private static function render_traffic_sources($rows) {
         if (empty($rows)) {
@@ -570,15 +570,47 @@ class OZ_Analytics_Dashboard {
             return;
         }
 
-        /* Color map for medium badges */
+        /* Color map for medium categories */
         $medium_colors = [
             'organic'  => '#00a32a',  // Green — search engines
             'direct'   => '#2271b1',  // Blue — typed URL
             'social'   => '#e65100',  // Orange — social media
             'referral' => '#7b1fa2',  // Purple — other websites
             'email'    => '#c62828',  // Red — email clicks
-            'cpc'      => '#f9a825',  // Yellow — paid ads
+            'cpc'      => '#d4a017',  // Gold — paid ads
+            'paid'     => '#d4a017',  // Gold — paid ads (alt)
+            'none'     => '#2271b1',  // Blue — direct (no medium)
             'unknown'  => '#646970',  // Grey
+        ];
+
+        /* Friendly source names */
+        $source_labels = [
+            'google'    => 'Google',
+            'bing'      => 'Bing',
+            'yahoo'     => 'Yahoo',
+            'duckduckgo' => 'DuckDuckGo',
+            'ecosia'    => 'Ecosia',
+            'facebook'  => 'Facebook',
+            'instagram' => 'Instagram',
+            'pinterest' => 'Pinterest',
+            'youtube'   => 'YouTube',
+            'tiktok'    => 'TikTok',
+            'linkedin'  => 'LinkedIn',
+            'twitter'   => 'Twitter / X',
+            'direct'    => 'Direct',
+        ];
+
+        /* Classify raw medium into a clean category + label */
+        $medium_categories = [
+            'organic'              => ['cat' => 'organic',  'label' => 'Organisch'],
+            'cpc'                  => ['cat' => 'cpc',      'label' => 'Betaald'],
+            'paid'                 => ['cat' => 'cpc',      'label' => 'Betaald'],
+            'social'               => ['cat' => 'social',   'label' => 'Social'],
+            'referral'             => ['cat' => 'referral', 'label' => 'Verwijzing'],
+            'email'                => ['cat' => 'email',    'label' => 'E-mail'],
+            'direct'               => ['cat' => 'direct',   'label' => 'Direct'],
+            'none'                 => ['cat' => 'direct',   'label' => 'Direct'],
+            'unknown'              => ['cat' => 'unknown',  'label' => 'Onbekend'],
         ];
 
         $max = 1;
@@ -589,8 +621,34 @@ class OZ_Analytics_Dashboard {
         foreach ($rows as $row) {
             $count  = intval($row['count']);
             $pct    = round(($count / $max) * 100);
-            $medium = $row['medium'] ?: 'unknown';
-            $color  = isset($medium_colors[$medium]) ? $medium_colors[$medium] : $medium_colors['unknown'];
+            $raw_source = strtolower(trim($row['source']));
+            $raw_medium = strtolower(trim($row['medium']));
+
+            /* Clean source name — special case: Meta ads use source=Facebook
+               but medium may specify the actual platform (Instagram_Stories_cpc) */
+            if ($raw_source === 'facebook' && strpos($raw_medium, 'instagram') !== false) {
+                $source_label = 'Instagram';
+            } elseif (isset($source_labels[$raw_source])) {
+                $source_label = $source_labels[$raw_source];
+            } else {
+                $source_label = ucfirst($raw_source);
+            }
+
+            /* Classify medium — check if raw medium contains known keywords */
+            $medium_info = null;
+            if (isset($medium_categories[$raw_medium])) {
+                $medium_info = $medium_categories[$raw_medium];
+            } elseif (strpos($raw_medium, 'cpc') !== false || strpos($raw_medium, 'paid') !== false || strpos($raw_medium, 'ppc') !== false) {
+                $medium_info = ['cat' => 'cpc', 'label' => 'Betaald'];
+            } elseif (strpos($raw_medium, 'social') !== false || strpos($raw_medium, 'stories') !== false || strpos($raw_medium, 'feed') !== false || strpos($raw_medium, 'reel') !== false) {
+                $medium_info = ['cat' => 'social', 'label' => 'Social'];
+            } elseif (strpos($raw_medium, 'email') !== false || strpos($raw_medium, 'newsletter') !== false) {
+                $medium_info = ['cat' => 'email', 'label' => 'E-mail'];
+            } else {
+                $medium_info = ['cat' => 'unknown', 'label' => ucfirst(str_replace('_', ' ', $raw_medium))];
+            }
+
+            $color = isset($medium_colors[$medium_info['cat']]) ? $medium_colors[$medium_info['cat']] : $medium_colors['unknown'];
 
             printf(
                 '<div class="oz-bar-row">'
@@ -598,9 +656,9 @@ class OZ_Analytics_Dashboard {
                 . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%;background:%s"></div></div>'
                 . '<span class="oz-bar-count">%s</span>'
                 . '</div>',
-                esc_html($row['source']),
+                esc_html($source_label),
                 esc_attr($color),
-                esc_html($medium),
+                esc_html($medium_info['label']),
                 $pct,
                 esc_attr($color),
                 number_format($count)
@@ -637,6 +695,7 @@ class OZ_Analytics_Dashboard {
 
     /**
      * Render a ranked top-N list.
+     * If values look like URL paths, cleans them up for readability.
      */
     private static function render_top_list($rows) {
         if (empty($rows)) {
@@ -645,6 +704,13 @@ class OZ_Analytics_Dashboard {
         }
 
         foreach ($rows as $i => $row) {
+            $display = $row['value'];
+
+            /* If it looks like a URL path, clean it up */
+            if (strpos($display, '/') === 0) {
+                $display = self::format_landing_page($display);
+            }
+
             printf(
                 '<div class="oz-top-item">'
                 . '<span class="oz-top-rank">%d.</span>'
@@ -652,10 +718,53 @@ class OZ_Analytics_Dashboard {
                 . '<span class="oz-top-count">%s</span>'
                 . '</div>',
                 $i + 1,
-                esc_html($row['value']),
+                esc_html($display),
                 number_format(intval($row['count']))
             );
         }
+    }
+
+    /**
+     * Turn a raw URL path into a readable page label.
+     * /producten/beton-cire-original-bestellen/ → "Beton Cire Original Bestellen"
+     * / → "Homepage"
+     */
+    private static function format_landing_page($path) {
+        $path = trim($path, '/');
+
+        if ($path === '') return 'Homepage';
+
+        /* Strip common prefixes to get the meaningful part */
+        $prefixes = ['producten/', 'product/', 'bestel/', 'product-categorie/'];
+        $prefix_label = '';
+        foreach ($prefixes as $p) {
+            if (strpos($path, $p) === 0) {
+                $path = substr($path, strlen($p));
+                /* Show a small prefix hint */
+                $prefix_labels = [
+                    'producten/' => '',
+                    'product/'   => '',
+                    'bestel/'    => '',
+                    'product-categorie/' => 'Cat: ',
+                ];
+                $prefix_label = $prefix_labels[$p];
+                break;
+            }
+        }
+
+        /* Remove trailing slug numbers/IDs and file extensions */
+        $path = trim($path, '/');
+
+        /* Convert slug to readable: dashes → spaces, capitalize */
+        $readable = str_replace('-', ' ', $path);
+        $readable = ucwords($readable);
+
+        /* Truncate if too long */
+        if (mb_strlen($readable) > 50) {
+            $readable = mb_substr($readable, 0, 47) . '...';
+        }
+
+        return $prefix_label . $readable;
     }
 
     /**
