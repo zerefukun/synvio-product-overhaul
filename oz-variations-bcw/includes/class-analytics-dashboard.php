@@ -253,7 +253,11 @@ class OZ_Analytics_Dashboard {
             function getDetail(name, data) {
                 try {
                     var d = JSON.parse(data);
+                    /* oz_color_selected has both oz_color + oz_color_mode;
+                       oz_color_mode_changed has only oz_color_mode.
+                       Check oz_color first — if present, show color name. Otherwise show mode. */
                     if (d.oz_color) return d.oz_color;
+                    if (d.oz_color_mode) return d.oz_color_mode === 'ral_ncs' ? 'RAL / NCS' : d.oz_color_mode;
                     /* oz_option_selected sends oz_option_type (pu/primer/etc) + oz_option_value */
                     if (d.oz_option_type) return d.oz_option_type + ': ' + (d.oz_option_value || '');
                     if (d.oz_upsell_name) return d.oz_upsell_name;
