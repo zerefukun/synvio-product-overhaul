@@ -514,24 +514,38 @@ class OZ_Analytics_Reporter {
         $since = self::since_date($days);
         $until = self::until_date($days);
 
-        $json_path = '$.' . $json_key;
-
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT JSON_UNQUOTE(JSON_EXTRACT(event_data, %s)) AS value, COUNT(*) AS count
+        // MariaDB has bugs with JSON_EXTRACT + GROUP BY (silently drops rows).
+        // Fetch raw event_data and aggregate in PHP instead.
+        $rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT event_data
              FROM {$table}
-             WHERE event_name = %s AND created_at >= %s AND created_at < %s
-             GROUP BY value
-             HAVING value IS NOT NULL AND value != 'null'
-             ORDER BY count DESC
-             LIMIT %d",
-            $json_path,
+             WHERE event_name = %s AND created_at >= %s AND created_at < %s",
             $event_name,
             $since,
-            $until,
-            $limit
+            $until
         ), ARRAY_A);
 
-        return $results ?: [];
+        // Aggregate values in PHP
+        $counts = [];
+        foreach ($rows as $row) {
+            $data = json_decode($row['event_data'], true);
+            if (!$data || !isset($data[$json_key])) continue;
+            $val = $data[$json_key];
+            if ($val === null || $val === '') continue;
+            $val = (string) $val;
+            if (!isset($counts[$val])) {
+                $counts[$val] = 0;
+            }
+            $counts[$val]++;
+        }
+
+        // Sort by count descending, format as expected output
+        arsort($counts);
+        $results = [];
+        foreach (array_slice($counts, 0, $limit, true) as $value => $count) {
+            $results[] = ['value' => $value, 'count' => $count];
+        }
+        return $results;
     }
 
     /**
@@ -574,24 +588,34 @@ class OZ_Analytics_Reporter {
         $since = self::since_date($days);
         $until = self::until_date($days);
 
-        // Group by source + medium for a more complete picture
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT
-                JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_traffic_source')) AS source,
-                JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_traffic_medium')) AS medium,
-                COUNT(*) AS count
+        // MariaDB has bugs with JSON_EXTRACT + GROUP BY (silently drops rows).
+        // Fetch raw event_data and aggregate in PHP instead.
+        $rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT event_data
              FROM {$table}
              WHERE event_name = 'oz_session_start'
-             AND created_at >= %s AND created_at < %s
-             GROUP BY source, medium
-             ORDER BY count DESC
-             LIMIT %d",
+             AND created_at >= %s AND created_at < %s",
             $since,
-            $until,
-            $limit
+            $until
         ), ARRAY_A);
 
-        return $results ?: [];
+        // Aggregate source+medium counts in PHP
+        $counts = [];
+        foreach ($rows as $row) {
+            $data = json_decode($row['event_data'], true);
+            if (!$data) continue;
+            $source = isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : 'unknown';
+            $medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : 'unknown';
+            $key = $source . '|' . $medium;
+            if (!isset($counts[$key])) {
+                $counts[$key] = ['source' => $source, 'medium' => $medium, 'count' => 0];
+            }
+            $counts[$key]['count']++;
+        }
+
+        // Sort by count descending, limit results
+        usort($counts, function ($a, $b) { return $b['count'] - $a['count']; });
+        return array_slice($counts, 0, $limit);
     }
 
     /**
