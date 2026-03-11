@@ -1430,11 +1430,126 @@ function init() {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+ * LIGHTBOX — fullscreen image viewer with prev/next navigation
+ * ═══════════════════════════════════════════════════════════════ */
+
+var lightbox = {
+  overlay: null,
+  img: null,
+  images: [],   // array of full-size URLs
+  current: 0,   // index of currently displayed image
+
+  /** Build the lightbox DOM (once) and append to body */
+  create: function () {
+    if (this.overlay) return;
+
+    var ov = document.createElement('div');
+    ov.className = 'oz-lightbox';
+    ov.innerHTML =
+      '<button class="oz-lb-close" aria-label="Sluiten">&times;</button>' +
+      '<button class="oz-lb-prev" aria-label="Vorige">&#8249;</button>' +
+      '<button class="oz-lb-next" aria-label="Volgende">&#8250;</button>' +
+      '<div class="oz-lb-img-wrap"><img class="oz-lb-img" alt=""></div>';
+
+    document.body.appendChild(ov);
+    this.overlay = ov;
+    this.img = ov.querySelector('.oz-lb-img');
+
+    var self = this;
+
+    // Close on overlay click (but not on image or buttons)
+    ov.addEventListener('click', function (e) {
+      if (e.target === ov || e.target.classList.contains('oz-lb-img-wrap')) {
+        self.close();
+      }
+    });
+    ov.querySelector('.oz-lb-close').addEventListener('click', function () { self.close(); });
+    ov.querySelector('.oz-lb-prev').addEventListener('click', function (e) { e.stopPropagation(); self.prev(); });
+    ov.querySelector('.oz-lb-next').addEventListener('click', function (e) { e.stopPropagation(); self.next(); });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function (e) {
+      if (!self.overlay || !self.overlay.classList.contains('oz-lb-open')) return;
+      if (e.key === 'Escape') self.close();
+      if (e.key === 'ArrowLeft') self.prev();
+      if (e.key === 'ArrowRight') self.next();
+    });
+  },
+
+  /** Collect all gallery image URLs from thumbnails */
+  collectImages: function () {
+    var thumbs = document.querySelectorAll('.oz-gallery-thumb');
+    this.images = [];
+    for (var i = 0; i < thumbs.length; i++) {
+      var src = thumbs[i].getAttribute('data-full-src');
+      if (src) this.images.push(src);
+    }
+  },
+
+  /** Open lightbox at given image URL */
+  open: function (src) {
+    this.create();
+    this.collectImages();
+
+    // Find index of clicked image
+    this.current = 0;
+    for (var i = 0; i < this.images.length; i++) {
+      if (this.images[i] === src) { this.current = i; break; }
+    }
+
+    this.show();
+    this.overlay.classList.add('oz-lb-open');
+    document.body.style.overflow = 'hidden';
+
+    // Hide arrows if only one image
+    var hasMultiple = this.images.length > 1;
+    this.overlay.querySelector('.oz-lb-prev').style.display = hasMultiple ? '' : 'none';
+    this.overlay.querySelector('.oz-lb-next').style.display = hasMultiple ? '' : 'none';
+  },
+
+  /** Display the current image */
+  show: function () {
+    if (this.images[this.current]) {
+      this.img.src = this.images[this.current];
+    }
+  },
+
+  prev: function () {
+    this.current = (this.current - 1 + this.images.length) % this.images.length;
+    this.show();
+  },
+
+  next: function () {
+    this.current = (this.current + 1) % this.images.length;
+    this.show();
+  },
+
+  close: function () {
+    if (this.overlay) {
+      this.overlay.classList.remove('oz-lb-open');
+      document.body.style.overflow = '';
+    }
+  }
+};
+
+/** Click handler for main gallery image — opens lightbox */
+function openGalleryLightbox() {
+  var mainImg = document.getElementById('mainImg');
+  if (!mainImg) return;
+
+  mainImg.addEventListener('click', function () {
+    lightbox.open(mainImg.src);
+  });
+}
+
+
 // Run when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', function () { init(); openGalleryLightbox(); });
 } else {
   init();
+  openGalleryLightbox();
 }
 
 
