@@ -561,8 +561,9 @@ class OZ_Analytics_Dashboard {
     }
 
     /**
-     * Render traffic sources with colored medium badges.
-     * Cleans up raw UTM values into readable labels.
+     * Render traffic sources with clear two-line layout.
+     * Line 1: Source name (Google, Instagram, Direct)
+     * Line 2: Channel description (via organisch zoeken, via betaalde advertentie)
      */
     private static function render_traffic_sources($rows) {
         if (empty($rows)) {
@@ -570,48 +571,74 @@ class OZ_Analytics_Dashboard {
             return;
         }
 
-        /* Color map for medium categories */
-        $medium_colors = [
-            'organic'  => '#00a32a',  // Green — search engines
-            'direct'   => '#2271b1',  // Blue — typed URL
-            'social'   => '#e65100',  // Orange — social media
-            'referral' => '#7b1fa2',  // Purple — other websites
-            'email'    => '#c62828',  // Red — email clicks
-            'cpc'      => '#d4a017',  // Gold — paid ads
-            'paid'     => '#d4a017',  // Gold — paid ads (alt)
-            'none'     => '#2271b1',  // Blue — direct (no medium)
-            'unknown'  => '#646970',  // Grey
+        /* Color map for channel categories */
+        $channel_colors = [
+            'organic'  => '#00a32a',
+            'direct'   => '#2271b1',
+            'social'   => '#e65100',
+            'referral' => '#7b1fa2',
+            'email'    => '#c62828',
+            'cpc'      => '#d4a017',
+            'unknown'  => '#646970',
         ];
 
         /* Friendly source names */
         $source_labels = [
-            'google'    => 'Google',
-            'bing'      => 'Bing',
-            'yahoo'     => 'Yahoo',
+            'google'     => 'Google',
+            'bing'       => 'Bing',
+            'yahoo'      => 'Yahoo',
             'duckduckgo' => 'DuckDuckGo',
-            'ecosia'    => 'Ecosia',
-            'facebook'  => 'Facebook',
-            'instagram' => 'Instagram',
-            'pinterest' => 'Pinterest',
-            'youtube'   => 'YouTube',
-            'tiktok'    => 'TikTok',
-            'linkedin'  => 'LinkedIn',
-            'twitter'   => 'Twitter / X',
-            'direct'    => 'Direct',
+            'ecosia'     => 'Ecosia',
+            'facebook'   => 'Facebook',
+            'instagram'  => 'Instagram',
+            'pinterest'  => 'Pinterest',
+            'youtube'    => 'YouTube',
+            'tiktok'     => 'TikTok',
+            'linkedin'   => 'LinkedIn',
+            'twitter'    => 'Twitter / X',
+            'direct'     => 'Direct',
         ];
 
-        /* Classify raw medium into a clean category + label */
-        $medium_categories = [
-            'organic'              => ['cat' => 'organic',  'label' => 'Organisch'],
-            'cpc'                  => ['cat' => 'cpc',      'label' => 'Betaald'],
-            'paid'                 => ['cat' => 'cpc',      'label' => 'Betaald'],
-            'social'               => ['cat' => 'social',   'label' => 'Social'],
-            'referral'             => ['cat' => 'referral', 'label' => 'Verwijzing'],
-            'email'                => ['cat' => 'email',    'label' => 'E-mail'],
-            'direct'               => ['cat' => 'direct',   'label' => 'Direct'],
-            'none'                 => ['cat' => 'direct',   'label' => 'Direct'],
-            'unknown'              => ['cat' => 'unknown',  'label' => 'Onbekend'],
+        /* Channel descriptions in Dutch — what the user actually understands */
+        $channel_descriptions = [
+            'organic'  => 'via organisch zoeken',
+            'cpc'      => 'via betaalde advertentie',
+            'social'   => 'via social media',
+            'referral' => 'via andere website',
+            'email'    => 'via e-mail',
+            'direct'   => 'direct bezoek (URL ingetypt)',
+            'unknown'  => 'onbekend kanaal',
         ];
+
+        /**
+         * Classify a raw source+medium into clean source label + channel category.
+         */
+        $classify = function ($raw_source, $raw_medium) use ($source_labels) {
+            /* Source label — Meta ads special case */
+            if ($raw_source === 'facebook' && strpos($raw_medium, 'instagram') !== false) {
+                $label = 'Instagram';
+            } elseif (isset($source_labels[$raw_source])) {
+                $label = $source_labels[$raw_source];
+            } else {
+                $label = ucfirst($raw_source);
+            }
+
+            /* Channel category from medium */
+            $known = ['organic', 'cpc', 'paid', 'social', 'referral', 'email', 'direct', 'none'];
+            if (in_array($raw_medium, $known, true)) {
+                $cat = ($raw_medium === 'paid') ? 'cpc' : (($raw_medium === 'none') ? 'direct' : $raw_medium);
+            } elseif (strpos($raw_medium, 'cpc') !== false || strpos($raw_medium, 'paid') !== false || strpos($raw_medium, 'ppc') !== false) {
+                $cat = 'cpc';
+            } elseif (strpos($raw_medium, 'social') !== false || strpos($raw_medium, 'stories') !== false || strpos($raw_medium, 'feed') !== false || strpos($raw_medium, 'reel') !== false) {
+                $cat = 'social';
+            } elseif (strpos($raw_medium, 'email') !== false || strpos($raw_medium, 'newsletter') !== false) {
+                $cat = 'email';
+            } else {
+                $cat = 'unknown';
+            }
+
+            return ['label' => $label, 'cat' => $cat];
+        };
 
         $max = 1;
         foreach ($rows as $row) {
@@ -624,41 +651,25 @@ class OZ_Analytics_Dashboard {
             $raw_source = strtolower(trim($row['source']));
             $raw_medium = strtolower(trim($row['medium']));
 
-            /* Clean source name — special case: Meta ads use source=Facebook
-               but medium may specify the actual platform (Instagram_Stories_cpc) */
-            if ($raw_source === 'facebook' && strpos($raw_medium, 'instagram') !== false) {
-                $source_label = 'Instagram';
-            } elseif (isset($source_labels[$raw_source])) {
-                $source_label = $source_labels[$raw_source];
-            } else {
-                $source_label = ucfirst($raw_source);
-            }
-
-            /* Classify medium — check if raw medium contains known keywords */
-            $medium_info = null;
-            if (isset($medium_categories[$raw_medium])) {
-                $medium_info = $medium_categories[$raw_medium];
-            } elseif (strpos($raw_medium, 'cpc') !== false || strpos($raw_medium, 'paid') !== false || strpos($raw_medium, 'ppc') !== false) {
-                $medium_info = ['cat' => 'cpc', 'label' => 'Betaald'];
-            } elseif (strpos($raw_medium, 'social') !== false || strpos($raw_medium, 'stories') !== false || strpos($raw_medium, 'feed') !== false || strpos($raw_medium, 'reel') !== false) {
-                $medium_info = ['cat' => 'social', 'label' => 'Social'];
-            } elseif (strpos($raw_medium, 'email') !== false || strpos($raw_medium, 'newsletter') !== false) {
-                $medium_info = ['cat' => 'email', 'label' => 'E-mail'];
-            } else {
-                $medium_info = ['cat' => 'unknown', 'label' => ucfirst(str_replace('_', ' ', $raw_medium))];
-            }
-
-            $color = isset($medium_colors[$medium_info['cat']]) ? $medium_colors[$medium_info['cat']] : $medium_colors['unknown'];
+            $info = $classify($raw_source, $raw_medium);
+            $color = isset($channel_colors[$info['cat']]) ? $channel_colors[$info['cat']] : $channel_colors['unknown'];
+            $desc  = isset($channel_descriptions[$info['cat']]) ? $channel_descriptions[$info['cat']] : $raw_medium;
 
             printf(
-                '<div class="oz-bar-row">'
-                . '<span class="oz-bar-label">%s <span class="oz-traffic-badge" style="background:%s">%s</span></span>'
+                '<div class="oz-traffic-row">'
+                . '<div class="oz-traffic-label">'
+                .   '<span class="oz-traffic-dot" style="background:%s"></span>'
+                .   '<div class="oz-traffic-text">'
+                .     '<span class="oz-traffic-source">%s</span>'
+                .     '<span class="oz-traffic-channel">%s</span>'
+                .   '</div>'
+                . '</div>'
                 . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%;background:%s"></div></div>'
                 . '<span class="oz-bar-count">%s</span>'
                 . '</div>',
-                esc_html($source_label),
                 esc_attr($color),
-                esc_html($medium_info['label']),
+                esc_html($info['label']),
+                esc_html($desc),
                 $pct,
                 esc_attr($color),
                 number_format($count)
@@ -839,12 +850,21 @@ class OZ_Analytics_Dashboard {
             .oz-live-event-detail { color: #646970; font-size: 11px; }
             @keyframes oz-fade-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 
-            /* ── Traffic source badges ── */
-            .oz-traffic-badge {
-                display: inline-block; font-size: 9px; font-weight: 600; color: #fff;
-                padding: 1px 5px; border-radius: 3px; vertical-align: middle;
-                margin-left: 4px; text-transform: uppercase; letter-spacing: 0.3px;
+            /* ── Traffic source rows ── */
+            .oz-traffic-row {
+                display: flex; align-items: center; gap: 8px;
+                margin-bottom: 8px; font-size: 13px;
             }
+            .oz-traffic-label {
+                display: flex; align-items: center; gap: 8px;
+                min-width: 200px; flex-shrink: 0;
+            }
+            .oz-traffic-dot {
+                width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+            }
+            .oz-traffic-text { display: flex; flex-direction: column; line-height: 1.3; }
+            .oz-traffic-source { font-weight: 600; color: #1d2327; font-size: 13px; }
+            .oz-traffic-channel { font-size: 11px; color: #646970; }
 
             /* ── Section titles ── */
             .oz-section-title {
