@@ -288,8 +288,10 @@ class OZ_Frontend_Display {
             $all_swatches[$vid] = $v;
         }
 
-        // Sort by product ID — ensures identical order on every color page
-        ksort($all_swatches);
+        // Sort alphabetically by color name (natural sort so Cement 1 < Cement 2 < Cement 10)
+        uasort($all_swatches, function ($a, $b) {
+            return strnatcasecmp($a['color'], $b['color']);
+        });
 
         $html = '<div class="oz-color-swatches">';
 
@@ -373,7 +375,10 @@ class OZ_Frontend_Display {
             ];
         }
 
-        ksort($swatches);
+        // Sort alphabetically by color name (natural sort)
+        uasort($swatches, function ($a, $b) {
+            return strnatcasecmp($a['color'], $b['color']);
+        });
 
         // Render as static swatches — data-static="1" tells JS not to navigate
         $html = '<div class="oz-color-swatches">';
