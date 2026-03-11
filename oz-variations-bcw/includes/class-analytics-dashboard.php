@@ -254,10 +254,15 @@ class OZ_Analytics_Dashboard {
                 try {
                     var d = JSON.parse(data);
                     if (d.oz_color) return d.oz_color;
-                    if (d.oz_option_label) return d.oz_option_label + ': ' + (d.oz_option_value || '');
+                    /* oz_option_selected sends oz_option_type (pu/primer/etc) + oz_option_value */
+                    if (d.oz_option_type) return d.oz_option_type + ': ' + (d.oz_option_value || '');
                     if (d.oz_upsell_name) return d.oz_upsell_name;
                     if (d.oz_trigger) return d.oz_trigger;
+                    if (d.oz_tool_mode) return d.oz_tool_mode;
+                    if (d.oz_tool_id) return d.oz_tool_id + ' ' + (d.oz_tool_action || '');
                     if (d.oz_qty) return 'qty: ' + d.oz_qty;
+                    if (d.oz_error) return d.oz_error;
+                    if (d.oz_image_index !== undefined) return 'foto ' + d.oz_image_index;
                 } catch(e) {}
                 return '';
             }
