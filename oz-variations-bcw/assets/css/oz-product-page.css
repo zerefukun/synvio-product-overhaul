@@ -797,9 +797,9 @@ details.oz-faq-item[open] .oz-faq-question::after {
 /* src/css/color.css */
 .oz-color-swatches {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(62px, 1fr));
-  column-gap: 2px;
-  row-gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  column-gap: 0;
+  row-gap: 4px;
   max-height: 1200px;
   opacity: 1;
   overflow: visible;
@@ -828,12 +828,12 @@ details.oz-faq-item[open] .oz-faq-question::after {
   text-decoration: none;
   position: relative;
   text-align: center;
-  padding-bottom: 2px;
+  padding-bottom: 0;
 }
 .oz-color-swatch .oz-swatch-img {
-  width: 56px;
-  height: 56px;
-  border-radius: 8px;
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
   border: 2px solid var(--oz-border);
   overflow: hidden;
   display: block;
