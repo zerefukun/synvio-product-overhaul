@@ -9,8 +9,7 @@
   /* CSS Grid auto-fill: pack as many swatches per row as possible */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-  column-gap: 0;
-  row-gap: 4px;
+  gap: 2px;
   /* Animated show — height expands first, then opacity fades in (0.1s delay) */
   max-height: 1200px;
   opacity: 1;

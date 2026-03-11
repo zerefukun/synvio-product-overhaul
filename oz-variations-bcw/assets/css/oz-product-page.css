@@ -798,8 +798,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-color-swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-  column-gap: 0;
-  row-gap: 4px;
+  gap: 2px;
   max-height: 1200px;
   opacity: 1;
   overflow: visible;
