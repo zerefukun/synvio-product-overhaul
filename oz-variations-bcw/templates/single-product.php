@@ -673,10 +673,10 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <!-- Trust Checks — compact inline checkmarks -->
       <div class="oz-trust-checks">
-        <span class="oz-trust-check">&#10003; Verzending NL, BE en DE</span>
-        <span class="oz-trust-check">&#10003; Achteraf betalen mogelijk</span>
-        <span class="oz-trust-check">&#10003; 20.000+ klanten</span>
-        <span class="oz-trust-check">&#10003; Vragen? Wij helpen je!</span>
+        <span class="oz-trust-check">&#10003; Vandaag besteld, morgen stucen</span>
+        <span class="oz-trust-check">&#10003; Achteraf betalen</span>
+        <span class="oz-trust-check">&#10003; 420.000+ m² aangebracht door klanten</span>
+        <span class="oz-trust-check">&#10003; Gratis workshop bij je bestelling</span>
       </div>
 
       <?php /* Short description removed — client decision 2026-03-07 */ ?>
