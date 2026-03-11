@@ -831,8 +831,8 @@ details.oz-faq-item[open] .oz-faq-question::after {
   padding-bottom: 0;
 }
 .oz-color-swatch .oz-swatch-img {
-  width: 46px;
-  height: 46px;
+  width: 100%;
+  aspect-ratio: 1;
   border-radius: 6px;
   border: 2px solid var(--oz-border);
   overflow: hidden;
