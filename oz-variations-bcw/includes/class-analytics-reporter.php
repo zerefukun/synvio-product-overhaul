@@ -599,16 +599,49 @@ class OZ_Analytics_Reporter {
             $until
         ), ARRAY_A);
 
+        // Normalize sources so aliases merge into one row.
+        // ig → instagram, fb → facebook, yt → youtube, x → twitter
+        // Facebook + Instagram medium → instagram (Meta ads on IG)
+        $source_aliases = [
+            'ig' => 'instagram', 'fb' => 'facebook', 'yt' => 'youtube', 'x' => 'twitter',
+        ];
+
+        // Classify medium into a clean channel category
+        $classify_medium = function ($raw) {
+            $m = strtolower($raw);
+            if ($m === 'organic') return 'organic';
+            if ($m === 'none' || $m === 'direct' || $m === '') return 'none';
+            if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
+            if (in_array($m, ['social', 'referral', 'email'], true)) return $m;
+            if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
+            if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false) return 'email';
+            return $m;
+        };
+
         // Aggregate source+medium counts in PHP
         $counts = [];
         foreach ($rows as $row) {
             $data = json_decode($row['event_data'], true);
             if (!$data) continue;
-            $source = isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : 'unknown';
+            $source = strtolower(isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : 'unknown');
             $medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : 'unknown';
-            $key = $source . '|' . $medium;
+
+            // Apply aliases (ig→instagram, fb→facebook, etc.)
+            if (isset($source_aliases[$source])) {
+                $source = $source_aliases[$source];
+            }
+
+            // Meta ads: source=facebook but medium mentions instagram → source=instagram
+            if ($source === 'facebook' && stripos($medium, 'instagram') !== false) {
+                $source = 'instagram';
+            }
+
+            // Normalize medium into a clean channel
+            $channel = $classify_medium($medium);
+
+            $key = $source . '|' . $channel;
             if (!isset($counts[$key])) {
-                $counts[$key] = ['source' => $source, 'medium' => $medium, 'count' => 0];
+                $counts[$key] = ['source' => $source, 'medium' => $channel, 'count' => 0];
             }
             $counts[$key]['count']++;
         }
