@@ -1,4 +1,25 @@
 <?php
+
+/**
+ * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
+ * Free tool, loads async, no performance impact.
+ * Dashboard: https://clarity.microsoft.com
+ */
+function oz_clarity_tracking() {
+    // Skip admin pages and logged-in admins (don't pollute data with our own sessions)
+    if (is_admin() || current_user_can('manage_options')) return;
+    ?>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vunpx49rhr");
+    </script>
+    <?php
+}
+add_action('wp_head', 'oz_clarity_tracking', 1);
+
 function oz_custom_scripts() {
     wp_enqueue_script(
         'oz-scripts-js',
