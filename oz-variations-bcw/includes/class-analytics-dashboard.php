@@ -93,6 +93,7 @@ class OZ_Analytics_Dashboard {
                     <span class="oz-live-dot"></span>
                     <span id="ozLiveCount">-</span> live
                 </span>
+                <a href="https://clarity.microsoft.com/projects/view/vunpx49rhr/dashboard" target="_blank" class="oz-clarity-link" title="Session recordings, heatmaps, user journeys">&#128249; Clarity</a>
                 <div class="oz-range-tabs">
                     <?php
                     $ranges = [1 => 'Vandaag', 'yesterday' => 'Gisteren', 7 => '7 dagen', 30 => '30 dagen', 90 => '90 dagen'];
@@ -1099,6 +1100,12 @@ class OZ_Analytics_Dashboard {
             .oz-section-subtitle { font-size: 12px; font-weight: 400; color: #646970; }
 
             /* ── Range tabs ── */
+            .oz-clarity-link {
+                padding: 6px 14px; border-radius: 4px; text-decoration: none;
+                font-size: 13px; font-weight: 500; color: #fff; background: #6c2dc7;
+                margin-left: 12px; transition: background 0.15s;
+            }
+            .oz-clarity-link:hover { background: #5a21b0; color: #fff; }
             .oz-range-tabs { display: flex; gap: 4px; margin-left: auto; }
             .oz-range-tabs a {
                 padding: 6px 14px; border-radius: 4px; text-decoration: none;
