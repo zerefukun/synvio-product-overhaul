@@ -516,14 +516,26 @@ class OZ_Analytics_Reporter {
 
         // MariaDB has bugs with JSON_EXTRACT + GROUP BY (silently drops rows).
         // Fetch raw event_data and aggregate in PHP instead.
-        $rows = $wpdb->get_results($wpdb->prepare(
-            "SELECT event_data
-             FROM {$table}
-             WHERE event_name = %s AND created_at >= %s AND created_at < %s",
-            $event_name,
-            $since,
-            $until
-        ), ARRAY_A);
+        // $event_name can be a string or array of event names to combine.
+        if (is_array($event_name)) {
+            $placeholders = implode(',', array_fill(0, count($event_name), '%s'));
+            $params = array_merge($event_name, [$since, $until]);
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT event_data
+                 FROM {$table}
+                 WHERE event_name IN ({$placeholders}) AND created_at >= %s AND created_at < %s",
+                ...$params
+            ), ARRAY_A);
+        } else {
+            $rows = $wpdb->get_results($wpdb->prepare(
+                "SELECT event_data
+                 FROM {$table}
+                 WHERE event_name = %s AND created_at >= %s AND created_at < %s",
+                $event_name,
+                $since,
+                $until
+            ), ARRAY_A);
+        }
 
         // Aggregate values in PHP
         $counts = [];

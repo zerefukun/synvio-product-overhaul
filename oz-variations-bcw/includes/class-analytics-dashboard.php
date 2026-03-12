@@ -76,7 +76,8 @@ class OZ_Analytics_Dashboard {
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
         $funnel   = OZ_Analytics_Reporter::funnel($range);
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
-        $upsells  = OZ_Analytics_Reporter::top_values('oz_cart_upsell_added', 'oz_upsell_name', $range, 10);
+        // Combine upsell_added + upsell_option_selected — both indicate upsell engagement
+        $upsells  = OZ_Analytics_Reporter::top_values(['oz_cart_upsell_added', 'oz_cart_upsell_option_selected'], 'oz_upsell_name', $range, 10);
         $traffic  = OZ_Analytics_Reporter::traffic_sources($range);
         $landings = OZ_Analytics_Reporter::top_landing_pages($range, 10);
 
