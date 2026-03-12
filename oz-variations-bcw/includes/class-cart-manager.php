@@ -431,6 +431,9 @@ class OZ_Cart_Manager {
             return $name;
         }
 
+        // Pass product_id so build_addon_details can resolve generic addon group labels
+        $data['product_id'] = $item->get_product_id();
+
         $details = self::build_addon_details($data);
 
         if (!empty($details)) {
