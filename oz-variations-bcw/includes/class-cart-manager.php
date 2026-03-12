@@ -658,38 +658,24 @@ class OZ_Cart_Manager {
             $details[] = 'Pakket: ' . $data['oz_pakket'];
         }
 
-        // PU layers
+        // PU layers — always show so Patrick knows what to pack
         if (isset($data['oz_pu_layers'])) {
             $layers = intval($data['oz_pu_layers']);
             if ($layers === 0) {
-                $line = isset($data['oz_line']) ? $data['oz_line'] : '';
-                if (abs(OZ_Product_Line_Config::get_pu_price($line, 0)) < 0.01) {
-                    $label = '';
-                } else {
-                    $label = 'Geen PU';
-                }
+                $details[] = 'Geen PU';
             } else {
-                $label = $layers === 1 ? '1 toplaag PU' : $layers . ' toplagen PU';
-            }
-            if ($label !== '') {
-                $details[] = $label;
+                $details[] = $layers === 1 ? '1 toplaag PU' : $layers . ' toplagen PU';
             }
         }
 
-        // Primer — skip "Geen" variants (no value to display)
+        // Primer — always show (Patrick needs to know "geen primer" too)
         if (!empty($data['oz_primer'])) {
-            $primer = $data['oz_primer'];
-            if (stripos($primer, 'geen') === false) {
-                $details[] = 'Primer: ' . $primer;
-            }
+            $details[] = 'Primer: ' . $data['oz_primer'];
         }
 
-        // Colorfresh — skip "Zonder" variants
+        // Colorfresh — always show
         if (!empty($data['oz_colorfresh'])) {
-            $cf = $data['oz_colorfresh'];
-            if (stripos($cf, 'zonder') === false) {
-                $details[] = $cf;
-            }
+            $details[] = $data['oz_colorfresh'];
         }
 
         // Toepassing
