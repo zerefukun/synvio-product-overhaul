@@ -13,3 +13,17 @@ oz-variations-bcw/assets/css/*.map
 
 # One-off tools/scripts — not part of the codebase
 tools/
+
+# Design assets & mockups — not code, stored locally only
+bucket-labels/
+bucket-label-design.html
+
+# Images — never commit binary images to the repo
+*.jpeg
+*.jpg
+*.png
+*.gif
+*.bmp
+*.webp
+*.svg
+*.ico
