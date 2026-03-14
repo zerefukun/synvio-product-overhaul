@@ -672,30 +672,17 @@ details.oz-faq-item[open] .oz-faq-question::after {
   display: none;
 }
 .oz-cross-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
-  padding: 10px 14px;
-  background: var(--oz-bg-subtle);
-  border: 1px solid var(--oz-border);
-  border-radius: 8px;
+  margin-bottom: 16px;
   font-size: 13px;
-  line-height: 1.4;
-}
-.oz-cross-link-text {
-  color: var(--oz-text-body);
+  color: var(--oz-text-muted);
 }
 .oz-cross-link-btn {
-  font-weight: 600;
   color: var(--oz-accent);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.15s;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .oz-cross-link-btn:hover {
   color: var(--oz-accent-hover);
-  text-decoration: underline;
 }
 .oz-product-short-desc {
   margin-top: 28px;
