@@ -294,9 +294,11 @@ class OZ_Analytics_Dashboard {
                 return '';
             }
 
-            /* Format time as HH:MM:SS */
+            /* Format time as HH:MM:SS — handles null/empty gracefully */
             function fmtTime(dateStr) {
+                if (!dateStr) return '--:--:--';
                 var d = new Date(dateStr.replace(' ', 'T'));
+                if (isNaN(d.getTime())) return '--:--:--';
                 var h = ('0' + d.getHours()).slice(-2);
                 var m = ('0' + d.getMinutes()).slice(-2);
                 var s = ('0' + d.getSeconds()).slice(-2);
