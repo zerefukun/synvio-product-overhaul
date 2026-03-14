@@ -156,10 +156,11 @@ class OZ_Variations_BCW {
         // DB version check — create analytics tables for existing installs
         // (new installs get it via activate(), but existing ones need this)
         $stored_version = get_option('oz_bcw_analytics_db_version', '0');
-        if (version_compare($stored_version, '1.1', '<')) {
+        if (version_compare($stored_version, '1.2', '<')) {
             OZ_Analytics_Store::create_table();
+            // v1.2: adds first_seen column to sessions table (dbDelta handles ALTER)
             OZ_Analytics_Store::create_sessions_table();
-            update_option('oz_bcw_analytics_db_version', '1.1');
+            update_option('oz_bcw_analytics_db_version', '1.2');
         }
     }
 

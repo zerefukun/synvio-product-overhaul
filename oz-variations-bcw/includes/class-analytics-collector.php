@@ -143,11 +143,23 @@ class OZ_Analytics_Collector {
     /**
      * AJAX handler: receive heartbeat ping from browser.
      * Lightweight — just updates last_seen for this session.
-     * Uses same nonce as event tracking for simplicity.
+     * Filters out bots and logged-in admins to match Clarity's session count.
      */
     public static function ajax_heartbeat() {
         if (!check_ajax_referer('oz_analytics', 'nonce', false)) {
             wp_send_json_error('Invalid nonce', 403);
+            return;
+        }
+
+        // Skip admins — same exclusion as Clarity (don't pollute live session data)
+        if (current_user_can('manage_options')) {
+            wp_send_json_success();
+            return;
+        }
+
+        // Skip bots — common crawlers that execute JS and send heartbeats
+        if (self::is_bot()) {
+            wp_send_json_success();
             return;
         }
 
@@ -157,6 +169,35 @@ class OZ_Analytics_Collector {
         OZ_Analytics_Store::update_heartbeat($session_id, $page_url);
 
         wp_send_json_success();
+    }
+
+    /**
+     * Detect bots by user agent string.
+     * These crawlers can execute JS and fire heartbeats,
+     * inflating our active session count vs Clarity.
+     *
+     * @return bool  True if current request is from a known bot
+     */
+    private static function is_bot() {
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? strtolower($_SERVER['HTTP_USER_AGENT']) : '';
+        if ($ua === '') return true; // No user agent = bot
+
+        // Common bot patterns — covers Google, Bing, SEO tools, uptime monitors
+        $bot_patterns = [
+            'googlebot', 'bingbot', 'yandexbot', 'baiduspider', 'duckduckbot',
+            'slurp', 'facebookexternalhit', 'linkedinbot', 'twitterbot',
+            'applebot', 'semrushbot', 'ahrefsbot', 'mj12bot', 'dotbot',
+            'petalbot', 'bytespider', 'gptbot', 'claudebot', 'anthropic',
+            'pingdom', 'uptimerobot', 'statuscake', 'site24x7',
+            'headlesschrome', 'phantomjs', 'python-requests', 'curl/',
+            'wget/', 'go-http-client', 'java/', 'crawler', 'spider', 'scraper',
+        ];
+
+        foreach ($bot_patterns as $pattern) {
+            if (strpos($ua, $pattern) !== false) return true;
+        }
+
+        return false;
     }
 
     /**
@@ -172,7 +213,8 @@ class OZ_Analytics_Collector {
             return;
         }
 
-        $sessions = OZ_Analytics_Store::get_active_sessions(60);
+        // 45s lookback — tighter window to match Clarity's session detection
+        $sessions = OZ_Analytics_Store::get_active_sessions(45);
 
         // Optional session filter for viewing one session's journey
         $filter_session = isset($_POST['session_id']) ? sanitize_text_field($_POST['session_id']) : '';

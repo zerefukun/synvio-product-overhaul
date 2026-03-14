@@ -320,7 +320,7 @@ class OZ_Analytics_Dashboard {
                         + '<span class="oz-live-session-dot"></span>'
                         + '<span class="oz-live-session-id">' + shortId(s.session_id) + '</span>'
                         + '<span class="oz-live-session-url">' + (s.page_url || '/') + '</span>'
-                        + '<span class="oz-live-session-time">' + fmtTime(s.last_seen) + '</span>'
+                        + '<span class="oz-live-session-time">' + fmtTime(s.first_seen || s.last_seen) + '</span>'
                         + '</div>';
                 }
                 sessionsEl.innerHTML = html;

@@ -126,13 +126,15 @@ class OZ_Analytics_Store {
 
     /* ══════════════════════════════════════════════════════════
      * ACTIVE SESSIONS (heartbeat tracking)
-     * Tiny table: session_id (PK) + last_seen + page_url.
-     * JS pings every 30s, sessions expire after 60s of silence.
+     * Tiny table: session_id (PK) + first_seen + last_seen + page_url.
+     * JS pings every 30s, sessions expire after 45s of silence.
+     * Sorted by first_seen (stable order — no jumping).
      * ══════════════════════════════════════════════════════════ */
 
     /**
      * Create the active sessions table.
      * Only holds currently-active rows — never grows beyond ~100 rows.
+     * first_seen = when session first appeared, used for stable sort order.
      */
     public static function create_sessions_table() {
         global $wpdb;
@@ -142,6 +144,7 @@ class OZ_Analytics_Store {
 
         $sql = "CREATE TABLE {$table} (
             session_id VARCHAR(50) NOT NULL,
+            first_seen DATETIME NOT NULL,
             last_seen DATETIME NOT NULL,
             page_url VARCHAR(255) NOT NULL DEFAULT '',
             PRIMARY KEY  (session_id),
@@ -154,7 +157,8 @@ class OZ_Analytics_Store {
 
     /**
      * Update heartbeat for a session.
-     * INSERT on first visit, UPDATE last_seen on subsequent pings.
+     * INSERT with first_seen on first visit, UPDATE only last_seen on subsequent pings.
+     * first_seen stays fixed so the list order is stable.
      *
      * @param string $session_id  Browser session identifier
      * @param string $page_url    Current page URL
@@ -165,26 +169,27 @@ class OZ_Analytics_Store {
         $table = self::sessions_table_name();
         $now   = current_time('mysql');
 
+        // first_seen is set on INSERT, never updated. last_seen updates every heartbeat.
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $wpdb->query($wpdb->prepare(
-            "INSERT INTO {$table} (session_id, last_seen, page_url)
-             VALUES (%s, %s, %s)
+            "INSERT INTO {$table} (session_id, first_seen, last_seen, page_url)
+             VALUES (%s, %s, %s, %s)
              ON DUPLICATE KEY UPDATE last_seen = %s, page_url = %s",
-            $session_id, $now, $page_url, $now, $page_url
+            $session_id, $now, $now, $page_url, $now, $page_url
         ));
 
-        // Cleanup stale sessions older than 5 minutes (piggyback on heartbeat)
+        // Cleanup stale sessions older than 2 minutes (piggyback on heartbeat)
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $wpdb->query("DELETE FROM {$table} WHERE last_seen < DATE_SUB(NOW(), INTERVAL 5 MINUTE)");
+        $wpdb->query("DELETE FROM {$table} WHERE last_seen < DATE_SUB(NOW(), INTERVAL 2 MINUTE)");
     }
 
     /**
      * Count sessions active within the last $seconds seconds.
      *
-     * @param int $seconds  Lookback window (default 60)
+     * @param int $seconds  Lookback window (default 45)
      * @return int  Number of active sessions
      */
-    public static function count_active($seconds = 60) {
+    public static function count_active($seconds = 45) {
         global $wpdb;
 
         $table = self::sessions_table_name();
@@ -198,21 +203,22 @@ class OZ_Analytics_Store {
 
     /**
      * Get all active sessions with their current page.
+     * Sorted by first_seen DESC (newest sessions at top, stable order).
      *
-     * @param int $seconds  Lookback window (default 60)
-     * @return array  [['session_id' => '...', 'page_url' => '...', 'last_seen' => '...'], ...]
+     * @param int $seconds  Lookback window (default 45)
+     * @return array  [['session_id' => '...', 'page_url' => '...', 'first_seen' => '...', 'last_seen' => '...'], ...]
      */
-    public static function get_active_sessions($seconds = 60) {
+    public static function get_active_sessions($seconds = 45) {
         global $wpdb;
 
         $table = self::sessions_table_name();
 
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->get_results($wpdb->prepare(
-            "SELECT session_id, page_url, last_seen
+            "SELECT session_id, page_url, first_seen, last_seen
              FROM {$table}
              WHERE last_seen >= DATE_SUB(NOW(), INTERVAL %d SECOND)
-             ORDER BY last_seen DESC",
+             ORDER BY first_seen DESC",
             absint($seconds)
         ), ARRAY_A);
     }

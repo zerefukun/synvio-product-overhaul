@@ -385,6 +385,7 @@ function oz_cart_drawer_enqueue() {
         'analyticsNonce'    => wp_create_nonce('oz_analytics'),
         'isCartOrCheckout'  => (is_cart() || is_checkout()) ? '1' : '0',
         'freeShipThreshold' => oz_get_free_shipping_threshold(),
+        'isAdmin'           => current_user_can('manage_options') ? '1' : '0',
     ]);
 }
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');

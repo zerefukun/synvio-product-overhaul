@@ -925,6 +925,8 @@
        ============================================ */
     function sendHeartbeat() {
         if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
+        // Skip heartbeat for admins — don't pollute live session data
+        if (ozCartDrawer.isAdmin === '1') return;
         var fd = new FormData();
         fd.append('action', 'oz_heartbeat');
         fd.append('nonce', ozCartDrawer.analyticsNonce);
