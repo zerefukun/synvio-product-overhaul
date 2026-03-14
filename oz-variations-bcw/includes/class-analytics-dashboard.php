@@ -76,8 +76,10 @@ class OZ_Analytics_Dashboard {
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
         $funnel   = OZ_Analytics_Reporter::funnel($range);
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
-        // Real tool/upsell sales from WooCommerce orders (not click events)
+        // Real tool/accessory sales from WooCommerce orders (all sources)
         $tool_sales = OZ_Analytics_Reporter::top_tool_sales($range, 10);
+        // Cart drawer upsell adds (only products added via upsell section)
+        $cart_upsells = OZ_Analytics_Reporter::top_values('oz_cart_upsell_added', 'oz_upsell_name', $range, 10);
         $traffic  = OZ_Analytics_Reporter::traffic_sources($range);
         $landings = OZ_Analytics_Reporter::top_landing_pages($range, 10);
 
@@ -224,14 +226,20 @@ class OZ_Analytics_Dashboard {
             </div>
 
             <!-- Top lists -->
-            <div class="oz-columns">
+            <div class="oz-columns oz-columns-3">
                 <div class="oz-panel">
                     <h3>Top Kleuren</h3>
                     <?php self::render_top_list($colors); ?>
                 </div>
                 <div class="oz-panel">
                     <h3>Gereedschap Verkoop</h3>
+                    <p class="oz-panel-subtitle">Echte verkoop (alle bronnen)</p>
                     <?php self::render_top_list($tool_sales); ?>
+                </div>
+                <div class="oz-panel">
+                    <h3>Cart Upsells</h3>
+                    <p class="oz-panel-subtitle">Toegevoegd via cart drawer</p>
+                    <?php self::render_top_list($cart_upsells); ?>
                 </div>
             </div>
         </div>
@@ -1128,10 +1136,12 @@ class OZ_Analytics_Dashboard {
 
             /* ── Two-column grid ── */
             .oz-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+            .oz-columns-3 { grid-template-columns: 1fr 1fr 1fr; }
             .oz-panel {
                 background: #fff; border: 1px solid #c3c4c7; border-radius: 4px; padding: 16px 20px;
             }
-            .oz-panel h3 { margin: 0 0 12px; font-size: 14px; color: #1d2327; }
+            .oz-panel h3 { margin: 0 0 4px; font-size: 14px; color: #1d2327; }
+            .oz-panel-subtitle { margin: 0 0 12px; font-size: 11px; color: #999; }
 
             /* ── Bar charts (pure CSS) ── */
             .oz-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
