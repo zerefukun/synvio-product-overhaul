@@ -252,7 +252,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
-            'option_order'   => ['color', 'pakket', 'primer', 'pu', 'tools'],
+            'option_order'   => ['pakket', 'color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
                 ['q' => 'Wat is het verschil tussen Easyline en All-in-One?', 'a' => 'Easyline is speciaal ontwikkeld voor eenvoudige toepassing op wanden. Het is lichter, makkelijker te verwerken en beschikbaar in handige pakketten. All-in-One is veelzijdiger voor zowel wand als vloer.'],
