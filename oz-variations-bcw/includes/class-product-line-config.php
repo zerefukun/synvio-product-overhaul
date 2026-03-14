@@ -170,6 +170,12 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/original-kleurstalen/',
+            // Cross-link: suggest an alternative product line to visitors
+            'cross_link'     => [
+                'text' => 'Liever kant & klaar?',
+                'label' => 'Bekijk Microcement',
+                'url'   => '/microcement/',
+            ],
             'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],

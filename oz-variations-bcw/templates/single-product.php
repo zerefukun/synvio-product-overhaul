@@ -276,6 +276,18 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       <?php endif; ?>
 
+      <?php
+      // Cross-link: suggest an alternative product line (e.g. "Liever kant & klaar? Bekijk Microcement")
+      // Configured per line in class-product-line-config.php → 'cross_link' key
+      if (!empty($config['cross_link'])) :
+          $cl = $config['cross_link'];
+      ?>
+        <div class="oz-cross-link">
+          <span class="oz-cross-link-text"><?php echo esc_html($cl['text']); ?></span>
+          <a href="<?php echo esc_url($cl['url']); ?>" class="oz-cross-link-btn"><?php echo esc_html($cl['label']); ?> &rarr;</a>
+        </div>
+      <?php endif; ?>
+
       <!-- ═══ OPTIONS WIDGET (moves between page and sheet) ═══ -->
       <div id="optionsDesktopHome">
       <div id="optionsWidget">
