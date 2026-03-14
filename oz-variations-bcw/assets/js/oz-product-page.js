@@ -185,7 +185,7 @@
     return /^(RAL\s?)?\d{4}$/i.test(code.trim());
   }
   function validateNcs(code) {
-    return /^(NCS\s+)?S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+    return /^(NCS\s+)?S?\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
   }
   function hasAnyTool(toolMode, tools, toolConfig) {
     if (!toolConfig) return false;
@@ -1228,6 +1228,8 @@
     }, autoFormatColor = function(raw) {
       if (/^RAL\s/i.test(raw)) return "RAL " + raw.replace(/^RAL\s*/i, "").trim();
       if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, "NCS ");
+      var ncsNoS = raw.match(/^NCS\s+(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/i);
+      if (ncsNoS) return "NCS S " + ncsNoS[1] + "-" + ncsNoS[2].toUpperCase();
       if (/^\d{4}$/.test(raw)) return "RAL " + raw;
       var ncsMatch = raw.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
       if (ncsMatch) return "NCS S " + ncsMatch[1] + "-" + ncsMatch[2].toUpperCase();

@@ -308,7 +308,8 @@ export function validateRal(code) {
  * @return {boolean}
  */
 export function validateNcs(code) {
-  return /^(NCS\s+)?S\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+  // Accepts: "S 2005-Y20R", "NCS S 2005-Y20R", "NCS 2005-Y20R" (missing S)
+  return /^(NCS\s+)?S?\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
 }
 
 /**

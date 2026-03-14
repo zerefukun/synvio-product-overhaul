@@ -795,6 +795,10 @@ function autoFormatColor(raw) {
   if (/^RAL\s/i.test(raw)) return 'RAL ' + raw.replace(/^RAL\s*/i, '').trim();
   if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, 'NCS ');
 
+  // NCS without S — e.g. "NCS 2005-Y20R" → "NCS S 2005-Y20R"
+  var ncsNoS = raw.match(/^NCS\s+(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/i);
+  if (ncsNoS) return 'NCS S ' + ncsNoS[1] + '-' + ncsNoS[2].toUpperCase();
+
   // Pure 4-digit number → RAL code
   if (/^\d{4}$/.test(raw)) return 'RAL ' + raw;
 
