@@ -452,7 +452,7 @@ function buildColorModeUI() {
   html += '<div class="oz-custom-color-hint" id="customColorHint">Formaat: RAL 7016</div>';
   html += '<div class="oz-custom-color-info">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
-  html += '<span>Wij mengen uw kleur op maat. Levertijd +2 werkdagen.</span>';
+  html += '<span>Wij mengen uw kleur op maat.</span>';
   html += '</div>';
   html += '</div>';
 
