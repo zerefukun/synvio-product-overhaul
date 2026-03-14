@@ -1074,9 +1074,9 @@ function setupSheetSwipe() {
  * Validates state (pure), then delegates to submitCart for I/O.
  */
 function addToCart() {
-  // Base products can't be added to cart — must pick a color first.
-  // Scroll to color section so user knows what to do.
-  if (P.isBase) {
+  // Base products need a color selection before ordering.
+  // Exception: RAL/NCS mode with a valid custom color — that IS their color choice.
+  if (P.isBase && !(S.colorMode === 'ral_ncs' && S.customColor)) {
     var colorGroup = document.querySelector('[data-option="color"]');
     if (colorGroup) {
       colorGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });

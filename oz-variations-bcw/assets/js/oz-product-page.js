@@ -1388,7 +1388,7 @@
         }
       }, { passive: true });
     }, addToCart = function() {
-      if (P.isBase) {
+      if (P.isBase && !(S.colorMode === "ral_ncs" && S.customColor)) {
         var colorGroup = document.querySelector('[data-option="color"]');
         if (colorGroup) {
           colorGroup.scrollIntoView({ behavior: "smooth", block: "center" });
