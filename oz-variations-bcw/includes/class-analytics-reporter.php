@@ -444,6 +444,67 @@ class OZ_Analytics_Reporter {
     }
 
 
+    /**
+     * Top-selling tool/upsell products by quantity — real WC order data.
+     * Queries order items for products in $upsell_product_ids.
+     * Returns same format as top_values() for render_top_list() compatibility.
+     *
+     * @param int $days   Date range
+     * @param int $limit  Max rows
+     * @return array  [['value' => string, 'count' => int], ...]
+     */
+    public static function top_tool_sales($days, $limit = 10) {
+        global $wpdb;
+        $items_table = $wpdb->prefix . 'woocommerce_order_items';
+        $meta_table  = $wpdb->prefix . 'woocommerce_order_itemmeta';
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        $ids_placeholder = implode(',', array_map('intval', self::$upsell_product_ids));
+
+        if (self::is_hpos_active()) {
+            $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
+                            AND o.status IN ('wc-completed', 'wc-processing')
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
+        } else {
+            $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
+                            AND o.post_type = 'shop_order'
+                            AND o.post_status IN ('wc-completed', 'wc-processing')
+                            AND o.post_date >= %s AND o.post_date < %s";
+        }
+
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT
+                oim_pid.meta_value AS product_id,
+                SUM(oim_qty.meta_value) AS qty
+             FROM {$items_table} oi
+             JOIN {$meta_table} oim_pid ON oi.order_item_id = oim_pid.order_item_id AND oim_pid.meta_key = '_product_id'
+             JOIN {$meta_table} oim_qty ON oi.order_item_id = oim_qty.order_item_id AND oim_qty.meta_key = '_qty'
+             {$orders_join}
+             WHERE oi.order_item_type = 'line_item'
+             AND oim_pid.meta_value IN ({$ids_placeholder})
+             GROUP BY product_id
+             ORDER BY qty DESC
+             LIMIT %d",
+            $since,
+            $until,
+            $limit
+        ), ARRAY_A);
+
+        // Resolve product names, format for render_top_list()
+        $output = [];
+        foreach ($results as $row) {
+            $product = wc_get_product(intval($row['product_id']));
+            $output[] = [
+                'value' => $product ? $product->get_name() : '#' . $row['product_id'],
+                'count' => intval($row['qty']),
+            ];
+        }
+
+        return $output;
+    }
+
     /* ══════════════════════════════════════════════════════════
      * SECTION 2: Beacon Event Data (oz_analytics_events table)
      * ══════════════════════════════════════════════════════════ */
