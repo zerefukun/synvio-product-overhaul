@@ -293,23 +293,30 @@ export function calculatePrices(config, state) {
 
 /**
  * Validate a RAL color code (4 digits).
+ * Very forgiving — strips prefix/spaces, just needs 4 digits.
+ * "7010", "RAL 7010", "RAL7010", "ral  7010" all pass.
  * @param {string} code
  * @return {boolean}
  */
 export function validateRal(code) {
-  // Accepts "4070" or "RAL 4070"
-  return /^(RAL\s?)?\d{4}$/i.test(code.trim());
+  var clean = code.trim().replace(/\s+/g, ' ');
+  return /^(RAL\s?)?\d{4}$/i.test(clean);
 }
 
 /**
- * Validate an NCS color code (e.g. "S 1050-Y90R" or "NCS S 1050-Y90R").
- * Loose match — allows common NCS formats with or without NCS prefix.
+ * Validate an NCS color code.
+ * Very forgiving — handles missing S, missing dash, extra spaces, no prefix.
+ * "2005-Y20R", "S 2005-Y20R", "NCS S 2005-Y20R", "NCS 2005-Y20R",
+ * "ncs2005y20r", "S2005Y20R", "2005y20r" all pass.
  * @param {string} code
  * @return {boolean}
  */
 export function validateNcs(code) {
-  // Accepts: "S 2005-Y20R", "NCS S 2005-Y20R", "NCS 2005-Y20R" (missing S)
-  return /^(NCS\s+)?S?\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+  // Collapse whitespace and strip optional NCS/S prefix
+  var clean = code.trim().replace(/\s+/g, '').toUpperCase();
+  clean = clean.replace(/^NCS/, '').replace(/^S/, '');
+  // Must be 4 digits + optional dash + letter + 2 digits + letter
+  return /^\d{4}-?[A-Z]\d{2}[A-Z]$/.test(clean);
 }
 
 /**

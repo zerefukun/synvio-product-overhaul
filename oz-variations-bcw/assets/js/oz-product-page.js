@@ -182,10 +182,13 @@
     };
   }
   function validateRal(code) {
-    return /^(RAL\s?)?\d{4}$/i.test(code.trim());
+    var clean = code.trim().replace(/\s+/g, " ");
+    return /^(RAL\s?)?\d{4}$/i.test(clean);
   }
   function validateNcs(code) {
-    return /^(NCS\s+)?S?\s?\d{4}-[A-Z]\d{2}[A-Z]$/i.test(code.trim());
+    var clean = code.trim().replace(/\s+/g, "").toUpperCase();
+    clean = clean.replace(/^NCS/, "").replace(/^S/, "");
+    return /^\d{4}-?[A-Z]\d{2}[A-Z]$/.test(clean);
   }
   function hasAnyTool(toolMode, tools, toolConfig) {
     if (!toolConfig) return false;
@@ -1226,15 +1229,11 @@
       var expanded = DOM.descContent.classList.toggle("expanded");
       DOM.readMoreBtn.textContent = expanded ? "Lees minder" : "Lees meer";
     }, autoFormatColor = function(raw) {
-      if (/^RAL\s/i.test(raw)) return "RAL " + raw.replace(/^RAL\s*/i, "").trim();
-      if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, "NCS ");
-      var ncsNoS = raw.match(/^NCS\s+(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/i);
-      if (ncsNoS) return "NCS S " + ncsNoS[1] + "-" + ncsNoS[2].toUpperCase();
-      if (/^\d{4}$/.test(raw)) return "RAL " + raw;
-      var ncsMatch = raw.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+      var s = raw.trim().replace(/\s+/g, " ");
+      var core = s.replace(/^(RAL|NCS)\s*/i, "").replace(/^S\s*/i, "").trim();
+      if (/^\d{4}$/.test(core)) return "RAL " + core;
+      var ncsMatch = core.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
       if (ncsMatch) return "NCS S " + ncsMatch[1] + "-" + ncsMatch[2].toUpperCase();
-      var ncsWithS = raw.match(/^[Ss]\s?(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
-      if (ncsWithS) return "NCS S " + ncsWithS[1] + "-" + ncsWithS[2].toUpperCase();
       return raw;
     }, handleCustomColorInput = function(e) {
       var input = e.target;

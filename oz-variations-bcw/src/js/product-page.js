@@ -791,24 +791,19 @@ function toggleReadMore() {
  * @return {string}  Formatted code, or original if no pattern matched
  */
 function autoFormatColor(raw) {
-  // Already has RAL/NCS prefix — leave it
-  if (/^RAL\s/i.test(raw)) return 'RAL ' + raw.replace(/^RAL\s*/i, '').trim();
-  if (/^(NCS\s*)?S\s/i.test(raw)) return raw.toUpperCase().replace(/^NCS\s*/, 'NCS ');
+  // Normalize: collapse whitespace, trim
+  var s = raw.trim().replace(/\s+/g, ' ');
 
-  // NCS without S — e.g. "NCS 2005-Y20R" → "NCS S 2005-Y20R"
-  var ncsNoS = raw.match(/^NCS\s+(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/i);
-  if (ncsNoS) return 'NCS S ' + ncsNoS[1] + '-' + ncsNoS[2].toUpperCase();
+  // Strip any RAL/NCS/S prefix to get the core code
+  var core = s.replace(/^(RAL|NCS)\s*/i, '').replace(/^S\s*/i, '').trim();
 
-  // Pure 4-digit number → RAL code
-  if (/^\d{4}$/.test(raw)) return 'RAL ' + raw;
+  // Pure 4-digit number → RAL code (e.g. "7010", "RAL 7010", "ral  7010")
+  if (/^\d{4}$/.test(core)) return 'RAL ' + core;
 
-  // NCS-like without prefix: digits + letter + digits + letter (e.g. "1050y90r" or "1050-y90r")
-  var ncsMatch = raw.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+  // NCS pattern: 4 digits + optional dash + letter + 2 digits + letter
+  // Handles: "2005-Y20R", "2005Y20R", "2005-y20r", and all prefixed variants
+  var ncsMatch = core.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
   if (ncsMatch) return 'NCS S ' + ncsMatch[1] + '-' + ncsMatch[2].toUpperCase();
-
-  // NCS with S prefix but no NCS (e.g. "s1050-y90r")
-  var ncsWithS = raw.match(/^[Ss]\s?(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
-  if (ncsWithS) return 'NCS S ' + ncsWithS[1] + '-' + ncsWithS[2].toUpperCase();
 
   return raw;
 }
