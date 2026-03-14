@@ -445,9 +445,9 @@ class OZ_Analytics_Reporter {
 
 
     /**
-     * Top-selling tool/upsell products by quantity — real WC order data.
-     * Queries order items for products in $upsell_product_ids.
-     * Returns same format as top_values() for render_top_list() compatibility.
+     * Top tools sold via our product page tools section (Kant & Klaar / Zelf Samenstellen).
+     * Only counts order items that have _oz_tool_size or _oz_tool_price meta,
+     * which means they were added through our tools UI — not bought loose or via cart upsells.
      *
      * @param int $days   Date range
      * @param int $limit  Max rows
@@ -460,8 +460,6 @@ class OZ_Analytics_Reporter {
         $since = self::since_date($days);
         $until = self::until_date($days);
 
-        $ids_placeholder = implode(',', array_map('intval', self::$upsell_product_ids));
-
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
@@ -473,6 +471,7 @@ class OZ_Analytics_Reporter {
                             AND o.post_date >= %s AND o.post_date < %s";
         }
 
+        // Only items with _oz_tool_size or _oz_tool_price = added via our product page tools UI
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT
@@ -481,9 +480,10 @@ class OZ_Analytics_Reporter {
              FROM {$items_table} oi
              JOIN {$meta_table} oim_pid ON oi.order_item_id = oim_pid.order_item_id AND oim_pid.meta_key = '_product_id'
              JOIN {$meta_table} oim_qty ON oi.order_item_id = oim_qty.order_item_id AND oim_qty.meta_key = '_qty'
+             JOIN {$meta_table} oim_tool ON oi.order_item_id = oim_tool.order_item_id
+                  AND oim_tool.meta_key IN ('_oz_tool_size', '_oz_tool_price')
              {$orders_join}
              WHERE oi.order_item_type = 'line_item'
-             AND oim_pid.meta_value IN ({$ids_placeholder})
              GROUP BY product_id
              ORDER BY qty DESC
              LIMIT %d",

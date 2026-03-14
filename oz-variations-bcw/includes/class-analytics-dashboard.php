@@ -233,7 +233,7 @@ class OZ_Analytics_Dashboard {
                 </div>
                 <div class="oz-panel">
                     <h3>Gereedschap Verkoop</h3>
-                    <p class="oz-panel-subtitle">Echte verkoop (alle bronnen)</p>
+                    <p class="oz-panel-subtitle">Via productpagina tools-sectie</p>
                     <?php self::render_top_list($tool_sales); ?>
                 </div>
                 <div class="oz-panel">
