@@ -50,8 +50,58 @@ class OZ_Analytics_Reporter {
         11017,                       // Schuurpapier
         11023, 11016,               // Other tools
         10998,                       // RAL Kleurenwaaier
+        22436,                       // Stuco Paste (cart drawer upsell with primer options)
         22997, 22996, 22994,        // Betonlook/stuco accessories
     ];
+
+    /** Source name aliases — normalize short forms to canonical names */
+    private static $source_aliases = [
+        'ig' => 'instagram', 'fb' => 'facebook', 'yt' => 'youtube', 'x' => 'twitter',
+    ];
+
+    /**
+     * Normalize a raw source + medium pair into canonical form.
+     * Single source of truth — used by both traffic_sources() and landings_by_source().
+     *
+     * @param string $raw_source  Raw traffic source
+     * @param string $raw_medium  Raw traffic medium
+     * @return array  ['source' => string, 'medium' => string]
+     */
+    private static function normalize_source($raw_source, $raw_medium) {
+        $source = strtolower($raw_source ?: 'unknown');
+
+        // Apply aliases (ig → instagram, fb → facebook, etc.)
+        if (isset(self::$source_aliases[$source])) {
+            $source = self::$source_aliases[$source];
+        }
+
+        // Meta ads: source=facebook but medium mentions instagram → source=instagram
+        if ($source === 'facebook' && stripos($raw_medium, 'instagram') !== false) {
+            $source = 'instagram';
+        }
+
+        return ['source' => $source, 'medium' => self::classify_medium($raw_medium)];
+    }
+
+    /**
+     * Classify a raw medium string into a clean channel category.
+     *
+     * @param string $raw  Raw medium value from UTM or referrer detection
+     * @return string  Normalized channel name
+     */
+    private static function classify_medium($raw) {
+        $m = strtolower($raw ?: '');
+        if ($m === 'organic') return 'organic';
+        if ($m === 'none' || $m === 'direct' || $m === '') return 'none';
+        if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
+        if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
+        if ($m === 'social' || $m === 'referral') return $m;
+        if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false || $m === 'email') return 'email';
+        if ($m === 'affiliate') return 'affiliate';
+        if ($m === 'display' || strpos($m, 'banner') !== false) return 'display';
+        if ($m === 'video' || strpos($m, 'youtube') !== false) return 'video';
+        return $m;
+    }
 
     /**
      * Detect whether HPOS (custom order tables) is active.
@@ -151,7 +201,7 @@ class OZ_Analytics_Reporter {
                     COALESCE(SUM(total_amount - shipping_total - shipping_tax), 0) AS revenue
                  FROM {$table}
                  WHERE status IN ('wc-completed', 'wc-processing')
-                 AND date_created_gmt >= %s AND date_created_gmt < %s",
+                 AND date_created_local >= %s AND date_created_local < %s",
                 $from, $to
             ), ARRAY_A);
         } else {
@@ -204,7 +254,7 @@ class OZ_Analytics_Reporter {
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
+                            AND o.date_created_local >= %s AND o.date_created_local < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -261,7 +311,7 @@ class OZ_Analytics_Reporter {
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
+                            AND o.date_created_local >= %s AND o.date_created_local < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -341,7 +391,7 @@ class OZ_Analytics_Reporter {
                     FROM {$orders_table} o
                     JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
                     WHERE o.status IN ('wc-completed', 'wc-processing')
-                    AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
+                    AND o.date_created_local >= %s AND o.date_created_local < %s
                     GROUP BY o.id
                 ) sub",
                 $from, $to
@@ -386,7 +436,7 @@ class OZ_Analytics_Reporter {
             $total_orders = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) FROM {$orders_table}
                  WHERE status IN ('wc-completed', 'wc-processing')
-                 AND date_created_gmt >= %s AND date_created_gmt < %s",
+                 AND date_created_local >= %s AND date_created_local < %s",
                 $from, $to
             ));
 
@@ -399,7 +449,7 @@ class OZ_Analytics_Reporter {
                  JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
                  JOIN {$meta_table} oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
                  WHERE o.status IN ('wc-completed', 'wc-processing')
-                 AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
+                 AND o.date_created_local >= %s AND o.date_created_local < %s
                  AND oim.meta_value IN ({$ids_placeholder})",
                 $from, $to
             ));
@@ -463,7 +513,7 @@ class OZ_Analytics_Reporter {
         if (self::is_hpos_active()) {
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
+                            AND o.date_created_local >= %s AND o.date_created_local < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -471,7 +521,10 @@ class OZ_Analytics_Reporter {
                             AND o.post_date >= %s AND o.post_date < %s";
         }
 
-        // Only items with _oz_tool_size or _oz_tool_price = added via our product page tools UI
+        // Match tools added via our product page:
+        // 1. Items with _oz_tool_size or _oz_tool_price meta (individual tools with size selection)
+        // 2. Gereedschapset products (11177 K&K, 25550 Lavasteen) — added with empty cart_data
+        //    so they lack tool meta, but they're still product-page tool sales
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT
@@ -480,10 +533,11 @@ class OZ_Analytics_Reporter {
              FROM {$items_table} oi
              JOIN {$meta_table} oim_pid ON oi.order_item_id = oim_pid.order_item_id AND oim_pid.meta_key = '_product_id'
              JOIN {$meta_table} oim_qty ON oi.order_item_id = oim_qty.order_item_id AND oim_qty.meta_key = '_qty'
-             JOIN {$meta_table} oim_tool ON oi.order_item_id = oim_tool.order_item_id
+             LEFT JOIN {$meta_table} oim_tool ON oi.order_item_id = oim_tool.order_item_id
                   AND oim_tool.meta_key IN ('_oz_tool_size', '_oz_tool_price')
              {$orders_join}
              WHERE oi.order_item_type = 'line_item'
+             AND (oim_tool.meta_id IS NOT NULL OR oim_pid.meta_value IN (11177, 25550))
              GROUP BY product_id
              ORDER BY qty DESC
              LIMIT %d",
@@ -672,45 +726,18 @@ class OZ_Analytics_Reporter {
             $until
         ), ARRAY_A);
 
-        // Normalize sources so aliases merge into one row.
-        // ig → instagram, fb → facebook, yt → youtube, x → twitter
-        // Facebook + Instagram medium → instagram (Meta ads on IG)
-        $source_aliases = [
-            'ig' => 'instagram', 'fb' => 'facebook', 'yt' => 'youtube', 'x' => 'twitter',
-        ];
-
-        // Classify medium into a clean channel category
-        $classify_medium = function ($raw) {
-            $m = strtolower($raw);
-            if ($m === 'organic') return 'organic';
-            if ($m === 'none' || $m === 'direct' || $m === '') return 'none';
-            if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
-            if (in_array($m, ['social', 'referral', 'email'], true)) return $m;
-            if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
-            if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false) return 'email';
-            return $m;
-        };
-
-        // Aggregate source+medium counts in PHP
+        // Aggregate source+medium counts in PHP using shared normalization
         $counts = [];
         foreach ($rows as $row) {
             $data = json_decode($row['event_data'], true);
             if (!$data) continue;
-            $source = strtolower(isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : 'unknown');
-            $medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : 'unknown';
 
-            // Apply aliases (ig→instagram, fb→facebook, etc.)
-            if (isset($source_aliases[$source])) {
-                $source = $source_aliases[$source];
-            }
-
-            // Meta ads: source=facebook but medium mentions instagram → source=instagram
-            if ($source === 'facebook' && stripos($medium, 'instagram') !== false) {
-                $source = 'instagram';
-            }
-
-            // Normalize medium into a clean channel
-            $channel = $classify_medium($medium);
+            $normalized = self::normalize_source(
+                isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : 'unknown',
+                isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : 'unknown'
+            );
+            $source  = $normalized['source'];
+            $channel = $normalized['medium'];
 
             $key = $source . '|' . $channel;
             if (!isset($counts[$key])) {
@@ -762,37 +789,20 @@ class OZ_Analytics_Reporter {
             $until
         ), ARRAY_A);
 
-        // Same normalization as traffic_sources() so clicks match
-        $source_aliases = [
-            'ig' => 'instagram', 'fb' => 'facebook', 'yt' => 'youtube', 'x' => 'twitter',
-        ];
-        $classify_medium = function ($raw) {
-            $m = strtolower($raw);
-            if ($m === 'organic') return 'organic';
-            if ($m === 'none' || $m === 'direct' || $m === '') return 'none';
-            if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
-            if (in_array($m, ['social', 'referral', 'email'], true)) return $m;
-            if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
-            if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false) return 'email';
-            return $m;
-        };
-
+        // Same shared normalization as traffic_sources()
         $results = [];
         foreach ($rows as $row) {
             $data = json_decode($row['event_data'], true);
             if (!$data) continue;
 
-            $row_source = strtolower(isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : '');
-            $row_medium = isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : '';
-
-            // Apply same normalization as traffic_sources()
-            if (isset($source_aliases[$row_source])) $row_source = $source_aliases[$row_source];
-            if ($row_source === 'facebook' && stripos($row_medium, 'instagram') !== false) $row_source = 'instagram';
-            $row_channel = $classify_medium($row_medium);
+            $normalized = self::normalize_source(
+                isset($data['oz_traffic_source']) ? $data['oz_traffic_source'] : '',
+                isset($data['oz_traffic_medium']) ? $data['oz_traffic_medium'] : ''
+            );
 
             // Match against normalized source + channel
-            if ($row_source !== strtolower($source)) continue;
-            if ($row_channel !== strtolower($medium)) continue;
+            if ($normalized['source'] !== strtolower($source)) continue;
+            if ($normalized['medium'] !== strtolower($medium)) continue;
 
             $results[] = [
                 'landing_page' => isset($data['oz_landing_page']) ? $data['oz_landing_page'] : '/',

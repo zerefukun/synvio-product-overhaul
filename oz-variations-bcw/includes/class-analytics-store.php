@@ -115,11 +115,15 @@ class OZ_Analytics_Store {
         $table    = self::table_name();
         $days_int = absint($days);
 
+        // Use current_time() instead of NOW() — events are stored in WP timezone,
+        // so cleanup must compare against the same timezone.
+        $cutoff = date('Y-m-d H:i:s', current_time('timestamp') - ($days_int * DAY_IN_SECONDS));
+
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM {$table} WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
-                $days_int
+                "DELETE FROM {$table} WHERE created_at < %s",
+                $cutoff
             )
         );
     }
@@ -179,8 +183,10 @@ class OZ_Analytics_Store {
         ));
 
         // Cleanup stale sessions older than 2 minutes (piggyback on heartbeat)
+        // Use current_time() to match how last_seen is stored (WP timezone)
+        $stale_cutoff = date('Y-m-d H:i:s', current_time('timestamp') - 120);
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $wpdb->query("DELETE FROM {$table} WHERE last_seen < DATE_SUB(NOW(), INTERVAL 2 MINUTE)");
+        $wpdb->query($wpdb->prepare("DELETE FROM {$table} WHERE last_seen < %s", $stale_cutoff));
     }
 
     /**

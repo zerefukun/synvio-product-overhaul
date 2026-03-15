@@ -101,6 +101,13 @@ class OZ_Analytics_Collector {
             return;
         }
 
+        // Skip admins and bots — same exclusion as heartbeat.
+        // Prevents test clicks and crawler noise from polluting funnels/color data.
+        if (current_user_can('manage_options') || self::is_bot()) {
+            wp_send_json_success();
+            return;
+        }
+
         // Sanitize simple string inputs
         $event_name = isset($_POST['event_name']) ? sanitize_text_field($_POST['event_name']) : '';
         $source     = isset($_POST['source']) ? sanitize_text_field($_POST['source']) : '';
@@ -134,8 +141,11 @@ class OZ_Analytics_Collector {
         // Uses WC session cookie if available, falls back to a hash of IP + user agent
         $session_id = self::get_session_id();
 
-        // Store the event (product_id 0 = no product, e.g. cart events)
-        OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id);
+        // Store the event — log failures for admin visibility
+        $result = OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id);
+        if ($result === false) {
+            error_log('[OZ Analytics] Failed to insert event: ' . $event_name . ' (session: ' . $session_id . ')');
+        }
 
         wp_send_json_success();
     }
