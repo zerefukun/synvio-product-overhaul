@@ -199,11 +199,13 @@ class OZ_Analytics_Store {
         global $wpdb;
 
         $table = self::sessions_table_name();
+        // Use current_time() to match how last_seen is stored (WP timezone)
+        $cutoff = date('Y-m-d H:i:s', current_time('timestamp') - absint($seconds));
 
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table} WHERE last_seen >= DATE_SUB(NOW(), INTERVAL %d SECOND)",
-            absint($seconds)
+            "SELECT COUNT(*) FROM {$table} WHERE last_seen >= %s",
+            $cutoff
         ));
     }
 
@@ -218,14 +220,16 @@ class OZ_Analytics_Store {
         global $wpdb;
 
         $table = self::sessions_table_name();
+        // Use current_time() to match how last_seen is stored (WP timezone)
+        $cutoff = date('Y-m-d H:i:s', current_time('timestamp') - absint($seconds));
 
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->get_results($wpdb->prepare(
             "SELECT session_id, page_url, first_seen, last_seen
              FROM {$table}
-             WHERE last_seen >= DATE_SUB(NOW(), INTERVAL %d SECOND)
+             WHERE last_seen >= %s
              ORDER BY first_seen DESC",
-            absint($seconds)
+            $cutoff
         ), ARRAY_A);
     }
 

@@ -96,7 +96,7 @@ class OZ_Analytics_Reporter {
         if (strpos($m, 'cpc') !== false || strpos($m, 'paid') !== false || strpos($m, 'ppc') !== false) return 'cpc';
         if (strpos($m, 'stories') !== false || strpos($m, 'feed') !== false || strpos($m, 'reel') !== false) return 'cpc';
         if ($m === 'social' || $m === 'referral') return $m;
-        if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false || $m === 'email') return 'email';
+        if (strpos($m, 'email') !== false || strpos($m, 'newsletter') !== false) return 'email';
         if ($m === 'affiliate') return 'affiliate';
         if ($m === 'display' || strpos($m, 'banner') !== false) return 'display';
         if ($m === 'video' || strpos($m, 'youtube') !== false) return 'video';
@@ -193,16 +193,21 @@ class OZ_Analytics_Reporter {
         global $wpdb;
 
         if (self::is_hpos_active()) {
-            // HPOS: query wc_orders table directly
+            // HPOS: query wc_orders + operational_data for shipping amounts
             // Subtract shipping to match WC Analytics "Totale verkoop"
+            // Convert WP-timezone dates to GMT for HPOS (stores date_created_gmt only)
             $table = $wpdb->prefix . 'wc_orders';
+            $op_table = $wpdb->prefix . 'wc_order_operational_data';
+            $from_gmt = get_gmt_from_date($from);
+            $to_gmt   = get_gmt_from_date($to);
             $row = $wpdb->get_row($wpdb->prepare(
                 "SELECT COUNT(*) AS orders,
-                    COALESCE(SUM(total_amount - shipping_total - shipping_tax), 0) AS revenue
-                 FROM {$table}
-                 WHERE status IN ('wc-completed', 'wc-processing')
-                 AND date_created_local >= %s AND date_created_local < %s",
-                $from, $to
+                    COALESCE(SUM(o.total_amount - COALESCE(od.shipping_total_amount, 0) - COALESCE(od.shipping_tax_amount, 0)), 0) AS revenue
+                 FROM {$table} o
+                 LEFT JOIN {$op_table} od ON od.order_id = o.id
+                 WHERE o.status IN ('wc-completed', 'wc-processing')
+                 AND o.date_created_gmt >= %s AND o.date_created_gmt < %s",
+                $from_gmt, $to_gmt
             ), ARRAY_A);
         } else {
             // Legacy: query posts + postmeta
@@ -252,9 +257,12 @@ class OZ_Analytics_Reporter {
         // Order items table is the same for HPOS and legacy.
         // We just need to join with the correct orders source for date filtering.
         if (self::is_hpos_active()) {
+            // HPOS stores date_created_gmt — convert WP-timezone dates to GMT
+            $since = get_gmt_from_date($since);
+            $until = get_gmt_from_date($until);
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_local >= %s AND o.date_created_local < %s";
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -309,9 +317,11 @@ class OZ_Analytics_Reporter {
         $until = self::until_date($days);
 
         if (self::is_hpos_active()) {
+            $since = get_gmt_from_date($since);
+            $until = get_gmt_from_date($until);
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_local >= %s AND o.date_created_local < %s";
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -385,16 +395,18 @@ class OZ_Analytics_Reporter {
 
         if (self::is_hpos_active()) {
             $orders_table = $wpdb->prefix . 'wc_orders';
+            $from_gmt = get_gmt_from_date($from);
+            $to_gmt   = get_gmt_from_date($to);
             $result = $wpdb->get_var($wpdb->prepare(
                 "SELECT AVG(item_count) FROM (
                     SELECT o.id, COUNT(oi.order_item_id) AS item_count
                     FROM {$orders_table} o
                     JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
                     WHERE o.status IN ('wc-completed', 'wc-processing')
-                    AND o.date_created_local >= %s AND o.date_created_local < %s
+                    AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
                     GROUP BY o.id
                 ) sub",
-                $from, $to
+                $from_gmt, $to_gmt
             ));
         } else {
             $result = $wpdb->get_var($wpdb->prepare(
@@ -432,12 +444,14 @@ class OZ_Analytics_Reporter {
 
         if (self::is_hpos_active()) {
             $orders_table = $wpdb->prefix . 'wc_orders';
+            $from_gmt = get_gmt_from_date($from);
+            $to_gmt   = get_gmt_from_date($to);
 
             $total_orders = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) FROM {$orders_table}
                  WHERE status IN ('wc-completed', 'wc-processing')
-                 AND date_created_local >= %s AND date_created_local < %s",
-                $from, $to
+                 AND date_created_gmt >= %s AND date_created_gmt < %s",
+                $from_gmt, $to_gmt
             ));
 
             if (intval($total_orders) === 0) return 0;
@@ -449,9 +463,9 @@ class OZ_Analytics_Reporter {
                  JOIN {$items_table} oi ON oi.order_id = o.id AND oi.order_item_type = 'line_item'
                  JOIN {$meta_table} oim ON oi.order_item_id = oim.order_item_id AND oim.meta_key = '_product_id'
                  WHERE o.status IN ('wc-completed', 'wc-processing')
-                 AND o.date_created_local >= %s AND o.date_created_local < %s
+                 AND o.date_created_gmt >= %s AND o.date_created_gmt < %s
                  AND oim.meta_value IN ({$ids_placeholder})",
-                $from, $to
+                $from_gmt, $to_gmt
             ));
         } else {
             $total_orders = $wpdb->get_var($wpdb->prepare(
@@ -511,9 +525,11 @@ class OZ_Analytics_Reporter {
         $until = self::until_date($days);
 
         if (self::is_hpos_active()) {
+            $since = get_gmt_from_date($since);
+            $until = get_gmt_from_date($until);
             $orders_join = "JOIN {$wpdb->prefix}wc_orders o ON oi.order_id = o.id
                             AND o.status IN ('wc-completed', 'wc-processing')
-                            AND o.date_created_local >= %s AND o.date_created_local < %s";
+                            AND o.date_created_gmt >= %s AND o.date_created_gmt < %s";
         } else {
             $orders_join = "JOIN {$wpdb->posts} o ON oi.order_id = o.ID
                             AND o.post_type = 'shop_order'
@@ -524,7 +540,8 @@ class OZ_Analytics_Reporter {
         // Match tools added via our product page:
         // 1. Items with _oz_tool_size or _oz_tool_price meta (individual tools with size selection)
         // 2. Gereedschapset products (11177 K&K, 25550 Lavasteen) — added with empty cart_data
-        //    so they lack tool meta, but they're still product-page tool sales
+        // Uses EXISTS subquery instead of LEFT JOIN to avoid double-counting
+        // when an item has both _oz_tool_size AND _oz_tool_price meta rows
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT
@@ -533,11 +550,16 @@ class OZ_Analytics_Reporter {
              FROM {$items_table} oi
              JOIN {$meta_table} oim_pid ON oi.order_item_id = oim_pid.order_item_id AND oim_pid.meta_key = '_product_id'
              JOIN {$meta_table} oim_qty ON oi.order_item_id = oim_qty.order_item_id AND oim_qty.meta_key = '_qty'
-             LEFT JOIN {$meta_table} oim_tool ON oi.order_item_id = oim_tool.order_item_id
-                  AND oim_tool.meta_key IN ('_oz_tool_size', '_oz_tool_price')
              {$orders_join}
              WHERE oi.order_item_type = 'line_item'
-             AND (oim_tool.meta_id IS NOT NULL OR oim_pid.meta_value IN (11177, 25550))
+             AND (
+                 EXISTS (
+                     SELECT 1 FROM {$meta_table} oim_tool
+                     WHERE oim_tool.order_item_id = oi.order_item_id
+                     AND oim_tool.meta_key IN ('_oz_tool_size', '_oz_tool_price')
+                 )
+                 OR oim_pid.meta_value IN (11177, 25550)
+             )
              GROUP BY product_id
              ORDER BY qty DESC
              LIMIT %d",
@@ -891,5 +913,18 @@ class OZ_Analytics_Reporter {
             return date('Y-m-d 00:00:00', current_time('timestamp'));
         }
         return current_time('Y-m-d H:i:s');
+    }
+
+    /**
+     * Convert WP-timezone date pair to GMT for HPOS queries.
+     * HPOS stores date_created_gmt (UTC), but since_date/until_date return WP timezone.
+     * Only needed when is_hpos_active() is true.
+     *
+     * @param string $since  WP-timezone start date
+     * @param string $until  WP-timezone end date
+     * @return array  [$since_gmt, $until_gmt]
+     */
+    private static function to_gmt($since, $until) {
+        return [get_gmt_from_date($since), get_gmt_from_date($until)];
     }
 }
