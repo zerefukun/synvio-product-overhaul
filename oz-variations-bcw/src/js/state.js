@@ -354,6 +354,11 @@ export function clampToolQty(current, delta) {
  * @return {string|null}  Error message, or null if valid
  */
 export function validateCartState(config, state) {
+  // Base product in swatch mode — user must navigate to a color variant first.
+  // Only RAL/NCS mode allows ordering from the base product page.
+  if (config.isBase && state.colorMode !== 'ral_ncs') {
+    return 'Kies eerst een kleur om te bestellen.';
+  }
   // RAL/NCS validation
   if (state.colorMode === 'ral_ncs') {
     if (!state.customColor) return 'Vul een RAL of NCS kleurcode in.';

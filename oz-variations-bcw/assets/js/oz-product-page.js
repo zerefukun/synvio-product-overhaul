@@ -204,6 +204,9 @@
     return Math.max(1, Math.min(99, current + delta));
   }
   function validateCartState(config, state) {
+    if (config.isBase && state.colorMode !== "ral_ncs") {
+      return "Kies eerst een kleur om te bestellen.";
+    }
     if (state.colorMode === "ral_ncs") {
       if (!state.customColor) return "Vul een RAL of NCS kleurcode in.";
       if (!validateRal(state.customColor) && !validateNcs(state.customColor)) {
