@@ -112,9 +112,17 @@ function syncUI() {
 
   // Enable/disable cart button based on validation state.
   // Base products start with oz-disabled; remove it when a valid color is chosen (e.g. RAL/NCS).
+  var error = validateCartState(P, S);
   if (DOM.addToCartBtn) {
-    var error = validateCartState(P, S);
     DOM.addToCartBtn.classList.toggle('oz-disabled', !!error);
+  }
+
+  // Update sticky buttons: switch from "Kies kleur" to "In winkelmand"
+  // when a base product has a valid RAL/NCS color entered
+  if (P.isBase) {
+    var ready = !error;
+    if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = ready ? 'In winkelmand' : 'Kies kleur';
+    if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? 'In winkelmand' : 'Kies kleur';
   }
 }
 
@@ -669,10 +677,11 @@ function handleClick(e) {
     return;
   }
 
-  // Mobile sticky button — base products scroll to colors, others open bottom sheet
+  // Mobile sticky button — base products without valid color scroll to colors, otherwise open sheet
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
-    if (P.isBase) {
+    if (P.isBase && validateCartState(P, S)) {
+      // No valid color yet — guide user to pick one
       scrollToColors();
     } else {
       openSheet();
@@ -680,10 +689,11 @@ function handleClick(e) {
     return;
   }
 
-  // Desktop sticky button — base products scroll to colors, others add to cart
+  // Desktop sticky button — base products without valid color scroll to colors, otherwise add to cart
   if (target === DOM.stickyDBtn || target.closest('#stickyDBtn')) {
     e.preventDefault();
-    if (P.isBase) {
+    if (P.isBase && validateCartState(P, S)) {
+      // No valid color yet — guide user to pick one
       scrollToColors();
     } else {
       addToCart();

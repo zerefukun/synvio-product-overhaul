@@ -777,9 +777,14 @@
       if (P.hasTools) {
         syncToolSectionV2("toolSection", S.toolMode, S.tools, S.extras, S.qty);
       }
+      var error = validateCartState(P, S);
       if (DOM.addToCartBtn) {
-        var error = validateCartState(P, S);
         DOM.addToCartBtn.classList.toggle("oz-disabled", !!error);
+      }
+      if (P.isBase) {
+        var ready = !error;
+        if (DOM.stickyBtn) DOM.stickyBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
+        if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
       }
     }, renderToolDetails = function(prices, anchor, lineClass) {
       if (!anchor) return;
@@ -1160,7 +1165,7 @@
       }
       if (target === DOM.stickyBtn || target.closest("#stickyBtn")) {
         e.preventDefault();
-        if (P.isBase) {
+        if (P.isBase && validateCartState(P, S)) {
           scrollToColors();
         } else {
           openSheet();
@@ -1169,7 +1174,7 @@
       }
       if (target === DOM.stickyDBtn || target.closest("#stickyDBtn")) {
         e.preventDefault();
-        if (P.isBase) {
+        if (P.isBase && validateCartState(P, S)) {
           scrollToColors();
         } else {
           addToCart();
