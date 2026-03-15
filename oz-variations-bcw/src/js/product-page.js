@@ -109,6 +109,13 @@ function syncUI() {
   if (P.hasTools) {
     syncToolSectionV2("toolSection", S.toolMode, S.tools, S.extras, S.qty);
   }
+
+  // Enable/disable cart button based on validation state.
+  // Base products start with oz-disabled; remove it when a valid color is chosen (e.g. RAL/NCS).
+  if (DOM.addToCartBtn) {
+    var error = validateCartState(P, S);
+    DOM.addToCartBtn.classList.toggle('oz-disabled', !!error);
+  }
 }
 
 /**

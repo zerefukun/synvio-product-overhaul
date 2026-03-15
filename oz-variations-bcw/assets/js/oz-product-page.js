@@ -777,6 +777,10 @@
       if (P.hasTools) {
         syncToolSectionV2("toolSection", S.toolMode, S.tools, S.extras, S.qty);
       }
+      if (DOM.addToCartBtn) {
+        var error = validateCartState(P, S);
+        DOM.addToCartBtn.classList.toggle("oz-disabled", !!error);
+      }
     }, renderToolDetails = function(prices, anchor, lineClass) {
       if (!anchor) return;
       var parent = anchor.parentNode;
