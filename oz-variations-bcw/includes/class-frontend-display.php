@@ -242,12 +242,13 @@ class OZ_Frontend_Display {
             $current_pid      = $product->get_id();
             $current_image_id = get_post_thumbnail_id($current_pid);
             $js_data['variants'][$current_pid] = [
-                'color'     => get_post_meta($current_pid, '_oz_color', true) ?: '',
-                'url'       => get_permalink($current_pid),
-                'image'     => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'thumbnail') : '',
-                'fullImage' => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'large') : '',
-                'price'     => floatval($product->get_price()),
-                'title'     => $product->get_name(),
+                'color'       => get_post_meta($current_pid, '_oz_color', true) ?: '',
+                'url'         => get_permalink($current_pid),
+                'image'       => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'thumbnail') : '',
+                'fullImage'   => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'large') : '',
+                'price'       => floatval($product->get_price()),
+                'title'       => $product->get_name(),
+                'description' => apply_filters('the_content', $product->get_description()),
             ];
         }
 
@@ -496,12 +497,13 @@ class OZ_Frontend_Display {
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
             $variants[$vid] = [
-                'color'     => $color,
-                'url'       => get_permalink($vid),
-                'image'     => $image_url,
-                'fullImage' => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
-                'price'     => $variant ? floatval($variant->get_price()) : 0,
-                'title'     => $variant ? $variant->get_name() : '',
+                'color'       => $color,
+                'url'         => get_permalink($vid),
+                'image'       => $image_url,
+                'fullImage'   => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'price'       => $variant ? floatval($variant->get_price()) : 0,
+                'title'       => $variant ? $variant->get_name() : '',
+                'description' => $variant ? apply_filters('the_content', $variant->get_description()) : '',
             ];
         }
 

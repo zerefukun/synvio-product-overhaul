@@ -232,11 +232,13 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <?php
       // Color label above title — shown for color variants and shared-color products.
-      // For shared colors (e.g. Betonlook Verf), initially hidden — JS shows it on swatch pick.
+      // Always rendered for configured_line products (pushState may navigate from
+      // base to variant, so the element must exist in DOM even when initially empty).
       $has_shared_colors = !empty($config['share_colors_from']);
-      if ($current_color || $has_shared_colors) : ?>
+      $has_color_variants = ($page_mode === 'configured_line' && !empty($config['base_id']));
+      if ($current_color || $has_shared_colors || $has_color_variants) : ?>
         <div class="oz-color-label" id="colorLabel"
-             <?php if (!$current_color && $has_shared_colors) echo 'style="display:none"'; ?>
+             <?php if (!$current_color) echo 'style="display:none"'; ?>
         ><?php echo esc_html($current_color ?: ''); ?></div>
       <?php endif; ?>
 

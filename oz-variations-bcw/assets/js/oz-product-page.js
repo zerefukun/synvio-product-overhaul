@@ -781,8 +781,12 @@
     toggleGalleryThumbs(isInitialProduct);
     var strippedTitle = stripColor(v.title, v.color);
     if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
+    swapDescription(v.description);
     if (DOM.selectedColorLabel) DOM.selectedColorLabel.textContent = v.color;
-    if (DOM.colorLabel) DOM.colorLabel.textContent = v.color;
+    if (DOM.colorLabel) {
+      DOM.colorLabel.textContent = v.color;
+      DOM.colorLabel.style.display = v.color ? "" : "none";
+    }
     if (DOM.stickyDColor) DOM.stickyDColor.textContent = v.color;
     if (DOM.stickyColorName) DOM.stickyColorName.textContent = v.color;
     if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
@@ -808,6 +812,26 @@
     }
     if (_onAfterNavigate) _onAfterNavigate();
     return true;
+  }
+  function swapDescription(html) {
+    if (!DOM.descContent) return;
+    var section = document.getElementById("sectionInfo");
+    if (!html) {
+      if (section) section.style.display = "none";
+      return;
+    }
+    if (section) section.style.display = "";
+    DOM.descContent.innerHTML = html;
+    DOM.descContent.classList.remove("expanded");
+    if (DOM.readMoreBtn) {
+      if (DOM.descContent.scrollHeight <= 120) {
+        DOM.readMoreBtn.style.display = "none";
+        DOM.descContent.classList.add("expanded");
+      } else {
+        DOM.readMoreBtn.style.display = "";
+        DOM.readMoreBtn.textContent = "Lees meer";
+      }
+    }
   }
   function swapMainImage(fullImageUrl) {
     if (!fullImageUrl || !DOM.mainImg) return;

@@ -110,28 +110,35 @@ function applyVariant(productId, isPopstate) {
   var strippedTitle = stripColor(v.title, v.color);
   if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
 
-  // 5. Update all color label elements across the page
+  // 5. Swap product description and reset read-more state
+  swapDescription(v.description);
+
+  // 6. Update all color label elements across the page
   if (DOM.selectedColorLabel) DOM.selectedColorLabel.textContent = v.color;
-  if (DOM.colorLabel)         DOM.colorLabel.textContent = v.color;
+  if (DOM.colorLabel) {
+    DOM.colorLabel.textContent = v.color;
+    // Show/hide — hidden on base products, visible on color variants
+    DOM.colorLabel.style.display = v.color ? '' : 'none';
+  }
   if (DOM.stickyDColor)       DOM.stickyDColor.textContent = v.color;
   if (DOM.stickyColorName)    DOM.stickyColorName.textContent = v.color;
 
-  // 6. Update sticky bar — thumbnail, product name (mobile + desktop)
+  // 7. Update sticky bar — thumbnail, product name (mobile + desktop)
   if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
   if (DOM.stickyProductName) DOM.stickyProductName.textContent = strippedTitle;
   if (DOM.stickyDTitle) DOM.stickyDTitle.textContent = strippedTitle;
 
-  // 7. Update swatch highlight — toggle 'selected' class
+  // 8. Update swatch highlight — toggle 'selected' class
   var swatches = document.querySelectorAll('.oz-color-swatch');
   for (var i = 0; i < swatches.length; i++) {
     var spid = parseInt(swatches[i].getAttribute('data-product-id'), 10);
     swatches[i].classList.toggle('selected', spid === productId);
   }
 
-  // 8. SEO meta tags
+  // 9. SEO meta tags
   updateSeoMeta(v.url, v.title);
 
-  // 9. URL update — pushState for first click, replaceState for rapid follow-ups
+  // 10. URL update — pushState for first click, replaceState for rapid follow-ups
   if (!isPopstate) {
     if (!_hasPushed) {
       // First click: create a real history entry immediately
@@ -149,7 +156,7 @@ function applyVariant(productId, isPopstate) {
     }, 300);
   }
 
-  // 10. Notify product-page.js to recalculate prices, cart state, etc.
+  // 11. Notify product-page.js to recalculate prices, cart state, etc.
   if (_onAfterNavigate) _onAfterNavigate();
 
   return true;
@@ -157,6 +164,40 @@ function applyVariant(productId, isPopstate) {
 
 
 /* ═══ HELPERS ════════════════════════════════════════════ */
+
+/**
+ * Swap the product description HTML and reset read-more state.
+ * If description is empty, hides the entire section.
+ */
+function swapDescription(html) {
+  if (!DOM.descContent) return;
+
+  var section = document.getElementById('sectionInfo');
+
+  if (!html) {
+    // No description for this variant — hide the section
+    if (section) section.style.display = 'none';
+    return;
+  }
+
+  // Show section (may have been hidden by a previous variant with no description)
+  if (section) section.style.display = '';
+
+  // Replace content
+  DOM.descContent.innerHTML = html;
+
+  // Reset read-more: collapse and re-evaluate whether button is needed
+  DOM.descContent.classList.remove('expanded');
+  if (DOM.readMoreBtn) {
+    if (DOM.descContent.scrollHeight <= 120) {
+      DOM.readMoreBtn.style.display = 'none';
+      DOM.descContent.classList.add('expanded');
+    } else {
+      DOM.readMoreBtn.style.display = '';
+      DOM.readMoreBtn.textContent = 'Lees meer';
+    }
+  }
+}
 
 /**
  * Swap main product image with crossfade. Cancels any in-flight swap
