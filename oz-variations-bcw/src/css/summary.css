@@ -171,11 +171,8 @@
     white-space: nowrap;
   }
 
-  /* Override stacked chip styles for ticker mode */
+  /* Keep pill shape, just remove extra margin for single-line fit */
   .oz-usp-ticker .swiper-slide li {
     margin: 0;
-    padding: 6px 0;
-    border: none;
-    background: none;
   }
 }

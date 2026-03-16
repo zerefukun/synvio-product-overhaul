@@ -728,9 +728,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
   }
   .oz-usp-ticker .swiper-slide li {
     margin: 0;
-    padding: 6px 0;
-    border: none;
-    background: none;
   }
 }
 

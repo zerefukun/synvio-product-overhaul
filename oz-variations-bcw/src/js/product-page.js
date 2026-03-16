@@ -1396,6 +1396,7 @@ function initUspTicker() {
     window.ozLoadSwiper(function () {
       new Swiper('.oz-usp-ticker', {
         slidesPerView: 'auto',
+        spaceBetween: 8,
         loop: true,
         autoplay: {
           delay: 3000,
