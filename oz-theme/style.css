@@ -41,53 +41,6 @@ License:        Ozmarketing - All rights reserved
     margin-top: 20px;
 }
 
-/* Handleiding component (still used by Croco Stuc + PU Color) */
-.handleiding-main {
-    clear: both;
-    margin: 50px 0;
-    user-select: none;
-}
-
-.handleiding-container {
-    display: flex;
-    padding: 15px;
-    align-items: center;
-    background-color: #dcd6cf;
-    border-radius: 4px;
-    box-shadow: 0px 0px 4px 1px #b9b8b8;
-}
-
-.handleiding-img{
-    flex: 0 0 auto;
-}
-
-.handleiding-img > img{
-    max-width: 150px;
-    max-height: 150px;
-}
-
-.handleiding-text {
-    padding: 0 20px;
-    font-size: 14px;
-}
-
-.handleiding-button {
-    white-space: nowrap;
-    margin: 0px 20px;
-    font-size: 14px;
-    position: relative;
-}
-
-.handleiding-button > a {
-    margin: 0;
-    border-radius: 4px;
-}
-
-.handleiding-button > a:hover{
-    box-shadow: 0 14px 28px rgba(0,0,0,.25),0 10px 10px rgba(0,0,0,.1);
-    transform: translateY(-6px);
-}
-
 /* RAL row layout */
 .lrow-ral {
     justify-content: left!important;
@@ -140,10 +93,6 @@ License:        Ozmarketing - All rights reserved
 
 /* MOBIEL STYLES */
 @media (max-width: 768px) {
-    .handleiding-img > img {
-        display: none!important;
-    }
-
     .quantity, .text-center .quantity{
         margin-bottom: 1%!important;
     }
