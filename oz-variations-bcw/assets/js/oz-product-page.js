@@ -1731,14 +1731,15 @@
       uspContainer.classList.add("swiper", "oz-usp-ticker");
       uspContainer.appendChild(wrapper);
       var shortDesc = uspContainer.closest(".oz-short-desc");
-      var gallery = document.querySelector(".oz-product-gallery");
-      if (shortDesc && gallery && gallery.parentNode) {
-        gallery.parentNode.insertBefore(shortDesc, gallery);
+      var breadcrumb = document.querySelector(".oz-breadcrumb");
+      if (shortDesc && breadcrumb && breadcrumb.parentNode) {
+        breadcrumb.parentNode.insertBefore(shortDesc, breadcrumb);
       }
       if (window.ozLoadSwiper) {
         window.ozLoadSwiper(function() {
           new Swiper(".oz-usp-ticker", {
-            slidesPerView: 1,
+            slidesPerView: "auto",
+            spaceBetween: 8,
             loop: true,
             autoplay: {
               delay: 3e3,
