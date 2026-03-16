@@ -2635,6 +2635,9 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
     z-index: 2;
     padding: 8px 12px;
   }
+  .oz-breadcrumb-overlay a {
+    color: inherit;
+  }
   .oz-product-gallery {
     position: relative;
     margin-top: -18px;

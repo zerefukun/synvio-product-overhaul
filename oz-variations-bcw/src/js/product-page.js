@@ -758,6 +758,9 @@ function switchGalleryImage(thumb) {
     DOM.mainImg.src = newSrc;
     DOM.mainImg.onload = function () {
       DOM.mainImg.classList.remove('oz-fade');
+      // Re-check breadcrumb contrast for the new image
+      var bc = document.querySelector('.oz-breadcrumb-overlay');
+      if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
     };
   }, 200);
 }
@@ -1363,6 +1366,45 @@ function setupStickyBar() {
 
 /* ═══ INITIALIZATION ════════════════════════════════════════ */
 
+/* ═══ BREADCRUMB CONTRAST DETECTION ══════════════════════ */
+
+/**
+ * Sample the top strip of an image and set breadcrumb text color
+ * based on average luminance. Dark image = white text, light image = dark text.
+ * Uses a tiny offscreen canvas to read pixel data.
+ */
+function adaptBreadcrumbColor(img, breadcrumb) {
+  try {
+    var canvas = document.createElement('canvas');
+    var sampleHeight = 40; // matches breadcrumb overlay height
+    // Scale down for speed — we only need rough luminance
+    canvas.width = 80;
+    canvas.height = Math.round(sampleHeight * (80 / img.naturalWidth));
+    var ctx = canvas.getContext('2d');
+    // Draw only the top strip of the image
+    ctx.drawImage(img, 0, 0, img.naturalWidth, sampleHeight, 0, 0, canvas.width, canvas.height);
+    var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    // Average luminance using perceptual weights
+    var totalLum = 0;
+    var pixels = data.length / 4;
+    for (var i = 0; i < data.length; i += 4) {
+      totalLum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    }
+    var avgLum = totalLum / pixels;
+
+    // Light image = dark text, dark image = white text
+    var isDark = avgLum < 140;
+    breadcrumb.style.color = isDark ? 'rgba(255,255,255,0.85)' : 'var(--oz-text-muted)';
+    // Subtle shadow for extra readability on any background
+    breadcrumb.style.textShadow = isDark
+      ? '0 1px 3px rgba(0,0,0,0.4)'
+      : '0 1px 2px rgba(255,255,255,0.6)';
+  } catch (e) {
+    // Canvas CORS or other error — fall back to default color
+  }
+}
+
 /* ═══ MOBILE USP TICKER ══════════════════════════════════ */
 
 /**
@@ -1422,6 +1464,18 @@ function initUspTicker() {
   if (breadcrumb && gallery) {
     breadcrumb.classList.add('oz-breadcrumb-overlay');
     gallery.insertBefore(breadcrumb, gallery.firstChild);
+
+    // Set initial breadcrumb color based on image brightness
+    var mainImg = document.getElementById('mainImg');
+    if (mainImg) {
+      if (mainImg.complete) {
+        adaptBreadcrumbColor(mainImg, breadcrumb);
+      } else {
+        mainImg.addEventListener('load', function () {
+          adaptBreadcrumbColor(mainImg, breadcrumb);
+        }, { once: true });
+      }
+    }
   }
 
   // Load Swiper via shared loader and initialize auto-play carousel

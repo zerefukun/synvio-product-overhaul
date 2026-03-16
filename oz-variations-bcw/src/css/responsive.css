@@ -86,7 +86,8 @@
     padding: 8px 0;
   }
 
-  /* Breadcrumb overlays the top of the gallery image */
+  /* Breadcrumb overlays the top of the gallery image.
+     Color + text-shadow set dynamically by adaptBreadcrumbColor(). */
   .oz-breadcrumb-overlay {
     position: absolute;
     top: 0;
@@ -94,6 +95,11 @@
     right: 0;
     z-index: 2;
     padding: 8px 12px;
+  }
+
+  /* Links inherit the contrast-adapted color from the parent */
+  .oz-breadcrumb-overlay a {
+    color: inherit;
   }
 
   /* Gallery needs relative positioning for the overlay.

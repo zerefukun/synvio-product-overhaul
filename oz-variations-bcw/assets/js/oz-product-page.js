@@ -1380,6 +1380,8 @@
         DOM.mainImg.src = newSrc;
         DOM.mainImg.onload = function() {
           DOM.mainImg.classList.remove("oz-fade");
+          var bc = document.querySelector(".oz-breadcrumb-overlay");
+          if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
         };
       }, 200);
     }, toggleInfoTooltip = function(btn) {
@@ -1715,6 +1717,26 @@
         }, { threshold: 0 });
         optionsObserver.observe(DOM.optionsWidget);
       }
+    }, adaptBreadcrumbColor = function(img, breadcrumb) {
+      try {
+        var canvas = document.createElement("canvas");
+        var sampleHeight = 40;
+        canvas.width = 80;
+        canvas.height = Math.round(sampleHeight * (80 / img.naturalWidth));
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, img.naturalWidth, sampleHeight, 0, 0, canvas.width, canvas.height);
+        var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        var totalLum = 0;
+        var pixels = data.length / 4;
+        for (var i = 0; i < data.length; i += 4) {
+          totalLum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+        }
+        var avgLum = totalLum / pixels;
+        var isDark = avgLum < 140;
+        breadcrumb.style.color = isDark ? "rgba(255,255,255,0.85)" : "var(--oz-text-muted)";
+        breadcrumb.style.textShadow = isDark ? "0 1px 3px rgba(0,0,0,0.4)" : "0 1px 2px rgba(255,255,255,0.6)";
+      } catch (e) {
+      }
     }, initUspTicker = function() {
       var uspContainer = document.querySelector(".oz-short-desc ul");
       if (!uspContainer || uspContainer.children.length < 2) return;
@@ -1751,6 +1773,16 @@
       if (breadcrumb && gallery) {
         breadcrumb.classList.add("oz-breadcrumb-overlay");
         gallery.insertBefore(breadcrumb, gallery.firstChild);
+        var mainImg = document.getElementById("mainImg");
+        if (mainImg) {
+          if (mainImg.complete) {
+            adaptBreadcrumbColor(mainImg, breadcrumb);
+          } else {
+            mainImg.addEventListener("load", function() {
+              adaptBreadcrumbColor(mainImg, breadcrumb);
+            }, { once: true });
+          }
+        }
       }
       if (window.ozLoadSwiper) {
         window.ozLoadSwiper(function() {
