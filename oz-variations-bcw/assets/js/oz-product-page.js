@@ -1733,8 +1733,7 @@
       if (window.ozLoadSwiper) {
         window.ozLoadSwiper(function() {
           new Swiper(".oz-usp-ticker", {
-            slidesPerView: "auto",
-            spaceBetween: 8,
+            slidesPerView: 1,
             loop: true,
             autoplay: {
               delay: 3e3,
