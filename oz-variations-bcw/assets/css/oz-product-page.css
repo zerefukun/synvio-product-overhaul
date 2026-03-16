@@ -716,6 +716,9 @@ details.oz-faq-item[open] .oz-faq-question::after {
   content: none;
 }
 @media (max-width: 900px) {
+  .oz-short-desc {
+    margin-bottom: 6px;
+  }
   .oz-usp-ticker {
     overflow: hidden;
     height: 36px;
@@ -728,6 +731,15 @@ details.oz-faq-item[open] .oz-faq-question::after {
   }
   .oz-usp-ticker .swiper-slide li {
     margin: 0;
+  }
+  .oz-product-title {
+    margin-bottom: 4px;
+  }
+  .oz-color-label {
+    margin-bottom: 4px;
+  }
+  .oz-product-base-price {
+    margin-bottom: 8px;
   }
 }
 
@@ -2608,6 +2620,22 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
   }
   .oz-breadcrumb {
     padding: 8px 0;
+  }
+  .oz-breadcrumb-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    padding: 8px 12px;
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.85),
+        transparent);
+  }
+  .oz-product-gallery {
+    position: relative;
   }
   body.oz-has-sticky {
     padding-bottom: 100px;

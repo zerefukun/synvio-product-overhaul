@@ -159,6 +159,10 @@
 
 /* Mobile USP ticker — compact auto-swiping strip replaces stacked chips */
 @media (max-width: 900px) {
+  .oz-short-desc {
+    margin-bottom: 6px;
+  }
+
   .oz-usp-ticker {
     overflow: hidden;
     height: 36px;
@@ -174,5 +178,19 @@
   /* Keep pill shape, just remove extra margin for single-line fit */
   .oz-usp-ticker .swiper-slide li {
     margin: 0;
+  }
+
+  /* Tighten spacing for mobile header block */
+  .oz-product-title {
+    margin-bottom: 4px;
+  }
+
+  /* Color label and price sit on one line */
+  .oz-color-label {
+    margin-bottom: 4px;
+  }
+
+  .oz-product-base-price {
+    margin-bottom: 8px;
   }
 }

@@ -1391,17 +1391,27 @@ function initUspTicker() {
   uspContainer.classList.add('swiper', 'oz-usp-ticker');
   uspContainer.appendChild(wrapper);
 
-  // Move USP ticker, color label, and title above the breadcrumb on mobile.
-  // Order: USP ticker → color label + title → breadcrumb → gallery
+  // Move elements above the gallery on mobile, hide breadcrumb.
+  // Order: USP ticker → title → color label + price → gallery
   var shortDesc = uspContainer.closest('.oz-short-desc');
   var breadcrumb = document.querySelector('.oz-breadcrumb');
   var colorLabel = document.getElementById('colorLabel');
   var title = document.querySelector('.oz-product-title');
+  var price = document.querySelector('.oz-product-base-price');
+  var gallery = document.querySelector('.oz-product-gallery');
 
-  if (breadcrumb && breadcrumb.parentNode) {
-    if (shortDesc) breadcrumb.parentNode.insertBefore(shortDesc, breadcrumb);
-    if (title) breadcrumb.parentNode.insertBefore(title, breadcrumb);
-    if (colorLabel) breadcrumb.parentNode.insertBefore(colorLabel, title);
+  if (gallery && gallery.parentNode) {
+    // Insert before gallery in reverse order (each insertBefore pushes previous down)
+    if (price) gallery.parentNode.insertBefore(price, gallery);
+    if (colorLabel) gallery.parentNode.insertBefore(colorLabel, price);
+    if (title) gallery.parentNode.insertBefore(title, colorLabel || price);
+    if (shortDesc) gallery.parentNode.insertBefore(shortDesc, title);
+  }
+
+  // Overlay breadcrumb on top of the gallery image
+  if (breadcrumb && gallery) {
+    breadcrumb.classList.add('oz-breadcrumb-overlay');
+    gallery.insertBefore(breadcrumb, gallery.firstChild);
   }
 
   // Load Swiper via shared loader and initialize auto-play carousel

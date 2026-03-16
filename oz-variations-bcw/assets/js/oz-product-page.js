@@ -1734,10 +1734,17 @@
       var breadcrumb = document.querySelector(".oz-breadcrumb");
       var colorLabel = document.getElementById("colorLabel");
       var title = document.querySelector(".oz-product-title");
-      if (breadcrumb && breadcrumb.parentNode) {
-        if (shortDesc) breadcrumb.parentNode.insertBefore(shortDesc, breadcrumb);
-        if (title) breadcrumb.parentNode.insertBefore(title, breadcrumb);
-        if (colorLabel) breadcrumb.parentNode.insertBefore(colorLabel, title);
+      var price = document.querySelector(".oz-product-base-price");
+      var gallery = document.querySelector(".oz-product-gallery");
+      if (gallery && gallery.parentNode) {
+        if (price) gallery.parentNode.insertBefore(price, gallery);
+        if (colorLabel) gallery.parentNode.insertBefore(colorLabel, price);
+        if (title) gallery.parentNode.insertBefore(title, colorLabel || price);
+        if (shortDesc) gallery.parentNode.insertBefore(shortDesc, title);
+      }
+      if (breadcrumb && gallery) {
+        breadcrumb.classList.add("oz-breadcrumb-overlay");
+        gallery.insertBefore(breadcrumb, gallery.firstChild);
       }
       if (window.ozLoadSwiper) {
         window.ozLoadSwiper(function() {
