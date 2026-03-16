@@ -1374,12 +1374,14 @@ function setupStickyBar() {
  * Uses a tiny offscreen canvas to read pixel data.
  */
 function adaptBreadcrumbColor(img, breadcrumb) {
+  if (!img.naturalWidth) return; // image not yet decoded
+
   try {
     var canvas = document.createElement('canvas');
     var sampleHeight = 40; // matches breadcrumb overlay height
     // Scale down for speed — we only need rough luminance
     canvas.width = 80;
-    canvas.height = Math.round(sampleHeight * (80 / img.naturalWidth));
+    canvas.height = Math.round(sampleHeight * (80 / img.naturalWidth)) || 10;
     var ctx = canvas.getContext('2d');
     // Draw only the top strip of the image
     ctx.drawImage(img, 0, 0, img.naturalWidth, sampleHeight, 0, 0, canvas.width, canvas.height);
@@ -1401,7 +1403,7 @@ function adaptBreadcrumbColor(img, breadcrumb) {
       ? '0 1px 3px rgba(0,0,0,0.4)'
       : '0 1px 2px rgba(255,255,255,0.6)';
   } catch (e) {
-    // Canvas CORS or other error — fall back to default color
+    console.warn('[OZ] Breadcrumb contrast detection failed:', e.message);
   }
 }
 

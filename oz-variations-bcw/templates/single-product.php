@@ -111,6 +111,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <img id="mainImg"
                src="<?php echo esc_url($main_image_url); ?>"
                alt="<?php echo esc_attr($product_name); ?>"
+               crossorigin="anonymous"
                loading="eager">
         </div>
 
