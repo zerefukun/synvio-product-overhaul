@@ -199,11 +199,20 @@ function oz_cart_drawer_enqueue() {
         null
     );
 
+    // Shared Swiper CDN loader — used by cart drawer and product page USP ticker
+    wp_enqueue_script(
+        'oz-swiper-loader',
+        get_stylesheet_directory_uri() . '/js/swiper-loader.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/swiper-loader.js'),
+        true
+    );
+
     // JS
     wp_enqueue_script(
         'oz-cart-drawer',
         get_stylesheet_directory_uri() . '/js/cart-drawer.js',
-        [],
+        ['oz-swiper-loader'],
         filemtime(get_stylesheet_directory() . '/js/cart-drawer.js'),
         true
     );

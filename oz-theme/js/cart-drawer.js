@@ -748,35 +748,7 @@
        RECENTLY VIEWED — Swiper carousel in empty state
        ============================================ */
 
-    /* Lazy-load Swiper from CDN only when the carousel is about to render */
-    var _swiperLoaded = false;
-    var _swiperFailed = false;
-    var _swiperCallbacks = [];
-
-    function loadSwiper(callback) {
-        if (_swiperLoaded) { callback(); return; }
-        if (_swiperFailed) return; // CDN already failed, don't retry
-        _swiperCallbacks.push(callback);
-        if (_swiperCallbacks.length > 1) return; // already loading
-
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
-        document.head.appendChild(link);
-
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
-        script.onload = function () {
-            _swiperLoaded = true;
-            for (var i = 0; i < _swiperCallbacks.length; i++) _swiperCallbacks[i]();
-            _swiperCallbacks = [];
-        };
-        script.onerror = function () {
-            _swiperFailed = true;  // don't retry on subsequent calls
-            _swiperCallbacks = []; // drain queue so callers don't hang
-        };
-        document.head.appendChild(script);
-    }
+    /* Swiper loading delegated to shared oz-theme/js/swiper-loader.js (window.ozLoadSwiper) */
 
     /* Track current product page view in localStorage (max 10 IDs, newest first) */
     function trackProductView() {
@@ -858,7 +830,7 @@
         R.recentlyViewedSlides.innerHTML = html;
         R.recentlyViewed.style.display = '';
 
-        loadSwiper(function () {
+        window.ozLoadSwiper(function () {
             if (_swiperInstance) _swiperInstance.destroy(true, true);
 
             _swiperInstance = new Swiper(

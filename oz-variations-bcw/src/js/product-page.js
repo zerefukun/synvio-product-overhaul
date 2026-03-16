@@ -1363,9 +1363,59 @@ function setupStickyBar() {
 
 /* ═══ INITIALIZATION ════════════════════════════════════════ */
 
+/* ═══ MOBILE USP TICKER ══════════════════════════════════ */
+
+/**
+ * Convert stacked USP chips into a compact auto-swiping horizontal ticker.
+ * Saves ~50-80px of vertical space so color swatches stay in initial viewport.
+ * Only runs on mobile (<=900px). Desktop keeps the stacked chip layout.
+ */
+function initUspTicker() {
+  var uspContainer = document.querySelector('.oz-short-desc ul');
+  if (!uspContainer || uspContainer.children.length < 2) return;
+
+  // Wrap each <li> in a Swiper slide
+  var items = uspContainer.querySelectorAll('li');
+  var wrapper = document.createElement('div');
+  wrapper.className = 'swiper-wrapper';
+
+  for (var i = 0; i < items.length; i++) {
+    var slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.appendChild(items[i]);
+    wrapper.appendChild(slide);
+  }
+
+  // Replace <ul> content with Swiper container
+  uspContainer.innerHTML = '';
+  uspContainer.classList.add('swiper', 'oz-usp-ticker');
+  uspContainer.appendChild(wrapper);
+
+  // Load Swiper via shared loader and initialize auto-play carousel
+  if (window.ozLoadSwiper) {
+    window.ozLoadSwiper(function () {
+      new Swiper('.oz-usp-ticker', {
+        slidesPerView: 'auto',
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        },
+        speed: 500,
+      });
+    });
+  }
+}
+
 function init() {
   cacheDom();
   initNavigation(syncUI);
+
+  // Mobile USP ticker — convert stacked chips to auto-swiping strip
+  if (window.innerWidth <= 900) {
+    initUspTicker();
+  }
 
   // Register syncUI as the callback for tool state changes
   setToolSyncCallback(syncUI);

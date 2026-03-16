@@ -1715,9 +1715,41 @@
         }, { threshold: 0 });
         optionsObserver.observe(DOM.optionsWidget);
       }
+    }, initUspTicker = function() {
+      var uspContainer = document.querySelector(".oz-short-desc ul");
+      if (!uspContainer || uspContainer.children.length < 2) return;
+      var items = uspContainer.querySelectorAll("li");
+      var wrapper = document.createElement("div");
+      wrapper.className = "swiper-wrapper";
+      for (var i = 0; i < items.length; i++) {
+        var slide = document.createElement("div");
+        slide.className = "swiper-slide";
+        slide.appendChild(items[i]);
+        wrapper.appendChild(slide);
+      }
+      uspContainer.innerHTML = "";
+      uspContainer.classList.add("swiper", "oz-usp-ticker");
+      uspContainer.appendChild(wrapper);
+      if (window.ozLoadSwiper) {
+        window.ozLoadSwiper(function() {
+          new Swiper(".oz-usp-ticker", {
+            slidesPerView: "auto",
+            loop: true,
+            autoplay: {
+              delay: 3e3,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true
+            },
+            speed: 500
+          });
+        });
+      }
     }, init = function() {
       cacheDom();
       initNavigation(syncUI);
+      if (window.innerWidth <= 900) {
+        initUspTicker();
+      }
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
       restoreToolState();

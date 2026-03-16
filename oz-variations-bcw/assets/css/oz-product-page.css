@@ -715,6 +715,24 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-product-short-desc li::before {
   content: none;
 }
+@media (max-width: 900px) {
+  .oz-usp-ticker {
+    overflow: hidden;
+    height: 36px;
+  }
+  .oz-usp-ticker .swiper-slide {
+    width: auto;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .oz-usp-ticker .swiper-slide li {
+    margin: 0;
+    padding: 6px 0;
+    border: none;
+    background: none;
+  }
+}
 
 /* src/css/options.css */
 .oz-option-group {
