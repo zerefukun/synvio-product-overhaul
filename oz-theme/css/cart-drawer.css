@@ -750,6 +750,118 @@ body.oz-drawer-open {
 }
 
 /* ============================================
+   RECENTLY VIEWED — Swiper carousel in empty state
+   ============================================ */
+.oz-recently-viewed {
+    width: 100%;
+    margin-top: 32px;
+    padding: 0;
+    text-align: left;
+}
+
+.oz-recently-viewed-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--oz-text-muted, #999999);
+    margin-bottom: 12px;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Flanking lines — matches .oz-drawer-upsells-title pattern */
+.oz-recently-viewed-title::before,
+.oz-recently-viewed-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--oz-border-light, #F0EFED);
+}
+
+/* Swiper container — slides bleed to edge padding */
+.oz-recently-viewed-swiper {
+    padding: 0 32px;
+    overflow: hidden;
+}
+
+/* Product card — vertical layout, clickable link */
+.oz-rv-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none !important;
+    color: inherit !important;
+    padding: 10px;
+    background: var(--oz-label-bg, #F7F7F5);
+    border: 1px solid var(--oz-label-border, #E0DFDD);
+    border-radius: 8px;
+    transition: border-color 0.2s var(--drawer-ease);
+}
+
+.oz-rv-card:hover {
+    border-color: var(--oz-accent, #135350);
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.oz-rv-img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: var(--oz-bg-warm, #F5F4F0);
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.oz-rv-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.oz-rv-name {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--oz-text-primary, #1A1A1A);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.oz-rv-price {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--oz-accent, #135350);
+    margin-top: 4px;
+}
+
+/* Pagination dots */
+.oz-recently-viewed-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.oz-recently-viewed-dots .swiper-pagination-bullet {
+    width: 6px;
+    height: 6px;
+    background: var(--oz-border, #E5E5E3);
+    border-radius: 50%;
+    opacity: 1;
+    transition: background 0.2s ease;
+}
+
+.oz-recently-viewed-dots .swiper-pagination-bullet-active {
+    background: var(--oz-accent, #135350);
+}
+
+/* ============================================
    STICKY FOOTER
    ============================================ */
 .oz-drawer-footer {
@@ -861,6 +973,7 @@ body.oz-drawer-open {
 
 /* Short viewports (small laptops ~768px tall) — compact everything */
 @media (max-height: 800px) {
+    .oz-recently-viewed { margin-top: 20px; }
     .oz-drawer-header { padding: 12px 24px; }
 
     .oz-shipping-bar { padding: 8px 24px; }
@@ -936,6 +1049,8 @@ body.oz-drawer-open {
     .oz-shipping-bar { padding: 10px 16px; }
     .oz-drawer-footer { padding: 14px 16px 18px; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
     .oz-cart-skeleton { padding: 16px 16px; }
+    .oz-recently-viewed-swiper { padding: 0 16px; }
+    .oz-recently-viewed-title { padding: 0 16px; }
 
     .oz-cart-item {
         grid-template-columns: 56px 1fr;

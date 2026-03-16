@@ -735,6 +735,153 @@
         R.shippingBar.style.display = (isEmpty || FREE_SHIP_THRESHOLD <= 0) ? 'none' : '';
         /* Explicitly hide upsells when cart is empty */
         R.upsellSection.style.display = isEmpty ? 'none' : R.upsellSection.style.display;
+
+        /* Show recently viewed carousel when empty, hide when filled */
+        if (isEmpty) {
+            fetchRecentlyViewed();
+        } else if (R.recentlyViewed) {
+            R.recentlyViewed.style.display = 'none';
+        }
+    }
+
+    /* ============================================
+       RECENTLY VIEWED — Swiper carousel in empty state
+       ============================================ */
+
+    /* Lazy-load Swiper from CDN only when the carousel is about to render */
+    var _swiperLoaded = false;
+    var _swiperFailed = false;
+    var _swiperCallbacks = [];
+
+    function loadSwiper(callback) {
+        if (_swiperLoaded) { callback(); return; }
+        if (_swiperFailed) return; // CDN already failed, don't retry
+        _swiperCallbacks.push(callback);
+        if (_swiperCallbacks.length > 1) return; // already loading
+
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css';
+        document.head.appendChild(link);
+
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js';
+        script.onload = function () {
+            _swiperLoaded = true;
+            for (var i = 0; i < _swiperCallbacks.length; i++) _swiperCallbacks[i]();
+            _swiperCallbacks = [];
+        };
+        script.onerror = function () {
+            _swiperFailed = true;  // don't retry on subsequent calls
+            _swiperCallbacks = []; // drain queue so callers don't hang
+        };
+        document.head.appendChild(script);
+    }
+
+    /* Track current product page view in localStorage (max 10 IDs, newest first) */
+    function trackProductView() {
+        var pid = parseInt(ozCartDrawer.currentProductId, 10);
+        if (!pid) return;
+
+        try {
+            var key = 'oz_recently_viewed';
+            var stored = JSON.parse(localStorage.getItem(key) || '[]');
+            stored = stored.filter(function (id) { return id !== pid; });
+            stored.unshift(pid);
+            if (stored.length > 10) stored = stored.slice(0, 10);
+            localStorage.setItem(key, JSON.stringify(stored));
+        } catch (e) {
+            /* Private browsing or quota exceeded */
+        }
+    }
+
+    var _rvFetched = false;
+    var _rvData = [];
+    var _swiperInstance = null;
+
+    /** Fetch recently viewed product data from server, then render carousel */
+    function fetchRecentlyViewed() {
+        /* Already fetched — just show the existing carousel, skip rebuild */
+        if (_rvFetched) {
+            if (R.recentlyViewed && _rvData.length) {
+                R.recentlyViewed.style.display = '';
+                if (_swiperInstance) _swiperInstance.update(); // recalc dimensions after display toggle
+            }
+            return;
+        }
+
+        var ids;
+        try { ids = JSON.parse(localStorage.getItem('oz_recently_viewed') || '[]'); }
+        catch (e) { return; }
+
+        if (!ids.length) return;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', ozCartDrawer.ajaxUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4 || xhr.status !== 200) return;
+            try {
+                var resp = JSON.parse(xhr.responseText);
+                if (resp.success && resp.data && resp.data.products) {
+                    _rvData = resp.data.products;
+                    _rvFetched = true;
+                    renderRecentlyViewed(_rvData);
+                }
+            } catch (e) { /* malformed response */ }
+        };
+        xhr.send('action=oz_recently_viewed_get&ids=' + encodeURIComponent(JSON.stringify(ids)));
+    }
+
+    /** Build Swiper slides and initialize carousel */
+    function renderRecentlyViewed(products) {
+        if (!R.recentlyViewed || !products.length) {
+            if (R.recentlyViewed) R.recentlyViewed.style.display = 'none';
+            return;
+        }
+
+        var html = '';
+        for (var i = 0; i < products.length; i++) {
+            var p = products[i];
+            var imgHtml = p.image
+                ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">'
+                : '';
+
+            html += '<div class="swiper-slide">' +
+                '<a href="' + esc(p.permalink) + '" class="oz-rv-card" data-product-id="' + p.id + '">' +
+                    '<div class="oz-rv-img">' + imgHtml + '</div>' +
+                    '<div class="oz-rv-name">' + esc(p.name) + '</div>' +
+                    '<div class="oz-rv-price">' + fmt(p.price) + '</div>' +
+                '</a>' +
+            '</div>';
+        }
+        R.recentlyViewedSlides.innerHTML = html;
+        R.recentlyViewed.style.display = '';
+
+        loadSwiper(function () {
+            if (_swiperInstance) _swiperInstance.destroy(true, true);
+
+            _swiperInstance = new Swiper(
+                R.recentlyViewed.querySelector('.oz-recently-viewed-swiper'), {
+                slidesPerView: 2.3,
+                spaceBetween: 12,
+                freeMode: true,
+                pagination: {
+                    el: R.recentlyViewed.querySelector('.oz-recently-viewed-dots'),
+                    clickable: true,
+                },
+            });
+        });
+
+        /* Track clicks — close drawer and navigate to product */
+        var cards = R.recentlyViewed.querySelectorAll('.oz-rv-card');
+        for (var j = 0; j < cards.length; j++) {
+            cards[j].addEventListener('click', function () {
+                dlPush('oz_cart_recently_viewed_clicked', {
+                    oz_product_id: parseInt(this.dataset.productId, 10),
+                });
+            });
+        }
     }
 
     /** Render footer subtotal */
@@ -898,12 +1045,17 @@
         R.footerSubtotal = document.getElementById('ozFooterSubtotal');
         R.emptyShopBtn = document.getElementById('ozEmptyShopBtn');
         R.checkoutBtn = document.getElementById('ozCheckoutBtn');
+        R.recentlyViewed = document.getElementById('ozRecentlyViewed');
+        R.recentlyViewedSlides = document.getElementById('ozRecentlyViewedSlides');
 
         /* Bail if template not present */
         if (!R.drawer) return;
 
         /* Bind all events */
         bindEvents();
+
+        /* Track product view for recently-viewed carousel */
+        trackProductView();
 
         /* Initial cart fetch (for badge count) */
         fetchCart(function () {

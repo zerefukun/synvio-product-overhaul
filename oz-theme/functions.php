@@ -216,6 +216,7 @@ function oz_cart_drawer_enqueue() {
         'isCartOrCheckout'  => (is_cart() || is_checkout()) ? '1' : '0',
         'freeShipThreshold' => oz_get_free_shipping_threshold(),
         'isAdmin'           => current_user_can('manage_options') ? '1' : '0',
+        'currentProductId'  => is_product() ? get_the_ID() : 0,
     ]);
 }
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
@@ -460,6 +461,40 @@ function oz_cart_drawer_add() {
 }
 add_action('wp_ajax_oz_cart_drawer_add', 'oz_cart_drawer_add');
 add_action('wp_ajax_nopriv_oz_cart_drawer_add', 'oz_cart_drawer_add');
+
+/**
+ * AJAX: Return product data for recently viewed IDs from localStorage.
+ * Accepts JSON array of product IDs, returns name/price/image/permalink.
+ * No nonce — read-only public data identical to what's on shop pages.
+ */
+function oz_recently_viewed_get() {
+    $raw_ids = isset($_POST['ids']) ? $_POST['ids'] : '[]';
+    $ids     = json_decode(stripslashes($raw_ids), true);
+
+    if (!is_array($ids) || empty($ids)) {
+        wp_send_json_success(['products' => []]);
+        return;
+    }
+
+    // Sanitize: positive integers only, cap at 10
+    $ids = array_slice(array_filter(array_map('absint', $ids)), 0, 10);
+
+    // Batch-fetch all products in one query (warms WC object cache)
+    wc_get_products(['include' => $ids, 'limit' => 10]);
+
+    // Build response using shared formatter, preserving localStorage order
+    $products = [];
+    foreach ($ids as $pid) {
+        $product = wc_get_product($pid); // served from cache after batch fetch
+        if (!$product || $product->get_status() !== 'publish') continue;
+
+        $products[] = oz_format_product_card($product);
+    }
+
+    wp_send_json_success(['products' => $products]);
+}
+add_action('wp_ajax_oz_recently_viewed_get', 'oz_recently_viewed_get');
+add_action('wp_ajax_nopriv_oz_recently_viewed_get', 'oz_recently_viewed_get');
 
 /**
  * Get upsell/cross-sell product suggestions for the cart drawer.
@@ -764,6 +799,26 @@ function oz_cart_drawer_get_upsells($cart) {
 }
 
 /**
+ * Shared product card formatter — returns id, name, price, image, permalink.
+ * Used by both upsell cards and recently-viewed carousel.
+ *
+ * @param WC_Product $product  A loaded WC product object.
+ * @return array
+ */
+function oz_format_product_card($product) {
+    $image_id  = $product->get_image_id();
+    $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+    return [
+        'id'        => $product->get_id(),
+        'name'      => $product->get_name(),
+        'price'     => floatval($product->get_price()),
+        'image'     => $image_url,
+        'permalink' => $product->get_permalink(),
+    ];
+}
+
+/**
  * Format a single product ID into an upsell card data array.
  * Returns false if product is not purchasable or out of stock.
  *
@@ -776,14 +831,5 @@ function oz_cart_drawer_format_upsell($product_id) {
         return false;
     }
 
-    $image_id  = $product->get_image_id();
-    $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
-
-    return [
-        'id'        => $product_id,
-        'name'      => $product->get_name(),
-        'price'     => floatval($product->get_price()),
-        'image'     => $image_url,
-        'permalink' => $product->get_permalink(),
-    ];
+    return oz_format_product_card($product);
 }

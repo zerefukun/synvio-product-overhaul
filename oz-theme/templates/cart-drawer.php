@@ -97,6 +97,15 @@ if (function_exists('WC') && WC()->payment_gateways()) {
             <div class="oz-cart-empty-title">Je winkelmand is leeg</div>
             <div class="oz-cart-empty-text">Voeg producten toe om te beginnen met je beton ciré project.</div>
             <button class="oz-cart-empty-btn" id="ozEmptyShopBtn">Verder winkelen</button>
+
+            <!-- Recently viewed products — populated by JS when localStorage has viewed IDs -->
+            <div class="oz-recently-viewed" id="ozRecentlyViewed" style="display:none">
+                <div class="oz-recently-viewed-title">Eerder bekeken</div>
+                <div class="swiper oz-recently-viewed-swiper">
+                    <div class="swiper-wrapper" id="ozRecentlyViewedSlides"></div>
+                </div>
+                <div class="oz-recently-viewed-dots"></div>
+            </div>
         </div>
     </div>
 
