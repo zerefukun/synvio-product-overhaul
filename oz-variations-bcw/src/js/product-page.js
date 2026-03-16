@@ -1431,9 +1431,8 @@ function init() {
     DOM.bottomSheet.addEventListener('click', function(e) {
       var link = e.target.closest('a[href]');
       if (link && S.sheetOpen) {
-        // Color swatches use pushState — don't intercept, let them bubble
+        // Color swatches use pushState — don't intercept, keep sheet open
         if (link.classList.contains('oz-color-swatch') && link.hasAttribute('data-product-id')) {
-          closeSheet();
           return;
         }
         e.preventDefault();
