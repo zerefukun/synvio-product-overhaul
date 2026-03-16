@@ -255,6 +255,11 @@ function swapMainImage(fullImageUrl) {
   _imgTimer = setTimeout(function() {
     DOM.mainImg.onload = function() {
       DOM.mainImg.classList.remove('oz-fade');
+      // Re-check breadcrumb contrast for the new image
+      var bc = document.querySelector('.oz-breadcrumb-overlay');
+      if (bc && typeof window.adaptBreadcrumbColor === 'function') {
+        window.adaptBreadcrumbColor(DOM.mainImg, bc);
+      }
     };
     DOM.mainImg.onerror = function() {
       // Remove fade even if image fails — don't leave it invisible

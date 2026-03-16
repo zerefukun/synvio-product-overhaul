@@ -867,6 +867,10 @@
     _imgTimer = setTimeout(function() {
       DOM.mainImg.onload = function() {
         DOM.mainImg.classList.remove("oz-fade");
+        var bc = document.querySelector(".oz-breadcrumb-overlay");
+        if (bc && typeof window.adaptBreadcrumbColor === "function") {
+          window.adaptBreadcrumbColor(DOM.mainImg, bc);
+        }
       };
       DOM.mainImg.onerror = function() {
         DOM.mainImg.classList.remove("oz-fade");
@@ -1878,6 +1882,7 @@
     };
     TOOL_STATE_KEY = "oz_bcw_tool_state";
     _sheetScrollY = 0;
+    window.adaptBreadcrumbColor = adaptBreadcrumbColor;
     lightbox = {
       overlay: null,
       img: null,

@@ -1406,6 +1406,8 @@ function adaptBreadcrumbColor(img, breadcrumb) {
     console.warn('[OZ] Breadcrumb contrast detection failed:', e.message);
   }
 }
+// Expose for navigation.js (separate module, can't import without circular dep)
+window.adaptBreadcrumbColor = adaptBreadcrumbColor;
 
 /* ═══ MOBILE USP TICKER ══════════════════════════════════ */
 
