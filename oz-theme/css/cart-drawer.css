@@ -728,7 +728,7 @@ body.oz-drawer-open {
     line-height: 1.6;
 }
 
-.oz-cart-empty-btn {
+.oz-drawer .oz-cart-empty-btn {
     display: inline-block !important;
     padding: 14px 32px !important;
     background: var(--oz-cta, #E67C00) !important;
@@ -745,7 +745,7 @@ body.oz-drawer-open {
     touch-action: manipulation;
 }
 
-.oz-cart-empty-btn:hover {
+.oz-drawer .oz-cart-empty-btn:hover {
     background: var(--oz-cta-hover, #D06E00) !important;
 }
 
@@ -754,9 +754,10 @@ body.oz-drawer-open {
    ============================================ */
 .oz-recently-viewed {
     width: 100%;
-    margin-top: 32px;
-    padding: 0;
+    flex-shrink: 0;
+    padding: 16px 0;
     text-align: left;
+    border-top: 1px solid var(--oz-border-light, #F0EFED);
 }
 
 .oz-recently-viewed-title {
@@ -973,7 +974,7 @@ body.oz-drawer-open {
 
 /* Short viewports (small laptops ~768px tall) — compact everything */
 @media (max-height: 800px) {
-    .oz-recently-viewed { margin-top: 20px; }
+    .oz-recently-viewed { padding: 10px 0; }
     .oz-drawer-header { padding: 12px 24px; }
 
     .oz-shipping-bar { padding: 8px 24px; }
