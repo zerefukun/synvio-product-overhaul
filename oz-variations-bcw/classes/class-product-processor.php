@@ -304,13 +304,15 @@ class OZ_Product_Processor {
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
             $variants[$vid] = [
-                'color'       => $color,
-                'url'         => get_permalink($vid),
-                'image'       => $image_url,
-                'fullImage'   => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
-                'price'       => floatval($variant->get_price()),
-                'title'       => $variant->get_name(),
-                'description' => apply_filters('the_content', $variant->get_description()),
+                'color'        => $color,
+                'url'          => get_permalink($vid),
+                'image'        => $image_url,
+                'fullImage'    => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'price'        => floatval($variant->get_price()),
+                'regularPrice' => floatval($variant->get_regular_price()),
+                'onSale'       => $variant->is_on_sale(),
+                'title'        => $variant->get_name(),
+                'description'  => apply_filters('the_content', $variant->get_description()),
             ];
         }
 

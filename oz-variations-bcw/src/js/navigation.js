@@ -13,7 +13,7 @@
  * @since 2.1.0
  */
 
-import { P } from './state.js';
+import { P, fmt } from './state.js';
 import { DOM } from './dom.js';
 
 // Debounce timer for pushState — only the final click in a rapid series
@@ -110,11 +110,17 @@ function applyVariant(productId, isPopstate) {
   var strippedTitle = stripColor(v.title, v.color);
   if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
 
-  // 5. Swap product description and reset read-more state
+  // 5. Swap product description, toggle "Productinfo" sticky link
   swapDescription(v.description);
+  toggleStickyLink('sectionInfo', !!v.description);
 
-  // 6. Update all color label elements across the page
-  if (DOM.selectedColorLabel) DOM.selectedColorLabel.textContent = v.color;
+  // 6. Update sale price strikethrough
+  updateSaleDisplay(v);
+
+  // 7. Update all color label elements across the page
+  if (DOM.selectedColorLabel) {
+    DOM.selectedColorLabel.textContent = v.color || 'Kies eerst uw kleur';
+  }
   if (DOM.colorLabel) {
     DOM.colorLabel.textContent = v.color;
     // Show/hide — hidden on base products, visible on color variants
@@ -127,22 +133,22 @@ function applyVariant(productId, isPopstate) {
     if (DOM.stickyColorWrap) DOM.stickyColorWrap.style.display = v.color ? '' : 'none';
   }
 
-  // 7. Update sticky bar — thumbnail, product name (mobile + desktop)
+  // 8. Update sticky bar — thumbnail, product name (mobile + desktop)
   if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
   if (DOM.stickyProductName) DOM.stickyProductName.textContent = strippedTitle;
   if (DOM.stickyDTitle) DOM.stickyDTitle.textContent = strippedTitle;
 
-  // 8. Update swatch highlight — toggle 'selected' class
+  // 9. Update swatch highlight — toggle 'selected' class
   var swatches = document.querySelectorAll('.oz-color-swatch');
   for (var i = 0; i < swatches.length; i++) {
     var spid = parseInt(swatches[i].getAttribute('data-product-id'), 10);
     swatches[i].classList.toggle('selected', spid === productId);
   }
 
-  // 9. SEO meta tags
+  // 10. SEO meta tags
   updateSeoMeta(v.url, v.title);
 
-  // 10. URL update — pushState for first click, replaceState for rapid follow-ups
+  // 11. URL update — pushState for first click, replaceState for rapid follow-ups
   if (!isPopstate) {
     if (!_hasPushed) {
       // First click: create a real history entry immediately
@@ -160,7 +166,7 @@ function applyVariant(productId, isPopstate) {
     }, 300);
   }
 
-  // 11. Notify product-page.js to recalculate prices, cart state, etc.
+  // 12. Notify product-page.js to recalculate prices, cart state, etc.
   if (_onAfterNavigate) _onAfterNavigate();
 
   return true;
@@ -201,6 +207,38 @@ function swapDescription(html) {
       DOM.readMoreBtn.textContent = 'Lees meer';
     }
   }
+}
+
+/**
+ * Update the sale price strikethrough display.
+ * Shows or hides the <del> element and updates the regular price text.
+ */
+function updateSaleDisplay(v) {
+  var priceWrap = document.querySelector('.oz-product-base-price');
+  if (!priceWrap) return;
+
+  var del = priceWrap.querySelector('del');
+
+  if (v.onSale && v.regularPrice && v.regularPrice !== v.price) {
+    // Variant is on sale — show strikethrough with regular price
+    if (!del) {
+      del = document.createElement('del');
+      priceWrap.insertBefore(del, priceWrap.firstChild);
+    }
+    del.textContent = fmt(v.regularPrice);
+    del.style.display = '';
+  } else {
+    // Not on sale — hide strikethrough
+    if (del) del.style.display = 'none';
+  }
+}
+
+/**
+ * Show or hide a desktop sticky nav link by its data-scroll target.
+ */
+function toggleStickyLink(sectionId, show) {
+  var link = document.querySelector('.oz-sticky-d-link[data-scroll="' + sectionId + '"]');
+  if (link) link.style.display = show ? '' : 'none';
 }
 
 /**

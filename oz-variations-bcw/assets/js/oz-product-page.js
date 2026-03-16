@@ -783,7 +783,11 @@
     var strippedTitle = stripColor(v.title, v.color);
     if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
     swapDescription(v.description);
-    if (DOM.selectedColorLabel) DOM.selectedColorLabel.textContent = v.color;
+    toggleStickyLink("sectionInfo", !!v.description);
+    updateSaleDisplay(v);
+    if (DOM.selectedColorLabel) {
+      DOM.selectedColorLabel.textContent = v.color || "Kies eerst uw kleur";
+    }
     if (DOM.colorLabel) {
       DOM.colorLabel.textContent = v.color;
       DOM.colorLabel.style.display = v.color ? "" : "none";
@@ -836,6 +840,25 @@
         DOM.readMoreBtn.textContent = "Lees meer";
       }
     }
+  }
+  function updateSaleDisplay(v) {
+    var priceWrap = document.querySelector(".oz-product-base-price");
+    if (!priceWrap) return;
+    var del = priceWrap.querySelector("del");
+    if (v.onSale && v.regularPrice && v.regularPrice !== v.price) {
+      if (!del) {
+        del = document.createElement("del");
+        priceWrap.insertBefore(del, priceWrap.firstChild);
+      }
+      del.textContent = fmt(v.regularPrice);
+      del.style.display = "";
+    } else {
+      if (del) del.style.display = "none";
+    }
+  }
+  function toggleStickyLink(sectionId, show2) {
+    var link = document.querySelector('.oz-sticky-d-link[data-scroll="' + sectionId + '"]');
+    if (link) link.style.display = show2 ? "" : "none";
   }
   function swapMainImage(fullImageUrl) {
     if (!fullImageUrl || !DOM.mainImg) return;
