@@ -1656,8 +1656,8 @@ var lightbox = {
   },
 
   /** Collect all gallery image URLs from thumbnails.
-   *  After pushState navigation, gallery thumbs are hidden (stale),
-   *  so fall back to the current main image as the only lightbox image. */
+   *  Thumbs are rebuilt per-variant on pushState navigation.
+   *  Falls back to current main image if no thumbs are visible. */
   collectImages: function () {
     var thumbStrip = document.querySelector('.oz-gallery-thumbs');
     var thumbsVisible = thumbStrip && thumbStrip.style.display !== 'none';
