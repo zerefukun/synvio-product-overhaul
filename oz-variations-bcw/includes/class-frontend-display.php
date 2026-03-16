@@ -241,11 +241,23 @@ class OZ_Frontend_Display {
         if ($line_key && !empty($js_data['variants'])) {
             $current_pid      = $product->get_id();
             $current_image_id = get_post_thumbnail_id($current_pid);
+
+            // Current product gallery — needed for popstate back-navigation rebuild
+            $current_gallery = [];
+            foreach ($product->get_gallery_image_ids() as $gid) {
+                $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                $g_large = wp_get_attachment_image_url($gid, 'large');
+                if ($g_thumb && $g_large) {
+                    $current_gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                }
+            }
+
             $js_data['variants'][$current_pid] = [
                 'color'        => get_post_meta($current_pid, '_oz_color', true) ?: '',
                 'url'          => get_permalink($current_pid),
                 'image'        => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'thumbnail') : '',
                 'fullImage'    => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'large') : '',
+                'gallery'      => $current_gallery,
                 'price'        => floatval($product->get_price()),
                 'regularPrice' => floatval($product->get_regular_price()),
                 'onSale'       => $product->is_on_sale(),
@@ -498,11 +510,24 @@ class OZ_Frontend_Display {
             $image_id  = get_post_thumbnail_id($vid);
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
+            // Gallery images for pushState thumbnail strip rebuild
+            $gallery = [];
+            if ($variant) {
+                foreach ($variant->get_gallery_image_ids() as $gid) {
+                    $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                    $g_large = wp_get_attachment_image_url($gid, 'large');
+                    if ($g_thumb && $g_large) {
+                        $gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                    }
+                }
+            }
+
             $variants[$vid] = [
                 'color'        => $color,
                 'url'          => get_permalink($vid),
                 'image'        => $image_url,
                 'fullImage'    => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'gallery'      => $gallery,
                 'price'        => $variant ? floatval($variant->get_price()) : 0,
                 'regularPrice' => $variant ? floatval($variant->get_regular_price()) : 0,
                 'onSale'       => $variant ? $variant->is_on_sale() : false,

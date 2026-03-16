@@ -779,7 +779,7 @@
     P.productName = v.title;
     P.isBase = isInitialProduct && _initialIsBase;
     swapMainImage(v.fullImage);
-    toggleGalleryThumbs(isInitialProduct);
+    rebuildGalleryThumbs(v);
     var strippedTitle = stripColor(v.title, v.color);
     if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
     swapDescription(v.description);
@@ -878,9 +878,32 @@
       DOM.mainImg.src = fullImageUrl;
     }, 200);
   }
-  function toggleGalleryThumbs(show2) {
-    var thumbs = document.querySelector(".oz-gallery-thumbs");
-    if (thumbs) thumbs.style.display = show2 ? "" : "none";
+  function createThumb(thumbSrc, fullSrc, index, selected) {
+    var div = document.createElement("div");
+    div.className = "oz-gallery-thumb" + (selected ? " selected" : "");
+    div.setAttribute("data-full-src", fullSrc);
+    div.setAttribute("data-index", index);
+    var img = document.createElement("img");
+    img.src = thumbSrc;
+    img.alt = "";
+    div.appendChild(img);
+    return div;
+  }
+  function rebuildGalleryThumbs(v) {
+    var container = document.querySelector(".oz-gallery-thumbs");
+    if (!container) return;
+    container.style.display = "";
+    container.innerHTML = "";
+    if (v.image && v.fullImage) {
+      container.appendChild(createThumb(v.image, v.fullImage, 0, true));
+    }
+    var gallery = v.gallery || [];
+    for (var i = 0; i < gallery.length; i++) {
+      container.appendChild(createThumb(gallery[i].thumb, gallery[i].full, i + 1, false));
+    }
+    if (container.children.length <= 1) {
+      container.style.display = "none";
+    }
   }
   function updateSeoMeta(url, title) {
     document.title = title + " - " + (P.siteTitle || "Beton Cire Webshop");

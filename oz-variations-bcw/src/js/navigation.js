@@ -102,9 +102,8 @@ function applyVariant(productId, isPopstate) {
   // 2. Swap main product image with crossfade
   swapMainImage(v.fullImage);
 
-  // 3. Gallery thumbnails — hide after swap (they belong to the original
-  // server-rendered product), restore when navigating back to initial
-  toggleGalleryThumbs(isInitialProduct);
+  // 3. Rebuild gallery thumbnails from variant data
+  rebuildGalleryThumbs(v);
 
   // 4. Update product title (strip color suffix from full WC name)
   var strippedTitle = stripColor(v.title, v.color);
@@ -270,15 +269,49 @@ function swapMainImage(fullImageUrl) {
 }
 
 /**
- * Show or hide the gallery thumbnail strip.
- * Thumbnails belong to the server-rendered product. They are valid
- * for the initial product but stale after a client-side color swap.
- *
- * @param {boolean} show  True to show (initial product), false to hide
+ * Create a single gallery thumbnail element.
  */
-function toggleGalleryThumbs(show) {
-  var thumbs = document.querySelector('.oz-gallery-thumbs');
-  if (thumbs) thumbs.style.display = show ? '' : 'none';
+function createThumb(thumbSrc, fullSrc, index, selected) {
+  var div = document.createElement('div');
+  div.className = 'oz-gallery-thumb' + (selected ? ' selected' : '');
+  div.setAttribute('data-full-src', fullSrc);
+  div.setAttribute('data-index', index);
+  var img = document.createElement('img');
+  img.src = thumbSrc;
+  img.alt = '';
+  div.appendChild(img);
+  return div;
+}
+
+/**
+ * Rebuild the gallery thumbnail strip from variant data.
+ * Called on every pushState navigation (including popstate back to initial).
+ * Replaces the old toggleGalleryThumbs() which just hid/showed the strip.
+ *
+ * @param {Object} v  Variant data from P.variants
+ */
+function rebuildGalleryThumbs(v) {
+  var container = document.querySelector('.oz-gallery-thumbs');
+  if (!container) return;
+
+  container.style.display = '';
+  container.innerHTML = '';
+
+  // Featured image as first thumbnail
+  if (v.image && v.fullImage) {
+    container.appendChild(createThumb(v.image, v.fullImage, 0, true));
+  }
+
+  // Gallery images
+  var gallery = v.gallery || [];
+  for (var i = 0; i < gallery.length; i++) {
+    container.appendChild(createThumb(gallery[i].thumb, gallery[i].full, i + 1, false));
+  }
+
+  // Hide strip if only 1 or 0 images (no point showing a single thumb)
+  if (container.children.length <= 1) {
+    container.style.display = 'none';
+  }
 }
 
 /**

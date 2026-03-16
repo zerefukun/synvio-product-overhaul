@@ -115,8 +115,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                loading="eager">
         </div>
 
-        <!-- Thumbnails -->
-        <?php if (!empty($gallery_ids) || $main_image_id) : ?>
+        <!-- Thumbnails (always rendered — JS rebuilds on pushState navigation) -->
         <div class="oz-gallery-thumbs">
           <?php if ($main_image_id) : ?>
             <div class="oz-gallery-thumb selected"
@@ -136,7 +135,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             </div>
           <?php endforeach; ?>
         </div>
-        <?php endif; ?>
       </div>
 
       <!-- Product description -->
