@@ -26,7 +26,7 @@ class OZ_Product_Line_Config {
      * Matches WAPO-PARITY-CONFIG.md §3 exactly.
      */
     private static $pu_prices = [
-        'original'    => [0 => 0, 1 => 40,    2 => 80,    3 => 120],
+        'original'    => [0 => 0, 1 => 8,     2 => 16,    3 => 24],   // per m² (was per 5m²: 40/80/120)
         'all-in-one'  => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
         'easyline'    => [0 => -40, 1 => 0,   2 => 40,   3 => 80],
         'microcement' => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
@@ -86,9 +86,9 @@ class OZ_Product_Line_Config {
      */
     private static $primer_options = [
         'original' => [
-            ['Geen',                     0,     false, false],
-            ['Zuigende ondergrond',      12.50, false, true],   // Advies
-            ['Niet zuigende ondergrond', 12.50, false, true],   // Advies
+            ['Geen',                     0,    false, false],
+            ['Zuigende ondergrond',      2.50, false, true],   // Advies — per m² (was 12.50 per 5m²)
+            ['Niet zuigende ondergrond', 2.50, false, true],   // Advies — per m² (was 12.50 per 5m²)
         ],
         'metallic' => [
             ['Geen',   0,    true,  false],
@@ -142,7 +142,7 @@ class OZ_Product_Line_Config {
     private static $lines = [
 
         // ─── ORIGINAL ────────────────────────────────────────────────
-        // 48 colors (1000-series), PU 0/40/80/120, primer, colorfresh, toepassing
+        // 48 colors (1000-series), PU, primer — prices per m² (was per 5m²)
         'original' => [
             'cats'           => [290],
             'usps'           => [
@@ -159,24 +159,19 @@ class OZ_Product_Line_Config {
                 'Verbruik'        => '~1 kg per m² (2 lagen)',
             ],
             'base_id'        => 11161,
-            'unit'           => '5m² pakket',
-            'unitM2'         => 5,
+            'unit'           => 'm²',
+            'unitM2'         => 1,
             'has_pu'         => true,
             'has_primer'     => true,
-            'has_colorfresh' => true,
-            'has_toepassing' => true,
-            'has_pakket'     => true,
+            'has_colorfresh' => false,
+            'has_toepassing' => false,
+            'has_pakket'     => false,
             'ral_ncs'        => false,  // Original has NO RAL/NCS
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/original-kleurstalen/',
-            // Cross-link: suggest an alternative product line to visitors
-            'cross_link'     => [
-                'text' => 'Liever kant & klaar?',
-                'label' => 'Bekijk Microcement',
-                'url'   => '/microcement/',
-            ],
-            'option_order'   => ['pakket', 'color', 'toepassing', 'primer', 'colorfresh', 'pu', 'tools'],
+            'cross_link'     => null,
+            'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
                 ['q' => 'Kan ik Beton Ciré Original zelf aanbrengen?', 'a' => 'Ja, met de juiste voorbereiding en ons gereedschapset is het goed zelf te doen. Bekijk onze handleiding of volg een workshop voor het beste resultaat.'],
