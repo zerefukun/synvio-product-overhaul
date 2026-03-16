@@ -653,6 +653,18 @@ class OZ_Cart_Manager {
             $details[] = 'Kleur: ' . $data['oz_selected_color'];
         }
 
+        // Standard color variant — color from product meta (e.g. "Nude 1" for Microcement).
+        // The cart drawer strips the color from the product name, so we add it here.
+        if ((!isset($data['oz_color_mode']) || $data['oz_color_mode'] === 'swatch') && empty($data['oz_selected_color'])) {
+            $pid = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            if ($pid) {
+                $color = get_post_meta($pid, '_oz_color', true);
+                if (!empty($color)) {
+                    $details[] = 'Kleur: ' . $color;
+                }
+            }
+        }
+
         // Pakket
         if (!empty($data['oz_pakket'])) {
             $details[] = 'Pakket: ' . $data['oz_pakket'];
