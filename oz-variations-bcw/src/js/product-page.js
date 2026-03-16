@@ -1391,6 +1391,13 @@ function initUspTicker() {
   uspContainer.classList.add('swiper', 'oz-usp-ticker');
   uspContainer.appendChild(wrapper);
 
+  // Move the entire .oz-short-desc block above the gallery image
+  var shortDesc = uspContainer.closest('.oz-short-desc');
+  var gallery = document.querySelector('.oz-product-gallery');
+  if (shortDesc && gallery && gallery.parentNode) {
+    gallery.parentNode.insertBefore(shortDesc, gallery);
+  }
+
   // Load Swiper via shared loader and initialize auto-play carousel
   if (window.ozLoadSwiper) {
     window.ozLoadSwiper(function () {
