@@ -1725,6 +1725,10 @@
         DOM.bottomSheet.addEventListener("click", function(e) {
           var link = e.target.closest("a[href]");
           if (link && S.sheetOpen) {
+            if (link.classList.contains("oz-color-swatch") && link.hasAttribute("data-product-id")) {
+              closeSheet();
+              return;
+            }
             e.preventDefault();
             closeSheet();
             window.location.href = link.href;

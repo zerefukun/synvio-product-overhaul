@@ -1424,11 +1424,18 @@ function init() {
       if (e.persisted && S.sheetOpen) closeSheet();
     });
 
-    // Intercept link clicks inside the sheet — close sheet before navigating
-    // This ensures the widget moves back to desktop before the page unloads
+    // Intercept link clicks inside the sheet — close sheet before navigating.
+    // This ensures the widget moves back to desktop before the page unloads.
+    // Color swatches with data-product-id are handled by the main click
+    // handler via pushState — let those bubble up normally.
     DOM.bottomSheet.addEventListener('click', function(e) {
       var link = e.target.closest('a[href]');
       if (link && S.sheetOpen) {
+        // Color swatches use pushState — don't intercept, let them bubble
+        if (link.classList.contains('oz-color-swatch') && link.hasAttribute('data-product-id')) {
+          closeSheet();
+          return;
+        }
         e.preventDefault();
         closeSheet();
         window.location.href = link.href;
