@@ -1799,13 +1799,22 @@
           if (e.key === "ArrowRight") self.next();
         });
       },
-      /** Collect all gallery image URLs from thumbnails */
+      /** Collect all gallery image URLs from thumbnails.
+       *  After pushState navigation, gallery thumbs are hidden (stale),
+       *  so fall back to the current main image as the only lightbox image. */
       collectImages: function() {
-        var thumbs = document.querySelectorAll(".oz-gallery-thumb");
+        var thumbStrip = document.querySelector(".oz-gallery-thumbs");
+        var thumbsVisible = thumbStrip && thumbStrip.style.display !== "none";
         this.images = [];
-        for (var i = 0; i < thumbs.length; i++) {
-          var src = thumbs[i].getAttribute("data-full-src");
-          if (src) this.images.push(src);
+        if (thumbsVisible) {
+          var thumbs = document.querySelectorAll(".oz-gallery-thumb");
+          for (var i = 0; i < thumbs.length; i++) {
+            var src = thumbs[i].getAttribute("data-full-src");
+            if (src) this.images.push(src);
+          }
+        }
+        if (!this.images.length && DOM.mainImg && DOM.mainImg.src) {
+          this.images.push(DOM.mainImg.src);
         }
       },
       /** Open lightbox at given image URL */
