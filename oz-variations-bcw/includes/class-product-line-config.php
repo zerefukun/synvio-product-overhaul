@@ -86,9 +86,8 @@ class OZ_Product_Line_Config {
      */
     private static $primer_options = [
         'original' => [
-            ['Geen',                     0,    false, false],
-            ['Zuigende ondergrond',      2.50, false, true],   // Advies — per m² (was 12.50 per 5m²)
-            ['Niet zuigende ondergrond', 2.50, false, true],   // Advies — per m² (was 12.50 per 5m²)
+            ['Primer', 0, true,  true],   // Advies — included in base price (like microcement)
+            ['Geen',   0, false, false],
         ],
         'metallic' => [
             ['Geen',   0,    true,  false],
@@ -142,21 +141,22 @@ class OZ_Product_Line_Config {
     private static $lines = [
 
         // ─── ORIGINAL ────────────────────────────────────────────────
-        // 48 colors (1000-series), PU, primer — prices per m² (was per 5m²)
+        // 48 colors (1000-series), PU, primer — kant & klaar pasta op kleur, per m²
         'original' => [
             'cats'           => [290],
             'usps'           => [
                 'Naadloze betonlook voor wanden, vloeren en meubels',
-                'Zelf mengen voor maximale controle over kleur en textuur',
+                'Op kleur gemengde pasta, direct klaar voor gebruik',
                 'Waterdicht bij gebruik van PU toplaag',
             ],
             'specs'          => [
-                'Type'            => 'Zelf te mengen mortel + pigment',
-                'Lagen'           => '2 lagen (RAW + FINE)',
+                'Type'            => 'Beton Ciré pasta op kleur',
+                'Laagdikte'       => '1-2 mm',
+                'Lagen'           => '2 lagen',
                 'Droogtijd'       => '24 uur per laag',
                 'Geschikt voor'   => 'Wand, vloer, meubel, keuken, badkamer, trap',
                 'Waterdicht'      => 'Ja, met PU toplaag',
-                'Verbruik'        => '~1 kg per m² (2 lagen)',
+                'Verbruik'        => '~1 kg per m²',
             ],
             'base_id'        => 11161,
             'unit'           => 'm²',
@@ -175,8 +175,8 @@ class OZ_Product_Line_Config {
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
                 ['q' => 'Kan ik Beton Ciré Original zelf aanbrengen?', 'a' => 'Ja, met de juiste voorbereiding en ons gereedschapset is het goed zelf te doen. Bekijk onze handleiding of volg een workshop voor het beste resultaat.'],
+                ['q' => 'Kan ik Beton Ciré Original over tegels aanbrengen?', 'a' => 'Ja, mits de tegels goed vastzitten en de ondergrond schoon en vetvrij is. Gebruik altijd onze primer voor de beste hechting.'],
                 ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes raden wij minimaal 2 lagen PU aan. Dit beschermt tegen slijtage en maakt het oppervlak waterdicht. Voor wanden is PU optioneel.'],
-                ['q' => 'Wat is het verschil tussen wand- en vloertoepassing?', 'a' => 'De vloertoepassing bevat een harder bindmiddel dat bestand is tegen loopverkeer. De wandtoepassing is lichter en makkelijker verticaal aan te brengen.'],
                 ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
             ],
         ],
