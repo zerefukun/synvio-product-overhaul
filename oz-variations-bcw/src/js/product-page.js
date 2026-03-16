@@ -1391,11 +1391,17 @@ function initUspTicker() {
   uspContainer.classList.add('swiper', 'oz-usp-ticker');
   uspContainer.appendChild(wrapper);
 
-  // Move the entire .oz-short-desc block above the breadcrumb
+  // Move USP ticker, color label, and title above the breadcrumb on mobile.
+  // Order: USP ticker → color label + title → breadcrumb → gallery
   var shortDesc = uspContainer.closest('.oz-short-desc');
   var breadcrumb = document.querySelector('.oz-breadcrumb');
-  if (shortDesc && breadcrumb && breadcrumb.parentNode) {
-    breadcrumb.parentNode.insertBefore(shortDesc, breadcrumb);
+  var colorLabel = document.getElementById('colorLabel');
+  var title = document.querySelector('.oz-product-title');
+
+  if (breadcrumb && breadcrumb.parentNode) {
+    if (shortDesc) breadcrumb.parentNode.insertBefore(shortDesc, breadcrumb);
+    if (title) breadcrumb.parentNode.insertBefore(title, breadcrumb);
+    if (colorLabel) breadcrumb.parentNode.insertBefore(colorLabel, title);
   }
 
   // Load Swiper via shared loader and initialize auto-play carousel
