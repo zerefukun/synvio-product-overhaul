@@ -328,6 +328,12 @@
     DOM.stickyDQty = document.getElementById("stickyDQty");
     DOM.stickyDBtn = document.getElementById("stickyDBtn");
     DOM.stickyPriceMobile = document.getElementById("stickyPriceMobile");
+    DOM.stickyThumb = document.getElementById("stickyThumb");
+    DOM.productTitle = document.querySelector(".oz-product-title");
+    DOM.selectedColorLabel = document.getElementById("selectedColorLabel");
+    DOM.stickyColorName = document.getElementById("stickyColorName");
+    DOM.stickyProductName = document.querySelector(".oz-sticky-product-name");
+    DOM.stickyDTitle = document.querySelector(".oz-sticky-d-title");
     DOM.priceBaseLabel = document.getElementById("priceBaseLabel");
     DOM.priceBase = document.getElementById("priceBase");
     DOM.pricePuLine = document.getElementById("pricePuLine");
@@ -740,6 +746,105 @@
     _onSync();
   }
 
+  // src/js/navigation.js
+  var _pushTimer = null;
+  var _hasPushed = false;
+  var _imgTimer = null;
+  var _initialProductId = null;
+  var _initialIsBase = false;
+  var _onAfterNavigate = null;
+  function initNavigation(onAfterNavigate) {
+    _initialProductId = parseInt(P.productId, 10) || P.productId;
+    _initialIsBase = P.isBase;
+    _onAfterNavigate = onAfterNavigate || null;
+    history.replaceState({ productId: P.productId }, "", location.href);
+    window.addEventListener("popstate", function(e) {
+      if (e.state && e.state.productId) {
+        applyVariant(e.state.productId, true);
+      }
+    });
+  }
+  function navigateToVariant(productId) {
+    return applyVariant(productId, false);
+  }
+  function applyVariant(productId, isPopstate) {
+    productId = parseInt(productId, 10) || productId;
+    var v = P.variants[productId];
+    if (!v) return false;
+    var isInitialProduct = productId === _initialProductId;
+    P.productId = productId;
+    P.currentColor = v.color;
+    P.basePrice = parseFloat(v.price) || P.basePrice;
+    P.productName = v.title;
+    P.isBase = isInitialProduct && _initialIsBase;
+    swapMainImage(v.fullImage);
+    toggleGalleryThumbs(isInitialProduct);
+    var strippedTitle = stripColor(v.title, v.color);
+    if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
+    if (DOM.selectedColorLabel) DOM.selectedColorLabel.textContent = v.color;
+    if (DOM.colorLabel) DOM.colorLabel.textContent = v.color;
+    if (DOM.stickyDColor) DOM.stickyDColor.textContent = v.color;
+    if (DOM.stickyColorName) DOM.stickyColorName.textContent = v.color;
+    if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
+    if (DOM.stickyProductName) DOM.stickyProductName.textContent = strippedTitle;
+    if (DOM.stickyDTitle) DOM.stickyDTitle.textContent = strippedTitle;
+    var swatches = document.querySelectorAll(".oz-color-swatch");
+    for (var i = 0; i < swatches.length; i++) {
+      var spid = parseInt(swatches[i].getAttribute("data-product-id"), 10);
+      swatches[i].classList.toggle("selected", spid === productId);
+    }
+    updateSeoMeta(v.url, v.title);
+    if (!isPopstate) {
+      if (!_hasPushed) {
+        history.pushState({ productId }, "", v.url);
+        _hasPushed = true;
+      } else {
+        history.replaceState({ productId }, "", v.url);
+      }
+      clearTimeout(_pushTimer);
+      _pushTimer = setTimeout(function() {
+        _hasPushed = false;
+      }, 300);
+    }
+    if (_onAfterNavigate) _onAfterNavigate();
+    return true;
+  }
+  function swapMainImage(fullImageUrl) {
+    if (!fullImageUrl || !DOM.mainImg) return;
+    clearTimeout(_imgTimer);
+    DOM.mainImg.classList.add("oz-fade");
+    _imgTimer = setTimeout(function() {
+      DOM.mainImg.onload = function() {
+        DOM.mainImg.classList.remove("oz-fade");
+      };
+      DOM.mainImg.onerror = function() {
+        DOM.mainImg.classList.remove("oz-fade");
+      };
+      DOM.mainImg.src = fullImageUrl;
+    }, 200);
+  }
+  function toggleGalleryThumbs(show2) {
+    var thumbs = document.querySelector(".oz-gallery-thumbs");
+    if (thumbs) thumbs.style.display = show2 ? "" : "none";
+  }
+  function updateSeoMeta(url, title) {
+    document.title = title + " - " + (P.siteTitle || "Beton Cire Webshop");
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.setAttribute("href", url);
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute("content", url);
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", title);
+  }
+  function stripColor(fullTitle, color) {
+    if (!color) return fullTitle;
+    var stripped = fullTitle.replace(/\s*\([^)]+\)\s*$/, "");
+    if (stripped !== fullTitle) return stripped.trim();
+    var escaped = color.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    var re = new RegExp("\\s+" + escaped + "\\s*$", "i");
+    return fullTitle.replace(re, "").trim();
+  }
+
   // src/js/product-page.js
   if (!P) {
   } else {
@@ -788,6 +893,9 @@
         var ready = !error;
         if (DOM.stickyBtn) DOM.stickyBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
         if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
+      } else {
+        if (DOM.stickyBtn) DOM.stickyBtn.textContent = "In winkelmand";
+        if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = "In winkelmand";
       }
     }, renderToolDetails = function(prices, anchor, lineClass) {
       if (!anchor) return;
@@ -1139,7 +1247,13 @@
           syncUI();
           return;
         }
-        saveToolState();
+        e.preventDefault();
+        var pid = parseInt(swatch.getAttribute("data-product-id"), 10);
+        if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
+        } else {
+          saveToolState();
+          window.location.href = swatch.href;
+        }
         return;
       }
       if (target === DOM.readMoreBtn || target.closest("#readMoreBtn")) {
@@ -1552,6 +1666,7 @@
       }
     }, init = function() {
       cacheDom();
+      initNavigation(syncUI);
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
       restoreToolState();

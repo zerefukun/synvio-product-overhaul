@@ -180,8 +180,13 @@ class OZ_Frontend_Display {
 
             // Color/variant data
             'currentColor' => get_post_meta($product->get_id(), '_oz_color', true) ?: '',
-            'variants'     => $line_key ? OZ_Product_Processor::get_variant_display_data($product->get_id()) : [],
+            'variants'     => $line_key
+                ? ($page_mode === 'configured_line' && OZ_Product_Processor::is_base_product($product)
+                    ? self::get_base_product_variants($product)
+                    : OZ_Product_Processor::get_variant_display_data($product->get_id()))
+                : [],
             'productImage' => $image_url,
+            'siteTitle'    => get_bloginfo('name'),
 
             // WooCommerce cart endpoints (always needed)
             'ajaxUrl'     => admin_url('admin-ajax.php'),
@@ -229,6 +234,21 @@ class OZ_Frontend_Display {
             } else {
                 $js_data['addonGroups'] = false;
             }
+        }
+
+        // Add current product to variants map so pushState back-navigation works.
+        // Without this, popstate to the initial page would have no variant data.
+        if ($line_key && !empty($js_data['variants'])) {
+            $current_pid      = $product->get_id();
+            $current_image_id = get_post_thumbnail_id($current_pid);
+            $js_data['variants'][$current_pid] = [
+                'color'     => get_post_meta($current_pid, '_oz_color', true) ?: '',
+                'url'       => get_permalink($current_pid),
+                'image'     => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'thumbnail') : '',
+                'fullImage' => $current_image_id ? wp_get_attachment_image_url($current_image_id, 'large') : '',
+                'price'     => floatval($product->get_price()),
+                'title'     => $product->get_name(),
+            ];
         }
 
         wp_localize_script('oz-product-page', 'ozProduct', $js_data);
@@ -331,13 +351,14 @@ class OZ_Frontend_Display {
             $is_current = ($pid === $current_id);
             // Each swatch is wrapped in a labeled container: image + color name below
             $html .= sprintf(
-                '<a href="%s" class="oz-color-swatch%s" data-color="%s">'
+                '<a href="%s" class="oz-color-swatch%s" data-color="%s" data-product-id="%d">'
                 . '<span class="oz-swatch-img"><img src="%s" alt="%s" width="46" height="46" loading="eager"></span>'
                 . '<span class="oz-swatch-name">%s</span>'
                 . '</a>',
                 esc_url($s['url']),
                 $is_current ? ' selected' : '',
                 esc_attr($s['color']),
+                $pid,
                 esc_url($s['image']),
                 esc_attr($s['color']),
                 esc_html($s['color'])
@@ -470,13 +491,17 @@ class OZ_Frontend_Display {
                 continue;
             }
 
+            $variant   = wc_get_product($vid);
             $image_id  = get_post_thumbnail_id($vid);
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
             $variants[$vid] = [
-                'color' => $color,
-                'url'   => get_permalink($vid),
-                'image' => $image_url,
+                'color'     => $color,
+                'url'       => get_permalink($vid),
+                'image'     => $image_url,
+                'fullImage' => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'price'     => $variant ? floatval($variant->get_price()) : 0,
+                'title'     => $variant ? $variant->get_name() : '',
             ];
         }
 

@@ -49,6 +49,14 @@ export function cacheDom() {
   DOM.stickyDBtn     = document.getElementById('stickyDBtn');
   DOM.stickyPriceMobile = document.getElementById('stickyPriceMobile');
 
+  // Navigation-related elements (pushState color switching)
+  DOM.stickyThumb       = document.getElementById('stickyThumb');
+  DOM.productTitle      = document.querySelector('.oz-product-title');
+  DOM.selectedColorLabel = document.getElementById('selectedColorLabel');
+  DOM.stickyColorName   = document.getElementById('stickyColorName');
+  DOM.stickyProductName = document.querySelector('.oz-sticky-product-name');
+  DOM.stickyDTitle      = document.querySelector('.oz-sticky-d-title');
+
   // Price breakdown elements
   DOM.priceBaseLabel     = document.getElementById('priceBaseLabel');
   DOM.priceBase          = document.getElementById('priceBase');

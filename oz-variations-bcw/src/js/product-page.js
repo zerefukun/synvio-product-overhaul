@@ -24,6 +24,7 @@
 import { P, S, updateState, fmt, fmtDelta, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
+import { initNavigation, navigateToVariant } from './navigation.js';
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
@@ -117,12 +118,15 @@ function syncUI() {
     DOM.addToCartBtn.classList.toggle('oz-disabled', !!error);
   }
 
-  // Update sticky buttons: switch from "Kies kleur" to "In winkelmand"
-  // when a base product has a valid RAL/NCS color entered
+  // Update sticky buttons: base products show "Kies kleur" until a valid
+  // RAL/NCS color is entered; variants always show "In winkelmand"
   if (P.isBase) {
     var ready = !error;
     if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = ready ? 'In winkelmand' : 'Kies kleur';
     if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? 'In winkelmand' : 'Kies kleur';
+  } else {
+    if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = 'In winkelmand';
+    if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = 'In winkelmand';
   }
 }
 
@@ -638,9 +642,16 @@ function handleClick(e) {
       return;
     }
 
-    // Normal swatch — save tool state before navigating to new product
-    saveToolState();
-    // Let the default link behavior proceed (page navigation)
+    // Normal swatch — pushState navigation (no page reload)
+    e.preventDefault();
+    var pid = parseInt(swatch.getAttribute('data-product-id'), 10);
+    if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
+      // syncUI called by navigation.js callback (handles both click + popstate)
+    } else {
+      // Fallback: full navigation if variant data is missing
+      saveToolState();
+      window.location.href = swatch.href;
+    }
     return;
   }
 
@@ -1354,6 +1365,7 @@ function setupStickyBar() {
 
 function init() {
   cacheDom();
+  initNavigation(syncUI);
 
   // Register syncUI as the callback for tool state changes
   setToolSyncCallback(syncUI);
