@@ -185,12 +185,19 @@
     margin-bottom: 4px;
   }
 
-  /* Color label and price sit on one line */
-  .oz-color-label {
-    margin-bottom: 4px;
+  /* Color label + price inline row */
+  .oz-mobile-label-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
   }
 
-  .oz-product-base-price {
-    margin-bottom: 8px;
+  .oz-mobile-label-price .oz-color-label {
+    margin-bottom: 0;
+  }
+
+  .oz-mobile-label-price .oz-product-base-price {
+    margin-bottom: 0;
   }
 }

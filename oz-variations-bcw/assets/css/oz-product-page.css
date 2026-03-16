@@ -735,11 +735,17 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-product-title {
     margin-bottom: 4px;
   }
-  .oz-color-label {
-    margin-bottom: 4px;
-  }
-  .oz-product-base-price {
+  .oz-mobile-label-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 8px;
+  }
+  .oz-mobile-label-price .oz-color-label {
+    margin-bottom: 0;
+  }
+  .oz-mobile-label-price .oz-product-base-price {
+    margin-bottom: 0;
   }
 }
 
