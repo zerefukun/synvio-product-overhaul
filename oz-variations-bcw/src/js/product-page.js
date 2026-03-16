@@ -1395,11 +1395,15 @@ function adaptBreadcrumbColor(img, breadcrumb) {
     }
     var avgLum = totalLum / pixels;
 
-    // Always white text — dark shadow strength adapts to image brightness.
-    // Darker images need less shadow, lighter images need more.
-    var shadowOpacity = isDark ? 0.3 : 0.6;
-    breadcrumb.style.color = 'rgba(255,255,255,0.9)';
-    breadcrumb.style.textShadow = '0 1px 3px rgba(0,0,0,' + shadowOpacity + '), 0 0 8px rgba(0,0,0,' + (shadowOpacity * 0.5) + ')';
+    // Dark image = white text + shadow for contrast.
+    // Light image = dark text, no shadow needed.
+    if (isDark) {
+      breadcrumb.style.color = 'rgba(255,255,255,0.9)';
+      breadcrumb.style.textShadow = '0 1px 3px rgba(0,0,0,0.5)';
+    } else {
+      breadcrumb.style.color = 'var(--oz-text-muted)';
+      breadcrumb.style.textShadow = 'none';
+    }
   } catch (e) {
     console.warn('[OZ] Breadcrumb contrast detection failed:', e.message);
   }

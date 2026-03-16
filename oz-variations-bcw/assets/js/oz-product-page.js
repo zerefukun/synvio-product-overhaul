@@ -1737,9 +1737,13 @@
           totalLum += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
         }
         var avgLum = totalLum / pixels;
-        var shadowOpacity = isDark ? 0.3 : 0.6;
-        breadcrumb.style.color = "rgba(255,255,255,0.9)";
-        breadcrumb.style.textShadow = "0 1px 3px rgba(0,0,0," + shadowOpacity + "), 0 0 8px rgba(0,0,0," + shadowOpacity * 0.5 + ")";
+        if (isDark) {
+          breadcrumb.style.color = "rgba(255,255,255,0.9)";
+          breadcrumb.style.textShadow = "0 1px 3px rgba(0,0,0,0.5)";
+        } else {
+          breadcrumb.style.color = "var(--oz-text-muted)";
+          breadcrumb.style.textShadow = "none";
+        }
       } catch (e) {
         console.warn("[OZ] Breadcrumb contrast detection failed:", e.message);
       }
