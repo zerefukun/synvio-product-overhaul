@@ -332,6 +332,7 @@
     DOM.productTitle = document.querySelector(".oz-product-title");
     DOM.selectedColorLabel = document.getElementById("selectedColorLabel");
     DOM.stickyColorName = document.getElementById("stickyColorName");
+    DOM.stickyColorWrap = document.getElementById("stickyColorWrap");
     DOM.stickyProductName = document.querySelector(".oz-sticky-product-name");
     DOM.stickyDTitle = document.querySelector(".oz-sticky-d-title");
     DOM.priceBaseLabel = document.getElementById("priceBaseLabel");
@@ -788,7 +789,10 @@
       DOM.colorLabel.style.display = v.color ? "" : "none";
     }
     if (DOM.stickyDColor) DOM.stickyDColor.textContent = v.color;
-    if (DOM.stickyColorName) DOM.stickyColorName.textContent = v.color;
+    if (DOM.stickyColorName) {
+      DOM.stickyColorName.textContent = v.color;
+      if (DOM.stickyColorWrap) DOM.stickyColorWrap.style.display = v.color ? "" : "none";
+    }
     if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
     if (DOM.stickyProductName) DOM.stickyProductName.textContent = strippedTitle;
     if (DOM.stickyDTitle) DOM.stickyDTitle.textContent = strippedTitle;

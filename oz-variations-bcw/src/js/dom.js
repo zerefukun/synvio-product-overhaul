@@ -54,6 +54,7 @@ export function cacheDom() {
   DOM.productTitle      = document.querySelector('.oz-product-title');
   DOM.selectedColorLabel = document.getElementById('selectedColorLabel');
   DOM.stickyColorName   = document.getElementById('stickyColorName');
+  DOM.stickyColorWrap   = document.getElementById('stickyColorWrap');
   DOM.stickyProductName = document.querySelector('.oz-sticky-product-name');
   DOM.stickyDTitle      = document.querySelector('.oz-sticky-d-title');
 

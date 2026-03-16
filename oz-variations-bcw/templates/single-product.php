@@ -721,9 +721,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
            alt="">
       <div class="oz-sticky-details">
         <div class="oz-sticky-product-name"><?php echo esc_html($product_name); ?></div>
-        <?php if ($current_color || $has_shared_colors) : ?>
+        <?php if ($current_color || $has_shared_colors || $has_color_variants) : ?>
         <div class="oz-sticky-color" id="stickyColorWrap"
-             <?php if (!$current_color && $has_shared_colors) echo 'style="display:none"'; ?>>
+             <?php if (!$current_color) echo 'style="display:none"'; ?>>
           <span class="oz-sticky-color-dot" id="stickyColorDot"></span>
           <span id="stickyColorName"><?php echo esc_html($current_color ?: ''); ?></span>
         </div>

@@ -121,7 +121,11 @@ function applyVariant(productId, isPopstate) {
     DOM.colorLabel.style.display = v.color ? '' : 'none';
   }
   if (DOM.stickyDColor)       DOM.stickyDColor.textContent = v.color;
-  if (DOM.stickyColorName)    DOM.stickyColorName.textContent = v.color;
+  if (DOM.stickyColorName) {
+    DOM.stickyColorName.textContent = v.color;
+    // Show/hide the sticky color wrapper (hidden on base, visible on variants)
+    if (DOM.stickyColorWrap) DOM.stickyColorWrap.style.display = v.color ? '' : 'none';
+  }
 
   // 7. Update sticky bar — thumbnail, product name (mobile + desktop)
   if (v.image && DOM.stickyThumb) DOM.stickyThumb.src = v.image;
