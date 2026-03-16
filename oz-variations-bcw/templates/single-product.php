@@ -684,8 +684,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
 
       <!-- Trust Checks — compact inline checkmarks -->
+      <?php
+      // Dynamic shipping trust text based on calculated ship date
+      if ($oz_ship->format('Y-m-d') === $oz_now->format('Y-m-d')) {
+          $oz_trust_ship = 'Voor 14:00 besteld, vandaag verzonden';
+      } else {
+          $oz_trust_ship = 'Verzonden op ' . $oz_dfmt($oz_ship);
+      }
+      ?>
       <div class="oz-trust-checks">
-        <span class="oz-trust-check">&#10003; Vandaag besteld, morgen stucen</span>
+        <span class="oz-trust-check">&#10003; <?php echo esc_html($oz_trust_ship); ?></span>
         <span class="oz-trust-check">&#10003; Achteraf betalen</span>
         <span class="oz-trust-check">&#10003; 420.000+ m² aangebracht door klanten</span>
         <span class="oz-trust-check">&#10003; Gratis workshop mogelijk bij bestelling</span>
