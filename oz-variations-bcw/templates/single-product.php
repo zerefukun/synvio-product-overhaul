@@ -201,7 +201,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       // Comparison table — "Welk product past bij mij?"
       // Shows all 6 main product lines with key differentiators.
       // Current product row highlighted, others link to their base product.
-      if ($page_mode === 'configured_line' && $line_key) :
+      if ($page_mode === 'configured_line' && $line_key && current_user_can('manage_options')) :
           $cmp_data = OZ_Product_Line_Config::get_comparison_data();
           $cmp_cols = $cmp_data['columns'];
           $cmp_lines = $cmp_data['lines'];
@@ -333,7 +333,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php
       // Cross-link: suggest an alternative product line (e.g. "Liever kant & klaar? Bekijk Microcement")
       // Configured per line in class-product-line-config.php → 'cross_link' key
-      if (!empty($config['cross_link'])) :
+      if (!empty($config['cross_link']) && current_user_can('manage_options')) :
           $cl = $config['cross_link'];
           $cl_url = !empty($cl['base_id']) ? get_permalink($cl['base_id']) : (!empty($cl['url']) ? $cl['url'] : '#');
       ?>
@@ -795,7 +795,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php if (!empty($oz_specs)) : ?>
         <a href="#sectionSpecs" class="oz-sticky-d-link" data-scroll="sectionSpecs">Specificaties</a>
       <?php endif; ?>
-      <?php if ($page_mode === 'configured_line' && $line_key) : ?>
+      <?php if ($page_mode === 'configured_line' && $line_key && current_user_can('manage_options')) : ?>
         <a href="#sectionCompare" class="oz-sticky-d-link" data-scroll="sectionCompare">Vergelijken</a>
       <?php endif; ?>
       <?php if (!empty($oz_faq) && is_array($oz_faq)) : ?>
