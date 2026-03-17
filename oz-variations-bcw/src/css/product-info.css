@@ -359,7 +359,7 @@ summary.oz-section-title--toggle {
 .oz-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
+  filter: blur(60px);
   pointer-events: none;
   z-index: 0;
   opacity: 0;
@@ -371,19 +371,28 @@ summary.oz-section-title--toggle {
 }
 
 .oz-orb--accent {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(19, 83, 80, 0.12) 0%, transparent 70%);
-  top: -60px;
-  right: 10%;
+  width: 350px;
+  height: 350px;
+  background: rgba(19, 83, 80, 0.08);
+  top: -80px;
+  right: 8%;
 }
 
 .oz-orb--warm {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, rgba(196, 164, 132, 0.15) 0%, transparent 70%);
-  bottom: -40px;
-  left: 5%;
+  width: 300px;
+  height: 300px;
+  background: rgba(196, 164, 132, 0.12);
+  bottom: -60px;
+  left: 3%;
+}
+
+/* On white background sections, orbs are more visible — tone down */
+.oz-showcase-block:nth-child(even) .oz-orb--accent {
+  background: rgba(19, 83, 80, 0.06);
+}
+
+.oz-showcase-block:nth-child(even) .oz-orb--warm {
+  background: rgba(196, 164, 132, 0.08);
 }
 
 /* Flip orb positions on reverse blocks */
