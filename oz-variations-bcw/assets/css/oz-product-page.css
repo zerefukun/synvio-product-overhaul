@@ -582,6 +582,86 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-faq-answer p {
   margin-bottom: 8px;
 }
+.oz-section-title--toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.oz-compare-details summary {
+  list-style: none;
+}
+.oz-compare-details summary::-webkit-details-marker {
+  display: none;
+}
+.oz-toggle-icon::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+}
+.oz-compare-details[open] .oz-toggle-icon::after {
+  content: "\2212";
+}
+.oz-compare-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 16px;
+}
+.oz-compare-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.oz-compare-table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--oz-text-muted);
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 2px solid var(--oz-border);
+  white-space: nowrap;
+}
+.oz-compare-table td {
+  padding: 12px;
+  color: var(--oz-text-body);
+  border-bottom: 1px solid var(--oz-border-light);
+  vertical-align: top;
+}
+.oz-compare-th-product,
+.oz-compare-product {
+  min-width: 120px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+}
+.oz-compare-product a {
+  color: var(--oz-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.oz-compare-product a:hover {
+  color: var(--oz-accent-hover);
+}
+.oz-compare-current {
+  background: var(--oz-accent-light);
+}
+.oz-compare-current td {
+  color: var(--oz-text-primary);
+  font-weight: 500;
+}
+.oz-compare-note {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--oz-text-muted);
+  margin-top: 2px;
+}
+.oz-compare-table tbody tr:last-child td {
+  border-bottom: none;
+}
 .oz-faq-answer p:last-child {
   margin-bottom: 0;
 }
@@ -2641,6 +2721,12 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
   .oz-product-gallery {
     position: relative;
     margin-top: -18px;
+  }
+  .oz-compare-scroll {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   body.oz-has-sticky {
     padding-bottom: 100px;

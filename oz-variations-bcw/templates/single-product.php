@@ -197,6 +197,59 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       </div>
       <?php endif; ?>
 
+      <?php
+      // Comparison table — "Welk product past bij mij?"
+      // Shows all 6 main product lines with key differentiators.
+      // Current product row highlighted, others link to their base product.
+      if ($page_mode === 'configured_line' && $line_key) :
+          $cmp_data = OZ_Product_Line_Config::get_comparison_data();
+          $cmp_cols = $cmp_data['columns'];
+          $cmp_lines = $cmp_data['lines'];
+      ?>
+      <div class="oz-product-info-section" id="sectionCompare">
+        <details class="oz-compare-details">
+          <summary class="oz-section-title oz-section-title--toggle">
+            Welk product past bij mij?
+            <span class="oz-toggle-icon"></span>
+          </summary>
+          <div class="oz-compare-scroll">
+            <table class="oz-compare-table">
+              <thead>
+                <tr>
+                  <th class="oz-compare-th-product">Product</th>
+                  <?php foreach ($cmp_cols as $col) : ?>
+                    <th><?php echo esc_html($col['label']); ?></th>
+                  <?php endforeach; ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($cmp_lines as $cmp_key => $cmp) :
+                  $is_current = ($cmp_key === $line_key);
+                  $cmp_url = (!$is_current && $cmp['base_id']) ? get_permalink($cmp['base_id']) : '';
+                ?>
+                <tr class="<?php echo $is_current ? 'oz-compare-current' : ''; ?>">
+                  <td class="oz-compare-product">
+                    <?php if ($cmp_url) : ?>
+                      <a href="<?php echo esc_url($cmp_url); ?>"><?php echo esc_html($cmp['name']); ?></a>
+                    <?php else : ?>
+                      <strong><?php echo esc_html($cmp['name']); ?></strong>
+                    <?php endif; ?>
+                    <?php if (!empty($cmp['note'])) : ?>
+                      <small class="oz-compare-note"><?php echo esc_html($cmp['note']); ?></small>
+                    <?php endif; ?>
+                  </td>
+                  <?php foreach ($cmp_cols as $col) : ?>
+                    <td><?php echo esc_html($cmp[$col['key']]); ?></td>
+                  <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+      <?php endif; ?>
+
       <!-- FAQ accordion — shared from base product across all colors -->
       <?php
       // FAQ fallback: variant override (if enabled) → base product → line config → empty
@@ -282,10 +335,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       // Configured per line in class-product-line-config.php → 'cross_link' key
       if (!empty($config['cross_link'])) :
           $cl = $config['cross_link'];
+          $cl_url = !empty($cl['base_id']) ? get_permalink($cl['base_id']) : (!empty($cl['url']) ? $cl['url'] : '#');
       ?>
         <div class="oz-cross-link">
           <span class="oz-cross-link-text"><?php echo esc_html($cl['text']); ?></span>
-          <a href="<?php echo esc_url($cl['url']); ?>" class="oz-cross-link-btn"><?php echo esc_html($cl['label']); ?> &rarr;</a>
+          <a href="<?php echo esc_url($cl_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($cl['label']); ?> &rarr;</a>
         </div>
       <?php endif; ?>
 
@@ -740,6 +794,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php endif; ?>
       <?php if (!empty($oz_specs)) : ?>
         <a href="#sectionSpecs" class="oz-sticky-d-link" data-scroll="sectionSpecs">Specificaties</a>
+      <?php endif; ?>
+      <?php if ($page_mode === 'configured_line' && $line_key) : ?>
+        <a href="#sectionCompare" class="oz-sticky-d-link" data-scroll="sectionCompare">Vergelijken</a>
       <?php endif; ?>
       <?php if (!empty($oz_faq) && is_array($oz_faq)) : ?>
         <a href="#sectionFaq" class="oz-sticky-d-link" data-scroll="sectionFaq">FAQ</a>

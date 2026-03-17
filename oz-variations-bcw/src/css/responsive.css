@@ -109,6 +109,14 @@
     margin-top: -18px;
   }
 
+  /* Comparison table — bleed to screen edges for full-width scroll */
+  .oz-compare-scroll {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   body.oz-has-sticky {
     padding-bottom: 100px;
   }
