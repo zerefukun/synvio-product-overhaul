@@ -1774,6 +1774,16 @@
         }
       }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
       for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
+      var showcase = document.querySelector(".oz-showcase");
+      if (showcase) {
+        var orbObserver = new IntersectionObserver(function(entries) {
+          if (entries[0].isIntersecting) {
+            showcase.classList.add("oz-orbs-visible");
+            orbObserver.disconnect();
+          }
+        }, { threshold: 0.05 });
+        orbObserver.observe(showcase);
+      }
     }, adaptBreadcrumbColor = function(img, breadcrumb) {
       if (!img.naturalWidth) return;
       try {

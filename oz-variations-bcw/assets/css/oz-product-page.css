@@ -697,6 +697,13 @@ summary.oz-section-title--toggle {
   filter: blur(80px);
   pointer-events: none;
   z-index: 0;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 1.2s ease, transform 1.2s ease;
+}
+.oz-showcase.oz-orbs-visible .oz-orb {
+  opacity: 1;
+  transform: scale(1);
 }
 .oz-orb--accent {
   width: 400px;
@@ -708,7 +715,7 @@ summary.oz-section-title--toggle {
 .oz-orb--warm {
   width: 350px;
   height: 350px;
-  background: rgba(196, 164, 132, 0.16);
+  background: rgba(196, 164, 132, 0.25);
   bottom: 8%;
   left: 5%;
 }
