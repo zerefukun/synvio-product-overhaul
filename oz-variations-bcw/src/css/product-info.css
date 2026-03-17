@@ -307,74 +307,151 @@ summary.oz-section-title--toggle {
 }
 
 
-/* ═══ SHOWCASE SECTIONS ════════════════════════════════════ */
+/* ═══ SHOWCASE SECTIONS ════════════════════════════════════
+   Editorial image + text blocks. Compact, scroll-animated.
+   Each block alternates image left/right.
+   ══════════════════════════════════════════════════════════ */
 
 .oz-showcase {
-  margin-top: 56px;
-}
-
-.oz-showcase-section {
-  background: var(--oz-bg-warm, #F5F4F0);
-  padding: 56px 0;
+  margin-top: 40px;
   /* Break out of page container to go full-width */
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
-  padding-left: calc(50vw - 50%);
-  padding-right: calc(50vw - 50%);
 }
 
-/* Alternating background */
-.oz-showcase-section--alt {
+.oz-showcase-block {
+  padding: 36px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Alternating warm/white background */
+.oz-showcase-block:nth-child(odd) {
+  background: var(--oz-bg-warm, #F5F4F0);
+}
+
+.oz-showcase-block:nth-child(even) {
   background: #fff;
 }
 
-.oz-showcase-section-inner {
-  max-width: 1200px;
+/* Subtle top border between sections */
+.oz-showcase-block + .oz-showcase-block {
+  border-top: 1px solid var(--oz-border-light, #F0EFED);
+}
+
+.oz-showcase-block__inner {
+  max-width: 1060px;
   margin: 0 auto;
+  padding: 0 24px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 48px;
+  gap: 40px;
   align-items: center;
 }
 
-/* Flip image/text order on alternating sections */
-.oz-showcase-section--alt .oz-showcase-section-inner {
+/* Reverse: text left, image right */
+.oz-showcase-block--reverse .oz-showcase-block__inner {
   direction: rtl;
 }
 
-.oz-showcase-section--alt .oz-showcase-section-inner > * {
+.oz-showcase-block--reverse .oz-showcase-block__inner > * {
   direction: ltr;
 }
 
-.oz-showcase-img img {
+/* ── Image ── */
+.oz-showcase-block__img-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.oz-showcase-block__img-wrap img {
   width: 100%;
-  border-radius: 12px;
-  aspect-ratio: 4/3;
+  aspect-ratio: 3/2;
   object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.oz-showcase-title {
+/* Subtle zoom on hover */
+.oz-showcase-block__img-wrap:hover img {
+  transform: scale(1.03);
+}
+
+/* ── Content ── */
+.oz-showcase-block__content {
+  padding: 4px 0;
+}
+
+.oz-showcase-block__eyebrow {
+  display: inline-block;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--oz-accent, #135350);
+  margin-bottom: 10px;
+}
+
+.oz-showcase-block__heading {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 400;
-  color: var(--oz-text-primary);
-  margin: 0 0 8px;
-  line-height: 1.3;
+  color: var(--oz-text-primary, #2D2926);
+  margin: 0 0 10px;
+  line-height: 1.25;
 }
 
-.oz-showcase-subtitle {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--oz-accent);
-  margin: 0 0 12px;
-  letter-spacing: 0.3px;
-}
-
-.oz-showcase-body {
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--oz-text-body);
+.oz-showcase-block__body {
+  font-family: 'Raleway', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--oz-text-body, #4A4543);
   margin: 0;
+}
+
+/* ── Scroll-reveal animation ── */
+.oz-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.oz-reveal.oz-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children: image appears first, text follows */
+.oz-reveal-child {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.oz-visible .oz-reveal-child:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.oz-visible .oz-reveal-child:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .oz-reveal,
+  .oz-reveal-child {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .oz-faq-answer p:last-child {

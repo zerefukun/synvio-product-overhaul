@@ -745,6 +745,52 @@ class OZ_Product_Line_Config {
     ];
 
     /**
+     * Default showcase sections per product line.
+     * Used when no _oz_showcase_sections meta is set on the base product.
+     * Admin can override via the meta box. image_id=0 means no image (placeholder).
+     */
+    private static $showcase_defaults = [
+        'original' => [
+            ['image_id' => 0, 'title' => 'De fijnste korrel op de markt', 'subtitle' => '50+ kleuren, strak resultaat', 'text' => "Original heeft de fijnste korrelstructuur van alle beton cire producten. Het resultaat: een fluweelzacht, strak oppervlak dat elke ruimte transformeert. Beschikbaar in meer dan 50 kleuren — van warm zand tot diep antraciet."],
+            ['image_id' => 0, 'title' => 'Van badkamer tot keukenblad', 'subtitle' => 'Naadloos op elk oppervlak', 'text' => "Breng Original aan op wanden, vloeren, meubels, aanrechtbladen en trappen. De minerale samenstelling hecht op vrijwel elke ondergrond. Met een PU toplaag is het resultaat waterdicht en slijtvast."],
+            ['image_id' => 0, 'title' => 'Zelf aanbrengen in 4 stappen', 'subtitle' => 'Primer, 2 lagen pasta, PU toplaag', 'text' => "Geen ervaring nodig. Met onze kant-en-klare pasta op kleur, het juiste gereedschap en een duidelijke handleiding creëer je zelf een professioneel resultaat. Elke m² apart bestelbaar — betaal alleen wat je nodig hebt."],
+        ],
+        'microcement' => [
+            ['image_id' => 0, 'title' => 'Echt cement, ultradunne laag', 'subtitle' => '36 kleuren uit 1 emmer', 'text' => "Microcement is een cementgebonden coating die in slechts 1-2mm dikte een robuuste, industriële betonlook creëert. Hard, duurzaam en geschikt voor intensief gebruik op vloeren en wanden."],
+            ['image_id' => 0, 'title' => 'De kracht van mineraal', 'subtitle' => 'Harder dan traditionele beton cire', 'text' => "Door de cementbasis is Microcement van nature hard en krasbestendig. Ideaal voor ruimtes waar de vloer veel te verduren krijgt: keukens, badkamers, winkels en horeca. Bescherm het met PU voor een waterdichte afwerking."],
+            ['image_id' => 0, 'title' => 'Modern renoveren zonder sloopwerk', 'subtitle' => 'Direct over bestaande tegels', 'text' => "Bespaar tijd en kosten door Microcement direct over tegels, stucwerk of beton aan te brengen. Geen sloopwerk, geen rommel. In 4 stappen van oud naar nieuw — met een naadloos resultaat."],
+        ],
+        'all-in-one' => [
+            ['image_id' => 0, 'title' => 'Alles uit 1 emmer', 'subtitle' => '36 kleuren, klaar voor gebruik', 'text' => "All-in-One is de makkelijkste manier om een betonlook te creëren. Open de emmer, roer en breng aan. Geen mengen, geen gedoe. Elke emmer is op kleur gemengd en bevat alles voor 1 m²."],
+            ['image_id' => 0, 'title' => 'Rustig of robuust — jij kiest', 'subtitle' => 'Creëer je eigen textuur', 'text' => "Door harder en langer te schuren krijg je een donkerdere, robuustere tekening. Wil je een rustig resultaat? Schuur licht en kort. Met All-in-One heb je volledige controle over het eindresultaat."],
+            ['image_id' => 0, 'title' => 'Ideaal voor beginners', 'subtitle' => 'Geen ervaring vereist', 'text' => "All-in-One is ontworpen voor zelfdoeners. De pasta is voorgemengd op kleur, primer zit inbegrepen per m². Volg de 5 stappen in onze handleiding en je hebt een professioneel resultaat."],
+        ],
+        'easyline' => [
+            ['image_id' => 0, 'title' => 'Levendige tekening, uniek karakter', 'subtitle' => '2 emmers: grof + fijn', 'text' => "De eerste laag grof en de tweede laag fijn — daardoor zie je de structuur van de eerste laag door de tweede heen. Het resultaat: een levendige, organische tekening die elke wand en vloer karakter geeft."],
+            ['image_id' => 0, 'title' => 'Kant-en-klaar in 36 kleuren', 'subtitle' => 'Direct aan de slag', 'text' => "Kies je kleur, bestel het pakket en ga aan de slag. Easyline wordt geleverd als compleet 5 m² pakket met grof en fijn materiaal. Inclusief primer en 1 laag PU standaard."],
+            ['image_id' => 0, 'title' => 'Spelen met textuur', 'subtitle' => 'Van subtiel tot expressief', 'text' => "Door harder en langer te schuren verbrand je als het ware de cire, waardoor de tekening donkerder en expressiever wordt. Elke wand wordt een uniek kunstwerk — geen twee oppervlakken zijn hetzelfde."],
+        ],
+        'metallic' => [
+            ['image_id' => 0, 'title' => 'Luxe met lichtreflecties', 'subtitle' => 'Parelmoer en velvet in één', 'text' => "Metallic Velvet combineert de zachtheid van fluweel met de schittering van parelmoer. Bij elke lichtinval verandert het oppervlak — van subtiel glanzend tot diep satijn. Een statement voor wanden en meubels."],
+            ['image_id' => 0, 'title' => 'Fluweelzacht gevoel', 'subtitle' => '12 exclusieve tinten', 'text' => "Van warm Champagne tot diep Black Pearl — elke kleur is zorgvuldig samengesteld voor maximale lichtreflectie. Het resultaat voelt fluweelzacht aan en geeft elke ruimte een luxueuze uitstraling."],
+        ],
+        'lavasteen' => [
+            ['image_id' => 0, 'title' => 'Waterdicht tot in de kern', 'subtitle' => 'Epoxy basis, geen PU nodig', 'text' => "Anders dan alle andere beton cire producten is Lavasteen op epoxy basis. Dat betekent: waterdicht tot in de kern, zonder afhankelijk te zijn van een PU toplaag. Bij schade blijft het oppervlak beschermd."],
+            ['image_id' => 0, 'title' => 'Extreem hard en slijtvast', 'subtitle' => 'Gemaakt met vulkanisch gesteente', 'text' => "De combinatie van epoxyhars en vulkanisch gesteente maakt Lavasteen het hardste product in ons assortiment. UV-bestendig, krasbestendig en bestand tegen intensief gebruik. Ideaal voor vloeren en werkbladen."],
+            ['image_id' => 0, 'title' => 'De gietvloer van de toekomst', 'subtitle' => 'Naadloos, robuust, onderhoudsvriendelijk', 'text' => "Geen voegen, geen naden, geen schimmel. Lavasteen creëert een doorlopend oppervlak dat eenvoudig schoon te houden is. De 2-componenten formule hardt uit tot een steenhard, chemisch resistent geheel."],
+        ],
+    ];
+
+    /**
+     * Get default showcase sections for a product line.
+     * @param string $line_key
+     * @return array
+     */
+    public static function get_showcase_defaults($line_key) {
+        return isset(self::$showcase_defaults[$line_key]) ? self::$showcase_defaults[$line_key] : [];
+    }
+
+    /**
      * Get comparison table data. Injects base_id from $lines config.
      * @return array  ['columns' => [...], 'lines' => [...]]
      */

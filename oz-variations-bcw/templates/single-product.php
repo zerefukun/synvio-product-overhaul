@@ -753,24 +753,17 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
   </div><!-- .oz-product-grid -->
 
   <?php
-  // Showcase sections — full-width image + text blocks below the product grid.
-  // Stored on base product, inherited by all color variants. Admin-only for now.
+  // Showcase sections — editorial image + text blocks below the product grid.
+  // Checks admin meta first, falls back to config defaults per line.
   if (current_user_can('manage_options')) :
       $showcase_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
       $showcase_sections = get_post_meta($showcase_source, '_oz_showcase_sections', true);
 
-      // Fallback: use product gallery images as placeholder sections
+      // Fallback: use config defaults for this product line
       if (empty($showcase_sections) || !is_array($showcase_sections)) {
-          $gallery_ids = $product->get_gallery_image_ids();
-          $showcase_sections = [];
-          foreach (array_slice($gallery_ids, 0, 3) as $gid) {
-              $showcase_sections[] = [
-                  'image_id' => $gid,
-                  'title'    => 'Voorbeeldtitel',
-                  'subtitle' => 'Stel in via WP Admin op het hoofdproduct',
-                  'text'     => '',
-              ];
-          }
+          $showcase_sections = $line_key
+              ? OZ_Product_Line_Config::get_showcase_defaults($line_key)
+              : [];
       }
 
       if (!empty($showcase_sections)) :
@@ -780,27 +773,30 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         $img_url = !empty($section['image_id'])
             ? wp_get_attachment_image_url($section['image_id'], 'full')
             : '';
-        if (!$img_url && empty($section['title'])) continue;
-        $even = ($si % 2 === 0);
+        $has_content = !empty($section['title']) || !empty($section['text']);
+        if (!$img_url && !$has_content) continue;
+        $reverse = ($si % 2 !== 0);
     ?>
-    <section class="oz-showcase-section <?php echo $even ? '' : 'oz-showcase-section--alt'; ?>">
-      <div class="oz-showcase-section-inner">
+    <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal">
+      <div class="oz-showcase-block__inner">
         <?php if ($img_url) : ?>
-        <div class="oz-showcase-img">
-          <img src="<?php echo esc_url($img_url); ?>"
-               alt="<?php echo esc_attr($section['title'] ?? ''); ?>"
-               loading="lazy">
+        <div class="oz-showcase-block__media oz-reveal-child">
+          <div class="oz-showcase-block__img-wrap">
+            <img src="<?php echo esc_url($img_url); ?>"
+                 alt="<?php echo esc_attr($section['title'] ?? ''); ?>"
+                 loading="lazy">
+          </div>
         </div>
         <?php endif; ?>
-        <div class="oz-showcase-text">
-          <?php if (!empty($section['title'])) : ?>
-            <h2 class="oz-showcase-title"><?php echo esc_html($section['title']); ?></h2>
-          <?php endif; ?>
+        <div class="oz-showcase-block__content oz-reveal-child">
           <?php if (!empty($section['subtitle'])) : ?>
-            <p class="oz-showcase-subtitle"><?php echo esc_html($section['subtitle']); ?></p>
+            <span class="oz-showcase-block__eyebrow"><?php echo esc_html($section['subtitle']); ?></span>
+          <?php endif; ?>
+          <?php if (!empty($section['title'])) : ?>
+            <h2 class="oz-showcase-block__heading"><?php echo esc_html($section['title']); ?></h2>
           <?php endif; ?>
           <?php if (!empty($section['text'])) : ?>
-            <p class="oz-showcase-body"><?php echo nl2br(esc_html($section['text'])); ?></p>
+            <p class="oz-showcase-block__body"><?php echo nl2br(esc_html($section['text'])); ?></p>
           <?php endif; ?>
         </div>
       </div>

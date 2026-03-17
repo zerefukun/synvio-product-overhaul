@@ -1751,6 +1751,22 @@
         }, { threshold: 0 });
         optionsObserver.observe(DOM.optionsWidget);
       }
+    }, setupScrollReveal = function() {
+      var reveals = document.querySelectorAll(".oz-reveal");
+      if (!reveals.length) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("oz-visible");
+        return;
+      }
+      var observer = new IntersectionObserver(function(entries) {
+        for (var i2 = 0; i2 < entries.length; i2++) {
+          if (entries[i2].isIntersecting) {
+            entries[i2].target.classList.add("oz-visible");
+            observer.unobserve(entries[i2].target);
+          }
+        }
+      }, { threshold: 0.15 });
+      for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
     }, adaptBreadcrumbColor = function(img, breadcrumb) {
       if (!img.naturalWidth) return;
       try {
@@ -1900,6 +1916,7 @@
           }
         }
       });
+      setupScrollReveal();
       setupStickyBar();
       if (DOM.descContent && DOM.readMoreBtn) {
         if (DOM.descContent.scrollHeight <= 120) {

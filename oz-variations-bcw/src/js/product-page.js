@@ -1364,6 +1364,36 @@ function setupStickyBar() {
 }
 
 
+/* ═══ SCROLL-REVEAL ANIMATIONS ═════════════════════════════ */
+
+/**
+ * Observe .oz-reveal elements and add .oz-visible when they enter viewport.
+ * Triggers once per element (unobserves after reveal). Uses a 15% threshold
+ * so the animation starts just as the element becomes meaningfully visible.
+ */
+function setupScrollReveal() {
+  var reveals = document.querySelectorAll('.oz-reveal');
+  if (!reveals.length) return;
+
+  // Respect reduced motion preference — make everything visible immediately
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (var i = 0; i < reveals.length; i++) reveals[i].classList.add('oz-visible');
+    return;
+  }
+
+  var observer = new IntersectionObserver(function (entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        entries[i].target.classList.add('oz-visible');
+        observer.unobserve(entries[i].target);
+      }
+    }
+  }, { threshold: 0.15 });
+
+  for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
+}
+
+
 /* ═══ INITIALIZATION ════════════════════════════════════════ */
 
 /* ═══ BREADCRUMB CONTRAST DETECTION ══════════════════════ */
@@ -1593,6 +1623,9 @@ function init() {
       if (S.sheetOpen) { closeSheet(); return; }
     }
   });
+
+  // Scroll-reveal animations for showcase sections
+  setupScrollReveal();
 
   // Mobile sticky bar
   setupStickyBar();
