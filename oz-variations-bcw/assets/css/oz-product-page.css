@@ -583,21 +583,11 @@ details.oz-faq-item[open] .oz-faq-question::after {
   margin-bottom: 8px;
 }
 summary.oz-section-title--toggle {
-  font-family:
-    "DM Serif Display",
-    Georgia,
-    serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--oz-text-primary);
-  letter-spacing: 0.2px;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid var(--oz-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
 }
 .oz-compare-details summary {
   list-style: none;
