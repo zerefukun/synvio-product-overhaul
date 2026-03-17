@@ -485,7 +485,7 @@ class OZ_BCW_Admin {
             if (!is_array($showcase) || empty($showcase)) {
                 // Fall back to config defaults for this product line
                 $line_info = OZ_Product_Line_Config::for_product(wc_get_product($post->ID));
-                $lk = $line_info['line_key'] ?? '';
+                $lk = $line_info['line'] ?? '';
                 $showcase = $lk ? OZ_Product_Line_Config::get_showcase_defaults($lk) : [];
             }
             ?>
