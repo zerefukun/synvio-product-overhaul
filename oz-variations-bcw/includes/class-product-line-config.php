@@ -735,12 +735,12 @@ class OZ_Product_Line_Config {
             ['key' => 'waterdicht', 'label' => 'Waterdicht'],
         ],
         'lines' => [
-            'original'    => ['name' => 'Original',        'one_liner' => 'Fijnste korrel, gladste resultaat',  'hardheid' => 'Hard',         'stappen' => 4, 'kleuren' => '50+', 'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer', 'hardheid' => 'Hard',         'stappen' => 4, 'kleuren' => '36',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Alles uit 1 emmer, eenvoudig',      'hardheid' => 'Minder hard',  'stappen' => 5, 'kleuren' => '36',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, levendige tekening',   'hardheid' => 'Minder hard',  'stappen' => 5, 'kleuren' => '36',  'emmers' => 2, 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'metallic'    => ['name' => 'Metallic Velvet',  'one_liner' => 'Luxe parelmoer/velvet effect',      'hardheid' => 'Minder hard',  'stappen' => 4, 'kleuren' => '12',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen wanden & meubels'],
-            'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',    'hardheid' => 'Extreem hard', 'stappen' => 4, 'kleuren' => '20',  'emmers' => 1, 'waterdicht' => 'Tot in de kern', 'note' => 'Geen PU nodig'],
+            'original'    => ['name' => 'Original',        'one_liner' => 'Fijnste korrel, gladste resultaat',  'hardheid' => 'Hard',         'stappen' => '4 stappen', 'kleuren' => '50+', 'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer', 'hardheid' => 'Hard',         'stappen' => '4 stappen', 'kleuren' => '36',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Alles uit 1 emmer, eenvoudig',      'hardheid' => 'Minder hard',  'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, levendige tekening',   'hardheid' => 'Minder hard',  'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '2 emmers', 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'metallic'    => ['name' => 'Metallic Velvet',  'one_liner' => 'Luxe parelmoer/velvet effect',      'hardheid' => 'Minder hard',  'stappen' => '4 stappen', 'kleuren' => '12',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen wanden & meubels'],
+            'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',    'hardheid' => 'Extreem hard', 'stappen' => '4 stappen', 'kleuren' => '20',  'emmers' => '1 emmer', 'waterdicht' => 'Tot in de kern', 'note' => 'Geen PU nodig'],
         ],
     ];
 
@@ -753,6 +753,7 @@ class OZ_Product_Line_Config {
         foreach ($data['lines'] as $key => &$row) {
             $row['base_id'] = isset(self::$lines[$key]) ? self::$lines[$key]['base_id'] : null;
         }
+        unset($row);
         return $data;
     }
 
