@@ -777,26 +777,29 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         if (!$img_url && !$has_content) continue;
         $reverse = ($si % 2 !== 0);
     ?>
-    <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal">
+    <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal" data-reveal-index="<?php echo $si; ?>">
+      <!-- Ambient gradient orbs -->
+      <div class="oz-orb oz-orb--accent" aria-hidden="true"></div>
+      <div class="oz-orb oz-orb--warm" aria-hidden="true"></div>
       <div class="oz-showcase-block__inner">
         <?php if ($img_url) : ?>
-        <div class="oz-showcase-block__media oz-reveal-child">
-          <div class="oz-showcase-block__img-wrap">
+        <div class="oz-showcase-block__media">
+          <div class="oz-showcase-block__img-wrap oz-reveal-img">
             <img src="<?php echo esc_url($img_url); ?>"
                  alt="<?php echo esc_attr($section['title'] ?? ''); ?>"
                  loading="lazy">
           </div>
         </div>
         <?php endif; ?>
-        <div class="oz-showcase-block__content oz-reveal-child">
+        <div class="oz-showcase-block__content">
           <?php if (!empty($section['subtitle'])) : ?>
-            <span class="oz-showcase-block__eyebrow"><?php echo esc_html($section['subtitle']); ?></span>
+            <span class="oz-showcase-block__eyebrow oz-reveal-el"><?php echo esc_html($section['subtitle']); ?></span>
           <?php endif; ?>
           <?php if (!empty($section['title'])) : ?>
-            <h2 class="oz-showcase-block__heading"><?php echo esc_html($section['title']); ?></h2>
+            <h2 class="oz-showcase-block__heading oz-reveal-el"><?php echo esc_html($section['title']); ?></h2>
           <?php endif; ?>
           <?php if (!empty($section['text'])) : ?>
-            <p class="oz-showcase-block__body"><?php echo nl2br(esc_html($section['text'])); ?></p>
+            <p class="oz-showcase-block__body oz-reveal-el"><?php echo nl2br(esc_html($section['text'])); ?></p>
           <?php endif; ?>
         </div>
       </div>

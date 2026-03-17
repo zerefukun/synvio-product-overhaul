@@ -1381,29 +1381,20 @@ function setupScrollReveal() {
     return;
   }
 
-  // Stagger blocks that are already in the viewport at load time.
-  // Each gets an incremental delay so they cascade in sequence.
-  var loadDelay = 0;
-
   var observer = new IntersectionObserver(function (entries) {
     for (var i = 0; i < entries.length; i++) {
       if (entries[i].isIntersecting) {
         var el = entries[i].target;
         observer.unobserve(el);
-
-        // If page just loaded and element is already visible, stagger with delay
-        if (loadDelay < 1500) {
-          (function (target, delay) {
-            setTimeout(function () { target.classList.add('oz-visible'); }, delay);
-          })(el, loadDelay);
-          loadDelay += 200;
-        } else {
-          // Scrolled into view later — animate immediately
-          el.classList.add('oz-visible');
-        }
+        // Stagger based on block index for blocks visible at page load
+        var idx = parseInt(el.getAttribute('data-reveal-index') || '0', 10);
+        var delay = idx * 150;
+        (function (target, d) {
+          setTimeout(function () { target.classList.add('oz-visible'); }, d);
+        })(el, delay);
       }
     }
-  }, { threshold: 0.1 });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
   for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
 }
