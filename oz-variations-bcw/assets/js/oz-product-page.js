@@ -748,6 +748,13 @@
   }
 
   // src/js/navigation.js
+  var _decodeEl = null;
+  function decodeEntities(str) {
+    if (!str || str.indexOf("&") === -1) return str;
+    if (!_decodeEl) _decodeEl = document.createElement("textarea");
+    _decodeEl.innerHTML = str;
+    return _decodeEl.value;
+  }
   var _pushTimer = null;
   var _hasPushed = false;
   var _imgTimer = null;
@@ -776,11 +783,11 @@
     P.productId = productId;
     P.currentColor = v.color;
     P.basePrice = parseFloat(v.price) || P.basePrice;
-    P.productName = v.title;
+    P.productName = decodeEntities(v.title);
     P.isBase = isInitialProduct && _initialIsBase;
     swapMainImage(v.fullImage);
     rebuildGalleryThumbs(v);
-    var strippedTitle = stripColor(v.title, v.color);
+    var strippedTitle = stripColor(decodeEntities(v.title), v.color);
     if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
     swapDescription(v.description);
     toggleStickyLink("sectionInfo", !!v.description);
@@ -805,7 +812,7 @@
       var spid = parseInt(swatches[i].getAttribute("data-product-id"), 10);
       swatches[i].classList.toggle("selected", spid === productId);
     }
-    updateSeoMeta(v.url, v.title);
+    updateSeoMeta(v.url, decodeEntities(v.title));
     if (!isPopstate) {
       if (!_hasPushed) {
         history.pushState({ productId }, "", v.url);

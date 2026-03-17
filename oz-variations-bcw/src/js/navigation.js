@@ -16,6 +16,15 @@
 import { P, fmt } from './state.js';
 import { DOM } from './dom.js';
 
+// Decode HTML entities in strings from wp_localize_script (e.g. &amp; → &)
+var _decodeEl = null;
+function decodeEntities(str) {
+  if (!str || str.indexOf('&') === -1) return str;
+  if (!_decodeEl) _decodeEl = document.createElement('textarea');
+  _decodeEl.innerHTML = str;
+  return _decodeEl.value;
+}
+
 // Debounce timer for pushState — only the final click in a rapid series
 // creates a browser history entry
 var _pushTimer = null;
@@ -96,7 +105,7 @@ function applyVariant(productId, isPopstate) {
   P.productId = productId;
   P.currentColor = v.color;
   P.basePrice = parseFloat(v.price) || P.basePrice;
-  P.productName = v.title;
+  P.productName = decodeEntities(v.title);
   P.isBase = (isInitialProduct && _initialIsBase);
 
   // 2. Swap main product image with crossfade
@@ -106,7 +115,7 @@ function applyVariant(productId, isPopstate) {
   rebuildGalleryThumbs(v);
 
   // 4. Update product title (strip color suffix from full WC name)
-  var strippedTitle = stripColor(v.title, v.color);
+  var strippedTitle = stripColor(decodeEntities(v.title), v.color);
   if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
 
   // 5. Swap product description, toggle "Productinfo" sticky link
@@ -145,7 +154,7 @@ function applyVariant(productId, isPopstate) {
   }
 
   // 10. SEO meta tags
-  updateSeoMeta(v.url, v.title);
+  updateSeoMeta(v.url, decodeEntities(v.title));
 
   // 11. URL update — pushState for first click, replaceState for rapid follow-ups
   if (!isPopstate) {
