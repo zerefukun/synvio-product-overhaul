@@ -1758,14 +1758,25 @@
         for (var i = 0; i < reveals.length; i++) reveals[i].classList.add("oz-visible");
         return;
       }
+      var loadDelay = 0;
       var observer = new IntersectionObserver(function(entries) {
         for (var i2 = 0; i2 < entries.length; i2++) {
           if (entries[i2].isIntersecting) {
-            entries[i2].target.classList.add("oz-visible");
-            observer.unobserve(entries[i2].target);
+            var el = entries[i2].target;
+            observer.unobserve(el);
+            if (loadDelay < 1500) {
+              (function(target, delay) {
+                setTimeout(function() {
+                  target.classList.add("oz-visible");
+                }, delay);
+              })(el, loadDelay);
+              loadDelay += 200;
+            } else {
+              el.classList.add("oz-visible");
+            }
           }
         }
-      }, { threshold: 0.15 });
+      }, { threshold: 0.1 });
       for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
     }, adaptBreadcrumbColor = function(img, breadcrumb) {
       if (!img.naturalWidth) return;

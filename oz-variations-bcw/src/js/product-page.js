@@ -1375,20 +1375,35 @@ function setupScrollReveal() {
   var reveals = document.querySelectorAll('.oz-reveal');
   if (!reveals.length) return;
 
-  // Respect reduced motion preference — make everything visible immediately
+  // Respect reduced motion preference
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     for (var i = 0; i < reveals.length; i++) reveals[i].classList.add('oz-visible');
     return;
   }
 
+  // Stagger blocks that are already in the viewport at load time.
+  // Each gets an incremental delay so they cascade in sequence.
+  var loadDelay = 0;
+
   var observer = new IntersectionObserver(function (entries) {
     for (var i = 0; i < entries.length; i++) {
       if (entries[i].isIntersecting) {
-        entries[i].target.classList.add('oz-visible');
-        observer.unobserve(entries[i].target);
+        var el = entries[i].target;
+        observer.unobserve(el);
+
+        // If page just loaded and element is already visible, stagger with delay
+        if (loadDelay < 1500) {
+          (function (target, delay) {
+            setTimeout(function () { target.classList.add('oz-visible'); }, delay);
+          })(el, loadDelay);
+          loadDelay += 200;
+        } else {
+          // Scrolled into view later — animate immediately
+          el.classList.add('oz-visible');
+        }
       }
     }
-  }, { threshold: 0.15 });
+  }, { threshold: 0.1 });
 
   for (var j = 0; j < reveals.length; j++) observer.observe(reveals[j]);
 }
