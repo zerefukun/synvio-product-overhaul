@@ -205,8 +205,17 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 /* ═══ COMPARISON TABLE ═════════════════════════════════════ */
 
-/* Toggle summary — reuses section title styling with +/- icon */
-.oz-section-title--toggle {
+/* Toggle summary — must re-declare visual properties because <summary>
+   has user-agent styles that can override the .oz-section-title class */
+summary.oz-section-title--toggle {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  letter-spacing: 0.2px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--oz-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
