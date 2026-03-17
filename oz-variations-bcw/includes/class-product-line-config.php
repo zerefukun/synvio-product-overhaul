@@ -767,7 +767,7 @@ class OZ_Product_Line_Config {
         ],
         'easyline' => [
             ['image_id' => 0, 'title' => 'Levendige tekening, uniek karakter', 'subtitle' => '2 emmers: grof + fijn', 'text' => "De eerste laag grof en de tweede laag fijn — daardoor zie je de structuur van de eerste laag door de tweede heen. Het resultaat: een levendige, organische tekening die elke wand en vloer karakter geeft."],
-            ['image_id' => 0, 'title' => 'Kant-en-klaar in 36 kleuren', 'subtitle' => 'Direct aan de slag', 'text' => "Kies je kleur, bestel het pakket en ga aan de slag. Easyline wordt geleverd als compleet 5 m² pakket met grof en fijn materiaal. Inclusief primer en 1 laag PU standaard."],
+            ['image_id' => 0, 'title' => 'Kant-en-klaar in 36 kleuren', 'subtitle' => 'Direct aan de slag', 'text' => "Kies je kleur, bestel het pakket en ga aan de slag. Easyline wordt geleverd als compleet 5 m² pakket met grof en fijn materiaal. Inclusief primer en 1 laag PU standaard. Wilt u meer controle? Selecteer zelf uw opties — kies het aantal PU lagen en het type primer dat bij uw project past."],
             ['image_id' => 0, 'title' => 'Spelen met textuur', 'subtitle' => 'Van subtiel tot expressief', 'text' => "Door harder en langer te schuren verbrand je als het ware de cire, waardoor de tekening donkerder en expressiever wordt. Elke wand wordt een uniek kunstwerk — geen twee oppervlakken zijn hetzelfde."],
         ],
         'metallic' => [
