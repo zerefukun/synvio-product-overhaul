@@ -53,16 +53,16 @@ class OZ_Product_Line_Config {
             [0, 'Geen Beschermlaag',  false],
         ],
         'easyline' => [
-            [1, '1 toplaag', true],
+            [0, 'Geen PU',    true],
+            [1, '1 toplaag',  false],
             [2, '2 toplagen', false],
             [3, '3 toplagen', false],
-            [0, 'Geen PU',    false],
         ],
         'microcement' => [
+            [0, 'Geen Beschermlaag',  true],
             [1, '1 toplaag',          false],
             [2, '2 toplagen',         false],
             [3, '3 toplagen',         false],
-            [0, 'Geen Beschermlaag',  false],
         ],
         'metallic' => [
             [0, 'Geen PU',     true],  // default = yes in WAPO
