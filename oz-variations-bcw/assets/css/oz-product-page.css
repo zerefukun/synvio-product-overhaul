@@ -669,16 +669,11 @@ summary.oz-section-title--toggle {
   margin-right: calc(-50vw + 50%);
   position: relative;
   overflow: hidden;
+  background: var(--oz-bg-warm, #F5F4F0);
 }
 .oz-showcase-block {
   padding: 48px 0;
   position: relative;
-}
-.oz-showcase-block:nth-child(odd) {
-  background: var(--oz-bg-warm, #F5F4F0);
-}
-.oz-showcase-block:nth-child(even) {
-  background: #fff;
 }
 .oz-showcase-block__inner {
   max-width: 1060px;
@@ -688,8 +683,6 @@ summary.oz-section-title--toggle {
   grid-template-columns: 1.1fr 0.9fr;
   gap: 48px;
   align-items: center;
-  position: relative;
-  z-index: 1;
 }
 .oz-showcase-block--reverse .oz-showcase-block__inner {
   grid-template-columns: 0.9fr 1.1fr;
