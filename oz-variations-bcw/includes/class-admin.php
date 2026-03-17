@@ -475,6 +475,97 @@ class OZ_BCW_Admin {
             });
         })();
         </script>
+
+        <!-- ═══ SHOWCASE SECTIES ═══ -->
+        <div class="oz-meta-section">
+            <h4>Showcase Secties</h4>
+            <p class="description">Secties met afbeelding + tekst onder de productpagina. Stel in op het hoofdproduct — varianten erven deze automatisch.</p>
+            <?php
+            $showcase = get_post_meta($post->ID, '_oz_showcase_sections', true);
+            if (!is_array($showcase)) $showcase = [];
+            ?>
+            <div id="oz-showcase-sections">
+                <?php foreach ($showcase as $i => $section) :
+                    $thumb = !empty($section['image_id']) ? wp_get_attachment_image_url($section['image_id'], 'medium') : '';
+                ?>
+                <div class="oz-showcase-section-row" style="border:1px solid #ddd; padding:12px; margin-bottom:10px; border-radius:4px; background:#fafafa;">
+                    <div style="display:flex; gap:12px;">
+                        <div style="flex-shrink:0;">
+                            <div class="oz-showcase-img-preview" style="width:150px; height:100px; border-radius:6px; border:1px solid #ccc; overflow:hidden; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                                <?php if ($thumb) : ?>
+                                    <img src="<?php echo esc_url($thumb); ?>" style="width:100%; height:100%; object-fit:cover;">
+                                <?php else : ?>
+                                    <span style="color:#999; font-size:12px;">+ Afbeelding</span>
+                                <?php endif; ?>
+                            </div>
+                            <input type="hidden" name="oz_showcase_image_ids[]" value="<?php echo absint($section['image_id'] ?? 0); ?>">
+                        </div>
+                        <div style="flex:1; display:flex; flex-direction:column; gap:6px;">
+                            <input type="text" name="oz_showcase_titles[]" value="<?php echo esc_attr($section['title'] ?? ''); ?>" placeholder="Titel" style="width:100%; font-weight:600;">
+                            <input type="text" name="oz_showcase_subtitles[]" value="<?php echo esc_attr($section['subtitle'] ?? ''); ?>" placeholder="Subtitel (optioneel)" style="width:100%;">
+                            <textarea name="oz_showcase_texts[]" placeholder="Tekst (optioneel)" rows="2" style="width:100%;"><?php echo esc_textarea($section['text'] ?? ''); ?></textarea>
+                        </div>
+                    </div>
+                    <button type="button" class="button oz-showcase-section-remove" style="color:#a00; margin-top:8px;">Verwijderen</button>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="button" id="oz-showcase-add-section">+ Sectie toevoegen</button>
+        </div>
+
+        <script>
+        (function(){
+            var container = document.getElementById('oz-showcase-sections');
+
+            // Add new section
+            document.getElementById('oz-showcase-add-section').addEventListener('click', function() {
+                var row = document.createElement('div');
+                row.className = 'oz-showcase-section-row';
+                row.style.cssText = 'border:1px solid #ddd; padding:12px; margin-bottom:10px; border-radius:4px; background:#fafafa;';
+                row.innerHTML = '<div style="display:flex; gap:12px;">'
+                    + '<div style="flex-shrink:0;">'
+                    + '<div class="oz-showcase-img-preview" style="width:150px; height:100px; border-radius:6px; border:1px solid #ccc; overflow:hidden; background:#eee; cursor:pointer; display:flex; align-items:center; justify-content:center;"><span style="color:#999; font-size:12px;">+ Afbeelding</span></div>'
+                    + '<input type="hidden" name="oz_showcase_image_ids[]" value="0">'
+                    + '</div>'
+                    + '<div style="flex:1; display:flex; flex-direction:column; gap:6px;">'
+                    + '<input type="text" name="oz_showcase_titles[]" value="" placeholder="Titel" style="width:100%; font-weight:600;">'
+                    + '<input type="text" name="oz_showcase_subtitles[]" value="" placeholder="Subtitel (optioneel)" style="width:100%;">'
+                    + '<textarea name="oz_showcase_texts[]" placeholder="Tekst (optioneel)" rows="2" style="width:100%;"></textarea>'
+                    + '</div></div>'
+                    + '<button type="button" class="button oz-showcase-section-remove" style="color:#a00; margin-top:8px;">Verwijderen</button>';
+                container.appendChild(row);
+            });
+
+            // Remove section
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains('oz-showcase-section-remove')) {
+                    e.target.closest('.oz-showcase-section-row').remove();
+                }
+            });
+
+            // Click image preview to open media library
+            container.addEventListener('click', function(e) {
+                var preview = e.target.closest('.oz-showcase-img-preview');
+                if (!preview) return;
+                var row = preview.closest('.oz-showcase-section-row');
+                var hiddenInput = row.querySelector('input[name="oz_showcase_image_ids[]"]');
+
+                var frame = wp.media({
+                    title: 'Afbeelding kiezen',
+                    multiple: false,
+                    library: { type: 'image' },
+                    button: { text: 'Selecteren' }
+                });
+                frame.on('select', function() {
+                    var att = frame.state().get('selection').first().toJSON();
+                    var url = att.sizes && att.sizes.medium ? att.sizes.medium.url : att.url;
+                    preview.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;">';
+                    hiddenInput.value = att.id;
+                });
+                frame.open();
+            });
+        })();
+        </script>
         <?php
     }
 
@@ -583,6 +674,34 @@ class OZ_BCW_Admin {
             } else {
                 delete_post_meta($faq_target, '_oz_faq');
             }
+        }
+
+        // Showcase sections — each section has image + title + subtitle + text
+        if (isset($_POST['oz_showcase_image_ids']) && is_array($_POST['oz_showcase_image_ids'])) {
+            $sections = [];
+            foreach ($_POST['oz_showcase_image_ids'] as $i => $img_id) {
+                $title    = sanitize_text_field($_POST['oz_showcase_titles'][$i] ?? '');
+                $subtitle = sanitize_text_field($_POST['oz_showcase_subtitles'][$i] ?? '');
+                $text     = sanitize_textarea_field($_POST['oz_showcase_texts'][$i] ?? '');
+                $img_id   = absint($img_id);
+
+                // Keep section if it has at least a title or an image
+                if ($title || $img_id) {
+                    $sections[] = [
+                        'image_id' => $img_id,
+                        'title'    => $title,
+                        'subtitle' => $subtitle,
+                        'text'     => $text,
+                    ];
+                }
+            }
+            if (!empty($sections)) {
+                update_post_meta($product_id, '_oz_showcase_sections', $sections);
+            } else {
+                delete_post_meta($product_id, '_oz_showcase_sections');
+            }
+        } else {
+            delete_post_meta($product_id, '_oz_showcase_sections');
         }
     }
 
