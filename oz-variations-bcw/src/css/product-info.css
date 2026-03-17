@@ -363,13 +363,6 @@ summary.oz-section-title--toggle {
   filter: blur(80px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-
-/* Fade in when the first showcase block becomes visible */
-.oz-showcase:has(.oz-visible) .oz-orb {
-  opacity: 1;
 }
 
 .oz-orb--accent {
@@ -497,8 +490,7 @@ summary.oz-section-title--toggle {
   .oz-reveal-el,
   .oz-reveal-img,
   .oz-showcase-block__img-wrap,
-  .oz-showcase-block__img-wrap img,
-  .oz-orb {
+  .oz-showcase-block__img-wrap img {
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
