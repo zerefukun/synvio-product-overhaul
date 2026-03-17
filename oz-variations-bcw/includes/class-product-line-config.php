@@ -47,16 +47,16 @@ class OZ_Product_Line_Config {
             [3, '3 Toplagen',    false],
         ],
         'all-in-one' => [
+            [0, 'Geen Beschermlaag',  true],
             [1, '1 toplaag',          false],
             [2, '2 toplagen',         false],
             [3, '3 toplagen',         false],
-            [0, 'Geen Beschermlaag',  false],
         ],
         'easyline' => [
-            [0, 'Geen PU',    true],
-            [1, '1 toplaag',  false],
+            [1, '1 toplaag', true],
             [2, '2 toplagen', false],
             [3, '3 toplagen', false],
+            [0, 'Geen PU',    false],
         ],
         'microcement' => [
             [0, 'Geen Beschermlaag',  true],
@@ -170,7 +170,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/original-kleurstalen/',
-            'cross_link'     => null,
+            'cross_link'     => ['text' => 'Ontdek ook Microcement?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -212,6 +212,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
+            'cross_link'     => ['text' => 'Op zoek naar een harder resultaat?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -253,6 +254,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
+            'cross_link'     => ['text' => 'Liever alles uit 1 emmer?', 'base_id' => 11165, 'label' => 'Bekijk All-in-One'],
             'option_order'   => ['pakket', 'color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -293,6 +295,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen-microcement-aanvragen/',
+            'cross_link'     => ['text' => 'Meer kleuren nodig?', 'base_id' => 11161, 'label' => 'Bekijk Original (50+ kleuren)'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -333,6 +336,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/velvet-kleurstalen/',
+            'cross_link'     => ['text' => 'Op zoek naar een betonlook vloer?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],  // corrected from WAPO block order
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -375,6 +379,7 @@ class OZ_Product_Line_Config {
             'has_tools'      => true,
             'kleurstalen_url'  => '/product/kleurenpakket/',
             'kleurstalen_text' => 'Kleurstalen aanvragen',
+            'cross_link'     => ['text' => 'Meer kleuren nodig?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
@@ -714,6 +719,42 @@ class OZ_Product_Line_Config {
             ],
         ],
     ];
+
+    /**
+     * Product line comparison table — "Welk product past bij mij?"
+     * Drives the comparison section on configured product pages.
+     * Data from Patrick's product knowledge email (2026-03-17).
+     */
+    private static $comparison = [
+        'columns' => [
+            ['key' => 'one_liner',  'label' => 'Kenmerk'],
+            ['key' => 'hardheid',   'label' => 'Hardheid'],
+            ['key' => 'stappen',    'label' => 'Stappen'],
+            ['key' => 'kleuren',    'label' => 'Kleuren'],
+            ['key' => 'emmers',     'label' => 'Emmers'],
+            ['key' => 'waterdicht', 'label' => 'Waterdicht'],
+        ],
+        'lines' => [
+            'original'    => ['name' => 'Original',        'one_liner' => 'Fijnste korrel, gladste resultaat',  'hardheid' => 'Hard',         'stappen' => 4, 'kleuren' => '50+', 'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer', 'hardheid' => 'Hard',         'stappen' => 4, 'kleuren' => '36',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Alles uit 1 emmer, eenvoudig',      'hardheid' => 'Minder hard',  'stappen' => 5, 'kleuren' => '36',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, levendige tekening',   'hardheid' => 'Minder hard',  'stappen' => 5, 'kleuren' => '36',  'emmers' => 2, 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'metallic'    => ['name' => 'Metallic Velvet',  'one_liner' => 'Luxe parelmoer/velvet effect',      'hardheid' => 'Minder hard',  'stappen' => 4, 'kleuren' => '12',  'emmers' => 1, 'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen wanden & meubels'],
+            'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',    'hardheid' => 'Extreem hard', 'stappen' => 4, 'kleuren' => '20',  'emmers' => 1, 'waterdicht' => 'Tot in de kern', 'note' => 'Geen PU nodig'],
+        ],
+    ];
+
+    /**
+     * Get comparison table data. Injects base_id from $lines config.
+     * @return array  ['columns' => [...], 'lines' => [...]]
+     */
+    public static function get_comparison_data() {
+        $data = self::$comparison;
+        foreach ($data['lines'] as $key => &$row) {
+            $row['base_id'] = isset(self::$lines[$key]) ? self::$lines[$key]['base_id'] : null;
+        }
+        return $data;
+    }
 
     /**
      * Get content (USPs + specs) for a generic product.
