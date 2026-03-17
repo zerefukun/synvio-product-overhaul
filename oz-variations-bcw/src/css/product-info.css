@@ -13,7 +13,7 @@
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 22px;
   font-weight: 400;
-  color: var(--oz-text-primary);
+  color: #555;
   margin-bottom: 18px;
   padding-bottom: 12px;
   border-bottom: 2px solid var(--oz-accent);
@@ -304,6 +304,77 @@ summary.oz-section-title--toggle {
 
 .oz-compare-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+
+/* ═══ SHOWCASE SECTIONS ════════════════════════════════════ */
+
+.oz-showcase {
+  margin-top: 56px;
+}
+
+.oz-showcase-section {
+  background: var(--oz-bg-warm, #F5F4F0);
+  padding: 56px 0;
+  /* Break out of page container to go full-width */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  padding-left: calc(50vw - 50%);
+  padding-right: calc(50vw - 50%);
+}
+
+/* Alternating background */
+.oz-showcase-section--alt {
+  background: #fff;
+}
+
+.oz-showcase-section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+/* Flip image/text order on alternating sections */
+.oz-showcase-section--alt .oz-showcase-section-inner {
+  direction: rtl;
+}
+
+.oz-showcase-section--alt .oz-showcase-section-inner > * {
+  direction: ltr;
+}
+
+.oz-showcase-img img {
+  width: 100%;
+  border-radius: 12px;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+}
+
+.oz-showcase-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.oz-showcase-subtitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--oz-accent);
+  margin: 0 0 12px;
+  letter-spacing: 0.3px;
+}
+
+.oz-showcase-body {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--oz-text-body);
+  margin: 0;
 }
 
 .oz-faq-answer p:last-child {
