@@ -482,7 +482,12 @@ class OZ_BCW_Admin {
             <p class="description">Secties met afbeelding + tekst onder de productpagina. Stel in op het hoofdproduct — varianten erven deze automatisch.</p>
             <?php
             $showcase = get_post_meta($post->ID, '_oz_showcase_sections', true);
-            if (!is_array($showcase)) $showcase = [];
+            if (!is_array($showcase) || empty($showcase)) {
+                // Fall back to config defaults for this product line
+                $line_info = OZ_Product_Line_Config::for_product(wc_get_product($post->ID));
+                $lk = $line_info['line_key'] ?? '';
+                $showcase = $lk ? OZ_Product_Line_Config::get_showcase_defaults($lk) : [];
+            }
             ?>
             <div id="oz-showcase-sections">
                 <?php foreach ($showcase as $i => $section) :
