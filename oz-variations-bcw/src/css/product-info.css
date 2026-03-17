@@ -317,13 +317,14 @@ summary.oz-section-title--toggle {
   /* Break out of page container to go full-width */
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
+  position: relative;
+  overflow: hidden;
 }
 
 /* ── Block layout ── */
 .oz-showcase-block {
   padding: 48px 0;
   position: relative;
-  overflow: hidden;
 }
 
 .oz-showcase-block:nth-child(odd) {
@@ -355,55 +356,36 @@ summary.oz-section-title--toggle {
   direction: ltr;
 }
 
-/* ── Gradient orbs — ambient depth ── */
+/* ── Gradient orbs — one pair for the entire showcase ── */
 .oz-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
+  filter: blur(80px);
   pointer-events: none;
   z-index: 0;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.5s ease;
 }
 
-.oz-visible .oz-orb {
+/* Fade in when the first showcase block becomes visible */
+.oz-showcase:has(.oz-visible) .oz-orb {
   opacity: 1;
 }
 
 .oz-orb--accent {
-  width: 350px;
-  height: 350px;
-  background: rgba(19, 83, 80, 0.18);
-  top: 10%;
-  right: 5%;
+  width: 400px;
+  height: 400px;
+  background: rgba(19, 83, 80, 0.14);
+  top: 5%;
+  right: 8%;
 }
 
 .oz-orb--warm {
-  width: 300px;
-  height: 300px;
-  background: rgba(196, 164, 132, 0.22);
-  bottom: 10%;
-  left: 3%;
-}
-
-/* On white backgrounds orbs stand out more — soften slightly */
-.oz-showcase-block:nth-child(even) .oz-orb--accent {
-  background: rgba(19, 83, 80, 0.12);
-}
-
-.oz-showcase-block:nth-child(even) .oz-orb--warm {
-  background: rgba(196, 164, 132, 0.15);
-}
-
-/* Flip orb positions on reverse blocks */
-.oz-showcase-block--reverse .oz-orb--accent {
-  right: auto;
-  left: 10%;
-}
-
-.oz-showcase-block--reverse .oz-orb--warm {
-  left: auto;
-  right: 5%;
+  width: 350px;
+  height: 350px;
+  background: rgba(196, 164, 132, 0.16);
+  bottom: 8%;
+  left: 5%;
 }
 
 /* ── Image with clip-path reveal ── */

@@ -667,11 +667,12 @@ summary.oz-section-title--toggle {
   margin-top: 40px;
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
+  position: relative;
+  overflow: hidden;
 }
 .oz-showcase-block {
   padding: 48px 0;
   position: relative;
-  overflow: hidden;
 }
 .oz-showcase-block:nth-child(odd) {
   background: var(--oz-bg-warm, #F5F4F0);
@@ -700,42 +701,28 @@ summary.oz-section-title--toggle {
 .oz-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
+  filter: blur(80px);
   pointer-events: none;
   z-index: 0;
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1.5s ease;
 }
-.oz-visible .oz-orb {
+.oz-showcase:has(.oz-visible) .oz-orb {
   opacity: 1;
 }
 .oz-orb--accent {
-  width: 350px;
-  height: 350px;
-  background: rgba(19, 83, 80, 0.18);
-  top: 10%;
-  right: 5%;
+  width: 400px;
+  height: 400px;
+  background: rgba(19, 83, 80, 0.14);
+  top: 5%;
+  right: 8%;
 }
 .oz-orb--warm {
-  width: 300px;
-  height: 300px;
-  background: rgba(196, 164, 132, 0.22);
-  bottom: 10%;
-  left: 3%;
-}
-.oz-showcase-block:nth-child(even) .oz-orb--accent {
-  background: rgba(19, 83, 80, 0.12);
-}
-.oz-showcase-block:nth-child(even) .oz-orb--warm {
-  background: rgba(196, 164, 132, 0.15);
-}
-.oz-showcase-block--reverse .oz-orb--accent {
-  right: auto;
-  left: 10%;
-}
-.oz-showcase-block--reverse .oz-orb--warm {
-  left: auto;
-  right: 5%;
+  width: 350px;
+  height: 350px;
+  background: rgba(196, 164, 132, 0.16);
+  bottom: 8%;
+  left: 5%;
 }
 .oz-showcase-block__img-wrap {
   border-radius: 10px;
@@ -2924,12 +2911,12 @@ body.oz-hide-banners #CybotCookiebotDialogBodyUnderlay {
     font-size: 13px;
   }
   .oz-orb--accent {
-    width: 180px;
-    height: 180px;
+    width: 220px;
+    height: 220px;
   }
   .oz-orb--warm {
-    width: 150px;
-    height: 150px;
+    width: 200px;
+    height: 200px;
   }
   body.oz-has-sticky {
     padding-bottom: 100px;

@@ -769,6 +769,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       if (!empty($showcase_sections)) :
   ?>
   <div class="oz-showcase">
+    <!-- Ambient gradient orbs — one pair for the entire showcase section -->
+    <div class="oz-orb oz-orb--accent" aria-hidden="true"></div>
+    <div class="oz-orb oz-orb--warm" aria-hidden="true"></div>
     <?php foreach ($showcase_sections as $si => $section) :
         $img_url = !empty($section['image_id'])
             ? wp_get_attachment_image_url($section['image_id'], 'full')
@@ -778,9 +781,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         $reverse = ($si % 2 !== 0);
     ?>
     <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal" data-reveal-index="<?php echo $si; ?>">
-      <!-- Ambient gradient orbs -->
-      <div class="oz-orb oz-orb--accent" aria-hidden="true"></div>
-      <div class="oz-orb oz-orb--warm" aria-hidden="true"></div>
       <div class="oz-showcase-block__inner">
         <?php if ($img_url) : ?>
         <div class="oz-showcase-block__media">

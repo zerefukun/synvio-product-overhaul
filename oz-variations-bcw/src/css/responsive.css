@@ -142,8 +142,8 @@
   }
 
   /* Smaller orbs on mobile */
-  .oz-orb--accent { width: 180px; height: 180px; }
-  .oz-orb--warm { width: 150px; height: 150px; }
+  .oz-orb--accent { width: 220px; height: 220px; }
+  .oz-orb--warm { width: 200px; height: 200px; }
 
   body.oz-has-sticky {
     padding-bottom: 100px;
