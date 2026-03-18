@@ -739,7 +739,7 @@ class OZ_Product_Line_Config {
             'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer',      'hardheid' => 'Harder',       'stappen' => '4 stappen', 'kleuren' => '36',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
             'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Drukkere tekening door langer te schuren', 'hardheid' => 'Hard',         'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
             'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, drukkere tekening',          'hardheid' => 'Hard',         'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '2 emmers', 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'metallic'    => ['name' => 'Metallic Velvet', 'one_liner' => 'Luxe parelmoer/velvet effect',             'hardheid' => 'Minder hard',  'stappen' => '4 stappen', 'kleuren' => '12',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen decoratief (niet voor natte cellen)'],
+            'metallic'    => ['name' => 'Metallic Velvet', 'one_liner' => 'Luxe parelmoer/velvet effect',             'hardheid' => 'Minder hard',  'stappen' => '4 stappen', 'kleuren' => '12',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen decoratief voor wanden'],
             'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',           'hardheid' => 'Extreem hard', 'stappen' => '4 stappen', 'kleuren' => '20',  'emmers' => '1 emmer',  'waterdicht' => 'Tot in de kern', 'note' => null],
         ],
     ];
