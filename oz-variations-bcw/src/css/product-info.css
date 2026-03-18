@@ -18,7 +18,7 @@
   border-bottom: 1px solid var(--oz-border-light);
 }
 
-.oz-tab {
+.oz-product-page .oz-tab {
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 16px;
   font-weight: 400;
@@ -26,17 +26,19 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
+  border-radius: 0;
   padding: 10px 16px;
+  margin-bottom: -1px;
   cursor: pointer;
   transition: color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
   white-space: nowrap;
 }
 
-.oz-tab:hover {
+.oz-product-page .oz-tab:hover {
   color: #555;
 }
 
-.oz-tab.active {
+.oz-product-page .oz-tab.active {
   color: #555;
   border-bottom-color: var(--oz-accent);
 }
@@ -253,35 +255,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 
 /* ═══ COMPARISON TABLE ═════════════════════════════════════ */
-
-/* Toggle summary — layout wrapper only; the inner .oz-section-title span
-   carries the visual styling (font, color, accent border at text width) */
-summary.oz-section-title--toggle {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
-}
-
-.oz-compare-details summary {
-  list-style: none;
-}
-
-.oz-compare-details summary::-webkit-details-marker {
-  display: none;
-}
-
-.oz-toggle-icon::after {
-  content: '+';
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--oz-text-muted);
-}
-
-.oz-compare-details[open] .oz-toggle-icon::after {
-  content: '\2212';
-}
 
 /* Horizontal scroll wrapper for mobile */
 .oz-compare-scroll {

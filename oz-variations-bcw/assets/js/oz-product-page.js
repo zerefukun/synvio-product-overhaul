@@ -835,7 +835,20 @@
     var tab = document.querySelector('.oz-tab[data-tab="info"]');
     if (!html) {
       if (panel) panel.style.display = "none";
-      if (tab) tab.style.display = "none";
+      if (tab) {
+        var wasActive = tab.classList.contains("active");
+        tab.style.display = "none";
+        if (wasActive) {
+          tab.classList.remove("active");
+          if (panel) panel.classList.remove("active");
+          var nextTab = document.querySelector('.oz-tab:not([style*="display: none"])');
+          if (nextTab) {
+            nextTab.classList.add("active");
+            var nextPanel = document.querySelector('.oz-tab-panel[data-tab="' + nextTab.getAttribute("data-tab") + '"]');
+            if (nextPanel) nextPanel.classList.add("active");
+          }
+        }
+      }
       return;
     }
     if (panel) panel.style.display = "";

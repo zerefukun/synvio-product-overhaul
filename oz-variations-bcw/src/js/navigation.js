@@ -202,7 +202,21 @@ function swapDescription(html) {
   if (!html) {
     // No description for this variant — hide the tab and panel
     if (panel) panel.style.display = 'none';
-    if (tab) tab.style.display = 'none';
+    if (tab) {
+      var wasActive = tab.classList.contains('active');
+      tab.style.display = 'none';
+      // If info was the active tab, activate the next visible one
+      if (wasActive) {
+        tab.classList.remove('active');
+        if (panel) panel.classList.remove('active');
+        var nextTab = document.querySelector('.oz-tab:not([style*="display: none"])');
+        if (nextTab) {
+          nextTab.classList.add('active');
+          var nextPanel = document.querySelector('.oz-tab-panel[data-tab="' + nextTab.getAttribute('data-tab') + '"]');
+          if (nextPanel) nextPanel.classList.add('active');
+        }
+      }
+    }
     return;
   }
 
@@ -248,14 +262,6 @@ function updateSaleDisplay(v) {
     // Not on sale — hide strikethrough
     if (del) del.style.display = 'none';
   }
-}
-
-/**
- * Show or hide a desktop sticky nav link by its data-scroll target.
- */
-function toggleStickyLink(sectionId, show) {
-  var link = document.querySelector('.oz-sticky-d-link[data-scroll="' + sectionId + '"]');
-  if (link) link.style.display = show ? '' : 'none';
 }
 
 /**

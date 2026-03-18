@@ -180,20 +180,20 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <!-- Tabbed info sections: Productinformatie | Specificaties | Vergelijken -->
       <?php if ($has_description || $has_specs || $has_compare) : ?>
       <div class="oz-tabs oz-product-info-section" id="ozTabs">
-        <div class="oz-tabs-bar" role="tablist">
+        <div class="oz-tabs-bar">
           <?php if ($has_description) : ?>
-            <button class="oz-tab active" data-tab="info" role="tab">Productinformatie</button>
+            <button class="oz-tab active" data-tab="info">Productinformatie</button>
           <?php endif; ?>
           <?php if ($has_specs) : ?>
-            <button class="oz-tab<?php echo !$has_description ? ' active' : ''; ?>" data-tab="specs" role="tab">Specificaties</button>
+            <button class="oz-tab<?php echo !$has_description ? ' active' : ''; ?>" data-tab="specs">Specificaties</button>
           <?php endif; ?>
           <?php if ($has_compare) : ?>
-            <button class="oz-tab<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" data-tab="compare" role="tab">Vergelijken</button>
+            <button class="oz-tab<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" data-tab="compare">Vergelijken</button>
           <?php endif; ?>
         </div>
 
         <?php if ($has_description) : ?>
-        <div class="oz-tab-panel active" id="tabInfo" data-tab="info" role="tabpanel">
+        <div class="oz-tab-panel active" id="tabInfo" data-tab="info">
           <div class="oz-description-wrapper">
             <div class="oz-description-content" id="descContent">
               <?php echo apply_filters('the_content', $description); ?>
@@ -204,7 +204,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <?php endif; ?>
 
         <?php if ($has_specs) : ?>
-        <div class="oz-tab-panel<?php echo !$has_description ? ' active' : ''; ?>" id="tabSpecs" data-tab="specs" role="tabpanel">
+        <div class="oz-tab-panel<?php echo !$has_description ? ' active' : ''; ?>" id="tabSpecs" data-tab="specs">
           <table class="oz-specs-table">
             <tbody>
               <?php foreach ($oz_specs as $spec_key => $spec_val) : ?>
@@ -219,7 +219,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <?php endif; ?>
 
         <?php if ($has_compare) : ?>
-        <div class="oz-tab-panel<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" id="tabCompare" data-tab="compare" role="tabpanel">
+        <div class="oz-tab-panel<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" id="tabCompare" data-tab="compare">
           <div class="oz-compare-scroll">
             <table class="oz-compare-table">
               <thead>
