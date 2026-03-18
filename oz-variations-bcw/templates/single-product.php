@@ -525,7 +525,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                     <button class="oz-info-btn" data-info-target="pu-info">i</button>
                   </div>
                   <div class="oz-info-tooltip" id="pu-info">
-                    PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.
+                    <?php if ($line_key === 'lavasteen') : ?>
+                      De UV-vriendelijke PU topcoat heeft een vullend vermogen. Meerdere PU toplagen zorgen ervoor dat het oppervlakte makkelijker schoon te maken is.
+                    <?php else : ?>
+                      PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.
+                    <?php endif; ?>
                   </div>
                   <div class="oz-option-labels">
                     <?php foreach ($pu_options as $opt) : ?>
