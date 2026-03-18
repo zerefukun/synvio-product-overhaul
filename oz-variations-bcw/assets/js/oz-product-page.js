@@ -822,6 +822,10 @@
         _hasPushed = false;
       }, 300);
     }
+    var editLink = document.querySelector("#wp-admin-bar-edit a");
+    if (editLink) {
+      editLink.href = editLink.href.replace(/post=\d+/, "post=" + productId);
+    }
     if (_onAfterNavigate) _onAfterNavigate();
     return true;
   }

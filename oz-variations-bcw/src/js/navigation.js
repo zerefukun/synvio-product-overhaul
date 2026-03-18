@@ -174,7 +174,13 @@ function applyVariant(productId, isPopstate) {
     }, 300);
   }
 
-  // 12. Notify product-page.js to recalculate prices, cart state, etc.
+  // 12. Update WP admin bar "Edit Product" link to point to current variant
+  var editLink = document.querySelector('#wp-admin-bar-edit a');
+  if (editLink) {
+    editLink.href = editLink.href.replace(/post=\d+/, 'post=' + productId);
+  }
+
+  // 13. Notify product-page.js to recalculate prices, cart state, etc.
   if (_onAfterNavigate) _onAfterNavigate();
 
   return true;
