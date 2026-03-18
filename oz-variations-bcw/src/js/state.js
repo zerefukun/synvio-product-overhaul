@@ -359,12 +359,9 @@ export function validateCartState(config, state) {
   if (config.isBase && state.colorMode !== 'ral_ncs') {
     return 'Kies eerst een kleur om te bestellen.';
   }
-  // RAL/NCS validation
+  // Custom color — must fill in something, any code accepted
   if (state.colorMode === 'ral_ncs') {
-    if (!state.customColor) return 'Vul een RAL of NCS kleurcode in.';
-    if (!validateRal(state.customColor) && !validateNcs(state.customColor)) {
-      return 'Ongeldige RAL of NCS kleurcode.';
-    }
+    if (!state.customColor) return 'Vul een kleurcode in.';
   }
   // Static/shared color validation — must pick a color before adding to cart
   if (config.hasStaticColors && state.colorMode === 'swatch' && !state.selectedColor) {

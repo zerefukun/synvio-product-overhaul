@@ -461,17 +461,16 @@ function buildColorModeUI() {
     html += '</div>';
   }
 
-  // Custom color input with NCS prefix and info box (matches reference design)
+  // Custom color input — accepts any color code, advises RAL/NCS
   html += '<div class="oz-custom-color-wrap' + (P.ralNcsOnly ? ' visible' : '') + '">';
   html += '<div class="oz-color-input-row">';
-  html += '<span class="oz-color-prefix" id="colorInputPrefix">NCS S</span>';
   html += '<input type="text" class="oz-custom-color-input" id="customColorInput" ';
-  html += 'placeholder="Bijv. RAL 7016">';
+  html += 'placeholder="Bijv. RAL 7016 of NCS S 2005-Y20R">';
   html += '</div>';
-  html += '<div class="oz-custom-color-hint" id="customColorHint">Formaat: RAL 7016</div>';
+  html += '<div class="oz-custom-color-hint" id="customColorHint"></div>';
   html += '<div class="oz-custom-color-info">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>';
-  html += '<span>Wij mengen uw kleur op maat.</span>';
+  html += '<span>Wij mengen elke kleurcode op maat. RAL en NCS aanbevolen.</span>';
   html += '</div>';
   html += '</div>';
 
@@ -867,15 +866,16 @@ function handleCustomColorInput(e) {
     return;
   }
 
-  // Check if it looks like RAL or NCS (also check the auto-formatted version)
+  // Auto-format and recognize RAL/NCS (but accept any code)
   var checkValue = autoFormatColor(value);
   var isRal = validateRal(checkValue);
   var isNcs = validateNcs(checkValue);
 
+  // Any non-empty input is valid — RAL/NCS get a recognition hint
+  input.classList.remove('invalid');
+  input.classList.add('valid');
+
   if (isRal || isNcs) {
-    input.classList.remove('invalid');
-    input.classList.add('valid');
-    // Track valid custom color entry (only on blur to avoid spamming on keystrokes)
     if (e.type === 'blur' || e.type === 'focusout') {
       analytics.trackCustomColor(checkValue, isRal ? 'ral' : 'ncs');
     }
@@ -884,11 +884,9 @@ function handleCustomColorInput(e) {
       hint.className = 'oz-custom-color-hint success';
     }
   } else {
-    input.classList.remove('valid');
-    input.classList.add('invalid');
     if (hint) {
-      hint.textContent = 'Voer een geldige RAL (4 cijfers) of NCS code in';
-      hint.className = 'oz-custom-color-hint error';
+      hint.textContent = '';
+      hint.className = 'oz-custom-color-hint';
     }
   }
 
