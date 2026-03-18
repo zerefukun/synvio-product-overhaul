@@ -1755,9 +1755,6 @@ summary.oz-section-title--toggle {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
-.oz-tool-mode:has(~ .oz-tool-items:not(:empty)) {
-  margin-bottom: 10px;
-}
 .oz-product-page .oz-tool-mode-btn {
   flex: 1;
   min-width: 0;
@@ -1798,7 +1795,7 @@ summary.oz-section-title--toggle {
   gap: 2px;
 }
 .oz-tool-list[data-list-type=individual] {
-  margin-top: 8px;
+  margin-top: 10px;
 }
 .oz-tool-list[data-list-type=individual].hidden {
   display: none;
@@ -1979,7 +1976,7 @@ summary.oz-section-title--toggle {
 .oz-set-contents.visible {
   max-height: 60px;
   opacity: 1;
-  margin-top: 2px;
+  margin-top: 10px;
   margin-bottom: 8px;
 }
 .oz-tool-extras-wrap {
