@@ -165,7 +165,7 @@
 /* Mobile USP ticker — compact auto-swiping strip replaces stacked chips */
 @media (max-width: 900px) {
   .oz-short-desc {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   .oz-usp-ticker {

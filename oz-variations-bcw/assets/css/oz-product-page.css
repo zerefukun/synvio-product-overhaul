@@ -458,15 +458,27 @@
 .oz-description-content p {
   margin-bottom: 14px;
 }
-.oz-description-content h3 {
+.oz-description-content h2,
+.oz-description-content h3,
+.oz-description-content h4,
+.oz-description-content h5,
+.oz-description-content h6 {
   font-family:
     "DM Serif Display",
     Georgia,
     serif;
-  font-size: 17px;
   font-weight: 400;
   margin: 24px 0 10px;
   color: var(--oz-text-primary);
+}
+.oz-description-content h2 {
+  font-size: 20px;
+}
+.oz-description-content h3 {
+  font-size: 17px;
+}
+.oz-description-content h4 {
+  font-size: 15px;
 }
 .oz-description-content ul {
   margin: 10px 0 14px 20px;
@@ -959,7 +971,7 @@ summary.oz-section-title--toggle {
 }
 @media (max-width: 900px) {
   .oz-short-desc {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
   .oz-usp-ticker {
     overflow: hidden;
