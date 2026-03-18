@@ -467,7 +467,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                     <button class="oz-info-btn" data-info-target="primer-info">i</button>
                   </div>
                   <div class="oz-info-tooltip" id="primer-info">
-                    Primer zorgt voor een goede hechting op de ondergrond. Kies de juiste primer op basis van je ondergrond.
+                    <?php if ($line_key === 'lavasteen') : ?>
+                      Primer zorgt voor hechting en neemt de eerste zuiging weg.
+                    <?php else : ?>
+                      Primer zorgt voor een goede hechting op de ondergrond.
+                    <?php endif; ?>
                   </div>
                   <div class="oz-option-labels">
                     <?php foreach ($primer_options as $opt) : ?>
