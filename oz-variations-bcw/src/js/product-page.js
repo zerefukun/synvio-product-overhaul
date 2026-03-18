@@ -654,6 +654,21 @@ function handleClick(e) {
     return;
   }
 
+  // Tab switching
+  var tabBtn = target.closest('.oz-tab');
+  if (tabBtn) {
+    e.preventDefault();
+    switchTab(tabBtn.getAttribute('data-tab'));
+    return;
+  }
+
+  // Sticky nav link tab activation
+  var stickyLink = target.closest('.oz-sticky-d-link[data-tab]');
+  if (stickyLink) {
+    var tabId = stickyLink.getAttribute('data-tab');
+    if (tabId) switchTab(tabId);
+  }
+
   // Read more toggle
   if (target === DOM.readMoreBtn || target.closest('#readMoreBtn')) {
     e.preventDefault();
@@ -800,6 +815,25 @@ function handleQtyInput() {
   // Analytics tracking moved to 'change' event only — see event binding below
   DOM.qtyInput.value = val;
   syncUI();
+}
+
+/**
+ * Switch active tab in the product info tabs.
+ * @param {string} tabId  Tab key: 'info', 'specs', or 'compare'
+ */
+function switchTab(tabId) {
+  var container = document.getElementById('ozTabs');
+  if (!container) return;
+
+  var tabs = container.querySelectorAll('.oz-tab');
+  var panels = container.querySelectorAll('.oz-tab-panel');
+
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab') === tabId);
+  }
+  for (var j = 0; j < panels.length; j++) {
+    panels[j].classList.toggle('active', panels[j].getAttribute('data-tab') === tabId);
+  }
 }
 
 /**

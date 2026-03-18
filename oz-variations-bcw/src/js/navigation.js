@@ -120,7 +120,7 @@ function applyVariant(productId, isPopstate) {
 
   // 5. Swap product description, toggle "Productinfo" sticky link
   swapDescription(v.description);
-  toggleStickyLink('sectionInfo', !!v.description);
+  toggleStickyLinkByTab('info', !!v.description);
 
   // 6. Update sale price strikethrough
   updateSaleDisplay(v);
@@ -196,16 +196,19 @@ function applyVariant(productId, isPopstate) {
 function swapDescription(html) {
   if (!DOM.descContent) return;
 
-  var section = document.getElementById('sectionInfo');
+  var panel = document.getElementById('tabInfo');
+  var tab = document.querySelector('.oz-tab[data-tab="info"]');
 
   if (!html) {
-    // No description for this variant — hide the section
-    if (section) section.style.display = 'none';
+    // No description for this variant — hide the tab and panel
+    if (panel) panel.style.display = 'none';
+    if (tab) tab.style.display = 'none';
     return;
   }
 
-  // Show section (may have been hidden by a previous variant with no description)
-  if (section) section.style.display = '';
+  // Show tab and panel (may have been hidden by a previous variant with no description)
+  if (panel) panel.style.display = '';
+  if (tab) tab.style.display = '';
 
   // Replace content
   DOM.descContent.innerHTML = html;
@@ -252,6 +255,14 @@ function updateSaleDisplay(v) {
  */
 function toggleStickyLink(sectionId, show) {
   var link = document.querySelector('.oz-sticky-d-link[data-scroll="' + sectionId + '"]');
+  if (link) link.style.display = show ? '' : 'none';
+}
+
+/**
+ * Show or hide a desktop sticky nav link by its data-tab attribute.
+ */
+function toggleStickyLinkByTab(tabId, show) {
+  var link = document.querySelector('.oz-sticky-d-link[data-tab="' + tabId + '"]');
   if (link) link.style.display = show ? '' : 'none';
 }
 

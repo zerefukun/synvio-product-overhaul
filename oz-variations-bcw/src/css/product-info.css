@@ -9,6 +9,48 @@
   margin-top: 56px;
 }
 
+
+/* ═══ TABBED SECTIONS ═══════════════════════════════════════ */
+
+.oz-tabs-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--oz-border-light);
+}
+
+.oz-tab {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #999;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
+  white-space: nowrap;
+}
+
+.oz-tab:hover {
+  color: #555;
+}
+
+.oz-tab.active {
+  color: #555;
+  border-bottom-color: var(--oz-accent);
+}
+
+.oz-tab-panel {
+  display: none;
+  padding-top: 20px;
+}
+
+.oz-tab-panel.active {
+  display: block;
+}
+
+
 .oz-section-title {
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 22px;

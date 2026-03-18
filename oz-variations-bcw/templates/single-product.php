@@ -137,24 +137,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
       </div>
 
-      <!-- Product description -->
+      <!-- Prepare data for tabbed sections -->
       <?php
       $description = $product->get_description();
-      if (!empty($description)) :
-      ?>
-      <div class="oz-product-info-section" id="sectionInfo">
-        <h2 class="oz-section-title">Productinformatie</h2>
-        <div class="oz-description-wrapper">
-          <div class="oz-description-content" id="descContent">
-            <?php echo apply_filters('the_content', $description); ?>
-          </div>
-          <button class="oz-read-more" id="readMoreBtn">Lees meer</button>
-        </div>
-      </div>
-      <?php endif; ?>
 
-      <!-- Per-section override flags — legacy shared override remains a fallback -->
-      <?php
+      // Per-section override flags — legacy shared override remains a fallback
       $is_line_variant = !empty($config['base_id']) && $config['base_id'] !== $product_id;
       $legacy_override = $is_line_variant && get_post_meta($product_id, '_oz_override_shared', true) === 'yes';
       $ovr_usps  = $is_line_variant && (
@@ -166,10 +153,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       $ovr_faq   = $is_line_variant && (
           get_post_meta($product_id, '_oz_override_faq', true) === 'yes' || $legacy_override
       );
-      ?>
 
-      <!-- Specifications table — shared from base product across all colors -->
-      <?php
       // Specs fallback: variant override (if enabled) → base product → line config → empty
       if ($ovr_specs) {
           $oz_specs = get_post_meta($product_id, '_oz_specs', true);
@@ -180,68 +164,98 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       if (empty($oz_specs) || !is_array($oz_specs)) {
           $oz_specs = isset($config['specs']) ? $config['specs'] : [];
       }
-      ?>
-      <?php if (!empty($oz_specs)) : ?>
-      <div class="oz-product-info-section" id="sectionSpecs">
-        <h2 class="oz-section-title">Specificaties</h2>
-        <table class="oz-specs-table">
-          <tbody>
-            <?php foreach ($oz_specs as $spec_key => $spec_val) : ?>
-              <tr>
-                <th><?php echo esc_html($spec_key); ?></th>
-                <td><?php echo esc_html($spec_val); ?></td>
-              </tr>
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-      </div>
-      <?php endif; ?>
 
-      <?php
-      // Comparison table — "Welk product past bij mij?"
-      // Shows all 6 main product lines with key differentiators.
-      // Current product row highlighted, others link to their base product.
-      if ($page_mode === 'configured_line' && $line_key && current_user_can('manage_options')) :
-          $cmp_data = OZ_Product_Line_Config::get_comparison_data();
-          $cmp_cols = $cmp_data['columns'];
+      // Comparison table data
+      $has_compare = $page_mode === 'configured_line' && $line_key && current_user_can('manage_options');
+      if ($has_compare) {
+          $cmp_data  = OZ_Product_Line_Config::get_comparison_data();
+          $cmp_cols  = $cmp_data['columns'];
           $cmp_lines = $cmp_data['lines'];
+      }
+
+      $has_description = !empty($description);
+      $has_specs       = !empty($oz_specs);
       ?>
-      <div class="oz-product-info-section" id="sectionCompare">
-        <h2 class="oz-section-title">Welke beton ciré past bij mij?</h2>
-        <div class="oz-compare-scroll">
-          <table class="oz-compare-table">
-            <thead>
-              <tr>
-                <th class="oz-compare-th-product">Product</th>
-                <?php foreach ($cmp_cols as $col) : ?>
-                  <th><?php echo esc_html($col['label']); ?></th>
-                <?php endforeach; ?>
-              </tr>
-            </thead>
+
+      <!-- Tabbed info sections: Productinformatie | Specificaties | Vergelijken -->
+      <?php if ($has_description || $has_specs || $has_compare) : ?>
+      <div class="oz-tabs oz-product-info-section" id="ozTabs">
+        <div class="oz-tabs-bar" role="tablist">
+          <?php if ($has_description) : ?>
+            <button class="oz-tab active" data-tab="info" role="tab">Productinformatie</button>
+          <?php endif; ?>
+          <?php if ($has_specs) : ?>
+            <button class="oz-tab<?php echo !$has_description ? ' active' : ''; ?>" data-tab="specs" role="tab">Specificaties</button>
+          <?php endif; ?>
+          <?php if ($has_compare) : ?>
+            <button class="oz-tab<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" data-tab="compare" role="tab">Vergelijken</button>
+          <?php endif; ?>
+        </div>
+
+        <?php if ($has_description) : ?>
+        <div class="oz-tab-panel active" id="tabInfo" data-tab="info" role="tabpanel">
+          <div class="oz-description-wrapper">
+            <div class="oz-description-content" id="descContent">
+              <?php echo apply_filters('the_content', $description); ?>
+            </div>
+            <button class="oz-read-more" id="readMoreBtn">Lees meer</button>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($has_specs) : ?>
+        <div class="oz-tab-panel<?php echo !$has_description ? ' active' : ''; ?>" id="tabSpecs" data-tab="specs" role="tabpanel">
+          <table class="oz-specs-table">
             <tbody>
-              <?php foreach ($cmp_lines as $cmp_key => $cmp) :
-                $is_current = ($cmp_key === $line_key);
-                $cmp_url = (!$is_current && $cmp['base_id']) ? get_permalink($cmp['base_id']) : '';
-              ?>
-              <tr class="<?php echo $is_current ? 'oz-compare-current' : ''; ?>">
-                <td class="oz-compare-product">
-                  <?php if ($cmp_url) : ?>
-                    <a href="<?php echo esc_url($cmp_url); ?>"><?php echo esc_html($cmp['name']); ?></a>
-                  <?php else : ?>
-                    <strong><?php echo esc_html($cmp['name']); ?></strong>
-                  <?php endif; ?>
-                  <?php if (!empty($cmp['note'])) : ?>
-                    <small class="oz-compare-note"><?php echo esc_html($cmp['note']); ?></small>
-                  <?php endif; ?>
-                </td>
-                <?php foreach ($cmp_cols as $col) : ?>
-                  <td><?php echo esc_html($cmp[$col['key']]); ?></td>
-                <?php endforeach; ?>
-              </tr>
+              <?php foreach ($oz_specs as $spec_key => $spec_val) : ?>
+                <tr>
+                  <th><?php echo esc_html($spec_key); ?></th>
+                  <td><?php echo esc_html($spec_val); ?></td>
+                </tr>
               <?php endforeach; ?>
             </tbody>
           </table>
         </div>
+        <?php endif; ?>
+
+        <?php if ($has_compare) : ?>
+        <div class="oz-tab-panel<?php echo !$has_description && !$has_specs ? ' active' : ''; ?>" id="tabCompare" data-tab="compare" role="tabpanel">
+          <div class="oz-compare-scroll">
+            <table class="oz-compare-table">
+              <thead>
+                <tr>
+                  <th class="oz-compare-th-product">Product</th>
+                  <?php foreach ($cmp_cols as $col) : ?>
+                    <th><?php echo esc_html($col['label']); ?></th>
+                  <?php endforeach; ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($cmp_lines as $cmp_key => $cmp) :
+                  $is_current = ($cmp_key === $line_key);
+                  $cmp_url = (!$is_current && $cmp['base_id']) ? get_permalink($cmp['base_id']) : '';
+                ?>
+                <tr class="<?php echo $is_current ? 'oz-compare-current' : ''; ?>">
+                  <td class="oz-compare-product">
+                    <?php if ($cmp_url) : ?>
+                      <a href="<?php echo esc_url($cmp_url); ?>"><?php echo esc_html($cmp['name']); ?></a>
+                    <?php else : ?>
+                      <strong><?php echo esc_html($cmp['name']); ?></strong>
+                    <?php endif; ?>
+                    <?php if (!empty($cmp['note'])) : ?>
+                      <small class="oz-compare-note"><?php echo esc_html($cmp['note']); ?></small>
+                    <?php endif; ?>
+                  </td>
+                  <?php foreach ($cmp_cols as $col) : ?>
+                    <td><?php echo esc_html($cmp[$col['key']]); ?></td>
+                  <?php endforeach; ?>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <?php endif; ?>
       </div>
       <?php endif; ?>
 
@@ -859,14 +873,14 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
     <!-- Left: page section nav links -->
     <div class="oz-sticky-d-nav">
-      <?php if (!empty($description)) : ?>
-        <a href="#sectionInfo" class="oz-sticky-d-link" data-scroll="sectionInfo">Productinfo</a>
+      <?php if ($has_description) : ?>
+        <a href="#ozTabs" class="oz-sticky-d-link" data-scroll="ozTabs" data-tab="info">Productinfo</a>
       <?php endif; ?>
-      <?php if (!empty($oz_specs)) : ?>
-        <a href="#sectionSpecs" class="oz-sticky-d-link" data-scroll="sectionSpecs">Specificaties</a>
+      <?php if ($has_specs) : ?>
+        <a href="#ozTabs" class="oz-sticky-d-link" data-scroll="ozTabs" data-tab="specs">Specificaties</a>
       <?php endif; ?>
-      <?php if ($page_mode === 'configured_line' && $line_key && current_user_can('manage_options')) : ?>
-        <a href="#sectionCompare" class="oz-sticky-d-link" data-scroll="sectionCompare">Vergelijken</a>
+      <?php if ($has_compare) : ?>
+        <a href="#ozTabs" class="oz-sticky-d-link" data-scroll="ozTabs" data-tab="compare">Vergelijken</a>
       <?php endif; ?>
       <?php if (!empty($oz_faq) && is_array($oz_faq)) : ?>
         <a href="#sectionFaq" class="oz-sticky-d-link" data-scroll="sectionFaq">FAQ</a>

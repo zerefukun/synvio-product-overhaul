@@ -55,6 +55,16 @@
     order: 3;
   }
 
+  .oz-tabs-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .oz-tab {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
   /* Mobile order: Gallery -> Summary -> Description */
   .oz-left-column {
     display: contents;

@@ -787,7 +787,7 @@
     var strippedTitle = stripColor(decodeEntities(v.title), v.color);
     if (DOM.productTitle) DOM.productTitle.textContent = strippedTitle;
     swapDescription(v.description);
-    toggleStickyLink("sectionInfo", !!v.description);
+    toggleStickyLinkByTab("info", !!v.description);
     updateSaleDisplay(v);
     if (DOM.selectedColorLabel) {
       DOM.selectedColorLabel.textContent = v.color || "Kies eerst uw kleur";
@@ -831,12 +831,15 @@
   }
   function swapDescription(html) {
     if (!DOM.descContent) return;
-    var section = document.getElementById("sectionInfo");
+    var panel = document.getElementById("tabInfo");
+    var tab = document.querySelector('.oz-tab[data-tab="info"]');
     if (!html) {
-      if (section) section.style.display = "none";
+      if (panel) panel.style.display = "none";
+      if (tab) tab.style.display = "none";
       return;
     }
-    if (section) section.style.display = "";
+    if (panel) panel.style.display = "";
+    if (tab) tab.style.display = "";
     DOM.descContent.innerHTML = html;
     DOM.descContent.classList.remove("expanded");
     if (DOM.readMoreBtn) {
@@ -864,8 +867,8 @@
       if (del) del.style.display = "none";
     }
   }
-  function toggleStickyLink(sectionId, show2) {
-    var link = document.querySelector('.oz-sticky-d-link[data-scroll="' + sectionId + '"]');
+  function toggleStickyLinkByTab(tabId, show2) {
+    var link = document.querySelector('.oz-sticky-d-link[data-tab="' + tabId + '"]');
     if (link) link.style.display = show2 ? "" : "none";
   }
   function swapMainImage(fullImageUrl) {
@@ -1341,6 +1344,17 @@
         }
         return;
       }
+      var tabBtn = target.closest(".oz-tab");
+      if (tabBtn) {
+        e.preventDefault();
+        switchTab(tabBtn.getAttribute("data-tab"));
+        return;
+      }
+      var stickyLink = target.closest(".oz-sticky-d-link[data-tab]");
+      if (stickyLink) {
+        var tabId = stickyLink.getAttribute("data-tab");
+        if (tabId) switchTab(tabId);
+      }
       if (target === DOM.readMoreBtn || target.closest("#readMoreBtn")) {
         e.preventDefault();
         toggleReadMore();
@@ -1437,6 +1451,17 @@
       updateState({ qty: val });
       DOM.qtyInput.value = val;
       syncUI();
+    }, switchTab = function(tabId) {
+      var container = document.getElementById("ozTabs");
+      if (!container) return;
+      var tabs = container.querySelectorAll(".oz-tab");
+      var panels = container.querySelectorAll(".oz-tab-panel");
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle("active", tabs[i].getAttribute("data-tab") === tabId);
+      }
+      for (var j = 0; j < panels.length; j++) {
+        panels[j].classList.toggle("active", panels[j].getAttribute("data-tab") === tabId);
+      }
     }, toggleReadMore = function() {
       if (!DOM.descContent || !DOM.readMoreBtn) return;
       var expanded = DOM.descContent.classList.toggle("expanded");
