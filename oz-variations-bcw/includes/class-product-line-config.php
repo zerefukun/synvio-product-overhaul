@@ -212,7 +212,7 @@ class OZ_Product_Line_Config {
             'ral_ncs_only'   => false,
             'has_tools'      => true,
             'kleurstalen_url' => '/kleurstalen/',
-            'cross_link'     => ['text' => 'Op zoek naar een harder resultaat?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
+            'cross_link'     => ['text' => 'Op zoek naar een beton ciré met een rustigere tekening?', 'links' => [['base_id' => 22760, 'label' => 'Bekijk Microcement'], ['base_id' => 11161, 'label' => 'Bekijk Original']]],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],

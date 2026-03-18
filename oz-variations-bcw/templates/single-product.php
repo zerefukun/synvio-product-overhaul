@@ -328,13 +328,23 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php
       // Cross-link: suggest an alternative product line (e.g. "Liever kant & klaar? Bekijk Microcement")
       // Configured per line in class-product-line-config.php → 'cross_link' key
+      // Supports single link (base_id + label) or multiple links (links array)
       if (!empty($config['cross_link']) && current_user_can('manage_options')) :
           $cl = $config['cross_link'];
-          $cl_url = !empty($cl['base_id']) ? get_permalink($cl['base_id']) : (!empty($cl['url']) ? $cl['url'] : '#');
       ?>
         <div class="oz-cross-link">
           <span class="oz-cross-link-text"><?php echo esc_html($cl['text']); ?></span>
-          <a href="<?php echo esc_url($cl_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($cl['label']); ?> &rarr;</a>
+          <?php if (!empty($cl['links'])) : ?>
+            <?php foreach ($cl['links'] as $link) :
+              $link_url = !empty($link['base_id']) ? get_permalink($link['base_id']) : (!empty($link['url']) ? $link['url'] : '#');
+            ?>
+              <a href="<?php echo esc_url($link_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($link['label']); ?> &rarr;</a>
+            <?php endforeach; ?>
+          <?php else :
+            $cl_url = !empty($cl['base_id']) ? get_permalink($cl['base_id']) : (!empty($cl['url']) ? $cl['url'] : '#');
+          ?>
+            <a href="<?php echo esc_url($cl_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($cl['label']); ?> &rarr;</a>
+          <?php endif; ?>
         </div>
       <?php endif; ?>
 
