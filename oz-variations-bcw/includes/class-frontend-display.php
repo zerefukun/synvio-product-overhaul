@@ -276,31 +276,21 @@ class OZ_Frontend_Display {
      * Within each group, natural sort (Cement 1, Cement 2, Cement 10).
      */
     private static function sort_swatches($a, $b) {
-        // Fixed group order — add more as needed
-        $groups = ['cement' => 1, 'blue' => 2, 'nude' => 3, 'sand' => 4, 'green' => 5];
-
-        $ga = self::swatch_group($a['color'], $groups);
-        $gb = self::swatch_group($b['color'], $groups);
-
-        // Different groups → sort by group rank
-        if ($ga !== $gb) return $ga - $gb;
-
-        // Same group → natural sort by full name (Cement 1 < Cement 2)
-        return strnatcasecmp($a['color'], $b['color']);
+        // Sort by the numeric code in the color name (e.g. "Nude 1018" → 1018)
+        $na = self::swatch_number($a['color']);
+        $nb = self::swatch_number($b['color']);
+        return $na - $nb;
     }
 
     /**
-     * Get numeric group rank for a color name.
-     * Returns the group rank if the name starts with a known prefix,
-     * or 999 + name length to push unknowns to the end by length.
+     * Extract numeric code from a color name (e.g. "Stone White 1000" → 1000).
+     * Falls back to PHP_INT_MAX so colors without numbers sort last.
      */
-    private static function swatch_group($color, $groups) {
-        $lower = mb_strtolower($color);
-        foreach ($groups as $prefix => $rank) {
-            if (strpos($lower, $prefix) === 0) return $rank;
+    private static function swatch_number($color) {
+        if (preg_match('/(\d+)/', $color, $m)) {
+            return (int) $m[1];
         }
-        // Unknown group — push to end, sorted by name length
-        return 999 + mb_strlen($color);
+        return PHP_INT_MAX;
     }
 
     /**
