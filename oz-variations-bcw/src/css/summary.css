@@ -62,7 +62,7 @@
 
 /* Short description — horizontal pill chips with checkmark icons */
 .oz-short-desc {
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
 .oz-short-desc ul {
@@ -165,7 +165,7 @@
 /* Mobile USP ticker — compact auto-swiping strip replaces stacked chips */
 @media (max-width: 900px) {
   .oz-short-desc {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .oz-usp-ticker {

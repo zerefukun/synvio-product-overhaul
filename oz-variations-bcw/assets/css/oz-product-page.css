@@ -887,7 +887,7 @@ summary.oz-section-title--toggle {
   margin-left: 4px;
 }
 .oz-short-desc {
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 .oz-short-desc ul {
   list-style: none;
@@ -971,7 +971,7 @@ summary.oz-section-title--toggle {
 }
 @media (max-width: 900px) {
   .oz-short-desc {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .oz-usp-ticker {
     overflow: hidden;
