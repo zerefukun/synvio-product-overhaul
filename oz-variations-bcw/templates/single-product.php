@@ -337,7 +337,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           <?php if (!empty($cl['links'])) : ?>
             <?php foreach ($cl['links'] as $i => $link) :
               $link_url = !empty($link['base_id']) ? get_permalink($link['base_id']) : (!empty($link['url']) ? $link['url'] : '#');
-              if ($i > 0) echo '<span class="oz-cross-link-sep">|</span>';
+              if ($i > 0) echo '<span class="oz-cross-link-sep">of</span>';
             ?>
               <a href="<?php echo esc_url($link_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($link['label']); ?></a>
             <?php endforeach; ?>
