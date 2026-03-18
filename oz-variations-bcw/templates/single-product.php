@@ -207,46 +207,41 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
           $cmp_lines = $cmp_data['lines'];
       ?>
       <div class="oz-product-info-section" id="sectionCompare">
-        <details class="oz-compare-details">
-          <summary class="oz-section-title--toggle">
-            <span class="oz-section-title">Welke beton ciré past bij mij?</span>
-            <span class="oz-toggle-icon"></span>
-          </summary>
-          <div class="oz-compare-scroll">
-            <table class="oz-compare-table">
-              <thead>
-                <tr>
-                  <th class="oz-compare-th-product">Product</th>
-                  <?php foreach ($cmp_cols as $col) : ?>
-                    <th><?php echo esc_html($col['label']); ?></th>
-                  <?php endforeach; ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($cmp_lines as $cmp_key => $cmp) :
-                  $is_current = ($cmp_key === $line_key);
-                  $cmp_url = (!$is_current && $cmp['base_id']) ? get_permalink($cmp['base_id']) : '';
-                ?>
-                <tr class="<?php echo $is_current ? 'oz-compare-current' : ''; ?>">
-                  <td class="oz-compare-product">
-                    <?php if ($cmp_url) : ?>
-                      <a href="<?php echo esc_url($cmp_url); ?>"><?php echo esc_html($cmp['name']); ?></a>
-                    <?php else : ?>
-                      <strong><?php echo esc_html($cmp['name']); ?></strong>
-                    <?php endif; ?>
-                    <?php if (!empty($cmp['note'])) : ?>
-                      <small class="oz-compare-note"><?php echo esc_html($cmp['note']); ?></small>
-                    <?php endif; ?>
-                  </td>
-                  <?php foreach ($cmp_cols as $col) : ?>
-                    <td><?php echo esc_html($cmp[$col['key']]); ?></td>
-                  <?php endforeach; ?>
-                </tr>
+        <h2 class="oz-section-title">Welke beton ciré past bij mij?</h2>
+        <div class="oz-compare-scroll">
+          <table class="oz-compare-table">
+            <thead>
+              <tr>
+                <th class="oz-compare-th-product">Product</th>
+                <?php foreach ($cmp_cols as $col) : ?>
+                  <th><?php echo esc_html($col['label']); ?></th>
                 <?php endforeach; ?>
-              </tbody>
-            </table>
-          </div>
-        </details>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($cmp_lines as $cmp_key => $cmp) :
+                $is_current = ($cmp_key === $line_key);
+                $cmp_url = (!$is_current && $cmp['base_id']) ? get_permalink($cmp['base_id']) : '';
+              ?>
+              <tr class="<?php echo $is_current ? 'oz-compare-current' : ''; ?>">
+                <td class="oz-compare-product">
+                  <?php if ($cmp_url) : ?>
+                    <a href="<?php echo esc_url($cmp_url); ?>"><?php echo esc_html($cmp['name']); ?></a>
+                  <?php else : ?>
+                    <strong><?php echo esc_html($cmp['name']); ?></strong>
+                  <?php endif; ?>
+                  <?php if (!empty($cmp['note'])) : ?>
+                    <small class="oz-compare-note"><?php echo esc_html($cmp['note']); ?></small>
+                  <?php endif; ?>
+                </td>
+                <?php foreach ($cmp_cols as $col) : ?>
+                  <td><?php echo esc_html($cmp[$col['key']]); ?></td>
+                <?php endforeach; ?>
+              </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
       </div>
       <?php endif; ?>
 
