@@ -434,7 +434,7 @@ button.oz-sticky-btn:active {
   cursor: pointer;
   text-align: center !important;
   transition: all 0.2s var(--oz-ease) !important;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   line-height: 1.3 !important;
 }
 
@@ -478,7 +478,7 @@ button.oz-sticky-btn:active {
   display: flex !important;
   align-items: center;
   justify-content: center;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   padding: 0 !important;
   transition: background 0.1s !important;
 }
@@ -767,7 +767,7 @@ button.oz-sheet-cta {
   border-radius: 8px;
   background: white;
   font-size: 14px;
-  font-family: "Raleway", sans-serif;
+  font-family: 'Raleway', sans-serif;
   color: var(--oz-text-primary);
   cursor: pointer;
   -webkit-appearance: none;
