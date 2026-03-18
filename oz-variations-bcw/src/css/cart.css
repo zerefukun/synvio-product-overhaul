@@ -159,7 +159,7 @@
   background: var(--oz-bg-warm);
   border-radius: 12px;
   padding: 16px 20px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   border: 1px solid var(--oz-border-light);
   font-size: 13px;
 }
@@ -227,7 +227,7 @@
 .oz-delivery-timeline {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   padding: 16px 14px;
   background: var(--oz-bg-warm);
   border-radius: 12px;
@@ -317,8 +317,7 @@
 
 /* Tight coupling with add-to-cart button — feels like one unit */
 .oz-payment-section {
-  margin-top: -12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -8,14 +8,14 @@
  */
 
 .oz-option-group {
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .oz-option-header {
   font-size: 12px;
   font-weight: 700;
   color: var(--oz-text-primary);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -196,7 +196,7 @@
   padding: 12px 16px;
   background: var(--oz-accent-light);
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   font-size: 13px;
   line-height: 1.6;
   color: var(--oz-accent);
