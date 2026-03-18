@@ -1737,6 +1737,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-product-page .oz-tool-mode-btn {
   flex: 1;
   min-width: 0;
+  white-space: nowrap;
   padding: 10px 8px;
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
