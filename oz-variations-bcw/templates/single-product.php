@@ -209,7 +209,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <div class="oz-product-info-section" id="sectionCompare">
         <details class="oz-compare-details">
           <summary class="oz-section-title--toggle">
-            <span class="oz-section-title">Welk product past bij mij?</span>
+            <span class="oz-section-title">Welke beton ciré past bij mij?</span>
             <span class="oz-toggle-icon"></span>
           </summary>
           <div class="oz-compare-scroll">
