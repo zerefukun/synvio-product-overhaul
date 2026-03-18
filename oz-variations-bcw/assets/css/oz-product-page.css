@@ -922,6 +922,10 @@ summary.oz-section-title--toggle {
 .oz-cross-link-btn:hover {
   color: var(--oz-accent-hover);
 }
+.oz-cross-link-sep {
+  margin: 0 4px;
+  color: var(--oz-text-muted);
+}
 .oz-product-short-desc {
   margin-top: 28px;
   margin-bottom: 20px;

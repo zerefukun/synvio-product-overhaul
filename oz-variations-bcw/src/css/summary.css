@@ -120,6 +120,11 @@
   color: var(--oz-accent-hover);
 }
 
+.oz-cross-link-sep {
+  margin: 0 4px;
+  color: var(--oz-text-muted);
+}
+
 /* WC short description — rendered as regular text block (not USP pills) */
 .oz-product-short-desc {
   margin-top: 28px;

@@ -335,10 +335,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <div class="oz-cross-link">
           <span class="oz-cross-link-text"><?php echo esc_html($cl['text']); ?></span>
           <?php if (!empty($cl['links'])) : ?>
-            <?php foreach ($cl['links'] as $link) :
+            <?php foreach ($cl['links'] as $i => $link) :
               $link_url = !empty($link['base_id']) ? get_permalink($link['base_id']) : (!empty($link['url']) ? $link['url'] : '#');
+              if ($i > 0) echo '<span class="oz-cross-link-sep">|</span>';
             ?>
-              <a href="<?php echo esc_url($link_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($link['label']); ?> &rarr;</a>
+              <a href="<?php echo esc_url($link_url); ?>" class="oz-cross-link-btn"><?php echo esc_html($link['label']); ?></a>
             <?php endforeach; ?>
           <?php else :
             $cl_url = !empty($cl['base_id']) ? get_permalink($cl['base_id']) : (!empty($cl['url']) ? $cl['url'] : '#');
