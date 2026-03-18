@@ -276,10 +276,19 @@ class OZ_Frontend_Display {
      * Within each group, natural sort (Cement 1, Cement 2, Cement 10).
      */
     private static function sort_swatches($a, $b) {
-        // Sort by the numeric code in the color name (e.g. "Nude 1018" → 1018)
+        // Original line has 4-digit codes (1000+) — sort numerically.
+        // Other lines have names like "Sand 1, Sand 2" — natural sort by name.
         $na = self::swatch_number($a['color']);
         $nb = self::swatch_number($b['color']);
-        return $na - $nb;
+
+        $a_has_code = ($na >= 1000 && $na < PHP_INT_MAX);
+        $b_has_code = ($nb >= 1000 && $nb < PHP_INT_MAX);
+
+        if ($a_has_code && $b_has_code) {
+            return $na - $nb;
+        }
+
+        return strnatcasecmp($a['color'], $b['color']);
     }
 
     /**
