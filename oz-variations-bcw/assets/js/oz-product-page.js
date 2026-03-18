@@ -188,7 +188,7 @@
   function validateNcs(code) {
     var clean = code.trim().replace(/\s+/g, "").toUpperCase();
     clean = clean.replace(/^NCS/, "").replace(/^S/, "");
-    return /^\d{4}-?[A-Z]\d{2}[A-Z]$/.test(clean);
+    return /^\d{4}-?([A-Z](\d{2}[A-Z])?)$/.test(clean);
   }
   function hasAnyTool(toolMode, tools, toolConfig) {
     if (!toolConfig) return false;
@@ -1445,7 +1445,7 @@
       var s = raw.trim().replace(/\s+/g, " ");
       var core = s.replace(/^(RAL|NCS)\s*/i, "").replace(/^S\s*/i, "").trim();
       if (/^\d{4}$/.test(core)) return "RAL " + core;
-      var ncsMatch = core.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+      var ncsMatch = core.match(/^(\d{4})-?([A-Za-z](?:\d{2}[A-Za-z])?)$/);
       if (ncsMatch) return "NCS S " + ncsMatch[1] + "-" + ncsMatch[2].toUpperCase();
       return raw;
     }, handleCustomColorInput = function(e) {

@@ -315,8 +315,8 @@ export function validateNcs(code) {
   // Collapse whitespace and strip optional NCS/S prefix
   var clean = code.trim().replace(/\s+/g, '').toUpperCase();
   clean = clean.replace(/^NCS/, '').replace(/^S/, '');
-  // Must be 4 digits + optional dash + letter + 2 digits + letter
-  return /^\d{4}-?[A-Z]\d{2}[A-Z]$/.test(clean);
+  // 4 digits + dash + hue: single letter (B, N, G, R, Y) or letter-digits-letter (Y20R)
+  return /^\d{4}-?([A-Z](\d{2}[A-Z])?)$/.test(clean);
 }
 
 /**

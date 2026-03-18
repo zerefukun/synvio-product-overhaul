@@ -830,9 +830,8 @@ function autoFormatColor(raw) {
   // Pure 4-digit number → RAL code (e.g. "7010", "RAL 7010", "ral  7010")
   if (/^\d{4}$/.test(core)) return 'RAL ' + core;
 
-  // NCS pattern: 4 digits + optional dash + letter + 2 digits + letter
-  // Handles: "2005-Y20R", "2005Y20R", "2005-y20r", and all prefixed variants
-  var ncsMatch = core.match(/^(\d{4})-?([A-Za-z]\d{2}[A-Za-z])$/);
+  // NCS pattern: 4 digits + hue (single letter like B/N or letter-digits-letter like Y20R)
+  var ncsMatch = core.match(/^(\d{4})-?([A-Za-z](?:\d{2}[A-Za-z])?)$/);
   if (ncsMatch) return 'NCS S ' + ncsMatch[1] + '-' + ncsMatch[2].toUpperCase();
 
   return raw;
