@@ -735,12 +735,12 @@ class OZ_Product_Line_Config {
             ['key' => 'waterdicht', 'label' => 'Waterdicht'],
         ],
         'lines' => [
-            'original'    => ['name' => 'Original',        'one_liner' => 'Fijnste korrel, gladste resultaat',  'hardheid' => 'Hard',         'stappen' => '4 stappen', 'kleuren' => '50+', 'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer', 'hardheid' => 'Hard',         'stappen' => '4 stappen', 'kleuren' => '36',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Alles uit 1 emmer, eenvoudig',      'hardheid' => 'Minder hard',  'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, levendige tekening',   'hardheid' => 'Minder hard',  'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '2 emmers', 'waterdicht' => 'Met PU toplaag', 'note' => null],
-            'metallic'    => ['name' => 'Metallic Velvet',  'one_liner' => 'Luxe parelmoer/velvet effect',      'hardheid' => 'Minder hard',  'stappen' => '4 stappen', 'kleuren' => '12',  'emmers' => '1 emmer', 'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen wanden & meubels'],
-            'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',    'hardheid' => 'Extreem hard', 'stappen' => '4 stappen', 'kleuren' => '20',  'emmers' => '1 emmer', 'waterdicht' => 'Tot in de kern', 'note' => 'Geen PU nodig'],
+            'original'    => ['name' => 'Original',        'one_liner' => 'Fijnste korrel, gladste resultaat',       'hardheid' => 'Harder',       'stappen' => '4 stappen', 'kleuren' => '50+', 'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'microcement' => ['name' => 'Microcement',     'one_liner' => 'Echt cement, ultradun, uit 1 emmer',      'hardheid' => 'Harder',       'stappen' => '4 stappen', 'kleuren' => '36',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'all-in-one'  => ['name' => 'All-in-One',      'one_liner' => 'Drukkere tekening door langer te schuren', 'hardheid' => 'Hard',         'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'easyline'    => ['name' => 'Easyline',        'one_liner' => 'Grof + fijn, drukkere tekening',          'hardheid' => 'Hard',         'stappen' => '5 stappen', 'kleuren' => '36',  'emmers' => '2 emmers', 'waterdicht' => 'Met PU toplaag', 'note' => null],
+            'metallic'    => ['name' => 'Metallic Velvet', 'one_liner' => 'Luxe parelmoer/velvet effect',             'hardheid' => 'Minder hard',  'stappen' => '4 stappen', 'kleuren' => '12',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => 'Alleen wanden & meubels'],
+            'lavasteen'   => ['name' => 'Lavasteen',       'one_liner' => 'Epoxy basis, extreem slijtvast',           'hardheid' => 'Extreem hard', 'stappen' => '4 stappen', 'kleuren' => '20',  'emmers' => '1 emmer',  'waterdicht' => 'Met PU toplaag', 'note' => null],
         ],
     ];
 
@@ -756,9 +756,9 @@ class OZ_Product_Line_Config {
             ['image_id' => 0, 'title' => 'Zelf aanbrengen in 4 stappen', 'subtitle' => 'Primer, 2 lagen pasta, PU toplaag', 'text' => "Geen ervaring nodig. Met onze kant-en-klare pasta op kleur, het juiste gereedschap en een duidelijke handleiding creëer je zelf een professioneel resultaat. Elke m² apart bestelbaar — betaal alleen wat je nodig hebt."],
         ],
         'microcement' => [
-            ['image_id' => 0, 'title' => 'Echt cement, ultradunne laag', 'subtitle' => '36 kleuren uit 1 emmer', 'text' => "Microcement is een cementgebonden coating die in slechts 1-2mm dikte een robuuste, industriële betonlook creëert. Hard, duurzaam en geschikt voor intensief gebruik op vloeren en wanden."],
+            ['image_id' => 0, 'title' => 'Echt cement, ultradunne laag', 'subtitle' => '36 kleuren uit 1 emmer', 'text' => "Microcement is een cementgebonden stuc — een dunne coating die in slechts 1-2mm dikte een robuuste, industriële betonlook creëert. Hard, duurzaam en geschikt voor intensief gebruik op vloeren en wanden."],
             ['image_id' => 0, 'title' => 'De kracht van mineraal', 'subtitle' => 'Harder dan traditionele beton cire', 'text' => "Door de cementbasis is Microcement van nature hard en krasbestendig. Ideaal voor ruimtes waar de vloer veel te verduren krijgt: keukens, badkamers, winkels en horeca. Bescherm het met PU voor een waterdichte afwerking."],
-            ['image_id' => 0, 'title' => 'Modern renoveren zonder sloopwerk', 'subtitle' => 'Direct over bestaande tegels', 'text' => "Bespaar tijd en kosten door Microcement direct over tegels, stucwerk of beton aan te brengen. Geen sloopwerk, geen rommel. In 4 stappen van oud naar nieuw — met een naadloos resultaat."],
+            ['image_id' => 0, 'title' => 'Modern renoveren zonder sloopwerk', 'subtitle' => 'Na voorbereiding over bestaande tegels', 'text' => "Tegels laten zitten, toch een naadloos resultaat. Ontvetten, een grofkorrelige primer aanbrengen en daarna in twee lagen egaliseren met Stucopaste of een andere cementgebonden stuc. Zodra de tegels niet meer zichtbaar zijn, kan de Microcement eroverheen. Geen rommel. Alleen resultaat."],
         ],
         'all-in-one' => [
             ['image_id' => 0, 'title' => 'Alles uit 1 emmer', 'subtitle' => '36 kleuren, klaar voor gebruik', 'text' => "All-in-One is de makkelijkste manier om een betonlook te creëren. Open de emmer, roer en breng aan. Geen mengen, geen gedoe. Elke emmer is op kleur gemengd en bevat alles voor 1 m²."],
@@ -775,7 +775,7 @@ class OZ_Product_Line_Config {
             ['image_id' => 0, 'title' => 'Fluweelzacht gevoel', 'subtitle' => '12 exclusieve tinten', 'text' => "Van warm Champagne tot diep Black Pearl — elke kleur is zorgvuldig samengesteld voor maximale lichtreflectie. Het resultaat voelt fluweelzacht aan en geeft elke ruimte een luxueuze uitstraling."],
         ],
         'lavasteen' => [
-            ['image_id' => 0, 'title' => 'Waterdicht tot in de kern', 'subtitle' => 'Epoxy basis, geen PU nodig', 'text' => "Anders dan alle andere beton cire producten is Lavasteen op epoxy basis. Dat betekent: waterdicht tot in de kern, zonder afhankelijk te zijn van een PU toplaag. Bij schade blijft het oppervlak beschermd."],
+            ['image_id' => 0, 'title' => 'Waterdicht tot in de kern', 'subtitle' => 'Epoxy basis, extreem slijtvast', 'text' => "Lavasteen is op epoxy basis — waterdicht tot in de kern. Een PU toplaag beschermt tegen verkleuring door licht. De combinatie van epoxy en PU maakt dit het meest duurzame product in ons assortiment."],
             ['image_id' => 0, 'title' => 'Extreem hard en slijtvast', 'subtitle' => 'Gemaakt met vulkanisch gesteente', 'text' => "De combinatie van epoxyhars en vulkanisch gesteente maakt Lavasteen het hardste product in ons assortiment. UV-bestendig, krasbestendig en bestand tegen intensief gebruik. Ideaal voor vloeren en werkbladen."],
             ['image_id' => 0, 'title' => 'De gietvloer van de toekomst', 'subtitle' => 'Naadloos, robuust, onderhoudsvriendelijk', 'text' => "Geen voegen, geen naden, geen schimmel. Lavasteen creëert een doorlopend oppervlak dat eenvoudig schoon te houden is. De 2-componenten formule hardt uit tot een steenhard, chemisch resistent geheel."],
         ],
