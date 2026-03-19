@@ -893,7 +893,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
   gap: 8px;
   flex-shrink: 0;
 }
-.oz-formula-btn {
+.oz-product-page .oz-formula-btn {
   padding: 10px 18px;
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
@@ -910,11 +910,11 @@ details.oz-faq-item[open] .oz-faq-question::after {
     box-shadow 0.25s var(--oz-ease);
   white-space: nowrap;
 }
-.oz-formula-btn:hover {
+.oz-product-page .oz-formula-btn:hover {
   border-color: var(--oz-label-hover-border);
   background: var(--oz-label-hover-bg);
 }
-.oz-formula-btn.selected {
+.oz-product-page .oz-formula-btn.selected {
   border-color: var(--oz-accent);
   background: var(--oz-accent);
   color: var(--oz-accent-text);
