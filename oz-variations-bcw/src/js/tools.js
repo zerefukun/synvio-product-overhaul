@@ -103,11 +103,14 @@ function buildToolRow(item, dataAttr, onToggle, onQtyDec, onQtyInc, onQtyEdit, o
  * Build the entire tool section DOM — mode toggle, set contents, extras, individual list, nudge.
  * Called once at init. The section lives inside optionsWidget and moves with it.
  */
-export function buildToolSectionV2(sectionId) {
+export function buildToolSectionV2(sectionId, rebuild) {
   if (!P.hasTools || !P.toolConfig) return;
   var TC = P.toolConfig;
   var section = document.getElementById(sectionId);
-  if (!section || section.children.length > 0) return;
+  if (!section) return;
+  // Clear and rebuild when called with rebuild=true (formula toggle)
+  if (rebuild) { section.innerHTML = ''; }
+  if (section.children.length > 0) return;
 
   // Mode toggle: Geen / Kant & Klaar / Zelf samenstellen
   var mode = document.createElement('div');

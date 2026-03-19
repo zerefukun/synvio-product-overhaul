@@ -554,11 +554,15 @@
     });
     return row;
   }
-  function buildToolSectionV2(sectionId) {
+  function buildToolSectionV2(sectionId, rebuild) {
     if (!P.hasTools || !P.toolConfig) return;
     var TC = P.toolConfig;
     var section = document.getElementById(sectionId);
-    if (!section || section.children.length > 0) return;
+    if (!section) return;
+    if (rebuild) {
+      section.innerHTML = "";
+    }
+    if (section.children.length > 0) return;
     var mode = document.createElement("div");
     mode.className = "oz-tool-mode";
     var btnNone = document.createElement("button");
@@ -1275,6 +1279,8 @@
       trackFormulaToggled(fromLabel, toLabel);
       updateState({ formulaMode: mode });
       if (mode === "target") {
+        _preToggleUrl = location.href;
+        _preToggleProductId = P.productId;
         P.productId = MT.targetProductId;
         P.productName = MT.targetProductName;
         P.basePrice = MT.targetBasePrice;
@@ -1309,17 +1315,20 @@
             P[keys[i]] = _originalP[keys[i]];
           }
         }
+        P.productId = _preToggleProductId;
         updateState({
           puLayers: findDefault(P.puOptions, "layers"),
           primer: findDefault(P.primerOptions, "label"),
           toepassing: P.toepassing ? P.toepassing[0] : null,
+          selectedColor: "",
+          // clear ZM static color selection
           toolMode: "none"
         });
         restoreContent();
         history.pushState(
           { productId: P.productId, formulaMode: "self" },
           "",
-          _originalUrl
+          _preToggleUrl
         );
       }
       var isZM = mode === "target";
@@ -1330,7 +1339,18 @@
       rebuildToggleOptions();
       rebuildPuOptions();
       if (P.hasTools) {
-        buildToolSectionV2("toolSection");
+        updateState({ toolMode: "none", extras: {}, tools: {} });
+        if (P.toolConfig && P.toolConfig.extras) {
+          P.toolConfig.extras.forEach(function(e) {
+            S.extras[e.id] = { on: false, qty: 0, size: 0 };
+          });
+        }
+        if (P.toolConfig && P.toolConfig.tools) {
+          P.toolConfig.tools.forEach(function(t) {
+            S.tools[t.id] = { on: false, qty: 0, size: 0 };
+          });
+        }
+        buildToolSectionV2("toolSection", true);
       }
       var toggleBtns = document.querySelectorAll(".oz-formula-btn");
       for (var b = 0; b < toggleBtns.length; b++) {
@@ -1599,19 +1619,19 @@
           syncUI();
           return;
         }
-        if (S.formulaMode === "target") {
-          e.preventDefault();
-          updateState({ selectedColor: colorName });
-          var allSwatchesZm = swatch.parentNode.querySelectorAll(".oz-color-swatch");
-          for (var zi = 0; zi < allSwatchesZm.length; zi++) {
-            allSwatchesZm[zi].classList.toggle("selected", allSwatchesZm[zi] === swatch);
-          }
-          syncUI();
-          return;
-        }
         e.preventDefault();
         var pid = parseInt(swatch.getAttribute("data-product-id"), 10);
         if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
+          if (S.formulaMode === "target" && P.modeToggle) {
+            P.productId = P.modeToggle.targetProductId;
+            P.isBase = false;
+            updateState({ selectedColor: colorName });
+            history.replaceState(
+              { productId: P.modeToggle.targetProductId, formulaMode: "target" },
+              "",
+              P.modeToggle.targetUrl
+            );
+          }
         } else {
           saveToolState();
           window.location.href = swatch.href;
@@ -2245,7 +2265,8 @@
         lightbox.open(mainImg.src);
       });
     };
-    _originalUrl = P.modeToggle ? location.href : null;
+    _preToggleUrl = P.modeToggle ? location.href : null;
+    _preToggleProductId = P ? P.productId : null;
     _originalContent = null;
     if (P.modeToggle) {
       captureOnce = function() {
@@ -2368,7 +2389,8 @@
       openGalleryLightbox();
     }
   }
-  var _originalUrl;
+  var _preToggleUrl;
+  var _preToggleProductId;
   var _originalContent;
   var captureOnce;
   var TOOL_STATE_KEY;

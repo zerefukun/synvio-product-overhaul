@@ -480,8 +480,10 @@ function buildColorModeUI() {
 
 /* ═══ FORMULA TOGGLE (K&K <-> Zelf Mengen & Mixen) ═════════ */
 
-// Store original URL for toggle-back restoration
-var _originalUrl = P.modeToggle ? location.href : null;
+// Store pre-toggle state for toggle-back restoration
+// Updated every time we toggle TO ZM (captures current color variant)
+var _preToggleUrl = P.modeToggle ? location.href : null;
+var _preToggleProductId = P ? P.productId : null;
 
 /**
  * Toggle between K&K and ZM formula modes.
@@ -503,6 +505,10 @@ function toggleFormula(mode) {
   updateState({ formulaMode: mode });
 
   if (mode === 'target') {
+    // Save current state for toggle-back (captures current color variant)
+    _preToggleUrl = location.href;
+    _preToggleProductId = P.productId;
+
     // Swap P properties to toggle target config
     P.productId     = MT.targetProductId;
     P.productName   = MT.targetProductName;
@@ -537,29 +543,32 @@ function toggleFormula(mode) {
       '', MT.targetUrl
     );
   } else {
-    // Restore original P values
+    // Restore K&K config values
     if (_originalP) {
       var keys = Object.keys(_originalP);
       for (var i = 0; i < keys.length; i++) {
         P[keys[i]] = _originalP[keys[i]];
       }
     }
+    // Restore the product ID to whatever color variant was active before toggle
+    P.productId = _preToggleProductId;
 
     // Reset option selections to original config defaults
     updateState({
       puLayers:   findDefault(P.puOptions, 'layers'),
       primer:     findDefault(P.primerOptions, 'label'),
       toepassing: P.toepassing ? P.toepassing[0] : null,
+      selectedColor: '',  // clear ZM static color selection
       toolMode:   'none',
     });
 
     // Restore original content
     restoreContent();
 
-    // pushState back to original URL
+    // pushState back to pre-toggle URL (the color variant they were on)
     history.pushState(
       { productId: P.productId, formulaMode: 'self' },
-      '', _originalUrl
+      '', _preToggleUrl
     );
   }
 
@@ -579,9 +588,17 @@ function toggleFormula(mode) {
   // Rebuild PU buttons with correct prices
   rebuildPuOptions();
 
-  // Rebuild tool section with correct tool set
+  // Rebuild tool section with correct tool set (clear + rebuild)
   if (P.hasTools) {
-    buildToolSectionV2('toolSection');
+    updateState({ toolMode: 'none', extras: {}, tools: {} });
+    // Re-init extras/tools state from new config
+    if (P.toolConfig && P.toolConfig.extras) {
+      P.toolConfig.extras.forEach(function(e) { S.extras[e.id] = { on: false, qty: 0, size: 0 }; });
+    }
+    if (P.toolConfig && P.toolConfig.tools) {
+      P.toolConfig.tools.forEach(function(t) { S.tools[t.id] = { on: false, qty: 0, size: 0 }; });
+    }
+    buildToolSectionV2('toolSection', true);
   }
 
   // Update toggle button highlight
@@ -959,22 +976,22 @@ function handleClick(e) {
       return;
     }
 
-    // ZM formula mode — swatches behave as static (update color, don't navigate)
-    if (S.formulaMode === 'target') {
-      e.preventDefault();
-      updateState({ selectedColor: colorName });
-      var allSwatchesZm = swatch.parentNode.querySelectorAll('.oz-color-swatch');
-      for (var zi = 0; zi < allSwatchesZm.length; zi++) {
-        allSwatchesZm[zi].classList.toggle('selected', allSwatchesZm[zi] === swatch);
-      }
-      syncUI();
-      return;
-    }
-
     // Normal swatch — pushState navigation (no page reload)
     e.preventDefault();
     var pid = parseInt(swatch.getAttribute('data-product-id'), 10);
     if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
+      // In ZM mode: navigation swaps visuals (image, title, gallery)
+      // but product ID must stay as the ZM product for add-to-cart
+      if (S.formulaMode === 'target' && P.modeToggle) {
+        P.productId = P.modeToggle.targetProductId;
+        P.isBase = false;
+        updateState({ selectedColor: colorName });
+        // Keep URL on ZM product (don't let navigateToVariant push variant URL)
+        history.replaceState(
+          { productId: P.modeToggle.targetProductId, formulaMode: 'target' },
+          '', P.modeToggle.targetUrl
+        );
+      }
       // syncUI called by navigation.js callback (handles both click + popstate)
     } else {
       // Fallback: full navigation if variant data is missing
