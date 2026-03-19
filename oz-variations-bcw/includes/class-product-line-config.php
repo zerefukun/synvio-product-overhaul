@@ -212,14 +212,14 @@ class OZ_Product_Line_Config {
             'unit'           => '5m²',
             'unitM2'         => 5,
             'has_pu'         => true,
-            'has_primer'     => true,
+            'has_primer'     => false,  // primer is internal only — not shown to customer
             'has_colorfresh' => false,
             'has_toepassing' => true,
             'has_pakket'     => false,
             'ral_ncs'        => false,
             'ral_ncs_only'   => false,
             'has_tools'      => true,
-            'option_order'   => ['color', 'toepassing', 'primer', 'pu', 'tools'],
+            'option_order'   => ['color', 'toepassing', 'pu', 'tools'],
             'mode_toggle'    => [
                 'target_product_id' => 11161,
                 'target_line'       => 'original',

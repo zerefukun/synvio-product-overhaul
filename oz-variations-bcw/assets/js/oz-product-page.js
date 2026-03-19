@@ -1322,7 +1322,13 @@
           _originalUrl
         );
       }
+      var isZM = mode === "target";
+      var primerGroup = document.querySelector('[data-option="primer"]');
+      if (primerGroup) primerGroup.style.display = isZM ? "none" : "";
+      var subtitle = document.getElementById("formulaSubtitle");
+      if (subtitle) subtitle.style.display = isZM ? "" : "none";
       rebuildToggleOptions();
+      rebuildPuOptions();
       if (P.hasTools) {
         buildToolSectionV2("toolSection");
       }
@@ -1413,20 +1419,6 @@
         }
       }
     }, rebuildToggleOptions = function() {
-      var primerGroup = document.querySelector('[data-option="primer"]');
-      if (primerGroup && P.primerOptions) {
-        var btnsWrap = primerGroup.querySelector(".oz-option-buttons");
-        if (btnsWrap) {
-          var html = "";
-          for (var i = 0; i < P.primerOptions.length; i++) {
-            var opt = P.primerOptions[i];
-            var isSelected = opt.label === S.primer;
-            var recBadge = opt.recommended ? ' <span class="oz-advies-badge">Advies</span>' : "";
-            html += '<button class="oz-option-btn' + (isSelected ? " selected" : "") + '" data-primer="' + opt.label + '">' + opt.label + recBadge + "</button>";
-          }
-          btnsWrap.innerHTML = html;
-        }
-      }
       var toeGroup = document.querySelector('[data-option="toepassing"]');
       if (P.toepassing && P.toepassing.length) {
         if (!toeGroup) {
@@ -1465,6 +1457,21 @@
       } else if (toeGroup) {
         toeGroup.style.display = "none";
       }
+    }, rebuildPuOptions = function() {
+      var puGroup = document.querySelector('[data-option="pu"]');
+      if (!puGroup || !P.puOptions) return;
+      var btnsWrap = puGroup.querySelector(".oz-option-buttons");
+      if (!btnsWrap) return;
+      var html = "";
+      for (var i = 0; i < P.puOptions.length; i++) {
+        var opt = P.puOptions[i];
+        var isSelected = opt.layers == S.puLayers;
+        var priceTag = "";
+        if (opt.price > 0) priceTag = " +" + fmt(opt.price);
+        else if (opt.price < 0) priceTag = " " + fmt(opt.price);
+        html += '<button class="oz-option-btn' + (isSelected ? " selected" : "") + '" data-pu="' + opt.layers + '">' + opt.label + (priceTag ? ' <span class="oz-price-tag">' + priceTag + "</span>" : "") + "</button>";
+      }
+      btnsWrap.innerHTML = html;
     }, openUpsell = function() {
       updateState({ upsellOpen: true });
       document.body.style.overflow = "hidden";

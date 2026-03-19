@@ -563,8 +563,21 @@ function toggleFormula(mode) {
     );
   }
 
-  // Rebuild option sections that changed (primer buttons, toepassing)
+  var isZM = (mode === 'target');
+
+  // Hide/show primer section — ZM includes primer, no customer choice
+  var primerGroup = document.querySelector('[data-option="primer"]');
+  if (primerGroup) primerGroup.style.display = isZM ? 'none' : '';
+
+  // "Incl. primer" subtitle
+  var subtitle = document.getElementById('formulaSubtitle');
+  if (subtitle) subtitle.style.display = isZM ? '' : 'none';
+
+  // Rebuild toepassing section (appears in ZM, hidden in K&K)
   rebuildToggleOptions();
+
+  // Rebuild PU buttons with correct prices
+  rebuildPuOptions();
 
   // Rebuild tool section with correct tool set
   if (P.hasTools) {
@@ -690,25 +703,9 @@ function restoreContent() {
 
 /**
  * Rebuild option groups that differ between K&K and ZM.
- * Dynamically rebuilds primer buttons and toepassing section.
+ * Primer is handled separately (hidden/shown, not rebuilt).
  */
 function rebuildToggleOptions() {
-  // Rebuild primer buttons
-  var primerGroup = document.querySelector('[data-option="primer"]');
-  if (primerGroup && P.primerOptions) {
-    var btnsWrap = primerGroup.querySelector('.oz-option-buttons');
-    if (btnsWrap) {
-      var html = '';
-      for (var i = 0; i < P.primerOptions.length; i++) {
-        var opt = P.primerOptions[i];
-        var isSelected = opt.label === S.primer;
-        var recBadge = opt.recommended ? ' <span class="oz-advies-badge">Advies</span>' : '';
-        html += '<button class="oz-option-btn' + (isSelected ? ' selected' : '') + '" data-primer="' + opt.label + '">' + opt.label + recBadge + '</button>';
-      }
-      btnsWrap.innerHTML = html;
-    }
-  }
-
   // Toepassing section — show/hide and rebuild
   var toeGroup = document.querySelector('[data-option="toepassing"]');
   if (P.toepassing && P.toepassing.length) {
@@ -752,6 +749,28 @@ function rebuildToggleOptions() {
     // Hide toepassing when switching back to K&K
     toeGroup.style.display = 'none';
   }
+}
+
+/**
+ * Rebuild PU option buttons with prices from the active config.
+ * K&K shows €8/16/24 per m², ZM shows €40/80/120 per 5m².
+ */
+function rebuildPuOptions() {
+  var puGroup = document.querySelector('[data-option="pu"]');
+  if (!puGroup || !P.puOptions) return;
+  var btnsWrap = puGroup.querySelector('.oz-option-buttons');
+  if (!btnsWrap) return;
+
+  var html = '';
+  for (var i = 0; i < P.puOptions.length; i++) {
+    var opt = P.puOptions[i];
+    var isSelected = opt.layers == S.puLayers;
+    var priceTag = '';
+    if (opt.price > 0) priceTag = ' +' + fmt(opt.price);
+    else if (opt.price < 0) priceTag = ' ' + fmt(opt.price);
+    html += '<button class="oz-option-btn' + (isSelected ? ' selected' : '') + '" data-pu="' + opt.layers + '">' + opt.label + (priceTag ? ' <span class="oz-price-tag">' + priceTag + '</span>' : '') + '</button>';
+  }
+  btnsWrap.innerHTML = html;
 }
 
 // Capture original content on first toggle

@@ -32,35 +32,54 @@
   margin: 0 0 4px;
 }
 
-/* Formula toggle — segmented control (K&K <-> Zelf Mengen & Mixen) */
+/* Title row — title + formula toggle side by side */
+.oz-title-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 4px;
+  flex-wrap: wrap;
+}
+.oz-title-row .oz-product-title {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Formula toggle — small pill buttons next to title */
 .oz-formula-toggle {
   display: flex;
-  gap: 0;
-  margin: 8px 0 12px;
-  border: 1px solid var(--oz-border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--oz-bg-subtle, #f5f5f5);
+  gap: 4px;
+  flex-shrink: 0;
 }
 .oz-formula-btn {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 4px 10px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.3;
-  border: none;
+  line-height: 1.4;
+  border: 1px solid var(--oz-border);
+  border-radius: 4px;
   background: transparent;
   color: var(--oz-text-secondary);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
 .oz-formula-btn.selected {
   background: var(--oz-text-primary, #1a1a1a);
+  border-color: var(--oz-text-primary, #1a1a1a);
   color: #fff;
 }
 .oz-formula-btn:not(.selected):hover {
-  background: rgba(0, 0, 0, 0.06);
+  border-color: var(--oz-text-primary, #1a1a1a);
+  color: var(--oz-text-primary);
+}
+
+/* "Incl. primer" subtitle — shown in ZM mode */
+.oz-formula-subtitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-text-secondary);
+  margin: 0 0 4px;
 }
 
 .oz-product-base-price {

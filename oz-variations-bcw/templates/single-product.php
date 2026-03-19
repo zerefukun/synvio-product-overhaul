@@ -303,17 +303,24 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         ><?php echo esc_html($current_color ?: ''); ?></div>
       <?php endif; ?>
 
-      <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
-
       <?php
       // Formula toggle — K&K <-> Zelf Mengen & Mixen switch
       $mode_toggle = !empty($config['mode_toggle']) ? $config['mode_toggle'] : null;
-      if ($mode_toggle) : ?>
-      <div class="oz-formula-toggle" id="formulaToggle">
-        <button class="oz-formula-btn selected" data-formula="self"><?php echo esc_html($mode_toggle['label_self']); ?></button>
-        <button class="oz-formula-btn" data-formula="target"><?php echo esc_html($mode_toggle['label_target']); ?></button>
+      ?>
+      <?php if ($mode_toggle) : ?>
+      <div class="oz-title-row">
+        <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
+        <div class="oz-formula-toggle" id="formulaToggle">
+          <button class="oz-formula-btn selected" data-formula="self"><?php echo esc_html($mode_toggle['label_self']); ?></button>
+          <button class="oz-formula-btn" data-formula="target"><?php echo esc_html($mode_toggle['label_target']); ?></button>
+        </div>
       </div>
+      <?php else : ?>
+      <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
       <?php endif; ?>
+
+      <!-- "Incl. primer" subtitle — shown in ZM mode (primer not a customer option) -->
+      <div class="oz-formula-subtitle" id="formulaSubtitle" style="display:none">Incl. primer</div>
 
       <div class="oz-product-base-price">
         <?php if ($on_sale) : ?>
