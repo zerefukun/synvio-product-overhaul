@@ -1295,12 +1295,17 @@
         P.toolConfig = MT.targetToolConfig;
         P.isBase = false;
         updateState({
-          puLayers: findDefault(P.puOptions, "layers"),
-          primer: findDefault(P.primerOptions, "label"),
+          // PU layers: keep current selection (same 0-3 range on both sides)
+          puLayers: S.puLayers,
+          // Primer: ZM has no customer-facing primer, clear it
+          primer: null,
+          // Toepassing: new in ZM, set default
           toepassing: P.toepassing ? P.toepassing[0] : null,
-          // Preserve selected color from current swatch
+          // Color: preserve from current swatch
           selectedColor: S.selectedColor || P.currentColor || "",
-          toolMode: "none"
+          // Tools: if K&K set was selected, auto-switch to ZM set
+          toolMode: S.toolMode === "set" ? "set" : S.toolMode
+          // Qty: preserved automatically (not in this patch)
         });
         swapContent(MT);
         history.pushState(
@@ -1317,12 +1322,16 @@
         }
         P.productId = _preToggleProductId;
         updateState({
-          puLayers: findDefault(P.puOptions, "layers"),
+          // PU layers: keep current selection
+          puLayers: S.puLayers,
+          // Primer: restore K&K default (was hidden in ZM)
           primer: findDefault(P.primerOptions, "label"),
-          toepassing: P.toepassing ? P.toepassing[0] : null,
+          // Toepassing: K&K doesn't have it, clear
+          toepassing: null,
+          // Color: clear ZM static selection (K&K uses variant navigation)
           selectedColor: "",
-          // clear ZM static color selection
-          toolMode: "none"
+          // Tools: if ZM set was selected, auto-switch to K&K set
+          toolMode: S.toolMode === "set" ? "set" : S.toolMode
         });
         restoreContent();
         history.pushState(
