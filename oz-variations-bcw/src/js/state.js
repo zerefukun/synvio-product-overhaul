@@ -458,7 +458,8 @@ export function buildCartPayload(config, state) {
 
   // Addon fields — same keys as OZ_Cart_Manager::extract_post_data()
   if (state.puLayers !== null)  payload.oz_pu_layers = state.puLayers;
-  if (state.primer)             payload.oz_primer = state.primer;
+  // Only send primer when it's a customer choice (not for ZM — always included)
+  if (state.primer && config.primerOptions) payload.oz_primer = state.primer;
   if (state.colorfresh)         payload.oz_colorfresh = state.colorfresh;
   if (state.toepassing)         payload.oz_toepassing = state.toepassing;
   if (state.pakket)             payload.oz_pakket = state.pakket;

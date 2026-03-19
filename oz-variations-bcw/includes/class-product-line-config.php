@@ -96,11 +96,7 @@ class OZ_Product_Line_Config {
             ['Primer', 0, true,  true],   // Advies — included in base price (like microcement)
             ['Geen',   0, false, false],
         ],
-        'original-zm' => [
-            ['Niet-zuigende primer', 0, true,  true],   // default, Advies
-            ['Zuigende primer',      0, false, false],
-            ['Geen primer',          0, false, false],
-        ],
+        // original-zm: no primer options — primer is always included, not a customer choice
         'metallic' => [
             ['Geen',   0,    true,  false],
             ['Primer', 5.99, false, true],   // Advies

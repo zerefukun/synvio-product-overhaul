@@ -685,8 +685,8 @@ class OZ_Cart_Manager {
             }
         }
 
-        // Primer — always show (Patrick needs to know "geen primer" too)
-        if (!empty($data['oz_primer'])) {
+        // Primer — show when it's a customer choice (not for ZM — always included)
+        if (!empty($data['oz_primer']) && (!isset($data['oz_line']) || $data['oz_line'] !== 'original-zm')) {
             $details[] = 'Primer: ' . $data['oz_primer'];
         }
 

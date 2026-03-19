@@ -277,7 +277,7 @@
       if (color) payload.oz_selected_color = color;
     }
     if (state.puLayers !== null) payload.oz_pu_layers = state.puLayers;
-    if (state.primer) payload.oz_primer = state.primer;
+    if (state.primer && config.primerOptions) payload.oz_primer = state.primer;
     if (state.colorfresh) payload.oz_colorfresh = state.colorfresh;
     if (state.toepassing) payload.oz_toepassing = state.toepassing;
     if (state.pakket) payload.oz_pakket = state.pakket;
@@ -1217,7 +1217,7 @@
             parts.push(S.puLayers + " PU " + (S.puLayers === 1 ? "laag" : "lagen"));
           }
         }
-        if (S.primer) {
+        if (S.primer && P.primerOptions) {
           parts.push("Primer: " + S.primer);
         }
         if (S.colorfresh && S.colorfresh !== "Zonder Colorfresh") {

@@ -380,8 +380,8 @@ function renderStickySummary() {
       }
     }
 
-    // Primer — always show (including "Geen")
-    if (S.primer) {
+    // Primer — only show when primer is a customer option (not for ZM)
+    if (S.primer && P.primerOptions) {
       parts.push('Primer: ' + S.primer);
     }
 
