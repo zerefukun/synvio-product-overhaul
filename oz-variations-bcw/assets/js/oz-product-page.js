@@ -1623,14 +1623,26 @@
         var pid = parseInt(swatch.getAttribute("data-product-id"), 10);
         if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
           if (S.formulaMode === "target" && P.modeToggle) {
-            P.productId = P.modeToggle.targetProductId;
+            var MT = P.modeToggle;
+            P.productId = MT.targetProductId;
+            P.basePrice = MT.targetBasePrice;
+            P.productLine = MT.targetLine;
+            P.unit = MT.targetUnit;
+            P.unitM2 = MT.targetUnitM2;
+            P.puOptions = MT.targetPuOptions;
+            P.primerOptions = MT.targetPrimerOptions;
+            P.toepassing = MT.targetToepassing;
+            P.optionOrder = MT.targetOptionOrder;
+            P.hasTools = MT.targetHasTools;
+            P.toolConfig = MT.targetToolConfig;
             P.isBase = false;
             updateState({ selectedColor: colorName });
             history.replaceState(
-              { productId: P.modeToggle.targetProductId, formulaMode: "target" },
+              { productId: MT.targetProductId, formulaMode: "target" },
               "",
-              P.modeToggle.targetUrl
+              MT.targetUrl
             );
+            syncUI();
           }
         } else {
           saveToolState();

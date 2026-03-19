@@ -980,17 +980,31 @@ function handleClick(e) {
     e.preventDefault();
     var pid = parseInt(swatch.getAttribute('data-product-id'), 10);
     if (pid && P.variants && P.variants[pid] && navigateToVariant(pid)) {
-      // In ZM mode: navigation swaps visuals (image, title, gallery)
-      // but product ID must stay as the ZM product for add-to-cart
+      // In ZM mode: navigateToVariant swaps visuals (image, title, gallery)
+      // but overwrites P.basePrice/productId/etc with K&K variant data.
+      // Restore all ZM config properties after the visual swap.
       if (S.formulaMode === 'target' && P.modeToggle) {
-        P.productId = P.modeToggle.targetProductId;
-        P.isBase = false;
+        var MT = P.modeToggle;
+        P.productId     = MT.targetProductId;
+        P.basePrice     = MT.targetBasePrice;
+        P.productLine   = MT.targetLine;
+        P.unit          = MT.targetUnit;
+        P.unitM2        = MT.targetUnitM2;
+        P.puOptions     = MT.targetPuOptions;
+        P.primerOptions = MT.targetPrimerOptions;
+        P.toepassing    = MT.targetToepassing;
+        P.optionOrder   = MT.targetOptionOrder;
+        P.hasTools      = MT.targetHasTools;
+        P.toolConfig    = MT.targetToolConfig;
+        P.isBase        = false;
         updateState({ selectedColor: colorName });
-        // Keep URL on ZM product (don't let navigateToVariant push variant URL)
+        // Keep URL on ZM product
         history.replaceState(
-          { productId: P.modeToggle.targetProductId, formulaMode: 'target' },
-          '', P.modeToggle.targetUrl
+          { productId: MT.targetProductId, formulaMode: 'target' },
+          '', MT.targetUrl
         );
+        // Re-render with correct ZM prices
+        syncUI();
       }
       // syncUI called by navigation.js callback (handles both click + popstate)
     } else {
