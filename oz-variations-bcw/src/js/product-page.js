@@ -484,6 +484,8 @@ function buildColorModeUI() {
 // Updated every time we toggle TO ZM (captures current color variant)
 var _preToggleUrl = P.modeToggle ? location.href : null;
 var _preToggleProductId = P ? P.productId : null;
+var _preToggleIsBase = P ? P.isBase : false;
+var _preToggleBasePrice = P ? P.basePrice : 0;
 
 /**
  * Toggle between K&K and ZM formula modes.
@@ -508,6 +510,8 @@ function toggleFormula(mode) {
     // Save current state for toggle-back (captures current color variant)
     _preToggleUrl = location.href;
     _preToggleProductId = P.productId;
+    _preToggleIsBase = P.isBase;
+    _preToggleBasePrice = P.basePrice;
 
     // Swap P properties to toggle target config
     P.productId     = MT.targetProductId;
@@ -548,15 +552,18 @@ function toggleFormula(mode) {
       '', MT.targetUrl
     );
   } else {
-    // Restore K&K config values
+    // Restore K&K config values (PU options, primer options, tools, etc.)
     if (_originalP) {
       var keys = Object.keys(_originalP);
       for (var i = 0; i < keys.length; i++) {
         P[keys[i]] = _originalP[keys[i]];
       }
     }
-    // Restore the product ID to whatever color variant was active before toggle
+    // Restore the product ID and isBase to the pre-toggle state
+    // (user may have navigated to a color variant before toggling)
     P.productId = _preToggleProductId;
+    P.isBase = _preToggleIsBase;
+    P.basePrice = _preToggleBasePrice;
 
     // Preserve compatible options back to K&K
     updateState({

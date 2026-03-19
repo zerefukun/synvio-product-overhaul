@@ -1284,6 +1284,8 @@
       if (mode === "target") {
         _preToggleUrl = location.href;
         _preToggleProductId = P.productId;
+        _preToggleIsBase = P.isBase;
+        _preToggleBasePrice = P.basePrice;
         P.productId = MT.targetProductId;
         P.productName = MT.targetProductName;
         P.basePrice = MT.targetBasePrice;
@@ -1324,6 +1326,8 @@
           }
         }
         P.productId = _preToggleProductId;
+        P.isBase = _preToggleIsBase;
+        P.basePrice = _preToggleBasePrice;
         updateState({
           // PU layers: keep current selection
           puLayers: S.puLayers,
@@ -2282,6 +2286,8 @@
     };
     _preToggleUrl = P.modeToggle ? location.href : null;
     _preToggleProductId = P ? P.productId : null;
+    _preToggleIsBase = P ? P.isBase : false;
+    _preToggleBasePrice = P ? P.basePrice : 0;
     _originalContent = null;
     if (P.modeToggle) {
       captureOnce = function() {
@@ -2406,6 +2412,8 @@
   }
   var _preToggleUrl;
   var _preToggleProductId;
+  var _preToggleIsBase;
+  var _preToggleBasePrice;
   var _originalContent;
   var captureOnce;
   var TOOL_STATE_KEY;
