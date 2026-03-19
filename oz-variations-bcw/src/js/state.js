@@ -448,12 +448,16 @@ export function buildCartPayload(config, state) {
     quantity: state.qty,
   };
 
-  // ZM: pass the line key, selected color, and color image as order meta
+  // ZM toggle mode: override product ID and line key
   if (isToggled) {
     payload.oz_line = config.modeToggle.targetLine;
     var color = state.selectedColor || config.currentColor || '';
     if (color) payload.oz_selected_color = color;
-    // Send the current main image so the cart shows the correct color thumbnail
+  }
+
+  // Send cart image for products with shared/static colors (ZM, Betonlook Verf)
+  // These use a single WC product for all colors — the color image must come from JS
+  if (config.hasStaticColors || isToggled) {
     var mainImg = document.getElementById('mainImg');
     if (mainImg && mainImg.src) payload.oz_cart_image = mainImg.src;
   }
