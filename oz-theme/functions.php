@@ -286,19 +286,24 @@ function oz_cart_drawer_get() {
         }
 
         // --- Thumbnail ---
-        // For RAL/NCS products: use the base (line) product image, not the color variant's.
-        // The variant's image shows a specific standard color which is misleading for RAL/NCS.
-        $image_id = $product->get_image_id();
-        if ($is_ral_ncs && !empty($cart_item['oz_line']) && class_exists('OZ_Product_Line_Config')) {
-            $base_id = OZ_Product_Line_Config::get_base_product_id($cart_item['oz_line']);
-            if ($base_id) {
-                $base_product = wc_get_product($base_id);
-                if ($base_product) {
-                    $image_id = $base_product->get_image_id();
+        // Priority: oz_cart_image (ZM color) > RAL/NCS base > product image
+        if (!empty($cart_item['oz_cart_image'])) {
+            // ZM products pass the selected color's image from JS
+            $image_url = esc_url($cart_item['oz_cart_image']);
+        } else {
+            $image_id = $product->get_image_id();
+            // For RAL/NCS products: use the base (line) product image, not the color variant's.
+            if ($is_ral_ncs && !empty($cart_item['oz_line']) && class_exists('OZ_Product_Line_Config')) {
+                $base_id = OZ_Product_Line_Config::get_base_product_id($cart_item['oz_line']);
+                if ($base_id) {
+                    $base_product = wc_get_product($base_id);
+                    if ($base_product) {
+                        $image_id = $base_product->get_image_id();
+                    }
                 }
             }
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
         }
-        $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
         // Build meta string from cart item data (color, options, etc.)
         $meta_parts = [];
