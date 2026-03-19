@@ -19,8 +19,8 @@
     primer: findDefault(P.primerOptions, "label"),
     // Colorfresh label (string or null)
     colorfresh: findDefault(P.colorfresh, "label"),
-    // Toepassing label (string or null)
-    toepassing: P.toepassing ? P.toepassing[0] : null,
+    // Toepassing label — null by default, user must choose (no pre-selection)
+    toepassing: null,
     // Pakket label (string or null)
     pakket: findDefault(P.pakket, "label"),
     // Color mode: 'swatch' or 'ral_ncs'

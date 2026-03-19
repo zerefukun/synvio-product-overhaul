@@ -319,8 +319,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
       <?php endif; ?>
 
-      <!-- "Incl. primer" subtitle — shown in ZM mode (primer not a customer option) -->
-      <div class="oz-formula-subtitle" id="formulaSubtitle" style="display:none">Incl. primer</div>
+      <!-- "Incl. primer" subtitle — visible when primer is not a customer option (ZM) -->
+      <?php $show_incl_primer = !empty($config['has_toepassing']) && empty($config['has_primer']); ?>
+      <div class="oz-formula-subtitle" id="formulaSubtitle" <?php if (!$show_incl_primer) echo 'style="display:none"'; ?>>Incl. primer</div>
 
       <div class="oz-product-base-price">
         <?php if ($on_sale) : ?>
@@ -481,11 +482,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                 if ($toepassing_opts) : ?>
                 <div class="oz-option-group" data-option="toepassing">
                   <div class="oz-option-header">
-                    Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span>
+                    Toepassing: <span class="oz-required-star" id="toepassingRequired" style="color:#e53e3e">*</span> <span class="oz-selected-value" id="selectedToepassingLabel"></span>
                   </div>
                   <div class="oz-option-labels">
                     <?php foreach ($toepassing_opts as $i => $label) : ?>
-                      <button class="oz-option-label-btn<?php echo $i === 0 ? ' selected' : ''; ?>"
+                      <button class="oz-option-label-btn"
                               data-toepassing="<?php echo esc_attr($label); ?>">
                         <?php echo esc_html($label); ?>
                       </button>
