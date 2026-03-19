@@ -42,6 +42,9 @@
     tools: {},
     // Upsell modal state
     upsellOpen: false,
+    // Formula mode: 'self' (current line) or 'target' (toggled line)
+    // null when no mode_toggle exists on this product
+    formulaMode: P.modeToggle ? "self" : null,
     // Generic addon selections — keyed by group key, value is selected label
     // Populated from P.addonGroups defaults below
     addons: {}
@@ -61,6 +64,21 @@
       S.addons[g.key] = findDefault(g.options, "label");
     });
   }
+  var _originalP = P && P.modeToggle ? {
+    productId: P.productId,
+    productName: P.productName,
+    basePrice: P.basePrice,
+    productLine: P.productLine,
+    unit: P.unit,
+    unitM2: P.unitM2,
+    isBase: P.isBase,
+    puOptions: P.puOptions,
+    primerOptions: P.primerOptions,
+    toepassing: P.toepassing,
+    optionOrder: P.optionOrder,
+    toolConfig: P.toolConfig,
+    hasTools: P.hasTools
+  } : null;
   function updateState(patch) {
     var keys = Object.keys(patch);
     for (var i = 0; i < keys.length; i++) {
@@ -213,6 +231,9 @@
     if (config.hasStaticColors && state.colorMode === "swatch" && !state.selectedColor) {
       return "Kies een kleur.";
     }
+    if (state.formulaMode === "target" && state.colorMode === "swatch" && !state.selectedColor && !config.currentColor) {
+      return "Kies eerst een kleur.";
+    }
     if (config.hasTools && state.toolMode === "individual" && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
       return "Kies minimaal 1 gereedschap of kies een andere optie.";
     }
@@ -239,12 +260,19 @@
     return null;
   }
   function buildCartPayload(config, state) {
+    var isToggled = state.formulaMode === "target" && config.modeToggle;
+    var productId = isToggled ? config.modeToggle.targetProductId : config.productId;
     var payload = {
       action: "oz_bcw_add_to_cart",
       nonce: config.nonce,
-      product_id: config.productId,
+      product_id: productId,
       quantity: state.qty
     };
+    if (isToggled) {
+      payload.oz_line = config.modeToggle.targetLine;
+      var color = state.selectedColor || config.currentColor || "";
+      if (color) payload.oz_selected_color = color;
+    }
     if (state.puLayers !== null) payload.oz_pu_layers = state.puLayers;
     if (state.primer) payload.oz_primer = state.primer;
     if (state.colorfresh) payload.oz_colorfresh = state.colorfresh;
@@ -458,6 +486,12 @@
   function trackGalleryImage(imageIndex) {
     push("oz_gallery_image", {
       oz_image_index: imageIndex
+    });
+  }
+  function trackFormulaToggled(fromMode, toMode) {
+    push("oz_formula_toggled", {
+      oz_from_mode: fromMode,
+      oz_to_mode: toMode
     });
   }
   function trackAddonSelected(addonKey, addonValue) {
@@ -764,7 +798,12 @@
     _onAfterNavigate = onAfterNavigate || null;
     history.replaceState({ productId: P.productId }, "", location.href);
     window.addEventListener("popstate", function(e) {
-      if (e.state && e.state.productId) {
+      if (!e.state) return;
+      if (e.state.formulaMode && window._ozToggleFormula) {
+        window._ozToggleFormula(e.state.formulaMode);
+        return;
+      }
+      if (e.state.productId) {
         applyVariant(e.state.productId, true);
       }
     });
@@ -1227,6 +1266,205 @@
       html += "</div>";
       html += "</div>";
       DOM.colorModeSlot.innerHTML = html;
+    }, toggleFormula = function(mode) {
+      if (!P.modeToggle || S.formulaMode === mode) return;
+      var prevMode = S.formulaMode;
+      var MT = P.modeToggle;
+      var fromLabel = prevMode === "self" ? MT.labelSelf : MT.labelTarget;
+      var toLabel = mode === "self" ? MT.labelSelf : MT.labelTarget;
+      trackFormulaToggled(fromLabel, toLabel);
+      updateState({ formulaMode: mode });
+      if (mode === "target") {
+        P.productId = MT.targetProductId;
+        P.productName = MT.targetProductName;
+        P.basePrice = MT.targetBasePrice;
+        P.productLine = MT.targetLine;
+        P.unit = MT.targetUnit;
+        P.unitM2 = MT.targetUnitM2;
+        P.puOptions = MT.targetPuOptions;
+        P.primerOptions = MT.targetPrimerOptions;
+        P.toepassing = MT.targetToepassing;
+        P.optionOrder = MT.targetOptionOrder;
+        P.hasTools = MT.targetHasTools;
+        P.toolConfig = MT.targetToolConfig;
+        P.isBase = false;
+        updateState({
+          puLayers: findDefault(P.puOptions, "layers"),
+          primer: findDefault(P.primerOptions, "label"),
+          toepassing: P.toepassing ? P.toepassing[0] : null,
+          // Preserve selected color from current swatch
+          selectedColor: S.selectedColor || P.currentColor || "",
+          toolMode: "none"
+        });
+        swapContent(MT);
+        history.pushState(
+          { productId: MT.targetProductId, formulaMode: "target" },
+          "",
+          MT.targetUrl
+        );
+      } else {
+        if (_originalP) {
+          var keys = Object.keys(_originalP);
+          for (var i = 0; i < keys.length; i++) {
+            P[keys[i]] = _originalP[keys[i]];
+          }
+        }
+        updateState({
+          puLayers: findDefault(P.puOptions, "layers"),
+          primer: findDefault(P.primerOptions, "label"),
+          toepassing: P.toepassing ? P.toepassing[0] : null,
+          toolMode: "none"
+        });
+        restoreContent();
+        history.pushState(
+          { productId: P.productId, formulaMode: "self" },
+          "",
+          _originalUrl
+        );
+      }
+      rebuildToggleOptions();
+      if (P.hasTools) {
+        buildToolSectionV2("toolSection");
+      }
+      var toggleBtns = document.querySelectorAll(".oz-formula-btn");
+      for (var b = 0; b < toggleBtns.length; b++) {
+        toggleBtns[b].classList.toggle("selected", toggleBtns[b].dataset.formula === mode);
+      }
+      var perUnits = document.querySelectorAll(".oz-per-unit");
+      for (var u = 0; u < perUnits.length; u++) {
+        perUnits[u].textContent = "per " + P.unit;
+      }
+      var m2Notes = document.querySelectorAll(".oz-m2-note");
+      for (var m = 0; m < m2Notes.length; m++) {
+        m2Notes[m].textContent = "per " + P.unit;
+      }
+      syncUI();
+    }, swapContent = function(MT) {
+      var uspList = document.querySelector(".oz-short-desc ul");
+      if (uspList && MT.targetUsps && MT.targetUsps.length) {
+        var uspHtml = "";
+        for (var i = 0; i < MT.targetUsps.length; i++) {
+          if (!MT.targetUsps[i]) continue;
+          uspHtml += '<li><svg class="oz-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"></path></svg>' + MT.targetUsps[i] + "</li>";
+        }
+        uspList.innerHTML = uspHtml;
+      }
+      var specsBody = document.querySelector(".oz-specs-table tbody");
+      if (specsBody && MT.targetSpecs) {
+        var specKeys = Object.keys(MT.targetSpecs);
+        if (specKeys.length) {
+          var specHtml = "";
+          for (var s = 0; s < specKeys.length; s++) {
+            specHtml += "<tr><th>" + specKeys[s] + "</th><td>" + MT.targetSpecs[specKeys[s]] + "</td></tr>";
+          }
+          specsBody.innerHTML = specHtml;
+        }
+      }
+      var faqList = document.querySelector(".oz-faq-list");
+      if (faqList && MT.targetFaq && MT.targetFaq.length) {
+        var faqHtml = "";
+        for (var f = 0; f < MT.targetFaq.length; f++) {
+          faqHtml += '<details class="oz-faq-item"><summary class="oz-faq-question">' + MT.targetFaq[f].q + '</summary><div class="oz-faq-answer">' + MT.targetFaq[f].a + "</div></details>";
+        }
+        faqList.innerHTML = faqHtml;
+      }
+      if (DOM.descContent && MT.targetDescription) {
+        DOM.descContent.innerHTML = MT.targetDescription;
+        DOM.descContent.classList.remove("expanded");
+        if (DOM.readMoreBtn) {
+          if (DOM.descContent.scrollHeight <= 120) {
+            DOM.readMoreBtn.style.display = "none";
+            DOM.descContent.classList.add("expanded");
+          } else {
+            DOM.readMoreBtn.style.display = "";
+            DOM.readMoreBtn.textContent = "Lees meer";
+          }
+        }
+      }
+    }, captureOriginalContent = function() {
+      if (_originalContent) return;
+      _originalContent = {};
+      var uspList = document.querySelector(".oz-short-desc ul");
+      if (uspList) _originalContent.uspsHtml = uspList.innerHTML;
+      var specsBody = document.querySelector(".oz-specs-table tbody");
+      if (specsBody) _originalContent.specsHtml = specsBody.innerHTML;
+      var faqList = document.querySelector(".oz-faq-list");
+      if (faqList) _originalContent.faqHtml = faqList.innerHTML;
+      if (DOM.descContent) _originalContent.descHtml = DOM.descContent.innerHTML;
+    }, restoreContent = function() {
+      if (!_originalContent) return;
+      var uspList = document.querySelector(".oz-short-desc ul");
+      if (uspList && _originalContent.uspsHtml) uspList.innerHTML = _originalContent.uspsHtml;
+      var specsBody = document.querySelector(".oz-specs-table tbody");
+      if (specsBody && _originalContent.specsHtml) specsBody.innerHTML = _originalContent.specsHtml;
+      var faqList = document.querySelector(".oz-faq-list");
+      if (faqList && _originalContent.faqHtml) faqList.innerHTML = _originalContent.faqHtml;
+      if (DOM.descContent && _originalContent.descHtml) {
+        DOM.descContent.innerHTML = _originalContent.descHtml;
+        DOM.descContent.classList.remove("expanded");
+        if (DOM.readMoreBtn) {
+          if (DOM.descContent.scrollHeight <= 120) {
+            DOM.readMoreBtn.style.display = "none";
+            DOM.descContent.classList.add("expanded");
+          } else {
+            DOM.readMoreBtn.style.display = "";
+            DOM.readMoreBtn.textContent = "Lees meer";
+          }
+        }
+      }
+    }, rebuildToggleOptions = function() {
+      var primerGroup = document.querySelector('[data-option="primer"]');
+      if (primerGroup && P.primerOptions) {
+        var btnsWrap = primerGroup.querySelector(".oz-option-buttons");
+        if (btnsWrap) {
+          var html = "";
+          for (var i = 0; i < P.primerOptions.length; i++) {
+            var opt = P.primerOptions[i];
+            var isSelected = opt.label === S.primer;
+            var recBadge = opt.recommended ? ' <span class="oz-advies-badge">Advies</span>' : "";
+            html += '<button class="oz-option-btn' + (isSelected ? " selected" : "") + '" data-primer="' + opt.label + '">' + opt.label + recBadge + "</button>";
+          }
+          btnsWrap.innerHTML = html;
+        }
+      }
+      var toeGroup = document.querySelector('[data-option="toepassing"]');
+      if (P.toepassing && P.toepassing.length) {
+        if (!toeGroup) {
+          var optionsWidget = DOM.optionsWidget;
+          if (optionsWidget) {
+            var toeSection = document.createElement("div");
+            toeSection.className = "oz-option-group";
+            toeSection.setAttribute("data-option", "toepassing");
+            var toeHtml = '<div class="oz-option-header">Toepassing <span class="oz-option-selected" id="selectedToepassingLabel">' + (S.toepassing || "") + "</span></div>";
+            toeHtml += '<div class="oz-option-buttons">';
+            for (var t = 0; t < P.toepassing.length; t++) {
+              var isSel = P.toepassing[t] === S.toepassing;
+              toeHtml += '<button class="oz-option-btn' + (isSel ? " selected" : "") + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + "</button>";
+            }
+            toeHtml += "</div>";
+            toeSection.innerHTML = toeHtml;
+            var primerSec = optionsWidget.querySelector('[data-option="primer"]');
+            if (primerSec) {
+              optionsWidget.insertBefore(toeSection, primerSec);
+            } else {
+              optionsWidget.appendChild(toeSection);
+            }
+          }
+        } else {
+          toeGroup.style.display = "";
+          var toeBtns = toeGroup.querySelector(".oz-option-buttons");
+          if (toeBtns) {
+            var toeHtml2 = "";
+            for (var t2 = 0; t2 < P.toepassing.length; t2++) {
+              var isSel2 = P.toepassing[t2] === S.toepassing;
+              toeHtml2 += '<button class="oz-option-btn' + (isSel2 ? " selected" : "") + '" data-toepassing="' + P.toepassing[t2] + '">' + P.toepassing[t2] + "</button>";
+            }
+            toeBtns.innerHTML = toeHtml2;
+          }
+        }
+      } else if (toeGroup) {
+        toeGroup.style.display = "none";
+      }
     }, openUpsell = function() {
       updateState({ upsellOpen: true });
       document.body.style.overflow = "hidden";
@@ -1260,6 +1498,12 @@
       }
     }, handleClick = function(e) {
       var target = e.target;
+      var formulaBtn = target.closest("[data-formula]");
+      if (formulaBtn) {
+        e.preventDefault();
+        toggleFormula(formulaBtn.dataset.formula);
+        return;
+      }
       var btn = target.closest("[data-pu], [data-primer], [data-colorfresh], [data-toepassing], [data-pakket]");
       var addonBtn = target.closest("[data-addon-key]");
       var thumb = target.closest(".oz-gallery-thumb");
@@ -1344,6 +1588,16 @@
           var allSwatches = swatch.parentNode.querySelectorAll(".oz-color-swatch");
           for (var si = 0; si < allSwatches.length; si++) {
             allSwatches[si].classList.toggle("selected", allSwatches[si] === swatch);
+          }
+          syncUI();
+          return;
+        }
+        if (S.formulaMode === "target") {
+          e.preventDefault();
+          updateState({ selectedColor: colorName });
+          var allSwatchesZm = swatch.parentNode.querySelectorAll(".oz-color-swatch");
+          for (var zi = 0; zi < allSwatchesZm.length; zi++) {
+            allSwatchesZm[zi].classList.toggle("selected", allSwatchesZm[zi] === swatch);
           }
           syncUI();
           return;
@@ -1984,6 +2238,19 @@
         lightbox.open(mainImg.src);
       });
     };
+    _originalUrl = P.modeToggle ? location.href : null;
+    _originalContent = null;
+    if (P.modeToggle) {
+      captureOnce = function() {
+        captureOriginalContent();
+      };
+      if (window.requestIdleCallback) {
+        requestIdleCallback(captureOnce);
+      } else {
+        setTimeout(captureOnce, 100);
+      }
+    }
+    window._ozToggleFormula = P.modeToggle ? toggleFormula : null;
     TOOL_STATE_KEY = "oz_bcw_tool_state";
     _sheetScrollY = 0;
     window.adaptBreadcrumbColor = adaptBreadcrumbColor;
@@ -2094,6 +2361,9 @@
       openGalleryLightbox();
     }
   }
+  var _originalUrl;
+  var _originalContent;
+  var captureOnce;
   var TOOL_STATE_KEY;
   var _sheetScrollY;
   var lightbox;

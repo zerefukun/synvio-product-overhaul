@@ -75,6 +75,7 @@ class OZ_Analytics_Dashboard {
         $product  = OZ_Analytics_Reporter::by_source('product', $range);
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
         $funnel   = OZ_Analytics_Reporter::funnel($range);
+        $zm_stats = OZ_Analytics_Reporter::formula_toggle_stats($range);
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
         // Real tool/accessory sales from WooCommerce orders (all sources)
         $tool_sales = OZ_Analytics_Reporter::top_tool_sales($range, 10);
@@ -224,6 +225,28 @@ class OZ_Analytics_Dashboard {
                 <h3>Conversie Funnel</h3>
                 <?php self::render_funnel($funnel); ?>
             </div>
+
+            <!-- Zelf Mengen & Mixen monitor -->
+            <?php if ($zm_stats['toggle_clicks'] > 0) : ?>
+            <div class="oz-panel" style="margin-bottom: 24px;">
+                <h3>Zelf Mengen & Mixen</h3>
+                <p class="oz-panel-subtitle">Toggle op Original productpagina</p>
+                <div class="oz-metric-row" style="display:flex;gap:32px;margin-top:12px;">
+                    <div>
+                        <div class="oz-metric-value"><?php echo $zm_stats['toggle_clicks']; ?></div>
+                        <div class="oz-metric-label">Toggle kliks</div>
+                    </div>
+                    <div>
+                        <div class="oz-metric-value"><?php echo $zm_stats['zm_add_to_cart']; ?></div>
+                        <div class="oz-metric-label">ZM in winkelmand</div>
+                    </div>
+                    <div>
+                        <div class="oz-metric-value"><?php echo $zm_stats['zm_conversion']; ?>%</div>
+                        <div class="oz-metric-label">ZM conversie</div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Top lists -->
             <div class="oz-columns oz-columns-3">

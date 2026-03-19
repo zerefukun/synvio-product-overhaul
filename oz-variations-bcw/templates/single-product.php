@@ -305,6 +305,16 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <h1 class="oz-product-title"><?php echo esc_html($product_name); ?></h1>
 
+      <?php
+      // Formula toggle — K&K <-> Zelf Mengen & Mixen switch
+      $mode_toggle = !empty($config['mode_toggle']) ? $config['mode_toggle'] : null;
+      if ($mode_toggle) : ?>
+      <div class="oz-formula-toggle" id="formulaToggle">
+        <button class="oz-formula-btn selected" data-formula="self"><?php echo esc_html($mode_toggle['label_self']); ?></button>
+        <button class="oz-formula-btn" data-formula="target"><?php echo esc_html($mode_toggle['label_target']); ?></button>
+      </div>
+      <?php endif; ?>
+
       <div class="oz-product-base-price">
         <?php if ($on_sale) : ?>
           <del><?php echo esc_html($fmt_price($regular_price)); ?></del>

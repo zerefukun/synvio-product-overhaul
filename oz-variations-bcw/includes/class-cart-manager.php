@@ -640,6 +640,11 @@ class OZ_Cart_Manager {
     private static function build_addon_details($data) {
         $details = [];
 
+        // Formula label — identifies Zelf Mengen & Mixen orders for Patrick
+        if (isset($data['oz_line']) && $data['oz_line'] === 'original-zm') {
+            $details[] = 'Formule: Zelf Mengen & Mixen';
+        }
+
         // Custom color (RAL/NCS)
         if (isset($data['oz_color_mode']) && $data['oz_color_mode'] === 'ral_ncs') {
             $code = isset($data['oz_custom_color']) ? $data['oz_custom_color'] : '';

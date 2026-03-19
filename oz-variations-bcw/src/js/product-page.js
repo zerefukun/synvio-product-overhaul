@@ -21,7 +21,7 @@
  * @since 2.0.0
  */
 
-import { P, S, updateState, fmt, fmtDelta, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
+import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
 import { initNavigation, navigateToVariant } from './navigation.js';
@@ -478,6 +478,297 @@ function buildColorModeUI() {
 }
 
 
+/* ═══ FORMULA TOGGLE (K&K <-> Zelf Mengen & Mixen) ═════════ */
+
+// Store original URL for toggle-back restoration
+var _originalUrl = P.modeToggle ? location.href : null;
+
+/**
+ * Toggle between K&K and ZM formula modes.
+ * Swaps product config, options, content, URL, and tool set.
+ *
+ * @param {string} mode  'self' (current/original line) or 'target' (toggled line)
+ */
+function toggleFormula(mode) {
+  if (!P.modeToggle || S.formulaMode === mode) return;
+
+  var prevMode = S.formulaMode;
+  var MT = P.modeToggle;
+
+  // Track the toggle
+  var fromLabel = prevMode === 'self' ? MT.labelSelf : MT.labelTarget;
+  var toLabel = mode === 'self' ? MT.labelSelf : MT.labelTarget;
+  analytics.trackFormulaToggled(fromLabel, toLabel);
+
+  updateState({ formulaMode: mode });
+
+  if (mode === 'target') {
+    // Swap P properties to toggle target config
+    P.productId     = MT.targetProductId;
+    P.productName   = MT.targetProductName;
+    P.basePrice     = MT.targetBasePrice;
+    P.productLine   = MT.targetLine;
+    P.unit          = MT.targetUnit;
+    P.unitM2        = MT.targetUnitM2;
+    P.puOptions     = MT.targetPuOptions;
+    P.primerOptions = MT.targetPrimerOptions;
+    P.toepassing    = MT.targetToepassing;
+    P.optionOrder   = MT.targetOptionOrder;
+    P.hasTools      = MT.targetHasTools;
+    P.toolConfig    = MT.targetToolConfig;
+    P.isBase        = false;  // ZM is always a single product
+
+    // Reset option selections to new config defaults
+    updateState({
+      puLayers:   findDefault(P.puOptions, 'layers'),
+      primer:     findDefault(P.primerOptions, 'label'),
+      toepassing: P.toepassing ? P.toepassing[0] : null,
+      // Preserve selected color from current swatch
+      selectedColor: S.selectedColor || P.currentColor || '',
+      toolMode:   'none',
+    });
+
+    // Swap content sections from pre-loaded data
+    swapContent(MT);
+
+    // pushState to ZM URL
+    history.pushState(
+      { productId: MT.targetProductId, formulaMode: 'target' },
+      '', MT.targetUrl
+    );
+  } else {
+    // Restore original P values
+    if (_originalP) {
+      var keys = Object.keys(_originalP);
+      for (var i = 0; i < keys.length; i++) {
+        P[keys[i]] = _originalP[keys[i]];
+      }
+    }
+
+    // Reset option selections to original config defaults
+    updateState({
+      puLayers:   findDefault(P.puOptions, 'layers'),
+      primer:     findDefault(P.primerOptions, 'label'),
+      toepassing: P.toepassing ? P.toepassing[0] : null,
+      toolMode:   'none',
+    });
+
+    // Restore original content
+    restoreContent();
+
+    // pushState back to original URL
+    history.pushState(
+      { productId: P.productId, formulaMode: 'self' },
+      '', _originalUrl
+    );
+  }
+
+  // Rebuild option sections that changed (primer buttons, toepassing)
+  rebuildToggleOptions();
+
+  // Rebuild tool section with correct tool set
+  if (P.hasTools) {
+    buildToolSectionV2('toolSection');
+  }
+
+  // Update toggle button highlight
+  var toggleBtns = document.querySelectorAll('.oz-formula-btn');
+  for (var b = 0; b < toggleBtns.length; b++) {
+    toggleBtns[b].classList.toggle('selected', toggleBtns[b].dataset.formula === mode);
+  }
+
+  // Update per-unit labels
+  var perUnits = document.querySelectorAll('.oz-per-unit');
+  for (var u = 0; u < perUnits.length; u++) {
+    perUnits[u].textContent = 'per ' + P.unit;
+  }
+  var m2Notes = document.querySelectorAll('.oz-m2-note');
+  for (var m = 0; m < m2Notes.length; m++) {
+    m2Notes[m].textContent = 'per ' + P.unit;
+  }
+
+  syncUI();
+}
+
+/**
+ * Swap USPs, specs, FAQ, and description from pre-loaded toggle target data.
+ */
+function swapContent(MT) {
+  // USPs
+  var uspList = document.querySelector('.oz-short-desc ul');
+  if (uspList && MT.targetUsps && MT.targetUsps.length) {
+    var uspHtml = '';
+    for (var i = 0; i < MT.targetUsps.length; i++) {
+      if (!MT.targetUsps[i]) continue;
+      uspHtml += '<li><svg class="oz-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"></path></svg>' + MT.targetUsps[i] + '</li>';
+    }
+    uspList.innerHTML = uspHtml;
+  }
+
+  // Specs table
+  var specsBody = document.querySelector('.oz-specs-table tbody');
+  if (specsBody && MT.targetSpecs) {
+    var specKeys = Object.keys(MT.targetSpecs);
+    if (specKeys.length) {
+      var specHtml = '';
+      for (var s = 0; s < specKeys.length; s++) {
+        specHtml += '<tr><th>' + specKeys[s] + '</th><td>' + MT.targetSpecs[specKeys[s]] + '</td></tr>';
+      }
+      specsBody.innerHTML = specHtml;
+    }
+  }
+
+  // FAQ
+  var faqList = document.querySelector('.oz-faq-list');
+  if (faqList && MT.targetFaq && MT.targetFaq.length) {
+    var faqHtml = '';
+    for (var f = 0; f < MT.targetFaq.length; f++) {
+      faqHtml += '<details class="oz-faq-item"><summary class="oz-faq-question">' + MT.targetFaq[f].q + '</summary><div class="oz-faq-answer">' + MT.targetFaq[f].a + '</div></details>';
+    }
+    faqList.innerHTML = faqHtml;
+  }
+
+  // Description
+  if (DOM.descContent && MT.targetDescription) {
+    DOM.descContent.innerHTML = MT.targetDescription;
+    DOM.descContent.classList.remove('expanded');
+    if (DOM.readMoreBtn) {
+      if (DOM.descContent.scrollHeight <= 120) {
+        DOM.readMoreBtn.style.display = 'none';
+        DOM.descContent.classList.add('expanded');
+      } else {
+        DOM.readMoreBtn.style.display = '';
+        DOM.readMoreBtn.textContent = 'Lees meer';
+      }
+    }
+  }
+}
+
+// Store original content for restoration on toggle-back
+var _originalContent = null;
+
+/**
+ * Snapshot original content sections on first toggle (lazy init).
+ */
+function captureOriginalContent() {
+  if (_originalContent) return;
+  _originalContent = {};
+  var uspList = document.querySelector('.oz-short-desc ul');
+  if (uspList) _originalContent.uspsHtml = uspList.innerHTML;
+  var specsBody = document.querySelector('.oz-specs-table tbody');
+  if (specsBody) _originalContent.specsHtml = specsBody.innerHTML;
+  var faqList = document.querySelector('.oz-faq-list');
+  if (faqList) _originalContent.faqHtml = faqList.innerHTML;
+  if (DOM.descContent) _originalContent.descHtml = DOM.descContent.innerHTML;
+}
+
+/**
+ * Restore original content sections from snapshot.
+ */
+function restoreContent() {
+  if (!_originalContent) return;
+  var uspList = document.querySelector('.oz-short-desc ul');
+  if (uspList && _originalContent.uspsHtml) uspList.innerHTML = _originalContent.uspsHtml;
+  var specsBody = document.querySelector('.oz-specs-table tbody');
+  if (specsBody && _originalContent.specsHtml) specsBody.innerHTML = _originalContent.specsHtml;
+  var faqList = document.querySelector('.oz-faq-list');
+  if (faqList && _originalContent.faqHtml) faqList.innerHTML = _originalContent.faqHtml;
+  if (DOM.descContent && _originalContent.descHtml) {
+    DOM.descContent.innerHTML = _originalContent.descHtml;
+    DOM.descContent.classList.remove('expanded');
+    if (DOM.readMoreBtn) {
+      if (DOM.descContent.scrollHeight <= 120) {
+        DOM.readMoreBtn.style.display = 'none';
+        DOM.descContent.classList.add('expanded');
+      } else {
+        DOM.readMoreBtn.style.display = '';
+        DOM.readMoreBtn.textContent = 'Lees meer';
+      }
+    }
+  }
+}
+
+/**
+ * Rebuild option groups that differ between K&K and ZM.
+ * Dynamically rebuilds primer buttons and toepassing section.
+ */
+function rebuildToggleOptions() {
+  // Rebuild primer buttons
+  var primerGroup = document.querySelector('[data-option="primer"]');
+  if (primerGroup && P.primerOptions) {
+    var btnsWrap = primerGroup.querySelector('.oz-option-buttons');
+    if (btnsWrap) {
+      var html = '';
+      for (var i = 0; i < P.primerOptions.length; i++) {
+        var opt = P.primerOptions[i];
+        var isSelected = opt.label === S.primer;
+        var recBadge = opt.recommended ? ' <span class="oz-advies-badge">Advies</span>' : '';
+        html += '<button class="oz-option-btn' + (isSelected ? ' selected' : '') + '" data-primer="' + opt.label + '">' + opt.label + recBadge + '</button>';
+      }
+      btnsWrap.innerHTML = html;
+    }
+  }
+
+  // Toepassing section — show/hide and rebuild
+  var toeGroup = document.querySelector('[data-option="toepassing"]');
+  if (P.toepassing && P.toepassing.length) {
+    if (!toeGroup) {
+      // Create toepassing section if it doesn't exist
+      var optionsWidget = DOM.optionsWidget;
+      if (optionsWidget) {
+        var toeSection = document.createElement('div');
+        toeSection.className = 'oz-option-group';
+        toeSection.setAttribute('data-option', 'toepassing');
+        var toeHtml = '<div class="oz-option-header">Toepassing <span class="oz-option-selected" id="selectedToepassingLabel">' + (S.toepassing || '') + '</span></div>';
+        toeHtml += '<div class="oz-option-buttons">';
+        for (var t = 0; t < P.toepassing.length; t++) {
+          var isSel = P.toepassing[t] === S.toepassing;
+          toeHtml += '<button class="oz-option-btn' + (isSel ? ' selected' : '') + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + '</button>';
+        }
+        toeHtml += '</div>';
+        toeSection.innerHTML = toeHtml;
+        // Insert before primer section
+        var primerSec = optionsWidget.querySelector('[data-option="primer"]');
+        if (primerSec) {
+          optionsWidget.insertBefore(toeSection, primerSec);
+        } else {
+          optionsWidget.appendChild(toeSection);
+        }
+      }
+    } else {
+      // Update existing toepassing buttons
+      toeGroup.style.display = '';
+      var toeBtns = toeGroup.querySelector('.oz-option-buttons');
+      if (toeBtns) {
+        var toeHtml2 = '';
+        for (var t2 = 0; t2 < P.toepassing.length; t2++) {
+          var isSel2 = P.toepassing[t2] === S.toepassing;
+          toeHtml2 += '<button class="oz-option-btn' + (isSel2 ? ' selected' : '') + '" data-toepassing="' + P.toepassing[t2] + '">' + P.toepassing[t2] + '</button>';
+        }
+        toeBtns.innerHTML = toeHtml2;
+      }
+    }
+  } else if (toeGroup) {
+    // Hide toepassing when switching back to K&K
+    toeGroup.style.display = 'none';
+  }
+}
+
+// Capture original content on first toggle
+if (P.modeToggle) {
+  // Use requestIdleCallback to capture after initial render
+  var captureOnce = function() { captureOriginalContent(); };
+  if (window.requestIdleCallback) {
+    requestIdleCallback(captureOnce);
+  } else {
+    setTimeout(captureOnce, 100);
+  }
+}
+
+// Export toggleFormula for navigation.js popstate handler
+window._ozToggleFormula = P.modeToggle ? toggleFormula : null;
+
+
 /* ═══ UPSELL MODAL HANDLERS ════════════════════════════════ */
 
 /** Open upsell modal — called from addToCart when no tools selected */
@@ -531,6 +822,14 @@ function renderUpsellModal() {
  */
 function handleClick(e) {
   var target = e.target;
+
+  // Formula toggle button — K&K <-> Zelf Mengen & Mixen
+  var formulaBtn = target.closest('[data-formula]');
+  if (formulaBtn) {
+    e.preventDefault();
+    toggleFormula(formulaBtn.dataset.formula);
+    return;
+  }
 
   // Walk up to find the actionable element (button, swatch, etc.)
   var btn = target.closest('[data-pu], [data-primer], [data-colorfresh], [data-toepassing], [data-pakket]');
@@ -636,6 +935,18 @@ function handleClick(e) {
       var allSwatches = swatch.parentNode.querySelectorAll('.oz-color-swatch');
       for (var si = 0; si < allSwatches.length; si++) {
         allSwatches[si].classList.toggle('selected', allSwatches[si] === swatch);
+      }
+      syncUI();
+      return;
+    }
+
+    // ZM formula mode — swatches behave as static (update color, don't navigate)
+    if (S.formulaMode === 'target') {
+      e.preventDefault();
+      updateState({ selectedColor: colorName });
+      var allSwatchesZm = swatch.parentNode.querySelectorAll('.oz-color-swatch');
+      for (var zi = 0; zi < allSwatchesZm.length; zi++) {
+        allSwatchesZm[zi].classList.toggle('selected', allSwatchesZm[zi] === swatch);
       }
       syncUI();
       return;

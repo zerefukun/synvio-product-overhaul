@@ -88,6 +88,10 @@ export var S = P ? {
   // Upsell modal state
   upsellOpen: false,
 
+  // Formula mode: 'self' (current line) or 'target' (toggled line)
+  // null when no mode_toggle exists on this product
+  formulaMode: P.modeToggle ? 'self' : null,
+
   // Generic addon selections — keyed by group key, value is selected label
   // Populated from P.addonGroups defaults below
   addons: {},
@@ -108,6 +112,24 @@ if (P && P.addonGroups && P.addonGroups.length) {
     S.addons[g.key] = findDefault(g.options, 'label');
   });
 }
+
+// Snapshot of original P values for formula toggle restore.
+// Saved once at init — used to restore P when toggling back from ZM to K&K.
+export var _originalP = P && P.modeToggle ? {
+  productId:     P.productId,
+  productName:   P.productName,
+  basePrice:     P.basePrice,
+  productLine:   P.productLine,
+  unit:          P.unit,
+  unitM2:        P.unitM2,
+  isBase:        P.isBase,
+  puOptions:     P.puOptions,
+  primerOptions: P.primerOptions,
+  toepassing:    P.toepassing,
+  optionOrder:   P.optionOrder,
+  toolConfig:    P.toolConfig,
+  hasTools:      P.hasTools,
+} : null;
 
 
 /* ═══ STATE MUTATION GATE ═══════════════════════════════════ */
@@ -367,6 +389,11 @@ export function validateCartState(config, state) {
   if (config.hasStaticColors && state.colorMode === 'swatch' && !state.selectedColor) {
     return 'Kies een kleur.';
   }
+  // ZM formula mode — single product, color stored as meta, must be selected
+  if (state.formulaMode === 'target' && state.colorMode === 'swatch'
+      && !state.selectedColor && !config.currentColor) {
+    return 'Kies eerst een kleur.';
+  }
   // Tool validation — individual mode must have at least 1 tool selected
   if (config.hasTools && state.toolMode === 'individual' && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
     return 'Kies minimaal 1 gereedschap of kies een andere optie.';
@@ -406,12 +433,24 @@ export function validateCartState(config, state) {
  * @return {Object}  Key-value pairs for the cart form data
  */
 export function buildCartPayload(config, state) {
+  // In ZM formula mode, add-to-cart targets the toggle product (11152)
+  var isToggled = (state.formulaMode === 'target' && config.modeToggle);
+  var productId = isToggled ? config.modeToggle.targetProductId : config.productId;
+
   var payload = {
     action: 'oz_bcw_add_to_cart',
     nonce: config.nonce,
-    product_id: config.productId,
+    product_id: productId,
     quantity: state.qty,
   };
+
+  // ZM: pass the line key and selected color as order meta
+  if (isToggled) {
+    payload.oz_line = config.modeToggle.targetLine;
+    // Color comes from the currently viewed swatch or selectedColor
+    var color = state.selectedColor || config.currentColor || '';
+    if (color) payload.oz_selected_color = color;
+  }
 
   // Addon fields — same keys as OZ_Cart_Manager::extract_post_data()
   if (state.puLayers !== null)  payload.oz_pu_layers = state.puLayers;

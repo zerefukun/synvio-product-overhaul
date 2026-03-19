@@ -182,6 +182,14 @@ export function trackGalleryImage(imageIndex) {
   });
 }
 
+/** Formula toggle — K&K <-> Zelf Mengen & Mixen */
+export function trackFormulaToggled(fromMode, toMode) {
+  push('oz_formula_toggled', {
+    oz_from_mode: fromMode,
+    oz_to_mode: toMode,
+  });
+}
+
 /** Generic addon group option selected */
 export function trackAddonSelected(addonKey, addonValue) {
   push('oz_option_selected', {

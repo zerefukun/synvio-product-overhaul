@@ -724,6 +724,35 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * Formula toggle stats: toggle clicks, ZM add-to-carts, and conversion rate.
+     * Used by the dashboard ZM monitoring section.
+     */
+    public static function formula_toggle_stats($days) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        $row = $wpdb->get_row($wpdb->prepare(
+            "SELECT
+                SUM(CASE WHEN event_name = 'oz_formula_toggled' THEN 1 ELSE 0 END) AS toggle_clicks,
+                SUM(CASE WHEN event_name = 'oz_add_to_cart' AND product_id = 11152 THEN 1 ELSE 0 END) AS zm_add_to_cart
+             FROM {$table}
+             WHERE created_at >= %s AND created_at < %s",
+            $since, $until
+        ), ARRAY_A);
+
+        $toggles = intval($row['toggle_clicks']);
+        $zm_atc  = intval($row['zm_add_to_cart']);
+
+        return [
+            'toggle_clicks'   => $toggles,
+            'zm_add_to_cart'  => $zm_atc,
+            'zm_conversion'   => $toggles > 0 ? round(($zm_atc / $toggles) * 100, 1) : 0,
+        ];
+    }
+
+    /**
      * Traffic sources: where sessions originated (from oz_session_start events).
      * Groups by oz_traffic_source extracted from event_data JSON.
      *

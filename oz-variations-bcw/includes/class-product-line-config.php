@@ -27,6 +27,7 @@ class OZ_Product_Line_Config {
      */
     private static $pu_prices = [
         'original'    => [0 => 0, 1 => 8,     2 => 16,    3 => 24],   // per m² (was per 5m²: 40/80/120)
+        'original-zm' => [0 => 0, 1 => 40,    2 => 80,    3 => 120],  // per 5m² unit (same €8/m² rate)
         'all-in-one'  => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
         'easyline'    => [0 => -40, 1 => 0,   2 => 40,   3 => 80],
         'microcement' => [0 => 0, 1 => 8,     2 => 16,    3 => 24],
@@ -41,6 +42,12 @@ class OZ_Product_Line_Config {
      */
     private static $pu_options = [
         'original' => [
+            [0, 'Geen toplaag',  false],
+            [1, '1 toplaag',     false],
+            [2, '2 Toplagen',    false],
+            [3, '3 Toplagen',    false],
+        ],
+        'original-zm' => [
             [0, 'Geen toplaag',  false],
             [1, '1 toplaag',     false],
             [2, '2 Toplagen',    false],
@@ -88,6 +95,11 @@ class OZ_Product_Line_Config {
         'original' => [
             ['Primer', 0, true,  true],   // Advies — included in base price (like microcement)
             ['Geen',   0, false, false],
+        ],
+        'original-zm' => [
+            ['Niet-zuigende primer', 0, true,  true],   // default, Advies
+            ['Zuigende primer',      0, false, false],
+            ['Geen primer',          0, false, false],
         ],
         'metallic' => [
             ['Geen',   0,    true,  false],
@@ -172,6 +184,12 @@ class OZ_Product_Line_Config {
             'kleurstalen_url' => '/original-kleurstalen/',
             'cross_link'     => ['text' => 'Ontdek ook Microcement?', 'base_id' => 22760, 'label' => 'Bekijk Microcement'],
             'option_order'   => ['color', 'primer', 'pu', 'tools'],
+            'mode_toggle'    => [
+                'target_product_id' => 11152,
+                'target_line'       => 'original-zm',
+                'label_self'        => 'Kant-en-Klaar',
+                'label_target'      => 'Zelf Mengen & Mixen',
+            ],
             'faq' => [
                 ['q' => 'Hoeveel m² heb ik nodig?', 'a' => 'Reken het oppervlak uit (lengte × breedte) en bestel minimaal die hoeveelheid. Wij adviseren 10% extra aan te houden voor snijverlies en onregelmatigheden.'],
                 ['q' => 'Kan ik Beton Ciré Original zelf aanbrengen?', 'a' => 'Ja, met de juiste voorbereiding en ons gereedschapset is het goed zelf te doen. Bekijk onze handleiding of volg een workshop voor het beste resultaat.'],
@@ -179,6 +197,36 @@ class OZ_Product_Line_Config {
                 ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes raden wij minimaal 2 lagen PU aan. Dit beschermt tegen slijtage en maakt het oppervlak waterdicht. Voor wanden is PU optioneel.'],
                 ['q' => 'Hoe lang is de droogtijd?', 'a' => 'Reken op 24 uur per laag bij kamertemperatuur (18-22°C). Na de laatste PU-laag is het oppervlak na 7 dagen volledig uitgehard.'],
             ],
+        ],
+
+        // ─── ORIGINAL ZELF MENGEN & MIXEN ───────────────────────────
+        // Same colors as K&K Original, sold per 5m², different formula
+        // Hidden from shop — only reachable via toggle on K&K Original page
+        'original-zm' => [
+            'cats'           => [],
+            'product_ids'    => [11152],
+            'share_colors_from' => 'original',
+            'usps'           => [],   // Patrick fills via admin
+            'specs'          => [],   // Patrick fills via admin
+            'base_id'        => null,
+            'unit'           => '5m²',
+            'unitM2'         => 5,
+            'has_pu'         => true,
+            'has_primer'     => true,
+            'has_colorfresh' => false,
+            'has_toepassing' => true,
+            'has_pakket'     => false,
+            'ral_ncs'        => false,
+            'ral_ncs_only'   => false,
+            'has_tools'      => true,
+            'option_order'   => ['color', 'toepassing', 'primer', 'pu', 'tools'],
+            'mode_toggle'    => [
+                'target_product_id' => 11161,
+                'target_line'       => 'original',
+                'label_self'        => 'Zelf Mengen & Mixen',
+                'label_target'      => 'Kant-en-Klaar',
+            ],
+            'faq'            => [],   // Patrick fills via admin
         ],
 
         // ─── ALL-IN-ONE ──────────────────────────────────────────────
@@ -491,10 +539,11 @@ class OZ_Product_Line_Config {
     ];
 
     /**
-     * Toepassing options (Original only). All free, no pricing.
+     * Toepassing options per line. All free, no pricing.
+     * Only lines with has_toepassing = true use this.
      */
     private static $toepassing_options = [
-        'Vloer', 'Wand', 'Meubel', 'Keuken', 'Badkamer', 'Trap',
+        'original-zm' => ['Vloer', 'Overige'],
     ];
 
     /**
@@ -1207,7 +1256,9 @@ class OZ_Product_Line_Config {
         if (!$config || !$config['has_toepassing']) {
             return false;
         }
-        return self::$toepassing_options;
+        return isset(self::$toepassing_options[$line_key])
+            ? self::$toepassing_options[$line_key]
+            : false;
     }
 
 
@@ -1258,6 +1309,18 @@ class OZ_Product_Line_Config {
     /** @return array  All line keys */
     public static function get_all_lines() {
         return array_keys(self::$lines);
+    }
+
+    /**
+     * Get mode toggle config for a line (K&K <-> ZM switch).
+     * Returns the mode_toggle array if present, false otherwise.
+     *
+     * @param string $line_key
+     * @return array|false
+     */
+    public static function get_mode_toggle_config($line_key) {
+        $config = self::get_config($line_key);
+        return ($config && !empty($config['mode_toggle'])) ? $config['mode_toggle'] : false;
     }
 
 
@@ -1439,21 +1502,40 @@ class OZ_Product_Line_Config {
     ];
 
     /**
-     * Gereedschapset Kant & Klaar — the complete set product.
+     * Tool sets per line. Lines not listed fall back to 'default'.
+     * Each set: id (WC product), name, price, contents list.
      */
-    private static $tool_set = [
-        'id'       => 11177,
-        'name'     => 'Gereedschapset Kant & Klaar',
-        'price'    => 89.99,
-        'contents' => [
-            '1x Flexibele spaan',
-            '1x Kwast primer',
-            '1x Kwast PU',
-            '1x PU garde',
-            '3x PU roller',
-            '1x Tape',
-            '2x Verfbak',
-            '1x Vachtroller',
+    private static $tool_sets = [
+        'default' => [
+            'id'       => 11177,
+            'name'     => 'Gereedschapset Kant & Klaar',
+            'price'    => 89.99,
+            'contents' => [
+                '1x Flexibele spaan',
+                '1x Kwast primer',
+                '1x Kwast PU',
+                '1x PU garde',
+                '3x PU roller',
+                '1x Tape',
+                '2x Verfbak',
+                '1x Vachtroller',
+            ],
+        ],
+        'original-zm' => [
+            'id'       => 11163,
+            'name'     => 'Gereedschapset Zelf Mengen',
+            'price'    => 119.99,
+            'contents' => [
+                '1x Flexibele spaan',
+                '1x Kwast primer',
+                '1x Kwast PU',
+                '1x PU garde',
+                '3x PU roller',
+                '1x Tape',
+                '2x Verfbak',
+                '1x Vachtroller',
+                '1x Mengstaaf',
+            ],
         ],
     ];
 
@@ -1501,7 +1583,7 @@ class OZ_Product_Line_Config {
         return $item;
     }
 
-    public static function get_tool_config() {
+    public static function get_tool_config($line_key = null) {
         // Build extras and tools arrays from catalog references
         // Each item is enriched with stock status from WooCommerce
         $extras = [];
@@ -1518,8 +1600,13 @@ class OZ_Product_Line_Config {
             );
         }
 
+        // Per-line tool set, fall back to default
+        $tool_set = isset(self::$tool_sets[$line_key])
+            ? self::$tool_sets[$line_key]
+            : self::$tool_sets['default'];
+
         return [
-            'toolSet'            => self::$tool_set,
+            'toolSet'            => $tool_set,
             'extras'             => $extras,
             'tools'              => $tools,
             'nudgeQtyThreshold'  => 3,

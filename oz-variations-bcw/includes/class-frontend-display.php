@@ -210,7 +210,7 @@ class OZ_Frontend_Display {
                 'optionOrder'   => $config['option_order'],
                 'crossSells'    => $product->get_cross_sell_ids(),
                 'hasTools'      => !empty($config['has_tools']),
-                'toolConfig'    => !empty($config['has_tools']) ? OZ_Product_Line_Config::get_tool_config() : null,
+                'toolConfig'    => !empty($config['has_tools']) ? OZ_Product_Line_Config::get_tool_config($line_key) : null,
             ];
         } else {
             // Generic modes — no configured-line addon options
@@ -264,6 +264,57 @@ class OZ_Frontend_Display {
                 'title'        => $product->get_name(),
                 'description'  => apply_filters('the_content', $product->get_description()),
             ];
+        }
+
+        // Mode toggle — pre-load target product data for instant client-side swap
+        if ($line_key) {
+            $mode_toggle = OZ_Product_Line_Config::get_mode_toggle_config($line_key);
+            if ($mode_toggle) {
+                $target_line   = $mode_toggle['target_line'];
+                $target_config = OZ_Product_Line_Config::get_config($target_line);
+                $target_pid    = $mode_toggle['target_product_id'];
+                $target_product = wc_get_product($target_pid);
+
+                if ($target_config && $target_product) {
+                    // Target product's USPs/specs/FAQ — from meta first, then config fallback
+                    $target_usps = get_post_meta($target_pid, '_oz_usps', true);
+                    if (empty($target_usps) || !is_array($target_usps)) {
+                        $target_usps = !empty($target_config['usps']) ? $target_config['usps'] : [];
+                    }
+                    $target_specs = get_post_meta($target_pid, '_oz_specs', true);
+                    if (empty($target_specs) || !is_array($target_specs)) {
+                        $target_specs = !empty($target_config['specs']) ? $target_config['specs'] : [];
+                    }
+                    $target_faq = get_post_meta($target_pid, '_oz_faq', true);
+                    if (empty($target_faq) || !is_array($target_faq)) {
+                        $target_faq = !empty($target_config['faq']) ? $target_config['faq'] : [];
+                    }
+
+                    $js_data['modeToggle'] = [
+                        'labelSelf'           => $mode_toggle['label_self'],
+                        'labelTarget'         => $mode_toggle['label_target'],
+                        'targetProductId'     => $target_pid,
+                        'targetLine'          => $target_line,
+                        'targetBasePrice'     => floatval($target_product->get_price()),
+                        'targetUnit'          => $target_config['unit'],
+                        'targetUnitM2'        => $target_config['unitM2'],
+                        'targetUrl'           => get_permalink($target_pid),
+                        'targetProductName'   => $target_product->get_name(),
+                        'targetPuOptions'     => OZ_Product_Line_Config::get_pu_options($target_line),
+                        'targetPrimerOptions' => OZ_Product_Line_Config::get_primer_options($target_line),
+                        'targetToepassing'    => OZ_Product_Line_Config::get_toepassing_options($target_line),
+                        'targetOptionOrder'   => $target_config['option_order'],
+                        'targetHasTools'      => !empty($target_config['has_tools']),
+                        'targetToolConfig'    => !empty($target_config['has_tools'])
+                            ? OZ_Product_Line_Config::get_tool_config($target_line)
+                            : null,
+                        'targetUsps'          => $target_usps,
+                        'targetSpecs'         => $target_specs,
+                        'targetFaq'           => $target_faq,
+                        'targetDescription'   => apply_filters('the_content', $target_product->get_description()),
+                    ];
+                }
+            }
         }
 
         wp_localize_script('oz-product-page', 'ozProduct', $js_data);

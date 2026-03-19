@@ -61,7 +61,15 @@ export function initNavigation(onAfterNavigate) {
   history.replaceState({ productId: P.productId }, '', location.href);
 
   window.addEventListener('popstate', function(e) {
-    if (e.state && e.state.productId) {
+    if (!e.state) return;
+
+    // Formula toggle popstate — restore K&K or ZM mode
+    if (e.state.formulaMode && window._ozToggleFormula) {
+      window._ozToggleFormula(e.state.formulaMode);
+      return;
+    }
+
+    if (e.state.productId) {
       applyVariant(e.state.productId, true);
     }
   });

@@ -43,6 +43,7 @@ class OZ_Analytics_Collector {
         'oz_upsell_skipped',
         'oz_sheet_opened',
         'oz_gallery_image',
+        'oz_formula_toggled',
         // Cart drawer events (11)
         'oz_cart_opened',
         'oz_cart_closed',
