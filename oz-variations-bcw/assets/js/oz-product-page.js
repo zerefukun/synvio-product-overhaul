@@ -234,6 +234,9 @@
     if (state.formulaMode === "target" && state.colorMode === "swatch" && !state.selectedColor && !config.currentColor) {
       return "Kies eerst een kleur.";
     }
+    if (config.toepassing && config.toepassing.length && !state.toepassing) {
+      return "Kies een toepassing (Vloer of Overige).";
+    }
     if (config.hasTools && state.toolMode === "individual" && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
       return "Kies minimaal 1 gereedschap of kies een andere optie.";
     }
@@ -1299,8 +1302,8 @@
           puLayers: S.puLayers,
           // Primer: ZM has no customer-facing primer, clear it
           primer: null,
-          // Toepassing: new in ZM, set default
-          toepassing: P.toepassing ? P.toepassing[0] : null,
+          // Toepassing: no default — user must choose (Vloer or Overige)
+          toepassing: null,
           // Color: preserve from current swatch
           selectedColor: S.selectedColor || P.currentColor || "",
           // Tools: if K&K set was selected, auto-switch to ZM set
@@ -1456,32 +1459,23 @@
             var toeSection = document.createElement("div");
             toeSection.className = "oz-option-group";
             toeSection.setAttribute("data-option", "toepassing");
-            var toeHtml = '<div class="oz-option-header">Toepassing <span class="oz-option-selected" id="selectedToepassingLabel">' + (S.toepassing || "") + "</span></div>";
-            toeHtml += '<div class="oz-option-buttons">';
+            var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
+            toeHtml += '<div class="oz-option-labels">';
             for (var t = 0; t < P.toepassing.length; t++) {
               var isSel = P.toepassing[t] === S.toepassing;
-              toeHtml += '<button class="oz-option-btn' + (isSel ? " selected" : "") + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + "</button>";
+              toeHtml += '<button class="oz-option-label-btn' + (isSel ? " selected" : "") + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + "</button>";
             }
             toeHtml += "</div>";
             toeSection.innerHTML = toeHtml;
-            var primerSec = optionsWidget.querySelector('[data-option="primer"]');
-            if (primerSec) {
-              optionsWidget.insertBefore(toeSection, primerSec);
+            var puSec = optionsWidget.querySelector('[data-option="pu"]');
+            if (puSec) {
+              optionsWidget.insertBefore(toeSection, puSec);
             } else {
               optionsWidget.appendChild(toeSection);
             }
           }
         } else {
           toeGroup.style.display = "";
-          var toeBtns = toeGroup.querySelector(".oz-option-buttons");
-          if (toeBtns) {
-            var toeHtml2 = "";
-            for (var t2 = 0; t2 < P.toepassing.length; t2++) {
-              var isSel2 = P.toepassing[t2] === S.toepassing;
-              toeHtml2 += '<button class="oz-option-btn' + (isSel2 ? " selected" : "") + '" data-toepassing="' + P.toepassing[t2] + '">' + P.toepassing[t2] + "</button>";
-            }
-            toeBtns.innerHTML = toeHtml2;
-          }
         }
       } else if (toeGroup) {
         toeGroup.style.display = "none";

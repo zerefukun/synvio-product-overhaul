@@ -394,6 +394,10 @@ export function validateCartState(config, state) {
       && !state.selectedColor && !config.currentColor) {
     return 'Kies eerst een kleur.';
   }
+  // Toepassing validation — must choose when available (ZM: Vloer/Overige)
+  if (config.toepassing && config.toepassing.length && !state.toepassing) {
+    return 'Kies een toepassing (Vloer of Overige).';
+  }
   // Tool validation — individual mode must have at least 1 tool selected
   if (config.hasTools && state.toolMode === 'individual' && !hasAnyTool(state.toolMode, state.tools, config.toolConfig)) {
     return 'Kies minimaal 1 gereedschap of kies een andere optie.';

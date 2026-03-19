@@ -530,8 +530,8 @@ function toggleFormula(mode) {
       puLayers:   S.puLayers,
       // Primer: ZM has no customer-facing primer, clear it
       primer:     null,
-      // Toepassing: new in ZM, set default
-      toepassing: P.toepassing ? P.toepassing[0] : null,
+      // Toepassing: no default — user must choose (Vloer or Overige)
+      toepassing: null,
       // Color: preserve from current swatch
       selectedColor: S.selectedColor || P.currentColor || '',
       // Tools: if K&K set was selected, auto-switch to ZM set
@@ -733,47 +733,36 @@ function restoreContent() {
  * Primer is handled separately (hidden/shown, not rebuilt).
  */
 function rebuildToggleOptions() {
-  // Toepassing section — show/hide and rebuild
+  // Toepassing section — show/hide and rebuild using existing template classes
   var toeGroup = document.querySelector('[data-option="toepassing"]');
   if (P.toepassing && P.toepassing.length) {
     if (!toeGroup) {
-      // Create toepassing section if it doesn't exist
+      // Create toepassing section matching the template markup exactly
       var optionsWidget = DOM.optionsWidget;
       if (optionsWidget) {
         var toeSection = document.createElement('div');
         toeSection.className = 'oz-option-group';
         toeSection.setAttribute('data-option', 'toepassing');
-        var toeHtml = '<div class="oz-option-header">Toepassing <span class="oz-option-selected" id="selectedToepassingLabel">' + (S.toepassing || '') + '</span></div>';
-        toeHtml += '<div class="oz-option-buttons">';
+        var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
+        toeHtml += '<div class="oz-option-labels">';
         for (var t = 0; t < P.toepassing.length; t++) {
           var isSel = P.toepassing[t] === S.toepassing;
-          toeHtml += '<button class="oz-option-btn' + (isSel ? ' selected' : '') + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + '</button>';
+          toeHtml += '<button class="oz-option-label-btn' + (isSel ? ' selected' : '') + '" data-toepassing="' + P.toepassing[t] + '">' + P.toepassing[t] + '</button>';
         }
         toeHtml += '</div>';
         toeSection.innerHTML = toeHtml;
-        // Insert before primer section
-        var primerSec = optionsWidget.querySelector('[data-option="primer"]');
-        if (primerSec) {
-          optionsWidget.insertBefore(toeSection, primerSec);
+        // Insert before PU section (toepassing comes before PU in ZM option_order)
+        var puSec = optionsWidget.querySelector('[data-option="pu"]');
+        if (puSec) {
+          optionsWidget.insertBefore(toeSection, puSec);
         } else {
           optionsWidget.appendChild(toeSection);
         }
       }
     } else {
-      // Update existing toepassing buttons
       toeGroup.style.display = '';
-      var toeBtns = toeGroup.querySelector('.oz-option-buttons');
-      if (toeBtns) {
-        var toeHtml2 = '';
-        for (var t2 = 0; t2 < P.toepassing.length; t2++) {
-          var isSel2 = P.toepassing[t2] === S.toepassing;
-          toeHtml2 += '<button class="oz-option-btn' + (isSel2 ? ' selected' : '') + '" data-toepassing="' + P.toepassing[t2] + '">' + P.toepassing[t2] + '</button>';
-        }
-        toeBtns.innerHTML = toeHtml2;
-      }
     }
   } else if (toeGroup) {
-    // Hide toepassing when switching back to K&K
     toeGroup.style.display = 'none';
   }
 }
