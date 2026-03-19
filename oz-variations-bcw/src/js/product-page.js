@@ -118,16 +118,15 @@ function syncUI() {
     DOM.addToCartBtn.classList.toggle('oz-disabled', !!error);
   }
 
-  // Update sticky buttons: base products show "Kies kleur" until a valid
-  // RAL/NCS color is entered; variants always show "In winkelmand"
-  if (P.isBase) {
-    var ready = !error;
-    if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = ready ? 'In winkelmand' : 'Kies kleur';
-    if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? 'In winkelmand' : 'Kies kleur';
-  } else {
-    if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = 'In winkelmand';
-    if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = 'In winkelmand';
+  // Update sticky buttons based on validation state
+  var stickyLabel = 'In winkelmand';
+  if (P.isBase && error) {
+    stickyLabel = 'Kies kleur';
+  } else if (P.toepassing && P.toepassing.length && !S.toepassing) {
+    stickyLabel = 'Kies toepassing';
   }
+  if (DOM.stickyBtn)  DOM.stickyBtn.textContent  = stickyLabel;
+  if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = stickyLabel;
 }
 
 /**
@@ -294,10 +293,14 @@ function renderOptionHighlights() {
  * Update the "selected value" labels in option headers.
  */
 function renderSelectedLabels() {
-  // Toepassing selected label
+  // Toepassing selected label + required indicator
   var tpLabel = document.getElementById('selectedToepassingLabel');
-  if (tpLabel && S.toepassing) {
-    tpLabel.textContent = S.toepassing;
+  if (tpLabel) {
+    tpLabel.textContent = S.toepassing || '';
+  }
+  var tpStar = document.getElementById('toepassingRequired');
+  if (tpStar) {
+    tpStar.style.display = S.toepassing ? 'none' : '';
   }
 
   // Color label in header — shows selected static color, RAL/NCS code, or product color
@@ -750,7 +753,7 @@ function rebuildToggleOptions() {
         var toeSection = document.createElement('div');
         toeSection.className = 'oz-option-group';
         toeSection.setAttribute('data-option', 'toepassing');
-        var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
+        var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-required-star" id="toepassingRequired" style="color:#e53e3e">*</span> <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
         toeHtml += '<div class="oz-option-labels">';
         for (var t = 0; t < P.toepassing.length; t++) {
           var isSel = P.toepassing[t] === S.toepassing;
@@ -1069,24 +1072,26 @@ function handleClick(e) {
     return;
   }
 
-  // Mobile sticky button — base products without valid color scroll to colors, otherwise open sheet
+  // Mobile sticky button
   if (target === DOM.stickyBtn || target.closest('#stickyBtn')) {
     e.preventDefault();
     if (P.isBase && validateCartState(P, S)) {
-      // No valid color yet — guide user to pick one
       scrollToColors();
+    } else if (needsToepassing()) {
+      scrollToToepassing();
     } else {
       openSheet();
     }
     return;
   }
 
-  // Desktop sticky button — base products without valid color scroll to colors, otherwise add to cart
+  // Desktop sticky button
   if (target === DOM.stickyDBtn || target.closest('#stickyDBtn')) {
     e.preventDefault();
     if (P.isBase && validateCartState(P, S)) {
-      // No valid color yet — guide user to pick one
       scrollToColors();
+    } else if (needsToepassing()) {
+      scrollToToepassing();
     } else {
       addToCart();
     }
@@ -1516,8 +1521,10 @@ function addToCart() {
   // Pure validation — returns error string or null
   var error = validateCartState(P, S);
   if (error) {
-    // Scroll to tool section if it's a tool error
-    if (error.indexOf('gereedschap') !== -1) {
+    // Scroll to the relevant section based on the error
+    if (error.indexOf('toepassing') !== -1) {
+      scrollToToepassing();
+    } else if (error.indexOf('gereedschap') !== -1) {
       var toolGroup = document.querySelector('[data-option="tools"]');
       if (toolGroup) toolGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -1714,6 +1721,27 @@ function scrollToColors() {
     // Brief pulse effect to draw attention to the swatches
     colorSection.classList.add('oz-pulse');
     setTimeout(function() { colorSection.classList.remove('oz-pulse'); }, 1500);
+  }
+}
+
+
+/**
+ * Check if toepassing selection is required but not yet chosen.
+ */
+function needsToepassing() {
+  return P.toepassing && P.toepassing.length && !S.toepassing;
+}
+
+/**
+ * Scroll to the toepassing section and highlight it.
+ * Same pattern as scrollToColors — pulse effect to draw attention.
+ */
+function scrollToToepassing() {
+  var toeSection = document.querySelector('[data-option="toepassing"]');
+  if (toeSection) {
+    smoothScrollTo(toeSection);
+    toeSection.classList.add('oz-pulse');
+    setTimeout(function() { toeSection.classList.remove('oz-pulse'); }, 1500);
   }
 }
 

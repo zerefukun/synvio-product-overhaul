@@ -1037,14 +1037,14 @@
       if (DOM.addToCartBtn) {
         DOM.addToCartBtn.classList.toggle("oz-disabled", !!error);
       }
-      if (P.isBase) {
-        var ready = !error;
-        if (DOM.stickyBtn) DOM.stickyBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
-        if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = ready ? "In winkelmand" : "Kies kleur";
-      } else {
-        if (DOM.stickyBtn) DOM.stickyBtn.textContent = "In winkelmand";
-        if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = "In winkelmand";
+      var stickyLabel = "In winkelmand";
+      if (P.isBase && error) {
+        stickyLabel = "Kies kleur";
+      } else if (P.toepassing && P.toepassing.length && !S.toepassing) {
+        stickyLabel = "Kies toepassing";
       }
+      if (DOM.stickyBtn) DOM.stickyBtn.textContent = stickyLabel;
+      if (DOM.stickyDBtn) DOM.stickyDBtn.textContent = stickyLabel;
     }, renderToolDetails = function(prices, anchor, lineClass) {
       if (!anchor) return;
       var parent = anchor.parentNode;
@@ -1153,8 +1153,12 @@
       }
     }, renderSelectedLabels = function() {
       var tpLabel = document.getElementById("selectedToepassingLabel");
-      if (tpLabel && S.toepassing) {
-        tpLabel.textContent = S.toepassing;
+      if (tpLabel) {
+        tpLabel.textContent = S.toepassing || "";
+      }
+      var tpStar = document.getElementById("toepassingRequired");
+      if (tpStar) {
+        tpStar.style.display = S.toepassing ? "none" : "";
       }
       var colorLabel = document.getElementById("selectedColorLabel");
       if (colorLabel) {
@@ -1463,7 +1467,7 @@
             var toeSection = document.createElement("div");
             toeSection.className = "oz-option-group";
             toeSection.setAttribute("data-option", "toepassing");
-            var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
+            var toeHtml = '<div class="oz-option-header">Toepassing: <span class="oz-required-star" id="toepassingRequired" style="color:#e53e3e">*</span> <span class="oz-selected-value" id="selectedToepassingLabel"></span></div>';
             toeHtml += '<div class="oz-option-labels">';
             for (var t = 0; t < P.toepassing.length; t++) {
               var isSel = P.toepassing[t] === S.toepassing;
@@ -1696,6 +1700,8 @@
         e.preventDefault();
         if (P.isBase && validateCartState(P, S)) {
           scrollToColors();
+        } else if (needsToepassing()) {
+          scrollToToepassing();
         } else {
           openSheet();
         }
@@ -1705,6 +1711,8 @@
         e.preventDefault();
         if (P.isBase && validateCartState(P, S)) {
           scrollToColors();
+        } else if (needsToepassing()) {
+          scrollToToepassing();
         } else {
           addToCart();
         }
@@ -1951,7 +1959,9 @@
       }
       var error = validateCartState(P, S);
       if (error) {
-        if (error.indexOf("gereedschap") !== -1) {
+        if (error.indexOf("toepassing") !== -1) {
+          scrollToToepassing();
+        } else if (error.indexOf("gereedschap") !== -1) {
           var toolGroup = document.querySelector('[data-option="tools"]');
           if (toolGroup) toolGroup.scrollIntoView({ behavior: "smooth", block: "center" });
         }
@@ -2062,6 +2072,17 @@
         colorSection.classList.add("oz-pulse");
         setTimeout(function() {
           colorSection.classList.remove("oz-pulse");
+        }, 1500);
+      }
+    }, needsToepassing = function() {
+      return P.toepassing && P.toepassing.length && !S.toepassing;
+    }, scrollToToepassing = function() {
+      var toeSection = document.querySelector('[data-option="toepassing"]');
+      if (toeSection) {
+        smoothScrollTo(toeSection);
+        toeSection.classList.add("oz-pulse");
+        setTimeout(function() {
+          toeSection.classList.remove("oz-pulse");
         }, 1500);
       }
     }, setupStickyBar = function() {
