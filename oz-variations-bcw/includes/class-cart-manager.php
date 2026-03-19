@@ -34,7 +34,7 @@ class OZ_Cart_Manager {
     private static $meta_keys = [
         'oz_line', 'oz_pu_layers', 'oz_primer', 'oz_colorfresh',
         'oz_toepassing', 'oz_color_mode', 'oz_custom_color',
-        'oz_selected_color', 'oz_pakket',
+        'oz_selected_color', 'oz_pakket', 'oz_cart_image',
     ];
 
     /**
@@ -79,6 +79,9 @@ class OZ_Cart_Manager {
         // WooCommerce hides meta keys starting with '_' by default,
         // so we re-label _oz_tool_size to show "Maat: 10cm" on PDF packing slips.
         add_filter('woocommerce_order_item_get_formatted_meta_data', [__CLASS__, 'expose_tool_size_meta'], 10, 2);
+
+        // Override cart thumbnail for items with a custom color image (ZM products)
+        add_filter('woocommerce_cart_item_thumbnail', [__CLASS__, 'override_cart_thumbnail'], 10, 3);
     }
 
     /**
@@ -188,6 +191,7 @@ class OZ_Cart_Manager {
             'oz_custom_color'   => $text('oz_custom_color'),
             'oz_selected_color' => $text('oz_selected_color'),
             'oz_pakket'         => $text('oz_pakket'),
+            'oz_cart_image'     => $text('oz_cart_image'),
         ];
 
         // PU layers (0-3, clamped)
@@ -489,6 +493,20 @@ class OZ_Cart_Manager {
             ];
         }
         return $formatted_meta;
+    }
+
+
+    /**
+     * Override cart item thumbnail for products with a custom color image.
+     * ZM products use a single WC product for all colors — the color image
+     * is passed from JS and stored in cart item data.
+     */
+    public static function override_cart_thumbnail($thumbnail, $cart_item, $cart_item_key) {
+        if (!empty($cart_item['oz_cart_image'])) {
+            $src = esc_url($cart_item['oz_cart_image']);
+            return '<img src="' . $src . '" class="attachment-woocommerce_thumbnail" alt="" width="100" height="100">';
+        }
+        return $thumbnail;
     }
 
 

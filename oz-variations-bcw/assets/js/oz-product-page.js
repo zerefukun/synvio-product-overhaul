@@ -275,6 +275,8 @@
       payload.oz_line = config.modeToggle.targetLine;
       var color = state.selectedColor || config.currentColor || "";
       if (color) payload.oz_selected_color = color;
+      var mainImg = document.getElementById("mainImg");
+      if (mainImg && mainImg.src) payload.oz_cart_image = mainImg.src;
     }
     if (state.puLayers !== null) payload.oz_pu_layers = state.puLayers;
     if (state.primer && config.primerOptions) payload.oz_primer = state.primer;
