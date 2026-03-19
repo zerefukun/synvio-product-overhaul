@@ -880,7 +880,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-title-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 12px;
   margin: 0 0 4px;
   flex-wrap: wrap;
@@ -890,34 +890,29 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-formula-toggle {
   display: flex;
-  gap: 8px;
+  gap: 0;
   flex-shrink: 0;
 }
 .oz-product-page .oz-formula-btn {
-  padding: 10px 18px;
-  border: 1.5px solid var(--oz-label-border);
-  border-radius: 8px;
-  background: var(--oz-label-bg);
-  color: var(--oz-label-text);
-  font-size: 13px;
+  padding: 4px 8px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--oz-text-muted, #999);
+  font-size: 12px;
   font-weight: 500;
   font-family: "Raleway", sans-serif;
   cursor: pointer;
-  transition:
-    border-color 0.25s var(--oz-ease),
-    background 0.25s var(--oz-ease),
-    color 0.25s var(--oz-ease),
-    box-shadow 0.25s var(--oz-ease);
+  transition: color 0.2s var(--oz-ease), border-color 0.2s var(--oz-ease);
   white-space: nowrap;
 }
 .oz-product-page .oz-formula-btn:hover {
-  border-color: var(--oz-label-hover-border);
-  background: var(--oz-label-hover-bg);
+  color: var(--oz-text-secondary, #555);
 }
 .oz-product-page .oz-formula-btn.selected {
-  border-color: var(--oz-accent);
-  background: var(--oz-accent);
-  color: var(--oz-accent-text);
+  color: var(--oz-text-primary);
+  border-bottom-color: var(--oz-accent);
 }
 .oz-formula-subtitle {
   font-size: 13px;
