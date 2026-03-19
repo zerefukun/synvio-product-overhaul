@@ -181,9 +181,11 @@ class OZ_Frontend_Display {
             // Color/variant data
             'currentColor' => get_post_meta($product->get_id(), '_oz_color', true) ?: '',
             'variants'     => $line_key
-                ? ($page_mode === 'configured_line' && OZ_Product_Processor::is_base_product($product)
-                    ? self::get_base_product_variants($product)
-                    : OZ_Product_Processor::get_variant_display_data($product->get_id()))
+                ? ($page_mode === 'configured_line' && !empty($config['share_colors_from'])
+                    ? self::get_shared_color_variants($config['share_colors_from'])
+                    : ($page_mode === 'configured_line' && OZ_Product_Processor::is_base_product($product)
+                        ? self::get_base_product_variants($product)
+                        : OZ_Product_Processor::get_variant_display_data($product->get_id())))
                 : [],
             'productImage' => $image_url,
             'siteTitle'    => get_bloginfo('name'),
@@ -583,6 +585,62 @@ class OZ_Frontend_Display {
                 'onSale'       => $variant ? $variant->is_on_sale() : false,
                 'title'        => $variant ? $variant->get_name() : '',
                 'description'  => $variant ? apply_filters('the_content', $variant->get_description()) : '',
+            ];
+        }
+
+        return $variants;
+    }
+
+    /**
+     * Get variant display data from a shared/source line.
+     * Used by products with share_colors_from (e.g. ZM borrows Original's palette).
+     * Returns variant data so JS can swap images on static swatch click.
+     *
+     * @param string $source_line_key  Line key to borrow colors from
+     * @return array  [product_id => variant data]
+     */
+    private static function get_shared_color_variants($source_line_key) {
+        $source_config = OZ_Product_Line_Config::get_config($source_line_key);
+        if (!$source_config || empty($source_config['cats'])) {
+            return [];
+        }
+
+        $args = [
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'posts_per_page' => 200,
+            'fields'         => 'ids',
+            'tax_query'      => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => $source_config['cats'],
+            ]],
+            'meta_query'     => [[
+                'key'     => '_oz_color',
+                'compare' => 'EXISTS',
+            ]],
+        ];
+
+        $ids = get_posts($args);
+        $variants = [];
+        $seen_colors = [];
+
+        foreach ($ids as $vid) {
+            $color = get_post_meta($vid, '_oz_color', true);
+            if (empty($color) || isset($seen_colors[$color])) {
+                continue;
+            }
+            $seen_colors[$color] = true;
+
+            $image_id  = get_post_thumbnail_id($vid);
+            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $variants[$vid] = [
+                'color'     => $color,
+                'url'       => '#',
+                'image'     => $image_url,
+                'fullImage' => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'gallery'   => [],
             ];
         }
 

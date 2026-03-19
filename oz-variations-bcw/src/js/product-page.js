@@ -971,15 +971,32 @@ function handleClick(e) {
     var colorName = swatch.getAttribute('data-color') || '';
     analytics.trackColorSelected(colorName);
 
-    // Static swatch (shared colors, e.g. Betonlook Verf) — no navigation
+    // Static swatch (shared colors, e.g. ZM, Betonlook Verf) — no navigation
     if (swatch.hasAttribute('data-static')) {
       e.preventDefault();
-      // Update state with selected color
       updateState({ selectedColor: colorName });
-      // Update swatch highlight — remove from siblings, add to clicked
+      // Update swatch highlight
       var allSwatches = swatch.parentNode.querySelectorAll('.oz-color-swatch');
       for (var si = 0; si < allSwatches.length; si++) {
         allSwatches[si].classList.toggle('selected', allSwatches[si] === swatch);
+      }
+      // Swap main image from variant data (if available)
+      if (P.variants) {
+        var vKeys = Object.keys(P.variants);
+        for (var vi = 0; vi < vKeys.length; vi++) {
+          if (P.variants[vKeys[vi]].color === colorName) {
+            var vData = P.variants[vKeys[vi]];
+            if (vData.fullImage && DOM.mainImg) {
+              DOM.mainImg.classList.add('oz-fade');
+              var fullImg = vData.fullImage;
+              setTimeout(function() {
+                DOM.mainImg.src = fullImg;
+                DOM.mainImg.onload = function() { DOM.mainImg.classList.remove('oz-fade'); };
+              }, 200);
+            }
+            break;
+          }
+        }
       }
       syncUI();
       return;

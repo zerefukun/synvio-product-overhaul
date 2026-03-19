@@ -1627,6 +1627,25 @@
           for (var si = 0; si < allSwatches.length; si++) {
             allSwatches[si].classList.toggle("selected", allSwatches[si] === swatch);
           }
+          if (P.variants) {
+            var vKeys = Object.keys(P.variants);
+            for (var vi = 0; vi < vKeys.length; vi++) {
+              if (P.variants[vKeys[vi]].color === colorName) {
+                var vData = P.variants[vKeys[vi]];
+                if (vData.fullImage && DOM.mainImg) {
+                  DOM.mainImg.classList.add("oz-fade");
+                  var fullImg = vData.fullImage;
+                  setTimeout(function() {
+                    DOM.mainImg.src = fullImg;
+                    DOM.mainImg.onload = function() {
+                      DOM.mainImg.classList.remove("oz-fade");
+                    };
+                  }, 200);
+                }
+                break;
+              }
+            }
+          }
           syncUI();
           return;
         }
