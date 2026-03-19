@@ -1290,6 +1290,7 @@
         _preToggleProductId = P.productId;
         _preToggleIsBase = P.isBase;
         _preToggleBasePrice = P.basePrice;
+        _preToggleProductName = P.productName;
         P.productId = MT.targetProductId;
         P.productName = MT.targetProductName;
         P.basePrice = MT.targetBasePrice;
@@ -1332,6 +1333,7 @@
         P.productId = _preToggleProductId;
         P.isBase = _preToggleIsBase;
         P.basePrice = _preToggleBasePrice;
+        P.productName = _preToggleProductName;
         updateState({
           // PU layers: keep current selection
           puLayers: S.puLayers,
@@ -1371,6 +1373,13 @@
           });
         }
         buildToolSectionV2("toolSection", true);
+      }
+      if (DOM.productTitle) {
+        var titleText = P.productName || "";
+        if (P.currentColor) {
+          titleText = titleText.replace(/\s*\([^)]+\)\s*$/, "").replace(new RegExp("\\s+" + P.currentColor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i"), "");
+        }
+        DOM.productTitle.textContent = titleText;
       }
       var toggleBtns = document.querySelectorAll(".oz-formula-btn");
       for (var b = 0; b < toggleBtns.length; b++) {
@@ -2283,7 +2292,10 @@
           if (S.sheetOpen) closeSheet();
         });
         window.addEventListener("pageshow", function(e) {
-          if (e.persisted && S.sheetOpen) closeSheet();
+          if (e.persisted) {
+            if (S.sheetOpen) closeSheet();
+            location.reload();
+          }
         });
         DOM.bottomSheet.addEventListener("click", function(e) {
           var link = e.target.closest("a[href]");
@@ -2328,6 +2340,7 @@
     _preToggleProductId = P ? P.productId : null;
     _preToggleIsBase = P ? P.isBase : false;
     _preToggleBasePrice = P ? P.basePrice : 0;
+    _preToggleProductName = P ? P.productName : "";
     _originalContent = null;
     if (P.modeToggle) {
       captureOnce = function() {
@@ -2454,6 +2467,7 @@
   var _preToggleProductId;
   var _preToggleIsBase;
   var _preToggleBasePrice;
+  var _preToggleProductName;
   var _originalContent;
   var captureOnce;
   var TOOL_STATE_KEY;

@@ -489,6 +489,7 @@ var _preToggleUrl = P.modeToggle ? location.href : null;
 var _preToggleProductId = P ? P.productId : null;
 var _preToggleIsBase = P ? P.isBase : false;
 var _preToggleBasePrice = P ? P.basePrice : 0;
+var _preToggleProductName = P ? P.productName : '';
 
 /**
  * Toggle between K&K and ZM formula modes.
@@ -515,6 +516,7 @@ function toggleFormula(mode) {
     _preToggleProductId = P.productId;
     _preToggleIsBase = P.isBase;
     _preToggleBasePrice = P.basePrice;
+    _preToggleProductName = P.productName;
 
     // Swap P properties to toggle target config
     P.productId     = MT.targetProductId;
@@ -567,6 +569,7 @@ function toggleFormula(mode) {
     P.productId = _preToggleProductId;
     P.isBase = _preToggleIsBase;
     P.basePrice = _preToggleBasePrice;
+    P.productName = _preToggleProductName;
 
     // Preserve compatible options back to K&K
     updateState({
@@ -619,6 +622,16 @@ function toggleFormula(mode) {
       P.toolConfig.tools.forEach(function(t) { S.tools[t.id] = { on: false, qty: 0, size: 0 }; });
     }
     buildToolSectionV2('toolSection', true);
+  }
+
+  // Update product title in DOM
+  if (DOM.productTitle) {
+    // Strip color suffix from product name for the title
+    var titleText = P.productName || '';
+    if (P.currentColor) {
+      titleText = titleText.replace(/\s*\([^)]+\)\s*$/, '').replace(new RegExp('\\s+' + P.currentColor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$', 'i'), '');
+    }
+    DOM.productTitle.textContent = titleText;
   }
 
   // Update toggle button highlight
@@ -2054,9 +2067,14 @@ function init() {
       if (S.sheetOpen) closeSheet();
     });
 
-    // Handle bfcache — browser back/forward restores DOM with sheet open
+    // Handle bfcache — browser back/forward restores stale DOM state.
+    // Force reload if the page was restored from cache to reset all JS state.
     window.addEventListener('pageshow', function(e) {
-      if (e.persisted && S.sheetOpen) closeSheet();
+      if (e.persisted) {
+        if (S.sheetOpen) closeSheet();
+        // bfcache restores old JS state with wrong product data — reload cleanly
+        location.reload();
+      }
     });
 
     // Intercept link clicks inside the sheet — close sheet before navigating.
