@@ -2079,10 +2079,10 @@
     }, scrollToToepassing = function() {
       var toeSection = document.querySelector('[data-option="toepassing"]');
       if (toeSection) {
-        smoothScrollTo(toeSection);
-        toeSection.classList.add("oz-pulse");
+        toeSection.scrollIntoView({ behavior: "smooth", block: "center" });
+        toeSection.classList.add("oz-highlight");
         setTimeout(function() {
-          toeSection.classList.remove("oz-pulse");
+          toeSection.classList.remove("oz-highlight");
         }, 1500);
       }
     }, setupStickyBar = function() {

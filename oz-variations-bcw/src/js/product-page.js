@@ -1739,9 +1739,9 @@ function needsToepassing() {
 function scrollToToepassing() {
   var toeSection = document.querySelector('[data-option="toepassing"]');
   if (toeSection) {
-    smoothScrollTo(toeSection);
-    toeSection.classList.add('oz-pulse');
-    setTimeout(function() { toeSection.classList.remove('oz-pulse'); }, 1500);
+    toeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toeSection.classList.add('oz-highlight');
+    setTimeout(function() { toeSection.classList.remove('oz-highlight'); }, 1500);
   }
 }
 
