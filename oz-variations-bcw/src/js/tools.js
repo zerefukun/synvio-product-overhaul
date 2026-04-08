@@ -179,6 +179,12 @@ export function buildToolSectionV2(sectionId, rebuild) {
     '15m\u00b2 raden wij extra rollers aan.</span>';
   section.appendChild(nudge);
 
+  // Hint shown when in individual mode with 0 tools selected
+  var hint = document.createElement('div');
+  hint.className = 'oz-tool-hint';
+  hint.textContent = 'Selecteer minimaal 1 gereedschap';
+  section.appendChild(hint);
+
   // Individual tool list — for "Zelf samenstellen" mode
   var indList = document.createElement('div');
   indList.className = 'oz-tool-list';
@@ -289,6 +295,18 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
   // Show/hide individual list — only in 'individual' mode
   var indList = section.querySelector('[data-list-type="individual"]');
   if (indList) indList.classList.toggle('hidden', toolMode !== 'individual');
+
+  // Hint: visible when in individual mode with 0 tools selected
+  var hintEl = section.querySelector('.oz-tool-hint');
+  if (hintEl) {
+    var anyToolOn = false;
+    if (toolMode === 'individual') {
+      for (var tk in tools) {
+        if (tools[tk] && tools[tk].on) { anyToolOn = true; break; }
+      }
+    }
+    hintEl.classList.toggle('visible', toolMode === 'individual' && !anyToolOn);
+  }
 
   // Sync individual tool rows — active when in individual mode AND toggled on
   syncItemRows(section, TC.tools, tools, 'tool', function(st) {

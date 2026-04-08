@@ -48,6 +48,16 @@
   /* Transitions */
   --oz-ease: cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Typography — Major Third scale (base 16px, ratio 1.25) */
+  --oz-text-xs: 10px;     /* badges, compare labels */
+  --oz-text-sm: 12px;     /* small text, breadcrumbs, specs labels */
+  --oz-text-base: 16px;   /* body text */
+  --oz-text-lg: 20px;     /* H4, tabs, FAQ questions */
+  --oz-text-xl: 25px;     /* H3, description headings */
+  --oz-text-2xl: 31px;    /* H2, section headings */
+  --oz-text-3xl: 39px;    /* H1 */
+  --oz-text-4xl: 49px;    /* display / hero */
+
   /* Error color — used by JS validation and CSS */
   --oz-error: #E53E3E;
 }

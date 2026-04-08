@@ -655,6 +655,18 @@ class OZ_Cart_Manager {
         return self::build_addon_details($data);
     }
 
+    /**
+     * Format color name for display — ZM lines show only the 4-digit code.
+     * "Elephant Skin 1004" -> "1004" for ZM, full name for K&K and others.
+     */
+    private static function format_color_for_line($color, $data) {
+        $line = isset($data['oz_line']) ? $data['oz_line'] : '';
+        if (strpos($line, '-zm') !== false && preg_match('/\b(\d{4})\s*$/', $color, $m)) {
+            return $m[1];
+        }
+        return $color;
+    }
+
     private static function build_addon_details($data) {
         $details = [];
 
@@ -673,7 +685,7 @@ class OZ_Cart_Manager {
         // JS sends color_mode as 'swatch', accept both 'swatch' and 'standard'
         if (!empty($data['oz_selected_color']) &&
             (!isset($data['oz_color_mode']) || $data['oz_color_mode'] === 'standard' || $data['oz_color_mode'] === 'swatch')) {
-            $details[] = 'Kleur: ' . $data['oz_selected_color'];
+            $details[] = 'Kleur: ' . self::format_color_for_line($data['oz_selected_color'], $data);
         }
 
         // Standard color variant — color from product meta (e.g. "Nude 1" for Microcement).
@@ -683,7 +695,7 @@ class OZ_Cart_Manager {
             if ($pid) {
                 $color = get_post_meta($pid, '_oz_color', true);
                 if (!empty($color)) {
-                    $details[] = 'Kleur: ' . $color;
+                    $details[] = 'Kleur: ' . self::format_color_for_line($color, $data);
                 }
             }
         }

@@ -142,8 +142,11 @@ class OZ_Analytics_Collector {
         // Uses WC session cookie if available, falls back to a hash of IP + user agent
         $session_id = self::get_session_id();
 
+        // Persistent visitor ID from oz_vid cookie (links sessions across visits)
+        $visitor_id = isset($_COOKIE['oz_vid']) ? sanitize_text_field($_COOKIE['oz_vid']) : '';
+
         // Store the event — log failures for admin visibility
-        $result = OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id);
+        $result = OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id, $visitor_id);
         if ($result === false) {
             error_log('[OZ Analytics] Failed to insert event: ' . $event_name . ' (session: ' . $session_id . ')');
         }

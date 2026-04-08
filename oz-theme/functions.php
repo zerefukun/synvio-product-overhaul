@@ -47,40 +47,27 @@ add_action('admin_enqueue_scripts', 'load_font_awesome');
 <?php
 /**
  * Server-side Order Attribution Fallback
- * Captures UTM parameters when Cookiebot blocks JS tracking
- * Added by Claude Code - 2026-01-09
+ * Captures UTM parameters via cookies when Cookiebot blocks JS tracking.
+ * Uses cookies instead of PHP sessions to avoid cache-killing headers.
  */
 
-// Start session early to store UTM params
-add_action('init', 'oz_start_attribution_session', 1);
-function oz_start_attribution_session() {
-    if (!session_id() && !headers_sent()) {
-        session_start();
-    }
-    
-    // Capture UTM params on first visit
-    $utm_params = array('utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term');
-    
+// Capture UTM params into cookies on first visit (no session_start needed)
+add_action('init', 'oz_capture_attribution_cookies', 1);
+function oz_capture_attribution_cookies() {
+    if (is_admin()) return;
+
+    // Only capture on the landing request (when UTM params are in the URL)
+    $utm_params = ['utm_source', 'utm_medium', 'utm_campaign'];
     foreach ($utm_params as $param) {
         if (isset($_GET[$param]) && !empty($_GET[$param])) {
-            $_SESSION['oz_' . $param] = sanitize_text_field($_GET[$param]);
+            $cookie_name = 'oz_' . $param;
+            // Don't overwrite existing — first touch wins
+            if (!isset($_COOKIE[$cookie_name])) {
+                $value = sanitize_text_field($_GET[$param]);
+                setcookie($cookie_name, $value, time() + 86400 * 30, '/', '', true, false);
+                $_COOKIE[$cookie_name] = $value; // Available in same request
+            }
         }
-    }
-    
-    // Capture referrer if not already set
-    if (!isset($_SESSION['oz_referrer']) && isset($_SERVER['HTTP_REFERER'])) {
-        $referrer = $_SERVER['HTTP_REFERER'];
-        $site_url = home_url();
-        
-        // Only store external referrers
-        if (strpos($referrer, $site_url) === false) {
-            $_SESSION['oz_referrer'] = esc_url_raw($referrer);
-        }
-    }
-    
-    // Track session start time
-    if (!isset($_SESSION['oz_session_start'])) {
-        $_SESSION['oz_session_start'] = current_time('mysql');
     }
 }
 
@@ -89,45 +76,26 @@ add_action('woocommerce_checkout_order_created', 'oz_apply_attribution_fallback'
 function oz_apply_attribution_fallback($order) {
     // Check if WooCommerce attribution already set
     $existing_source = $order->get_meta('_wc_order_attribution_source_type');
-    
     if (!empty($existing_source)) {
         return; // WC attribution worked, don't override
     }
-    
-    // Determine source type based on available data
-    $source_type = 'typein'; // Default: direct visit
-    $utm_source = isset($_SESSION['oz_utm_source']) ? $_SESSION['oz_utm_source'] : '';
-    $utm_medium = isset($_SESSION['oz_utm_medium']) ? $_SESSION['oz_utm_medium'] : '';
-    $utm_campaign = isset($_SESSION['oz_utm_campaign']) ? $_SESSION['oz_utm_campaign'] : '';
-    $referrer = isset($_SESSION['oz_referrer']) ? $_SESSION['oz_referrer'] : '';
-    
+
+    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field($_COOKIE['oz_utm_source']) : '';
+    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field($_COOKIE['oz_utm_medium']) : '';
+    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field($_COOKIE['oz_utm_campaign']) : '';
+
     // Determine source type
+    $source_type = 'typein';
     if (!empty($utm_source) || !empty($utm_campaign)) {
         $source_type = 'utm';
-    } elseif (!empty($referrer)) {
-        // Check if organic search
-        $search_engines = array('google', 'bing', 'yahoo', 'duckduckgo', 'ecosia');
-        foreach ($search_engines as $engine) {
-            if (stripos($referrer, $engine) !== false) {
-                $source_type = 'organic';
-                $utm_source = $engine;
-                break;
-            }
-        }
-        if ($source_type !== 'organic') {
-            $source_type = 'referral';
-        }
     }
-    
-    // Apply attribution meta (server-side fallback)
+
     $order->update_meta_data('_wc_order_attribution_source_type', $source_type);
     $order->update_meta_data('_wc_order_attribution_utm_source', $utm_source ?: 'direct');
     $order->update_meta_data('_wc_order_attribution_utm_medium', $utm_medium);
     $order->update_meta_data('_wc_order_attribution_utm_campaign', $utm_campaign);
-    $order->update_meta_data('_wc_order_attribution_referrer', $referrer);
-    $order->update_meta_data('_wc_order_attribution_session_start_time', isset($_SESSION['oz_session_start']) ? $_SESSION['oz_session_start'] : '');
-    $order->update_meta_data('_oz_attribution_fallback', 'yes'); // Mark as fallback
-    
+    $order->update_meta_data('_oz_attribution_fallback', 'yes');
+
     $order->save();
 }
 
@@ -847,3 +815,93 @@ function oz_cart_drawer_format_upsell($product_id) {
 
     return oz_format_product_card($product);
 }
+
+/**
+ * Override Flatsome's FAQ schema output to deduplicate questions.
+ * Flatsome accumulates FAQ items in a global array across all rendered
+ * accordions on the page, causing massive duplication on category/listing pages.
+ * This replaces Flatsome's hook with a deduplicating version.
+ */
+function oz_dedup_faq_schema() {
+    global $flatsome_accordion_faq_schema;
+
+    if (empty($flatsome_accordion_faq_schema)) {
+        return;
+    }
+
+    // Deduplicate by question text
+    $seen = [];
+    $unique = [];
+    foreach ($flatsome_accordion_faq_schema as $faq) {
+        $key = wp_strip_all_tags($faq['question']);
+        if (isset($seen[$key])) continue;
+        $seen[$key] = true;
+        $unique[] = [
+            '@type'          => 'Question',
+            'name'           => $key,
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => wp_kses_post($faq['answer']),
+            ],
+        ];
+    }
+
+    $json = [
+        '@context'   => 'https://schema.org',
+        '@type'      => 'FAQPage',
+        'mainEntity' => $unique,
+    ];
+
+    echo '<script type="application/ld+json">' . wp_json_encode($json) . '</script>';
+}
+// Remove Flatsome's original (duplicating) FAQ schema output, replace with deduped version
+remove_action('wp_footer', 'flatsome_print_faq_schema');
+add_action('wp_footer', 'oz_dedup_faq_schema');
+
+/**
+ * Remove block editor scripts from the frontend.
+ * The product carousel plugin (woo-product-carousel-slider-and-grid-ultimate)
+ * enqueues its Gutenberg JS on every page instead of only in admin.
+ * This drags in 42 block editor dependencies (React, wp-blocks, etc.) ~500KB
+ * that block the main thread and delay interactive elements like the mobile menu.
+ */
+function oz_dequeue_frontend_block_editor() {
+    if (is_admin()) return;
+    wp_dequeue_script('wcpcsup-gutenberg-js');
+}
+add_action('wp_enqueue_scripts', 'oz_dequeue_frontend_block_editor', 100);
+
+/**
+ * Remove plugin scripts that load on every page but are only needed in specific contexts.
+ * Reduces blocking JS count from ~40 to ~33 on non-product pages,
+ * letting flatsome.js (mega menu) execute sooner.
+ */
+function oz_dequeue_unnecessary_scripts() {
+    if (is_admin()) return;
+
+    // Follow-Up Emails — only needed on My Account and product pages
+    if (!is_product() && !is_account_page()) {
+        wp_dequeue_script('fue-account-subscriptions');
+        wp_dequeue_script('fue-front-script');
+    }
+
+    // Product category discount — only needed on product and shop pages
+    if (!is_product() && !is_shop() && !is_product_category()) {
+        wp_dequeue_script('woo-product-category-discount');
+        wp_dequeue_style('woo-product-category-discount');
+    }
+
+    // Keuzehulp editor — only needed on pages that contain the shortcode
+    $has_keuzehulp = false;
+    if (is_singular()) {
+        $post = get_post();
+        if ($post && strpos($post->post_content, 'keuzehulp') !== false) {
+            $has_keuzehulp = true;
+        }
+    }
+    if (!$has_keuzehulp) {
+        wp_dequeue_script('keuzehulp-v8-frontend');
+        wp_dequeue_style('keuzehulp-v8-frontend');
+    }
+}
+add_action('wp_enqueue_scripts', 'oz_dequeue_unnecessary_scripts', 100);

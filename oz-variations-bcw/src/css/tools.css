@@ -28,7 +28,7 @@
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
   background: var(--oz-label-bg);
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   font-weight: 500;
   color: var(--oz-label-text);
   cursor: pointer;
@@ -50,7 +50,7 @@
 }
 
 .oz-product-page .oz-tool-mode-btn .oz-price-add {
-  font-size: 10px;
+  font-size: var(--oz-text-xs);
   margin-left: 2px;
   opacity: 0.7;
 }
@@ -126,12 +126,12 @@
 .oz-tool-name {
   flex: 1;
   min-width: 0; /* allow name to shrink below content width on narrow screens */
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   font-weight: 500;
   color: var(--oz-text-primary);
 }
 .oz-tool-price {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   white-space: nowrap;
 }
@@ -165,7 +165,7 @@
   border: none;
   background: var(--oz-bg-subtle);
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-primary);
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@
   border-left: 1px solid var(--oz-border);
   border-right: 1px solid var(--oz-border);
   border-radius: 0;
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   font-family: 'Raleway', sans-serif;
   color: var(--oz-text-primary);
@@ -217,7 +217,7 @@
   border: 1px solid var(--oz-border);
   border-radius: 5px;
   background: var(--oz-bg-subtle);
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   font-family: 'Raleway', sans-serif;
   font-weight: 500;
   color: var(--oz-text-body);
@@ -247,7 +247,7 @@
 /* ═══ SET CONTENTS — what is in the box ═══════════════════════ */
 
 .oz-set-contents {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   line-height: 1.5;
   padding: 0 2px;
@@ -280,11 +280,28 @@
   overflow: visible;
 }
 .oz-extras-label {
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   color: var(--oz-text-primary);
   margin-bottom: 6px;
   margin-top: 8px;
+}
+
+
+/* ═══ TOOL HINT — 0 tools selected in individual mode ═════════ */
+
+.oz-tool-hint {
+  display: none;
+  padding: 8px 12px;
+  background: var(--oz-stone-100, #F5F4F0);
+  border: 1px solid var(--oz-stone-200, #E5E5E3);
+  border-radius: 6px;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body, #555);
+  margin-top: 8px;
+}
+.oz-tool-hint.visible {
+  display: block;
 }
 
 
@@ -298,7 +315,7 @@
   background: #fef3c7;
   border: 1px solid #f59e0b;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: #92400e;
   line-height: 1.5;
   margin-top: 8px;
@@ -345,13 +362,13 @@
 
 .oz-upsell-title {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 22px;
+  font-size: var(--oz-text-xl);
   color: var(--oz-text-primary);
   margin-bottom: 8px;
 }
 
 .oz-upsell-text {
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   color: var(--oz-text-body);
   margin-bottom: 24px;
   line-height: 1.6;
@@ -364,7 +381,7 @@
   background: var(--oz-cta);
   color: white;
   font-weight: 700;
-  font-size: 15px;
+  font-size: var(--oz-text-base);
   cursor: pointer;
   transition: background 0.2s;
   margin-bottom: 10px;
@@ -375,7 +392,7 @@
 }
 
 .oz-upsell-skip {
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   cursor: pointer;
   padding: 8px;

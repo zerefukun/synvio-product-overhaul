@@ -43,7 +43,7 @@
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  font-size: 16px;
+  font-size: var(--oz-text-base);
   cursor: pointer;
   display: flex !important;
   align-items: center;
@@ -76,7 +76,7 @@
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   font-weight: 600;
   font-family: 'Raleway', sans-serif;
   color: var(--oz-text-primary);
@@ -107,7 +107,7 @@
 
 /* Per-unit note next to quantity */
 .oz-qty-unit {
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   white-space: nowrap;
   margin-left: 10px;
@@ -121,7 +121,7 @@
   border-radius: 8px !important;
   background: var(--oz-cta) !important;
   color: var(--oz-cta-text) !important;
-  font-size: 15px !important;
+  font-size: var(--oz-text-base) !important;
   font-weight: 700;
   cursor: pointer;
   transition: background-color 0.3s var(--oz-ease);
@@ -161,7 +161,7 @@
   padding: 16px 20px;
   margin-bottom: 12px;
   border: 1px solid var(--oz-border-light);
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
 }
 
 .oz-price-line {
@@ -176,7 +176,7 @@
   border-top: 1px solid var(--oz-border);
   margin-top: 10px;
   padding-top: 12px;
-  font-size: 20px;
+  font-size: var(--oz-text-lg);
   font-weight: 700;
   color: var(--oz-text-primary);
   letter-spacing: -0.3px;
@@ -195,7 +195,7 @@
 
 /* Price line m2 note */
 .oz-price-line .oz-m2-note {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
 }
 
@@ -210,7 +210,7 @@
 }
 
 .oz-trust-check {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   font-weight: 500;
   color: var(--oz-text-muted);
 }
@@ -292,14 +292,14 @@
 }
 
 .oz-step-label {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   color: var(--oz-text-primary);
   letter-spacing: 0.2px;
 }
 
 .oz-step-date {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   color: var(--oz-text-muted);
   margin-top: 3px;
 }
@@ -308,7 +308,7 @@
 /* Cart error message — styled via CSS class, not inline JS */
 .oz-cart-error {
   color: var(--oz-error);
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   margin-top: 8px;
 }
 
@@ -325,7 +325,7 @@
 }
 
 .oz-payment-label {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   color: var(--oz-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -284,7 +284,7 @@ function toggleStickyLinkByTab(tabId, show) {
  * Swap main product image with crossfade. Cancels any in-flight swap
  * from a previous click. Includes onerror fallback.
  */
-function swapMainImage(fullImageUrl) {
+export function swapMainImage(fullImageUrl) {
   if (!fullImageUrl || !DOM.mainImg) return;
 
   // Cancel any in-flight swap from rapid clicking
@@ -311,7 +311,7 @@ function swapMainImage(fullImageUrl) {
 /**
  * Create a single gallery thumbnail element.
  */
-function createThumb(thumbSrc, fullSrc, index, selected) {
+export function createThumb(thumbSrc, fullSrc, index, selected) {
   var div = document.createElement('div');
   div.className = 'oz-gallery-thumb' + (selected ? ' selected' : '');
   div.setAttribute('data-full-src', fullSrc);

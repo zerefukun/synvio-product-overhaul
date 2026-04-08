@@ -208,6 +208,7 @@ class OZ_Frontend_Display {
                 'pakket'        => OZ_Product_Line_Config::get_pakket_options($line_key),
                 'hasRalNcs'     => (bool) $config['ral_ncs'],
                 'ralNcsOnly'    => (bool) $config['ral_ncs_only'],
+                'baseProductId' => OZ_Product_Line_Config::get_base_product_id($line_key),
                 'hasStaticColors' => !empty($config['share_colors_from']),
                 'optionOrder'   => $config['option_order'],
                 'crossSells'    => $product->get_cross_sell_ids(),
@@ -292,6 +293,16 @@ class OZ_Frontend_Display {
                         $target_faq = !empty($target_config['faq']) ? $target_config['faq'] : [];
                     }
 
+                    // Target product gallery — used for gallery strip in target mode
+                    $target_gallery = [];
+                    foreach ($target_product->get_gallery_image_ids() as $gid) {
+                        $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                        $g_large = wp_get_attachment_image_url($gid, 'large');
+                        if ($g_thumb && $g_large) {
+                            $target_gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                        }
+                    }
+
                     $js_data['modeToggle'] = [
                         'labelSelf'           => $mode_toggle['label_self'],
                         'labelTarget'         => $mode_toggle['label_target'],
@@ -314,12 +325,25 @@ class OZ_Frontend_Display {
                         'targetSpecs'         => $target_specs,
                         'targetFaq'           => $target_faq,
                         'targetDescription'   => apply_filters('the_content', $target_product->get_description()),
+                        'targetGallery'       => $target_gallery,
                     ];
                 }
             }
         }
 
         wp_localize_script('oz-product-page', 'ozProduct', $js_data);
+    }
+
+    /**
+     * Extract the trailing number code from a color name for swatch labels.
+     * "Elephant Skin 1004" → "1004", "Sand 1" → "Sand 1" (no 4-digit code)
+     * Falls back to full name if no code found.
+     */
+    private static function extract_color_code($color_name) {
+        if (preg_match('/\b(\d{4})\s*$/', $color_name, $m)) {
+            return $m[1];
+        }
+        return $color_name;
     }
 
     /**
@@ -416,7 +440,8 @@ class OZ_Frontend_Display {
 
         foreach ($all_swatches as $pid => $s) {
             $is_current = ($pid === $current_id);
-            // Each swatch is wrapped in a labeled container: image + color name below
+            // K&K swatches show full color name
+            $swatch_label = $s['color'];
             $html .= sprintf(
                 '<a href="%s" class="oz-color-swatch%s" data-color="%s" data-product-id="%d">'
                 . '<span class="oz-swatch-img"><img src="%s" alt="%s" width="46" height="46" loading="eager"></span>'
@@ -428,7 +453,7 @@ class OZ_Frontend_Display {
                 $pid,
                 esc_url($s['image']),
                 esc_attr($s['color']),
-                esc_html($s['color'])
+                esc_html($swatch_label)
             );
         }
 
@@ -483,8 +508,10 @@ class OZ_Frontend_Display {
             }
             $seen_colors[$color] = true;
 
-            $image_id  = get_post_thumbnail_id($vid);
-            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+            // Use ZM image if available, fall back to K&K featured image
+            $zm_image_id = get_post_meta($vid, '_oz_zm_image_id', true);
+            $image_id    = $zm_image_id ?: get_post_thumbnail_id($vid);
+            $image_url   = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
             if (empty($image_url)) {
                 continue; // Skip colors without a thumbnail — avoids broken img src=""
             }
@@ -502,6 +529,7 @@ class OZ_Frontend_Display {
         $html = '<div class="oz-color-swatches">';
 
         foreach ($swatches as $pid => $s) {
+            $swatch_label = self::extract_color_code($s['color']);
             $html .= sprintf(
                 '<a href="#" class="oz-color-swatch" data-color="%s" data-static="1">'
                 . '<span class="oz-swatch-img"><img src="%s" alt="%s" width="46" height="46" loading="eager"></span>'
@@ -510,7 +538,7 @@ class OZ_Frontend_Display {
                 esc_attr($s['color']),
                 esc_url($s['image']),
                 esc_attr($s['color']),
-                esc_html($s['color'])
+                esc_html($swatch_label)
             );
         }
 
@@ -574,11 +602,16 @@ class OZ_Frontend_Display {
                 }
             }
 
+            // ZM image for K&K→ZM toggle (old bucket photo without K&K branding)
+            $zm_image_id = get_post_meta($vid, '_oz_zm_image_id', true);
+
             $variants[$vid] = [
                 'color'        => $color,
                 'url'          => get_permalink($vid),
                 'image'        => $image_url,
                 'fullImage'    => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'zmImage'      => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'thumbnail') : '',
+                'zmFullImage'  => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'large') : '',
                 'gallery'      => $gallery,
                 'price'        => $variant ? floatval($variant->get_price()) : 0,
                 'regularPrice' => $variant ? floatval($variant->get_regular_price()) : 0,
@@ -632,8 +665,10 @@ class OZ_Frontend_Display {
             }
             $seen_colors[$color] = true;
 
-            $image_id  = get_post_thumbnail_id($vid);
-            $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+            // Use ZM image if available, fall back to K&K featured image
+            $zm_image_id = get_post_meta($vid, '_oz_zm_image_id', true);
+            $image_id    = $zm_image_id ?: get_post_thumbnail_id($vid);
+            $image_url   = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
             $variants[$vid] = [
                 'color'     => $color,

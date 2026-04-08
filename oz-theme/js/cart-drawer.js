@@ -1063,6 +1063,23 @@
     setInterval(sendHeartbeat, 30000);
 
     /* ============================================
+       VISITOR ID — persistent cookie linking sessions across visits.
+       A CPC visitor who returns as direct shares the same oz_vid.
+       Enables first-touch attribution and assisted conversion analysis.
+       ============================================ */
+    (function initVisitorId() {
+        var match = document.cookie.match(/(?:^|;\s*)oz_vid=([^;]+)/);
+        if (!match) {
+            // Generate UUID v4-style visitor ID
+            var vid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+            document.cookie = 'oz_vid=' + vid + '; path=/; max-age=31536000; SameSite=Lax';
+        }
+    })();
+
+    /* ============================================
        SESSION START — Track traffic source once per browser session.
        Fires oz_session_start with classified referrer + UTM params.
        Uses sessionStorage to deduplicate (clears on tab close).

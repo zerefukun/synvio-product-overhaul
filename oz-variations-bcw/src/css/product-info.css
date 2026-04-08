@@ -20,7 +20,7 @@
 
 .oz-product-page .oz-tab {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 16px;
+  font-size: var(--oz-text-base);
   font-weight: 400;
   color: #999;
   background: none;
@@ -55,7 +55,7 @@
 
 .oz-section-title {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 22px;
+  font-size: var(--oz-text-xl);
   font-weight: 400;
   color: #555;
   margin-bottom: 18px;
@@ -75,7 +75,7 @@
   overflow: hidden;
   line-height: 1.9;
   color: var(--oz-text-body);
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
   transition: max-height 0.6s var(--oz-ease), -webkit-mask-image 0.4s;
@@ -102,9 +102,9 @@
   color: var(--oz-text-primary);
 }
 
-.oz-description-content h2 { font-size: 20px; }
-.oz-description-content h3 { font-size: 17px; }
-.oz-description-content h4 { font-size: 15px; }
+.oz-description-content h2 { font-size: var(--oz-text-xl); }
+.oz-description-content h3 { font-size: var(--oz-text-lg); }
+.oz-description-content h4 { font-size: var(--oz-text-base); }
 
 .oz-description-content ul {
   margin: 10px 0 14px 20px;
@@ -122,7 +122,7 @@
   width: fit-content;
   margin: 8px auto 0;
   color: var(--oz-accent);
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   cursor: pointer;
   border: none;
@@ -155,7 +155,7 @@
 .oz-specs-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--oz-text-base);
 }
 
 .oz-specs-table tr {
@@ -183,7 +183,7 @@
   color: var(--oz-text-primary);
   width: 42%;
   padding-right: 20px;
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -210,7 +210,7 @@
 
 /* Question row — clickable summary */
 .oz-faq-question {
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   font-weight: 600;
   color: var(--oz-text-primary);
   cursor: pointer;
@@ -229,7 +229,7 @@
 /* Custom arrow indicator */
 .oz-faq-question::after {
   content: '+';
-  font-size: 18px;
+  font-size: var(--oz-text-lg);
   font-weight: 400;
   color: var(--oz-text-muted);
   flex-shrink: 0;
@@ -244,7 +244,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 /* Answer content */
 .oz-faq-answer {
   padding-top: 8px;
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   color: var(--oz-text-body);
   line-height: 1.7;
 }
@@ -267,11 +267,11 @@ details.oz-faq-item[open] .oz-faq-question::after {
   width: 100%;
   min-width: 640px;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
 }
 
 .oz-compare-table th {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -292,8 +292,20 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-compare-th-product,
 .oz-compare-product {
   min-width: 120px;
+  max-width: 140px;
   font-weight: 600;
   color: var(--oz-text-primary);
+  /* Sticky first column so product names stay visible on horizontal scroll */
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--oz-bg-page, #FAFAF9);
+  /* Subtle right border to visually separate from scrolling content */
+  border-right: 1px solid var(--oz-border-light, #E5E5E3);
+}
+
+.oz-compare-current .oz-compare-product {
+  background: var(--oz-accent-light);
 }
 
 .oz-compare-product a {
@@ -318,7 +330,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 .oz-compare-note {
   display: block;
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   font-weight: 400;
   color: var(--oz-text-muted);
   margin-top: 2px;
@@ -342,6 +354,11 @@ details.oz-faq-item[open] .oz-faq-question::after {
   position: relative;
   overflow: hidden;
   background: var(--oz-bg-warm, #F5F4F0);
+}
+
+/* Target showcase hidden by default — JS shows it on toggle */
+.oz-showcase[data-showcase-mode="target"] {
+  display: none;
 }
 
 /* ── Block layout ── */
@@ -443,7 +460,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-showcase-block__eyebrow {
   display: inline-block;
   font-family: 'Raleway', sans-serif;
-  font-size: 10.5px;
+  font-size: var(--oz-text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -467,7 +484,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 .oz-showcase-block__heading {
   font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 26px;
+  font-size: var(--oz-text-2xl);
   font-weight: 400;
   color: var(--oz-text-primary, #2D2926);
   margin: 0 0 12px;
@@ -476,7 +493,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 .oz-showcase-block__body {
   font-family: 'Raleway', sans-serif;
-  font-size: 13.5px;
+  font-size: var(--oz-text-sm);
   line-height: 1.75;
   color: var(--oz-text-body, #4A4543);
   margin: 0;

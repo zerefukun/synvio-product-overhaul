@@ -62,11 +62,13 @@ class OZ_Analytics_Store {
             source VARCHAR(10) NOT NULL,
             product_id INT UNSIGNED NOT NULL DEFAULT 0,
             session_id VARCHAR(50) NOT NULL,
+            visitor_id VARCHAR(40) NOT NULL DEFAULT '',
             created_at DATETIME NOT NULL,
             PRIMARY KEY  (id),
             KEY idx_event_created (event_name, created_at),
             KEY idx_source (source),
-            KEY idx_created (created_at)
+            KEY idx_created (created_at),
+            KEY idx_visitor (visitor_id)
         ) {$charset};";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -81,9 +83,10 @@ class OZ_Analytics_Store {
      * @param string $source      'product' or 'cart'
      * @param int $product_id  WC product ID (0 = no product, e.g. cart events)
      * @param string $session_id  Browser session identifier
+     * @param string $visitor_id  Persistent visitor identifier (from oz_vid cookie)
      * @return int|false  Insert ID on success, false on failure
      */
-    public static function insert($event_name, $event_data, $source, $product_id, $session_id) {
+    public static function insert($event_name, $event_data, $source, $product_id, $session_id, $visitor_id = '') {
         global $wpdb;
 
         $result = $wpdb->insert(
@@ -94,9 +97,10 @@ class OZ_Analytics_Store {
                 'source'     => $source,
                 'product_id' => absint($product_id),
                 'session_id' => $session_id,
+                'visitor_id' => $visitor_id,
                 'created_at' => current_time('mysql'),
             ],
-            ['%s', '%s', '%s', '%d', '%s', '%s']
+            ['%s', '%s', '%s', '%d', '%s', '%s', '%s']
         );
 
         return $result ? $wpdb->insert_id : false;

@@ -8,9 +8,9 @@
 .oz-product-page {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 8px 40px 80px;
+  padding: 8px 40px 0;
   font-family: 'Raleway', system-ui, -apple-system, sans-serif;
-  font-size: 15px;
+  font-size: var(--oz-text-base);
   line-height: 1.6;
   color: var(--oz-text-body);
   -webkit-font-smoothing: antialiased;
@@ -19,7 +19,7 @@
 
 .oz-breadcrumb {
   padding: 14px 0;
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   letter-spacing: 0.2px;
 }
@@ -40,6 +40,7 @@
   grid-template-columns: 56fr 44fr;
   gap: 56px;
   align-items: start;
+  margin-bottom: 80px;
 }
 
 /* Prevent large images from blowing out the grid column.

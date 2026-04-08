@@ -24,7 +24,7 @@
 import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
-import { initNavigation, navigateToVariant } from './navigation.js';
+import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
@@ -82,6 +82,20 @@ function payloadToFormData(payload) {
  * Master render — updates all dynamic UI from state.
  * Called after every state change.
  */
+/**
+ * Format color for display. ZM mode shows only the 4-digit code.
+ * K&K and other lines show the full color name.
+ */
+function displayColor(colorName) {
+  if (!colorName) return '';
+  // ZM mode: strip to number code only (e.g. "Elephant Skin 1004" -> "1004")
+  if (S.formulaMode === 'target' || (P.productLine && P.productLine.indexOf('-zm') !== -1)) {
+    var match = colorName.match(/\b(\d{4})\s*$/);
+    if (match) return match[1];
+  }
+  return colorName;
+}
+
 function syncUI() {
   var prices = calculatePrices(P, S);
 
@@ -309,9 +323,9 @@ function renderSelectedLabels() {
     if (S.colorMode === 'ral_ncs' && S.customColor) {
       colorLabel.textContent = S.customColor;
     } else if (S.selectedColor) {
-      colorLabel.textContent = S.selectedColor;
+      colorLabel.textContent = displayColor(S.selectedColor);
     } else if (P.currentColor) {
-      colorLabel.textContent = P.currentColor;
+      colorLabel.textContent = displayColor(P.currentColor);
     }
   }
 
@@ -321,7 +335,7 @@ function renderSelectedLabels() {
       DOM.colorLabel.textContent = S.customColor;
       DOM.colorLabel.style.display = '';
     } else if (S.selectedColor) {
-      DOM.colorLabel.textContent = S.selectedColor;
+      DOM.colorLabel.textContent = displayColor(S.selectedColor);
       DOM.colorLabel.style.display = '';
     } else if (!P.currentColor && P.hasStaticColors) {
       // No color picked yet — hide the empty label
@@ -342,9 +356,9 @@ function renderStickySummary() {
     if (S.colorMode === 'ral_ncs' && S.customColor) {
       DOM.stickyDColor.textContent = S.customColor;
     } else if (S.selectedColor) {
-      DOM.stickyDColor.textContent = S.selectedColor;
+      DOM.stickyDColor.textContent = displayColor(S.selectedColor);
     } else {
-      DOM.stickyDColor.textContent = P.currentColor || '';
+      DOM.stickyDColor.textContent = displayColor(P.currentColor || '');
     }
   }
 
@@ -356,9 +370,9 @@ function renderStickySummary() {
     if (S.colorMode === 'ral_ncs' && S.customColor) {
       mobileColor = S.customColor;
     } else if (S.selectedColor) {
-      mobileColor = S.selectedColor;
+      mobileColor = displayColor(S.selectedColor);
     } else {
-      mobileColor = P.currentColor || '';
+      mobileColor = displayColor(P.currentColor || '');
     }
     stickyColorName.textContent = mobileColor;
     // Show/hide the wrap for shared-color products
@@ -490,6 +504,8 @@ var _preToggleProductId = P ? P.productId : null;
 var _preToggleIsBase = P ? P.isBase : false;
 var _preToggleBasePrice = P ? P.basePrice : 0;
 var _preToggleProductName = P ? P.productName : '';
+var _preToggleMainImgSrc = '';
+var _preToggleGalleryHtml = '';
 
 /**
  * Toggle between K&K and ZM formula modes.
@@ -517,6 +533,9 @@ function toggleFormula(mode) {
     _preToggleIsBase = P.isBase;
     _preToggleBasePrice = P.basePrice;
     _preToggleProductName = P.productName;
+    _preToggleMainImgSrc = DOM.mainImg ? DOM.mainImg.src : '';
+    var galleryEl = document.querySelector('.oz-gallery-thumbs');
+    _preToggleGalleryHtml = galleryEl ? galleryEl.innerHTML : '';
 
     // Swap P properties to toggle target config
     P.productId     = MT.targetProductId;
@@ -597,6 +616,15 @@ function toggleFormula(mode) {
 
   var isZM = (mode === 'target');
 
+  // Swap images: ZM shows old bucket photos, K&K shows new avif photos
+  swapVariantImages(isZM);
+
+  // Swap showcase sections — each line has its own (or none)
+  var selfShowcase = document.querySelector('.oz-showcase[data-showcase-mode="self"]');
+  var targetShowcase = document.querySelector('.oz-showcase[data-showcase-mode="target"]');
+  if (selfShowcase) selfShowcase.style.display = isZM ? 'none' : '';
+  if (targetShowcase) targetShowcase.style.display = isZM ? '' : 'none';
+
   // Hide/show primer section — ZM includes primer, no customer choice
   var primerGroup = document.querySelector('[data-option="primer"]');
   if (primerGroup) primerGroup.style.display = isZM ? 'none' : '';
@@ -651,6 +679,123 @@ function toggleFormula(mode) {
   }
 
   syncUI();
+}
+
+/**
+ * Swap variant images between K&K and ZM modes.
+ * ZM mode uses old bucket photos (zmImage/zmFullImage), K&K uses default.
+ * Also swaps swatch thumbnails and rebuilds gallery strip.
+ */
+function swapVariantImages(toZM) {
+  var currentColor = S.selectedColor || P.currentColor || '';
+
+  if (toZM) {
+    // Swap main image to ZM version for current color
+    // zmFullImage exists on K&K variant data; on direct ZM load, fullImage IS the ZM image
+    var zmFull = findVariantField(currentColor, 'zmFullImage') || findVariantField(currentColor, 'fullImage');
+    if (zmFull) swapMainImage(zmFull);
+
+    // Rebuild gallery: ZM color image + ZM product generic gallery
+    rebuildGalleryForZM(currentColor);
+  } else {
+    // Restore K&K image for the color the user had selected in ZM mode
+    var selectedColor = S.selectedColor || P.currentColor || '';
+    var kkFull = findVariantField(selectedColor, 'fullImage');
+    if (kkFull) {
+      swapMainImage(kkFull);
+      // Also navigate to the K&K variant so gallery + URL match the color
+      var vKeys = Object.keys(P.variants);
+      for (var vi = 0; vi < vKeys.length; vi++) {
+        if (P.variants[vKeys[vi]].color === selectedColor) {
+          var kkV = P.variants[vKeys[vi]];
+          // Rebuild gallery from K&K variant data
+          var container = document.querySelector('.oz-gallery-thumbs');
+          if (container) {
+            container.innerHTML = '';
+            container.style.display = '';
+            if (kkV.image && kkV.fullImage) {
+              container.appendChild(createThumb(kkV.image, kkV.fullImage, 0, true));
+            }
+            var gallery = kkV.gallery || [];
+            for (var gi = 0; gi < gallery.length; gi++) {
+              container.appendChild(createThumb(gallery[gi].thumb, gallery[gi].full, gi + 1, false));
+            }
+            if (container.children.length <= 1) container.style.display = 'none';
+          }
+          break;
+        }
+      }
+    } else if (_preToggleMainImgSrc && DOM.mainImg) {
+      // Fallback: no color was selected, restore pre-toggle snapshot
+      DOM.mainImg.src = _preToggleMainImgSrc;
+      var galleryEl = document.querySelector('.oz-gallery-thumbs');
+      if (galleryEl && _preToggleGalleryHtml) {
+        galleryEl.innerHTML = _preToggleGalleryHtml;
+        galleryEl.style.display = '';
+      }
+    }
+  }
+
+  // Swap swatch <img> tags and labels
+  var swatches = document.querySelectorAll('.oz-color-swatch[data-color]');
+  for (var i = 0; i < swatches.length; i++) {
+    var colorName = swatches[i].getAttribute('data-color');
+    var img = swatches[i].querySelector('.oz-swatch-img img');
+    if (!colorName) continue;
+
+    if (img) {
+      var src = toZM
+        ? (findVariantField(colorName, 'zmImage') || findVariantField(colorName, 'image'))
+        : findVariantField(colorName, 'image');
+      if (src) img.src = src;
+    }
+
+    // Swap label: ZM shows only number code, K&K shows full name
+    var label = swatches[i].querySelector('.oz-swatch-name');
+    if (label) {
+      if (toZM) {
+        var codeMatch = colorName.match(/\b(\d{4})\s*$/);
+        label.textContent = codeMatch ? codeMatch[1] : colorName;
+      } else {
+        label.textContent = colorName;
+      }
+    }
+  }
+}
+
+/** Find a field value from P.variants by matching color name. */
+function findVariantField(colorName, fieldName) {
+  if (!colorName || !P.variants) return '';
+  var keys = Object.keys(P.variants);
+  for (var i = 0; i < keys.length; i++) {
+    if (P.variants[keys[i]].color === colorName) {
+      return P.variants[keys[i]][fieldName] || '';
+    }
+  }
+  return '';
+}
+
+/** Rebuild gallery strip for ZM mode: color bucket image + ZM product lifestyle gallery. */
+function rebuildGalleryForZM(colorName) {
+  var container = document.querySelector('.oz-gallery-thumbs');
+  if (!container) return;
+  container.innerHTML = '';
+  container.style.display = '';
+
+  // ZM bucket image for the selected color as first thumb
+  var zmThumb = findVariantField(colorName, 'zmImage') || findVariantField(colorName, 'image');
+  var zmFull = findVariantField(colorName, 'zmFullImage') || findVariantField(colorName, 'fullImage');
+  if (zmThumb && zmFull) {
+    container.appendChild(createThumb(zmThumb, zmFull, 0, true));
+  }
+
+  // ZM product generic gallery images (lifestyle shots from product 11152)
+  var zmGallery = (P.modeToggle && P.modeToggle.targetGallery) || [];
+  for (var i = 0; i < zmGallery.length; i++) {
+    container.appendChild(createThumb(zmGallery[i].thumb, zmGallery[i].full, i + 1, false));
+  }
+
+  if (container.children.length <= 1) container.style.display = 'none';
 }
 
 /**
@@ -994,23 +1139,8 @@ function handleClick(e) {
         allSwatches[si].classList.toggle('selected', allSwatches[si] === swatch);
       }
       // Swap main image from variant data (if available)
-      if (P.variants) {
-        var vKeys = Object.keys(P.variants);
-        for (var vi = 0; vi < vKeys.length; vi++) {
-          if (P.variants[vKeys[vi]].color === colorName) {
-            var vData = P.variants[vKeys[vi]];
-            if (vData.fullImage && DOM.mainImg) {
-              DOM.mainImg.classList.add('oz-fade');
-              var fullImg = vData.fullImage;
-              setTimeout(function() {
-                DOM.mainImg.src = fullImg;
-                DOM.mainImg.onload = function() { DOM.mainImg.classList.remove('oz-fade'); };
-              }, 200);
-            }
-            break;
-          }
-        }
-      }
+      var fullImg = findVariantField(colorName, 'fullImage');
+      if (fullImg) swapMainImage(fullImg);
       syncUI();
       return;
     }
@@ -1042,6 +1172,12 @@ function handleClick(e) {
           { productId: MT.targetProductId, formulaMode: 'target' },
           '', MT.targetUrl
         );
+
+        // navigateToVariant applied K&K images — swap to ZM images
+        var navV = P.variants[pid];
+        if (navV && navV.zmFullImage) swapMainImage(navV.zmFullImage);
+        rebuildGalleryForZM(colorName);
+
         // Re-render with correct ZM prices
         syncUI();
       }
@@ -1538,8 +1674,7 @@ function addToCart() {
   if (P.isBase && !(S.colorMode === 'ral_ncs' && S.customColor)) {
     var colorGroup = document.querySelector('[data-option="color"]');
     if (colorGroup) {
-      colorGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // Briefly highlight the color section to draw attention
+      smoothScrollTo(colorGroup);
       colorGroup.classList.add('oz-highlight');
       setTimeout(function() { colorGroup.classList.remove('oz-highlight'); }, 1500);
     }
@@ -1556,7 +1691,11 @@ function addToCart() {
       scrollToToepassing();
     } else if (error.indexOf('gereedschap') !== -1) {
       var toolGroup = document.querySelector('[data-option="tools"]');
-      if (toolGroup) toolGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (toolGroup) {
+        smoothScrollTo(toolGroup);
+        toolGroup.classList.add('oz-highlight');
+        setTimeout(function() { toolGroup.classList.remove('oz-highlight'); }, 1500);
+      }
     }
     analytics.trackAddToCartError(error);
     shakeButton();
@@ -1708,8 +1847,11 @@ function removeCartMsg() {
  * Offsets for sticky bar height + 20px padding.
  */
 function smoothScrollTo(el) {
-  var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
-  var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+  // Account for any fixed/sticky header at the top (Flatsome's sticky header)
+  var topOffset = 0;
+  var stickyHeader = document.querySelector('.header-wrapper .stuck, #header.stuck, .header-main');
+  if (stickyHeader) topOffset = stickyHeader.offsetHeight;
+  var targetY = el.getBoundingClientRect().top + window.pageYOffset - topOffset - 48;
   var startY = window.pageYOffset;
   var diff = targetY - startY;
   var duration = 900;
@@ -1769,7 +1911,7 @@ function needsToepassing() {
 function scrollToToepassing() {
   var toeSection = document.querySelector('[data-option="toepassing"]');
   if (toeSection) {
-    toeSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    smoothScrollTo(toeSection);
     toeSection.classList.add('oz-highlight');
     setTimeout(function() { toeSection.classList.remove('oz-highlight'); }, 1500);
   }
@@ -1800,6 +1942,13 @@ function setupStickyBar() {
     // Show sticky bar when CTA is out of view, BUT hide on mobile when options are visible
     var show = ctaOutOfView && !(isMobile.matches && optionsInView);
     DOM.stickyBar.classList.toggle('visible', show);
+
+    // Add bottom padding to body so footer content isn't hidden behind the fixed bar
+    if (show) {
+      document.body.style.paddingBottom = DOM.stickyBar.offsetHeight + 'px';
+    } else {
+      document.body.style.paddingBottom = '';
+    }
   }
 
   // Observer 1: add-to-cart button — triggers sticky bar when scrolled past

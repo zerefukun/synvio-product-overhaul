@@ -265,6 +265,9 @@
   function buildCartPayload(config, state) {
     var isToggled = state.formulaMode === "target" && config.modeToggle;
     var productId = isToggled ? config.modeToggle.targetProductId : config.productId;
+    if (state.colorMode === "ral_ncs" && !config.isBase && config.baseProductId) {
+      productId = config.baseProductId;
+    }
     var payload = {
       action: "oz_bcw_add_to_cart",
       nonce: config.nonce,
@@ -400,7 +403,7 @@
   var _lastBeaconTime = 0;
   function beacon(eventName, payload) {
     if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
-    var key = eventName + "|" + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || "");
+    var key = eventName + "|" + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || payload.oz_tool_id || "");
     var now = Date.now();
     if (key === _lastBeacon && now - _lastBeaconTime < 1500) return;
     _lastBeacon = key;
@@ -474,6 +477,22 @@
       oz_primer: S.primer,
       oz_tool_mode: S.toolMode,
       oz_color: S.colorMode === "ral_ncs" ? S.customColor : P.currentColor
+    });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ ecommerce: null });
+    window.dataLayer.push({
+      event: "add_to_cart",
+      ecommerce: {
+        currency: "EUR",
+        value: prices.total,
+        items: [{
+          item_id: P.productId,
+          item_name: P.productName,
+          price: prices.total / S.qty,
+          quantity: S.qty,
+          item_category: P.productLine || ""
+        }]
+      }
     });
   }
   function trackAddToCartError(errorMsg) {
@@ -631,6 +650,10 @@
     nudge.className = "oz-smart-nudge";
     nudge.innerHTML = NUDGE_ICON + "<span><strong>Groot project?</strong> PU rollers verharden na ~2 uur gebruik. Bij meer dan 15m\xB2 raden wij extra rollers aan.</span>";
     section.appendChild(nudge);
+    var hint = document.createElement("div");
+    hint.className = "oz-tool-hint";
+    hint.textContent = "Selecteer minimaal 1 gereedschap";
+    section.appendChild(hint);
     var indList = document.createElement("div");
     indList.className = "oz-tool-list";
     indList.dataset.listType = "individual";
@@ -710,6 +733,19 @@
     }
     var indList = section.querySelector('[data-list-type="individual"]');
     if (indList) indList.classList.toggle("hidden", toolMode !== "individual");
+    var hintEl = section.querySelector(".oz-tool-hint");
+    if (hintEl) {
+      var anyToolOn = false;
+      if (toolMode === "individual") {
+        for (var tk in tools) {
+          if (tools[tk] && tools[tk].on) {
+            anyToolOn = true;
+            break;
+          }
+        }
+      }
+      hintEl.classList.toggle("visible", toolMode === "individual" && !anyToolOn);
+    }
     syncItemRows(section, TC.tools, tools, "tool", function(st) {
       return toolMode === "individual" && st && st.on;
     });
@@ -1023,6 +1059,13 @@
         });
       }
       return data;
+    }, displayColor = function(colorName) {
+      if (!colorName) return "";
+      if (S.formulaMode === "target" || P.productLine && P.productLine.indexOf("-zm") !== -1) {
+        var match = colorName.match(/\b(\d{4})\s*$/);
+        if (match) return match[1];
+      }
+      return colorName;
     }, syncUI = function() {
       var prices = calculatePrices(P, S);
       renderBreakdown(prices);
@@ -1169,9 +1212,9 @@
         if (S.colorMode === "ral_ncs" && S.customColor) {
           colorLabel.textContent = S.customColor;
         } else if (S.selectedColor) {
-          colorLabel.textContent = S.selectedColor;
+          colorLabel.textContent = displayColor(S.selectedColor);
         } else if (P.currentColor) {
-          colorLabel.textContent = P.currentColor;
+          colorLabel.textContent = displayColor(P.currentColor);
         }
       }
       if (DOM.colorLabel) {
@@ -1179,7 +1222,7 @@
           DOM.colorLabel.textContent = S.customColor;
           DOM.colorLabel.style.display = "";
         } else if (S.selectedColor) {
-          DOM.colorLabel.textContent = S.selectedColor;
+          DOM.colorLabel.textContent = displayColor(S.selectedColor);
           DOM.colorLabel.style.display = "";
         } else if (!P.currentColor && P.hasStaticColors) {
           DOM.colorLabel.style.display = "none";
@@ -1191,9 +1234,9 @@
         if (S.colorMode === "ral_ncs" && S.customColor) {
           DOM.stickyDColor.textContent = S.customColor;
         } else if (S.selectedColor) {
-          DOM.stickyDColor.textContent = S.selectedColor;
+          DOM.stickyDColor.textContent = displayColor(S.selectedColor);
         } else {
-          DOM.stickyDColor.textContent = P.currentColor || "";
+          DOM.stickyDColor.textContent = displayColor(P.currentColor || "");
         }
       }
       var stickyColorName = document.getElementById("stickyColorName");
@@ -1203,9 +1246,9 @@
         if (S.colorMode === "ral_ncs" && S.customColor) {
           mobileColor = S.customColor;
         } else if (S.selectedColor) {
-          mobileColor = S.selectedColor;
+          mobileColor = displayColor(S.selectedColor);
         } else {
-          mobileColor = P.currentColor || "";
+          mobileColor = displayColor(P.currentColor || "");
         }
         stickyColorName.textContent = mobileColor;
         if (stickyColorWrap) {
@@ -1295,6 +1338,9 @@
         _preToggleIsBase = P.isBase;
         _preToggleBasePrice = P.basePrice;
         _preToggleProductName = P.productName;
+        _preToggleMainImgSrc = DOM.mainImg ? DOM.mainImg.src : "";
+        var galleryEl = document.querySelector(".oz-gallery-thumbs");
+        _preToggleGalleryHtml = galleryEl ? galleryEl.innerHTML : "";
         P.productId = MT.targetProductId;
         P.productName = MT.targetProductName;
         P.basePrice = MT.targetBasePrice;
@@ -1358,6 +1404,11 @@
         );
       }
       var isZM = mode === "target";
+      swapVariantImages(isZM);
+      var selfShowcase = document.querySelector('.oz-showcase[data-showcase-mode="self"]');
+      var targetShowcase = document.querySelector('.oz-showcase[data-showcase-mode="target"]');
+      if (selfShowcase) selfShowcase.style.display = isZM ? "none" : "";
+      if (targetShowcase) targetShowcase.style.display = isZM ? "" : "none";
       var primerGroup = document.querySelector('[data-option="primer"]');
       if (primerGroup) primerGroup.style.display = isZM ? "none" : "";
       var subtitle = document.getElementById("formulaSubtitle");
@@ -1398,6 +1449,89 @@
         m2Notes[m].textContent = "per " + P.unit;
       }
       syncUI();
+    }, swapVariantImages = function(toZM) {
+      var currentColor = S.selectedColor || P.currentColor || "";
+      if (toZM) {
+        var zmFull = findVariantField(currentColor, "zmFullImage") || findVariantField(currentColor, "fullImage");
+        if (zmFull) swapMainImage(zmFull);
+        rebuildGalleryForZM(currentColor);
+      } else {
+        var selectedColor = S.selectedColor || P.currentColor || "";
+        var kkFull = findVariantField(selectedColor, "fullImage");
+        if (kkFull) {
+          swapMainImage(kkFull);
+          var vKeys = Object.keys(P.variants);
+          for (var vi = 0; vi < vKeys.length; vi++) {
+            if (P.variants[vKeys[vi]].color === selectedColor) {
+              var kkV = P.variants[vKeys[vi]];
+              var container = document.querySelector(".oz-gallery-thumbs");
+              if (container) {
+                container.innerHTML = "";
+                container.style.display = "";
+                if (kkV.image && kkV.fullImage) {
+                  container.appendChild(createThumb(kkV.image, kkV.fullImage, 0, true));
+                }
+                var gallery = kkV.gallery || [];
+                for (var gi = 0; gi < gallery.length; gi++) {
+                  container.appendChild(createThumb(gallery[gi].thumb, gallery[gi].full, gi + 1, false));
+                }
+                if (container.children.length <= 1) container.style.display = "none";
+              }
+              break;
+            }
+          }
+        } else if (_preToggleMainImgSrc && DOM.mainImg) {
+          DOM.mainImg.src = _preToggleMainImgSrc;
+          var galleryEl = document.querySelector(".oz-gallery-thumbs");
+          if (galleryEl && _preToggleGalleryHtml) {
+            galleryEl.innerHTML = _preToggleGalleryHtml;
+            galleryEl.style.display = "";
+          }
+        }
+      }
+      var swatches = document.querySelectorAll(".oz-color-swatch[data-color]");
+      for (var i = 0; i < swatches.length; i++) {
+        var colorName = swatches[i].getAttribute("data-color");
+        var img = swatches[i].querySelector(".oz-swatch-img img");
+        if (!colorName) continue;
+        if (img) {
+          var src = toZM ? findVariantField(colorName, "zmImage") || findVariantField(colorName, "image") : findVariantField(colorName, "image");
+          if (src) img.src = src;
+        }
+        var label = swatches[i].querySelector(".oz-swatch-name");
+        if (label) {
+          if (toZM) {
+            var codeMatch = colorName.match(/\b(\d{4})\s*$/);
+            label.textContent = codeMatch ? codeMatch[1] : colorName;
+          } else {
+            label.textContent = colorName;
+          }
+        }
+      }
+    }, findVariantField = function(colorName, fieldName) {
+      if (!colorName || !P.variants) return "";
+      var keys = Object.keys(P.variants);
+      for (var i = 0; i < keys.length; i++) {
+        if (P.variants[keys[i]].color === colorName) {
+          return P.variants[keys[i]][fieldName] || "";
+        }
+      }
+      return "";
+    }, rebuildGalleryForZM = function(colorName) {
+      var container = document.querySelector(".oz-gallery-thumbs");
+      if (!container) return;
+      container.innerHTML = "";
+      container.style.display = "";
+      var zmThumb = findVariantField(colorName, "zmImage") || findVariantField(colorName, "image");
+      var zmFull = findVariantField(colorName, "zmFullImage") || findVariantField(colorName, "fullImage");
+      if (zmThumb && zmFull) {
+        container.appendChild(createThumb(zmThumb, zmFull, 0, true));
+      }
+      var zmGallery = P.modeToggle && P.modeToggle.targetGallery || [];
+      for (var i = 0; i < zmGallery.length; i++) {
+        container.appendChild(createThumb(zmGallery[i].thumb, zmGallery[i].full, i + 1, false));
+      }
+      if (container.children.length <= 1) container.style.display = "none";
     }, swapContent = function(MT) {
       var uspList = document.querySelector(".oz-short-desc ul");
       if (uspList && MT.targetUsps && MT.targetUsps.length) {
@@ -1640,25 +1774,8 @@
           for (var si = 0; si < allSwatches.length; si++) {
             allSwatches[si].classList.toggle("selected", allSwatches[si] === swatch);
           }
-          if (P.variants) {
-            var vKeys = Object.keys(P.variants);
-            for (var vi = 0; vi < vKeys.length; vi++) {
-              if (P.variants[vKeys[vi]].color === colorName) {
-                var vData = P.variants[vKeys[vi]];
-                if (vData.fullImage && DOM.mainImg) {
-                  DOM.mainImg.classList.add("oz-fade");
-                  var fullImg = vData.fullImage;
-                  setTimeout(function() {
-                    DOM.mainImg.src = fullImg;
-                    DOM.mainImg.onload = function() {
-                      DOM.mainImg.classList.remove("oz-fade");
-                    };
-                  }, 200);
-                }
-                break;
-              }
-            }
-          }
+          var fullImg = findVariantField(colorName, "fullImage");
+          if (fullImg) swapMainImage(fullImg);
           syncUI();
           return;
         }
@@ -1685,6 +1802,9 @@
               "",
               MT.targetUrl
             );
+            var navV = P.variants[pid];
+            if (navV && navV.zmFullImage) swapMainImage(navV.zmFullImage);
+            rebuildGalleryForZM(colorName);
             syncUI();
           }
         } else {
@@ -1979,7 +2099,7 @@
       if (P.isBase && !(S.colorMode === "ral_ncs" && S.customColor)) {
         var colorGroup = document.querySelector('[data-option="color"]');
         if (colorGroup) {
-          colorGroup.scrollIntoView({ behavior: "smooth", block: "center" });
+          smoothScrollTo(colorGroup);
           colorGroup.classList.add("oz-highlight");
           setTimeout(function() {
             colorGroup.classList.remove("oz-highlight");
@@ -1995,7 +2115,13 @@
           scrollToToepassing();
         } else if (error.indexOf("gereedschap") !== -1) {
           var toolGroup = document.querySelector('[data-option="tools"]');
-          if (toolGroup) toolGroup.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (toolGroup) {
+            smoothScrollTo(toolGroup);
+            toolGroup.classList.add("oz-highlight");
+            setTimeout(function() {
+              toolGroup.classList.remove("oz-highlight");
+            }, 1500);
+          }
         }
         trackAddToCartError(error);
         shakeButton();
@@ -2075,8 +2201,10 @@
       var existing = document.querySelector(".oz-cart-msg");
       if (existing) existing.remove();
     }, smoothScrollTo = function(el) {
-      var barHeight = DOM.stickyBar ? DOM.stickyBar.offsetHeight : 0;
-      var targetY = el.getBoundingClientRect().top + window.pageYOffset - barHeight - 20;
+      var topOffset = 0;
+      var stickyHeader = document.querySelector(".header-wrapper .stuck, #header.stuck, .header-main");
+      if (stickyHeader) topOffset = stickyHeader.offsetHeight;
+      var targetY = el.getBoundingClientRect().top + window.pageYOffset - topOffset - 48;
       var startY = window.pageYOffset;
       var diff = targetY - startY;
       var duration = 900;
@@ -2111,7 +2239,7 @@
     }, scrollToToepassing = function() {
       var toeSection = document.querySelector('[data-option="toepassing"]');
       if (toeSection) {
-        toeSection.scrollIntoView({ behavior: "smooth", block: "center" });
+        smoothScrollTo(toeSection);
         toeSection.classList.add("oz-highlight");
         setTimeout(function() {
           toeSection.classList.remove("oz-highlight");
@@ -2127,6 +2255,11 @@
       function updateStickyVisibility() {
         var show2 = ctaOutOfView && !(isMobile.matches && optionsInView);
         DOM.stickyBar.classList.toggle("visible", show2);
+        if (show2) {
+          document.body.style.paddingBottom = DOM.stickyBar.offsetHeight + "px";
+        } else {
+          document.body.style.paddingBottom = "";
+        }
       }
       var ctaObserver = new IntersectionObserver(function(entries) {
         ctaOutOfView = !entries[0].isIntersecting;
@@ -2345,6 +2478,8 @@
     _preToggleIsBase = P ? P.isBase : false;
     _preToggleBasePrice = P ? P.basePrice : 0;
     _preToggleProductName = P ? P.productName : "";
+    _preToggleMainImgSrc = "";
+    _preToggleGalleryHtml = "";
     _originalContent = null;
     if (P.modeToggle) {
       captureOnce = function() {
@@ -2472,6 +2607,8 @@
   var _preToggleIsBase;
   var _preToggleBasePrice;
   var _preToggleProductName;
+  var _preToggleMainImgSrc;
+  var _preToggleGalleryHtml;
   var _originalContent;
   var captureOnce;
   var TOOL_STATE_KEY;

@@ -78,7 +78,7 @@
   }
 
   .oz-sticky-d-link {
-    font-size: 12px;
+    font-size: var(--oz-text-sm);
     font-weight: 600;
     color: var(--oz-text-muted);
     text-decoration: none;
@@ -104,7 +104,7 @@
 
   /* Title — bold, truncates on narrow screens */
   .oz-sticky-d-title {
-    font-size: 14px;
+    font-size: var(--oz-text-base);
     font-weight: 700;
     color: var(--oz-text-primary);
     white-space: nowrap;
@@ -116,7 +116,7 @@
 
   /* Color — accent colored, next to title */
   .oz-sticky-d-color {
-    font-size: 13px;
+    font-size: var(--oz-text-sm);
     font-weight: 600;
     color: var(--oz-accent);
     white-space: nowrap;
@@ -127,7 +127,7 @@
 
   /* Options summary — clickable, scrolls to options widget */
   .oz-sticky-d-options {
-    font-size: 12px;
+    font-size: var(--oz-text-sm);
     color: var(--oz-text-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -156,7 +156,7 @@
 
   /* Price with inline m² superscript */
   .oz-sticky-d-price {
-    font-size: 18px;
+    font-size: var(--oz-text-lg);
     font-weight: 800;
     color: var(--oz-text-primary);
     letter-spacing: -0.3px;
@@ -166,7 +166,7 @@
 
   /* Small unit superscript — e.g. "5m²" */
   .oz-sticky-d-unit {
-    font-size: 10px;
+    font-size: var(--oz-text-xs);
     font-weight: 500;
     color: var(--oz-text-muted);
     vertical-align: super;
@@ -175,7 +175,7 @@
   }
 
   .oz-sticky-d-qty {
-    font-size: 13px;
+    font-size: var(--oz-text-sm);
     font-weight: 600;
     color: var(--oz-text-muted);
     white-space: nowrap;
@@ -192,7 +192,7 @@
     border-radius: 8px !important;
     background: var(--oz-cta) !important;
     color: var(--oz-cta-text) !important;
-    font-size: 12px !important;
+    font-size: var(--oz-text-sm) !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.8px !important;
@@ -234,7 +234,7 @@
 }
 
 .oz-sticky-product-name {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   color: var(--oz-text-primary);
   white-space: nowrap;
@@ -243,7 +243,7 @@
 }
 
 .oz-sticky-color {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   color: var(--oz-text-muted);
   display: flex;
   align-items: center;
@@ -258,7 +258,7 @@
 }
 
 .oz-sticky-price {
-  font-size: 20px;
+  font-size: var(--oz-text-lg);
   font-weight: 800;
   color: var(--oz-text-primary);
   letter-spacing: -0.5px;
@@ -268,7 +268,7 @@
 
 .oz-sticky-price-unit {
   display: block;
-  font-size: 10px;
+  font-size: var(--oz-text-xs);
   font-weight: 400;
   color: var(--oz-text-muted);
   letter-spacing: 0;
@@ -282,7 +282,7 @@ button.oz-sticky-btn {
   border-radius: 10px !important;
   background: var(--oz-cta) !important;
   color: var(--oz-cta-text) !important;
-  font-size: 14px !important;
+  font-size: var(--oz-text-base) !important;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Raleway', sans-serif;
@@ -360,7 +360,7 @@ button.oz-sticky-btn:active {
 }
 
 .oz-sheet-title {
-  font-size: 17px;
+  font-size: var(--oz-text-lg);
   font-weight: 700;
   color: var(--oz-text-primary);
   margin-bottom: 20px;
@@ -375,7 +375,7 @@ button.oz-sticky-btn:active {
   border-radius: 8px !important;
   background: var(--oz-label-bg) !important;
   color: var(--oz-label-text) !important;
-  font-size: 13px !important;
+  font-size: var(--oz-text-sm) !important;
   font-weight: 500 !important;
   cursor: pointer;
   font-family: 'Raleway', sans-serif;
@@ -403,7 +403,7 @@ button.oz-sticky-btn:active {
   border-radius: 8px !important;
   background: var(--oz-label-bg) !important;
   color: var(--oz-label-text) !important;
-  font-size: 13px !important;
+  font-size: var(--oz-text-sm) !important;
   font-weight: 500 !important;
   cursor: pointer;
   font-family: 'Raleway', sans-serif;
@@ -428,7 +428,7 @@ button.oz-sticky-btn:active {
   border: 1.5px solid var(--oz-label-border) !important;
   border-radius: 8px !important;
   background: var(--oz-label-bg) !important;
-  font-size: 12px !important;
+  font-size: var(--oz-text-sm) !important;
   font-weight: 500 !important;
   color: var(--oz-label-text) !important;
   cursor: pointer;
@@ -450,7 +450,7 @@ button.oz-sticky-btn:active {
 }
 
 .oz-bottom-sheet .oz-tool-mode-btn .oz-price-add {
-  font-size: 10px !important;
+  font-size: var(--oz-text-xs) !important;
   display: block !important;
   margin-top: 2px;
   opacity: 0.7;
@@ -473,7 +473,7 @@ button.oz-sticky-btn:active {
   height: 28px !important;
   border: none !important;
   background: var(--oz-bg-subtle) !important;
-  font-size: 13px !important;
+  font-size: var(--oz-text-sm) !important;
   color: var(--oz-text-primary) !important;
   display: flex !important;
   align-items: center;
@@ -495,7 +495,7 @@ button.oz-sticky-btn:active {
   border: none !important;
   border-left: 1px solid var(--oz-border) !important;
   border-right: 1px solid var(--oz-border) !important;
-  font-size: 12px !important;
+  font-size: var(--oz-text-sm) !important;
   font-weight: 600 !important;
   color: var(--oz-text-primary) !important;
   background: white !important;
@@ -509,7 +509,7 @@ button.oz-sticky-btn:active {
   border: 1px solid var(--oz-border) !important;
   border-radius: 5px !important;
   background: var(--oz-bg-subtle) !important;
-  font-size: 11px !important;
+  font-size: var(--oz-text-xs) !important;
   font-weight: 500 !important;
   color: var(--oz-text-body) !important;
   cursor: pointer;
@@ -541,7 +541,7 @@ button.oz-sticky-btn:active {
   height: 48px !important;
   background: var(--oz-bg-subtle) !important;
   border: none !important;
-  font-size: 16px !important;
+  font-size: var(--oz-text-base) !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -557,7 +557,7 @@ button.oz-sticky-btn:active {
   text-align: center;
   border: none !important;
   box-shadow: none !important;
-  font-size: 14px !important;
+  font-size: var(--oz-text-base) !important;
   font-weight: 600 !important;
   background: white !important;
   color: var(--oz-text-primary) !important;
@@ -572,7 +572,7 @@ button.oz-sticky-btn:active {
   border-radius: 8px !important;
   background: var(--oz-cta) !important;
   color: var(--oz-cta-text) !important;
-  font-size: 15px !important;
+  font-size: var(--oz-text-base) !important;
   font-weight: 700 !important;
   font-family: 'Raleway', sans-serif;
   text-transform: uppercase !important;
@@ -594,7 +594,7 @@ button.oz-sticky-btn:active {
   border-radius: 50% !important;
   background: var(--oz-accent-light) !important;
   color: var(--oz-accent) !important;
-  font-size: 11px !important;
+  font-size: var(--oz-text-xs) !important;
   font-weight: 700 !important;
   font-style: italic;
   font-family: Georgia, serif;
@@ -625,19 +625,19 @@ button.oz-sticky-btn:active {
   margin-bottom: 0;
   padding-top: 4px;
   border-top: 1px solid var(--oz-border-light);
-  font-size: 16px;
+  font-size: var(--oz-text-base);
 }
 
 .oz-sheet-total-label {
   font-weight: 600;
   color: var(--oz-text-primary);
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   color: var(--oz-text-body);
 }
 
 .oz-sheet-total-price {
   font-weight: 700;
-  font-size: 22px;
+  font-size: var(--oz-text-xl);
   color: var(--oz-text-primary);
   letter-spacing: -0.3px;
 }
@@ -649,7 +649,7 @@ button.oz-sheet-cta {
   color: var(--oz-cta-text) !important;
   border: none !important;
   border-radius: 10px !important;
-  font-size: 15px !important;
+  font-size: var(--oz-text-base) !important;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Raleway', sans-serif;
@@ -681,7 +681,7 @@ button.oz-sheet-cta {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   font-weight: 700;
   color: var(--oz-text-primary);
   text-transform: uppercase;
@@ -734,7 +734,7 @@ button.oz-sheet-cta {
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
   background: var(--oz-label-bg);
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   font-weight: 600;
   color: var(--oz-label-text);
   cursor: pointer;
@@ -749,7 +749,7 @@ button.oz-sheet-cta {
 }
 
 .oz-bottom-sheet .oz-sheet-label-btn .oz-price-add {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   font-weight: 500;
   color: var(--oz-text-muted);
   display: block;
@@ -766,7 +766,7 @@ button.oz-sheet-cta {
   border: 1.5px solid var(--oz-label-border);
   border-radius: 8px;
   background: white;
-  font-size: 14px;
+  font-size: var(--oz-text-base);
   font-family: 'Raleway', sans-serif;
   color: var(--oz-text-primary);
   cursor: pointer;
@@ -791,7 +791,7 @@ button.oz-sheet-cta {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 18px;
+  font-size: var(--oz-text-lg);
   color: var(--oz-text-primary);
   transition: all 0.15s;
 }
@@ -807,7 +807,7 @@ button.oz-sheet-cta {
   text-align: center;
   border: 1.5px solid var(--oz-border);
   border-radius: 8px;
-  font-size: 15px;
+  font-size: var(--oz-text-base);
   font-weight: 600;
   background: white;
   color: var(--oz-text-primary);
@@ -829,16 +829,16 @@ button.oz-sheet-cta {
   justify-content: space-between;
   align-items: baseline;
   padding: 2px 0;
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-body);
 }
 
 .oz-sheet-m2-small {
-  font-size: 11px;
+  font-size: var(--oz-text-xs);
   color: var(--oz-text-muted);
 }
 
 .oz-sheet-m2-note {
-  font-size: 12px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
 }

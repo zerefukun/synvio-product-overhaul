@@ -313,11 +313,16 @@ class OZ_Product_Processor {
                 }
             }
 
+            // ZM image for K&K→ZM toggle (old bucket photo without K&K branding)
+            $zm_image_id = get_post_meta($vid, '_oz_zm_image_id', true);
+
             $variants[$vid] = [
                 'color'        => $color,
                 'url'          => get_permalink($vid),
                 'image'        => $image_url,
                 'fullImage'    => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
+                'zmImage'      => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'thumbnail') : '',
+                'zmFullImage'  => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'large') : '',
                 'gallery'      => $gallery,
                 'price'        => floatval($variant->get_price()),
                 'regularPrice' => floatval($variant->get_regular_price()),

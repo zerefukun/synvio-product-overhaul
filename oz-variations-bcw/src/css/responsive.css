@@ -8,7 +8,7 @@
 /* Small laptops — tighten spacing so the 2-column layout fits */
 @media (max-width: 1100px) {
   .oz-product-page {
-    padding: 8px 24px 80px;
+    padding: 8px 24px 0;
   }
 
   .oz-product-grid {
@@ -18,7 +18,7 @@
 
 @media (max-width: 900px) {
   .oz-product-page {
-    padding: 8px 16px 100px; /* room for sticky bar */
+    padding: 8px 16px 0;
   }
 
   .oz-product-grid {
@@ -57,11 +57,18 @@
 
   .oz-tabs-bar {
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    /* Hide scrollbar but keep scroll functional */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .oz-tabs-bar::-webkit-scrollbar {
+    display: none;
   }
 
   .oz-tab {
-    font-size: 14px;
+    font-size: var(--oz-text-sm);
     padding: 8px 12px;
   }
 
@@ -85,11 +92,11 @@
   button.oz-sticky-btn,
   button.oz-sheet-cta {
     height: 54px;
-    font-size: 16px;
+    font-size: var(--oz-text-base);
   }
 
   .oz-product-title {
-    font-size: 26px;
+    font-size: var(--oz-text-xl);
   }
 
   .oz-breadcrumb {
@@ -144,11 +151,11 @@
   }
 
   .oz-showcase-block__heading {
-    font-size: 21px;
+    font-size: var(--oz-text-xl);
   }
 
   .oz-showcase-block__body {
-    font-size: 13px;
+    font-size: var(--oz-text-sm);
   }
 
   /* Smaller orbs on mobile */

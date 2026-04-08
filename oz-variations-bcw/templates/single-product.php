@@ -166,7 +166,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       }
 
       // Comparison table data
-      $has_compare = $page_mode === 'configured_line' && $line_key && current_user_can('manage_options');
+      $has_compare = $page_mode === 'configured_line' && $line_key;
       if ($has_compare) {
           $cmp_data  = OZ_Product_Line_Config::get_comparison_data();
           $cmp_cols  = $cmp_data['columns'];
@@ -800,59 +800,80 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
   <?php
   // Showcase sections — editorial image + text blocks below the product grid.
-  // Checks admin meta first, falls back to config defaults per line.
-  if (current_user_can('manage_options')) :
-      $showcase_source = !empty($config['base_id']) ? $config['base_id'] : $product_id;
-      $showcase_sections = get_post_meta($showcase_source, '_oz_showcase_sections', true);
+  // Per product LINE (not per color). When mode_toggle exists, pre-render both
+  // so JS can swap on toggle. If target line has no showcase, it hides entirely.
 
-      // Fallback: use config defaults for this product line
-      if (empty($showcase_sections) || !is_array($showcase_sections)) {
-          $showcase_sections = $line_key
-              ? OZ_Product_Line_Config::get_showcase_defaults($line_key)
-              : [];
+  // Helper to resolve showcase sections for a given line
+  $resolve_showcase = function($lk, $cfg) use ($product_id) {
+      $src = !empty($cfg['base_id']) ? $cfg['base_id'] : $product_id;
+      $sections = get_post_meta($src, '_oz_showcase_sections', true);
+      if (empty($sections) || !is_array($sections)) {
+          $sections = $lk ? OZ_Product_Line_Config::get_showcase_defaults($lk) : [];
       }
+      return $sections;
+  };
 
-      if (!empty($showcase_sections)) :
-  ?>
-  <div class="oz-showcase">
-    <!-- Ambient gradient orbs — one pair for the entire showcase section -->
-    <div class="oz-orb oz-orb--accent" aria-hidden="true"></div>
-    <div class="oz-orb oz-orb--warm" aria-hidden="true"></div>
-    <?php foreach ($showcase_sections as $si => $section) :
-        $img_url = !empty($section['image_id'])
-            ? wp_get_attachment_image_url($section['image_id'], 'full')
-            : '';
-        $has_content = !empty($section['title']) || !empty($section['text']);
-        if (!$img_url && !$has_content) continue;
-        $reverse = ($si % 2 !== 0);
-    ?>
-    <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal" data-reveal-index="<?php echo $si; ?>">
-      <div class="oz-showcase-block__inner">
-        <?php if ($img_url) : ?>
-        <div class="oz-showcase-block__media">
-          <div class="oz-showcase-block__img-wrap oz-reveal-img">
-            <img src="<?php echo esc_url($img_url); ?>"
-                 alt="<?php echo esc_attr($section['title'] ?? ''); ?>"
-                 loading="lazy">
+  // Helper to render a showcase block
+  $render_showcase = function($sections, $mode_attr) {
+      if (empty($sections)) return;
+      ?>
+      <div class="oz-showcase" data-showcase-mode="<?php echo esc_attr($mode_attr); ?>">
+        <div class="oz-orb oz-orb--accent" aria-hidden="true"></div>
+        <div class="oz-orb oz-orb--warm" aria-hidden="true"></div>
+        <?php foreach ($sections as $si => $section) :
+            $img_url = !empty($section['image_id'])
+                ? wp_get_attachment_image_url($section['image_id'], 'full')
+                : '';
+            $has_content = !empty($section['title']) || !empty($section['text']);
+            if (!$img_url && !$has_content) continue;
+            $reverse = ($si % 2 !== 0);
+        ?>
+        <section class="oz-showcase-block <?php echo $reverse ? 'oz-showcase-block--reverse' : ''; ?> oz-reveal" data-reveal-index="<?php echo $si; ?>">
+          <div class="oz-showcase-block__inner">
+            <?php if ($img_url) : ?>
+            <div class="oz-showcase-block__media">
+              <div class="oz-showcase-block__img-wrap oz-reveal-img">
+                <img src="<?php echo esc_url($img_url); ?>"
+                     alt="<?php echo esc_attr($section['title'] ?? ''); ?>"
+                     loading="lazy">
+              </div>
+            </div>
+            <?php endif; ?>
+            <div class="oz-showcase-block__content">
+              <?php if (!empty($section['subtitle'])) : ?>
+                <span class="oz-showcase-block__eyebrow oz-reveal-el"><?php echo esc_html($section['subtitle']); ?></span>
+              <?php endif; ?>
+              <?php if (!empty($section['title'])) : ?>
+                <h2 class="oz-showcase-block__heading oz-reveal-el"><?php echo esc_html($section['title']); ?></h2>
+              <?php endif; ?>
+              <?php if (!empty($section['text'])) : ?>
+                <p class="oz-showcase-block__body oz-reveal-el"><?php echo nl2br(esc_html($section['text'])); ?></p>
+              <?php endif; ?>
+            </div>
           </div>
-        </div>
-        <?php endif; ?>
-        <div class="oz-showcase-block__content">
-          <?php if (!empty($section['subtitle'])) : ?>
-            <span class="oz-showcase-block__eyebrow oz-reveal-el"><?php echo esc_html($section['subtitle']); ?></span>
-          <?php endif; ?>
-          <?php if (!empty($section['title'])) : ?>
-            <h2 class="oz-showcase-block__heading oz-reveal-el"><?php echo esc_html($section['title']); ?></h2>
-          <?php endif; ?>
-          <?php if (!empty($section['text'])) : ?>
-            <p class="oz-showcase-block__body oz-reveal-el"><?php echo nl2br(esc_html($section['text'])); ?></p>
-          <?php endif; ?>
-        </div>
+        </section>
+        <?php endforeach; ?>
       </div>
-    </section>
-    <?php endforeach; ?>
-  </div>
-  <?php endif; endif; ?>
+      <?php
+  };
+
+  // Current line's showcase
+  $self_sections = $resolve_showcase($line_key, $config);
+  $render_showcase($self_sections, 'self');
+
+  // Toggle target line's showcase (pre-rendered, hidden by default)
+  if ($line_key) {
+      $mode_toggle_cfg = OZ_Product_Line_Config::get_mode_toggle_config($line_key);
+      if ($mode_toggle_cfg) {
+          $target_line_key = $mode_toggle_cfg['target_line'];
+          $target_cfg = OZ_Product_Line_Config::get_config($target_line_key);
+          if ($target_cfg) {
+              $target_sections = $resolve_showcase($target_line_key, $target_cfg);
+              $render_showcase($target_sections, 'target');
+          }
+      }
+  }
+  ?>
 
 </div><!-- .oz-product-page -->
 

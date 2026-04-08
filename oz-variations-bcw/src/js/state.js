@@ -441,6 +441,12 @@ export function buildCartPayload(config, state) {
   var isToggled = (state.formulaMode === 'target' && config.modeToggle);
   var productId = isToggled ? config.modeToggle.targetProductId : config.productId;
 
+  // RAL/NCS on a color variant page — use the base product so the pakbon
+  // doesn't show both the variant color name and the custom RAL/NCS code
+  if (state.colorMode === 'ral_ncs' && !config.isBase && config.baseProductId) {
+    productId = config.baseProductId;
+  }
+
   var payload = {
     action: 'oz_bcw_add_to_cart',
     nonce: config.nonce,

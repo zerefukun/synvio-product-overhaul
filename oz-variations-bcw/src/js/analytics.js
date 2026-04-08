@@ -42,7 +42,7 @@ function beacon(eventName, payload) {
   if (!P || !P.ajaxUrl || !P.analyticsNonce) return;
 
   // Deduplicate: skip if same event fired within 1.5 seconds
-  var key = eventName + '|' + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || '');
+  var key = eventName + '|' + (payload.oz_color || payload.oz_option_value || payload.oz_tool_mode || payload.oz_tool_id || '');
   var now = Date.now();
   if (key === _lastBeacon && (now - _lastBeaconTime) < 1500) return;
   _lastBeacon = key;
@@ -145,6 +145,26 @@ export function trackAddToCart(prices) {
     oz_primer: S.primer,
     oz_tool_mode: S.toolMode,
     oz_color: S.colorMode === 'ral_ncs' ? S.customColor : P.currentColor,
+  });
+
+  // Standard GA4 ecommerce add_to_cart — needed for Google Ads conversion
+  // tracking and any GTM setup that listens for the default event name.
+  // Runs alongside our custom oz_add_to_cart (which has richer data).
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ ecommerce: null }); // Clear previous ecommerce data
+  window.dataLayer.push({
+    event: 'add_to_cart',
+    ecommerce: {
+      currency: 'EUR',
+      value: prices.total,
+      items: [{
+        item_id: P.productId,
+        item_name: P.productName,
+        price: prices.total / S.qty,
+        quantity: S.qty,
+        item_category: P.productLine || '',
+      }],
+    },
   });
 }
 

@@ -115,3 +115,18 @@ License:        Ozmarketing - All rights reserved
         width: calc(50% - var(--wp--style--unstable-gallery-gap, 16px)/2);
     }
 }
+
+/* CSS fallback for Flatsome mega menu hover.
+ * Flatsome relies on JS (hoverIntent + flatsome.js) to show dropdowns.
+ * If JS hasn't loaded yet (39 blocking scripts before it), the menu is dead.
+ * This pure-CSS hover makes the dropdown visible immediately on hover,
+ * so the menu works even while JS is still loading.
+ * Once flatsome.js loads, it takes over with hoverIntent for a smoother delay. */
+@media (min-width: 850px) {
+  .has-dropdown:hover > .nav-dropdown,
+  .has-dropdown:focus-within > .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+  }
+}
