@@ -240,9 +240,9 @@ function oz_cart_drawer_enqueue() {
     // JS
     wp_enqueue_script(
         'oz-cart-drawer',
-        get_stylesheet_directory_uri() . '/js/cart-drawer.js',
+        get_stylesheet_directory_uri() . '/js/cart-drawer.min.js',
         ['oz-swiper-loader'],
-        filemtime(get_stylesheet_directory() . '/js/cart-drawer.js'),
+        filemtime(get_stylesheet_directory() . '/js/cart-drawer.min.js'),
         true
     );
 
@@ -939,6 +939,22 @@ add_action('wp_enqueue_scripts', 'oz_dequeue_frontend_block_editor', 100);
  */
 function oz_dequeue_unnecessary_scripts() {
     if (is_admin()) return;
+
+    // reCAPTCHA — only needed on pages with actual forms (checkout, my-account)
+    // On the homepage it loads 8-10x via WC form hooks and iframes = 3.6 MB wasted JS
+    // The plugin prints script tags inline via form hooks, not wp_enqueue_script
+    $needs_captcha = is_account_page() || is_checkout();
+    if (!$needs_captcha) {
+        wp_dequeue_script('wpcaptcha-recaptcha');
+        wp_dequeue_script('google-recaptcha');
+        wp_dequeue_script('wpcf7-recaptcha');
+        // Remove the inline script prints that the captcha plugin attaches to WC form hooks
+        remove_action('woocommerce_login_form', array('WPCaptcha_Functions', 'login_scripts_print'));
+        remove_action('woocommerce_login_form', array('WPCaptcha_Functions', 'captcha_fields_print'));
+        remove_action('woocommerce_register_form', array('WPCaptcha_Functions', 'login_scripts_print'));
+        remove_action('woocommerce_register_form', array('WPCaptcha_Functions', 'captcha_fields_print'));
+        remove_action('comment_form_after_fields', array('WPCaptcha_Functions', 'login_scripts_print'));
+    }
 
     // Follow-Up Emails — only needed on My Account and product pages
     if (!is_product() && !is_account_page()) {
