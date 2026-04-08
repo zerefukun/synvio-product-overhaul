@@ -40,6 +40,51 @@ function load_font_awesome() {
 add_action('wp_enqueue_scripts', 'load_font_awesome');
 add_action('admin_enqueue_scripts', 'load_font_awesome');
 
+/**
+ * Defer non-critical CSS by switching rel to preload + onload swap.
+ * Prevents render-blocking for stylesheets that aren't needed above the fold.
+ */
+function oz_defer_non_critical_css($tag, $handle) {
+    $defer_handles = ['font-awesome', 'fue-followups'];
+    if (in_array($handle, $defer_handles, true)) {
+        // preload + onload swap pattern: loads without blocking render
+        $tag = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", $tag);
+        // noscript fallback for non-JS browsers
+        $tag .= '<noscript>' . str_replace("rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", "rel='stylesheet'", $tag) . '</noscript>';
+    }
+    return $tag;
+}
+add_filter('style_loader_tag', 'oz_defer_non_critical_css', 10, 2);
+
+/**
+ * Add defer attribute to non-critical JS that blocks rendering.
+ * These scripts don't need to run before first paint.
+ */
+function oz_defer_non_critical_js($tag, $handle) {
+    // Swiper is loaded 2x by WooCommerce Product Carousel plugin (37 KB each, render-blocking)
+    $defer_handles = ['wcpcsup-swiper-js', 'wcpcsu-swiper-js', 'wp-consent-api'];
+    if (in_array($handle, $defer_handles, true)) {
+        // Only add defer if not already present
+        if (strpos($tag, 'defer') === false) {
+            $tag = str_replace(' src=', ' defer src=', $tag);
+        }
+    }
+    return $tag;
+}
+add_filter('script_loader_tag', 'oz_defer_non_critical_js', 10, 2);
+
+/**
+ * Defer the Swiper CSS too — it's only needed after sliders initialize.
+ */
+function oz_defer_swiper_css($tag, $handle) {
+    $defer_handles = ['wcpcsup-swiper-css', 'wcpcsu-swiper-css'];
+    if (in_array($handle, $defer_handles, true)) {
+        $tag = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", $tag);
+    }
+    return $tag;
+}
+add_filter('style_loader_tag', 'oz_defer_swiper_css', 10, 2);
+
 /* M² Calculator removed — Phase 4 cleanup (was dead code, no products use it) */
 /* Oz Handleiding removed — no longer used */
 
@@ -883,6 +928,7 @@ function oz_dequeue_unnecessary_scripts() {
     if (!is_product() && !is_account_page()) {
         wp_dequeue_script('fue-account-subscriptions');
         wp_dequeue_script('fue-front-script');
+        wp_dequeue_style('fue-followups');
     }
 
     // Product category discount — only needed on product and shop pages
@@ -903,5 +949,33 @@ function oz_dequeue_unnecessary_scripts() {
         wp_dequeue_script('keuzehulp-v8-frontend');
         wp_dequeue_style('keuzehulp-v8-frontend');
     }
+
+    // swmodal — only needed on pages that use it
+    if (!is_product()) {
+        wp_dequeue_style('swmodal');
+        wp_dequeue_script('swmodal');
+    }
 }
 add_action('wp_enqueue_scripts', 'oz_dequeue_unnecessary_scripts', 100);
+
+/**
+ * Remove WordPress admin/editor CSS from the frontend.
+ * These are enqueued by Gutenberg/block editor plugins and have no effect on the frontend,
+ * but they block rendering (~77 KB total). Runs at priority 9999 to catch late enqueues.
+ */
+function oz_remove_admin_styles_from_frontend() {
+    if (is_admin()) return;
+
+    // dashicons: admin toolbar icons — only needed for logged-in admins
+    if (!is_user_logged_in()) {
+        wp_dequeue_style('dashicons');
+        wp_deregister_style('dashicons');
+    }
+
+    // Gutenberg block editor styles leaked onto the frontend by Popup Maker and other plugins
+    wp_dequeue_style('wp-block-editor');
+    wp_dequeue_style('wp-components');
+    wp_dequeue_style('wp-preferences');
+    wp_dequeue_style('popup-maker-block-library-style');
+}
+add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);
