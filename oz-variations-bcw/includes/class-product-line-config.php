@@ -556,9 +556,8 @@ class OZ_Product_Line_Config {
      * [label, price, default]
      */
     private static $pakket_options = [
-        'original' => [
-            ['5m2', 0, true],
-        ],
+        // Original has NO pakket — sold per 1m². Removed stale 'original' entry
+        // that caused pakbon to show "Pakket: 5m2" on every Original order.
         'easyline' => [
             ['5m2', 0, true],
         ],
@@ -1270,6 +1269,11 @@ class OZ_Product_Line_Config {
      * @return array|false
      */
     public static function get_pakket_options($line_key) {
+        // Safety: only return pakket options when the line actually uses them
+        $config = self::get_config($line_key);
+        if (!$config || empty($config['has_pakket'])) {
+            return false;
+        }
         if (!isset(self::$pakket_options[$line_key])) {
             return false;
         }
