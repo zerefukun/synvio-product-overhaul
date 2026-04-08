@@ -61,10 +61,16 @@ add_filter('style_loader_tag', 'oz_defer_non_critical_css', 10, 2);
  * These scripts don't need to run before first paint.
  */
 function oz_defer_non_critical_js($tag, $handle) {
-    // Swiper is loaded 2x by WooCommerce Product Carousel plugin (37 KB each, render-blocking)
-    $defer_handles = ['wcpcsup-swiper-js', 'wcpcsu-swiper-js', 'wp-consent-api'];
+    $defer_handles = [
+        'wcpcsup-swiper-js',  // Swiper JS (37 KB) — Product Carousel
+        'wcpcsu-swiper-js',   // Swiper JS duplicate
+        'wcpcsup-main-js',    // Product Carousel main.js (1.3 KB)
+        'wcpcsup-swmodal-js', // Product Carousel modal (0.9 KB)
+        'wp-consent-api',     // WP Consent API (1 KB)
+        'cookiebot-wp-consent-level-api-integration', // Cookiebot integration (0.9 KB)
+        'wc-js-cookie',       // js.cookie (1.2 KB) — already has data-wp-strategy but adding defer too
+    ];
     if (in_array($handle, $defer_handles, true)) {
-        // Only add defer if not already present
         if (strpos($tag, 'defer') === false) {
             $tag = str_replace(' src=', ' defer src=', $tag);
         }
@@ -76,8 +82,18 @@ add_filter('script_loader_tag', 'oz_defer_non_critical_js', 10, 2);
 /**
  * Defer the Swiper CSS too — it's only needed after sliders initialize.
  */
+/**
+ * Defer non-critical CSS: Swiper, Follow-Up Emails, swmodal, wc-blocks, small plugin CSS.
+ * WP appends -css to the ID but the handle passed here does NOT include it.
+ */
 function oz_defer_swiper_css($tag, $handle) {
-    $defer_handles = ['wcpcsup-swiper-css', 'wcpcsu-swiper-css'];
+    $defer_handles = [
+        'wcpcsup-swiper',   // Product Carousel swiper CSS (4 KB)
+        'wcpcsu-swiper',    // Product Carousel swiper CSS duplicate
+        'follow-up-emails', // WC Follow-Ups (0.7 KB)
+        'wcpcsup-swmodal',  // Product Carousel modal CSS (1 KB)
+        'wc-blocks',        // WooCommerce blocks CSS (2.6 KB)
+    ];
     if (in_array($handle, $defer_handles, true)) {
         $tag = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", $tag);
     }
