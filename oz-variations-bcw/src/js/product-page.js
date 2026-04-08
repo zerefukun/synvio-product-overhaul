@@ -1712,10 +1712,33 @@ function addToCart() {
 }
 
 /**
+ * Fetch a fresh nonce from the server.
+ * Used when page cache (LiteSpeed) served a stale nonce.
+ */
+function refreshNonce() {
+  var data = new FormData();
+  data.append('action', 'oz_bcw_refresh_nonce');
+  return fetch(P.ajaxUrl, {
+    method: 'POST',
+    body: data,
+    credentials: 'same-origin',
+  })
+    .then(function (res) { return res.json(); })
+    .then(function (json) {
+      if (json.success && json.data && json.data.nonce) {
+        P.nonce = json.data.nonce;
+        return json.data.nonce;
+      }
+      return null;
+    });
+}
+
+/**
  * Actually submit the cart — thin I/O shell.
  * Pure payload building is in buildCartPayload(), I/O is here.
+ * On stale nonce (page cache), fetches a fresh nonce and retries once.
  */
-function submitCart() {
+function submitCart(isRetry) {
   // Pure: build payload object from state
   var payload = buildCartPayload(P, S);
 
@@ -1723,7 +1746,7 @@ function submitCart() {
   var data = payloadToFormData(payload);
 
   // Disable button + show loading state
-  setCartLoading(true);
+  if (!isRetry) setCartLoading(true);
 
   fetch(P.ajaxUrl, {
     method: 'POST',
@@ -1732,9 +1755,22 @@ function submitCart() {
   })
     .then(function (res) { return res.json(); })
     .then(function (json) {
+      // Stale nonce from page cache — refresh and retry once
+      if (!isRetry && json && json.success === false && json.data === 'nonce_expired') {
+        refreshNonce().then(function (fresh) {
+          if (fresh) {
+            submitCart(true);
+          } else {
+            setCartLoading(false);
+            showCartError('Sessie verlopen. Ververs de pagina.');
+          }
+        });
+        return;
+      }
+
       setCartLoading(false);
 
-      if (json.success) {
+      if (json && json.success) {
         // Track successful add to cart
         analytics.trackAddToCart(calculatePrices(P, S));
 
@@ -1752,7 +1788,8 @@ function submitCart() {
           jQuery(document.body).trigger('wc_fragment_refresh');
         }
       } else {
-        showCartError(json.data || 'Er ging iets mis.');
+        var msg = (json && json.data) ? json.data : 'Er ging iets mis.';
+        showCartError(msg);
       }
     })
     .catch(function () {

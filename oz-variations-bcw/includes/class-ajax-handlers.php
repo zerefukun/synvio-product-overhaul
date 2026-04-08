@@ -24,6 +24,10 @@ class OZ_Ajax_Handlers {
         // Frontend: add to cart with addon data
         add_action('wp_ajax_oz_bcw_add_to_cart', [__CLASS__, 'ajax_add_to_cart']);
         add_action('wp_ajax_nopriv_oz_bcw_add_to_cart', [__CLASS__, 'ajax_add_to_cart']);
+
+        // Lightweight nonce refresh — used when page cache serves a stale nonce
+        add_action('wp_ajax_oz_bcw_refresh_nonce', [__CLASS__, 'ajax_refresh_nonce']);
+        add_action('wp_ajax_nopriv_oz_bcw_refresh_nonce', [__CLASS__, 'ajax_refresh_nonce']);
     }
 
     /**
@@ -66,11 +70,23 @@ class OZ_Ajax_Handlers {
     }
 
     /**
+     * Return a fresh nonce for add-to-cart.
+     * Called when page cache served a stale nonce.
+     */
+    public static function ajax_refresh_nonce() {
+        wp_send_json_success(['nonce' => wp_create_nonce('oz_bcw_cart')]);
+    }
+
+    /**
      * AJAX add-to-cart with addon data.
      * Called from the product page JS instead of standard WooCommerce add-to-cart.
      */
     public static function ajax_add_to_cart() {
-        check_ajax_referer('oz_bcw_cart', 'nonce');
+        // Verify nonce — return JSON error instead of die('-1') so JS can detect and retry
+        if (!wp_verify_nonce($_POST['nonce'] ?? '', 'oz_bcw_cart')) {
+            wp_send_json_error('nonce_expired');
+            return;
+        }
 
         $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
         $quantity   = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
