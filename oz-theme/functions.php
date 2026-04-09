@@ -972,15 +972,20 @@ add_action('wp_enqueue_scripts', 'oz_dequeue_frontend_block_editor', 100);
 function oz_dequeue_unnecessary_scripts() {
     if (is_admin()) return;
 
-    // reCAPTCHA — only needed on pages with actual forms (checkout, my-account)
-    // On the homepage it loads 8-10x via WC form hooks and iframes = 3.6 MB wasted JS
-    // The plugin prints script tags inline via form hooks, not wp_enqueue_script
-    $needs_captcha = is_account_page() || is_checkout();
+    // reCAPTCHA — only strip on pages that definitely have no forms.
+    // CF7 forms (kleurstalen aanvraag) need wpcf7-recaptcha to validate submissions.
+    $has_cf7 = false;
+    if (is_singular()) {
+        $post = get_post();
+        if ($post && strpos($post->post_content, 'contact-form-7') !== false) {
+            $has_cf7 = true;
+        }
+    }
+    $needs_captcha = is_account_page() || is_checkout() || $has_cf7;
     if (!$needs_captcha) {
         wp_dequeue_script('wpcaptcha-recaptcha');
         wp_dequeue_script('google-recaptcha');
         wp_dequeue_script('wpcf7-recaptcha');
-        // Remove the inline script prints that the captcha plugin attaches to WC form hooks
         remove_action('woocommerce_login_form', array('WPCaptcha_Functions', 'login_scripts_print'));
         remove_action('woocommerce_login_form', array('WPCaptcha_Functions', 'captcha_fields_print'));
         remove_action('woocommerce_register_form', array('WPCaptcha_Functions', 'login_scripts_print'));
