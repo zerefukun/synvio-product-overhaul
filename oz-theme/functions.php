@@ -974,14 +974,16 @@ function oz_dequeue_unnecessary_scripts() {
 
     // reCAPTCHA — only strip on pages that definitely have no forms.
     // CF7 forms (kleurstalen aanvraag) need wpcf7-recaptcha to validate submissions.
-    $has_cf7 = false;
+    // Detect pages with forms that need reCAPTCHA (CF7 or WPForms)
+    $has_form = false;
     if (is_singular()) {
         $post = get_post();
-        if ($post && strpos($post->post_content, 'contact-form-7') !== false) {
-            $has_cf7 = true;
+        if ($post && (strpos($post->post_content, 'contact-form-7') !== false
+                   || strpos($post->post_content, 'wpforms') !== false)) {
+            $has_form = true;
         }
     }
-    $needs_captcha = is_account_page() || is_checkout() || $has_cf7;
+    $needs_captcha = is_account_page() || is_checkout() || $has_form;
     if (!$needs_captcha) {
         wp_dequeue_script('wpcaptcha-recaptcha');
         wp_dequeue_script('google-recaptcha');
