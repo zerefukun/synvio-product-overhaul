@@ -109,6 +109,30 @@ function oz_defer_swiper_css($tag, $handle) {
 }
 add_filter('style_loader_tag', 'oz_defer_swiper_css', 10, 2);
 
+/**
+ * Add aria-labels to Flatsome banner links that have no accessible name.
+ * Flatsome's [ux_banner link="..."] generates <a class="fill"> wrappers
+ * with no text content — screen readers can't identify them.
+ * Extracts a label from the URL slug (e.g. "beton-cire-badkamer" -> "Badkamer").
+ */
+function oz_add_banner_aria_labels($content) {
+    // Match Flatsome's banner fill links: <a class="fill" href="..."><div class="fill banner-link"></div></a>
+    return preg_replace_callback(
+        '/<a\s+class="fill"\s+href="([^"]+)">\s*<div\s+class="fill banner-link"><\/div>\s*<\/a>/',
+        function ($m) {
+            $url = $m[1];
+            // Extract last URL segment as label
+            $path = trim(parse_url($url, PHP_URL_PATH), '/');
+            $slug = basename($path);
+            // Clean slug: "beton-cire-badkamer" -> "Beton cire badkamer"
+            $label = ucfirst(str_replace('-', ' ', $slug));
+            return '<a class="fill" href="' . esc_url($url) . '" aria-label="' . esc_attr($label) . '"><div class="fill banner-link"></div></a>';
+        },
+        $content
+    );
+}
+add_filter('the_content', 'oz_add_banner_aria_labels', 999);
+
 /* M² Calculator removed — Phase 4 cleanup (was dead code, no products use it) */
 /* Oz Handleiding removed — no longer used */
 
