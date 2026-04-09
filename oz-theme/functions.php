@@ -5,6 +5,21 @@
  * Free tool, loads async, no performance impact.
  * Dashboard: https://clarity.microsoft.com
  */
+/**
+ * Preload the LCP hero image on the homepage.
+ * Eliminates the ~960ms "resource load delay" where the browser waits for
+ * render-blocking CSS before discovering the <img> in the DOM.
+ * With preload, the image downloads in parallel with CSS.
+ */
+function oz_preload_hero_image() {
+    if (!is_front_page()) return;
+    $hero_url = wp_get_attachment_image_url(28735, 'medium_large');
+    if ($hero_url) {
+        echo '<link rel="preload" as="image" href="' . esc_url($hero_url) . '" fetchpriority="high">' . "\n";
+    }
+}
+add_action('wp_head', 'oz_preload_hero_image', 1);
+
 function oz_clarity_tracking() {
     // Skip admin pages and logged-in admins (don't pollute data with our own sessions)
     if (is_admin() || current_user_can('manage_options')) return;
