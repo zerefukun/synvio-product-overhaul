@@ -30,6 +30,7 @@ do_action( 'flatsome_before_page' );
 
 		<div class="oz-hp-ruimtes-wrap">
 
+			<?php /* Row 1 — top 3 featured: badkamer, keuken, toilet. Desc + CTA always visible. */ ?>
 			<div class="oz-hp-ruimtes-row1">
 
 				<a href="/ruimtes/beton-cire-badkamer/" class="oz-hp-ruimtes-card">
@@ -50,16 +51,26 @@ do_action( 'flatsome_before_page' );
 					</div>
 				</a>
 
+				<a href="/ruimtes/beton-cire-toilet/" class="oz-hp-ruimtes-card">
+					<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( home_url( '/wp-content/uploads/2024/01/Toilet-NA-Pim-Mossel.jpg' ) ); ?>" alt="Beton cire toilet" loading="lazy">
+					<div class="oz-hp-ruimtes-card-content">
+						<div class="oz-hp-ruimtes-card-name">Toilet</div>
+						<div class="oz-hp-ruimtes-card-desc">Van wastafel tot wand: een naadloze betonlook waar geen tegel of voeg aan te pas komt.</div>
+						<span class="oz-hp-ruimtes-card-cta">Meer informatie</span>
+					</div>
+				</a>
+
+			</div>
+
+			<?php /* Row 2 — compact name-only cards for the rest */ ?>
+			<div class="oz-hp-ruimtes-row2">
+
 				<a href="/ruimtes/beton-cire-vloer/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
 					<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( home_url( '/wp-content/uploads/2024/02/ruimtes-vloer-voorbeeld-3-1.webp' ) ); ?>" alt="Beton cire vloer" loading="lazy">
 					<div class="oz-hp-ruimtes-card-content">
 						<div class="oz-hp-ruimtes-card-name">Vloer</div>
 					</div>
 				</a>
-
-			</div>
-
-			<div class="oz-hp-ruimtes-row2">
 
 				<a href="/ruimtes/beton-cire-wand/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
 					<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( home_url( '/wp-content/uploads/2024/02/Woonkamer-wand.webp' ) ); ?>" alt="Beton cire wand" loading="lazy">
@@ -79,13 +90,6 @@ do_action( 'flatsome_before_page' );
 					<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( home_url( '/wp-content/uploads/2024/02/Tv-Meubel-1004-Original.webp' ) ); ?>" alt="Beton cire meubels" loading="lazy">
 					<div class="oz-hp-ruimtes-card-content">
 						<div class="oz-hp-ruimtes-card-name">Meubels</div>
-					</div>
-				</a>
-
-				<a href="/ruimtes/beton-cire-toilet/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact oz-hp-ruimtes-overlap">
-					<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( home_url( '/wp-content/uploads/2024/01/Toilet-NA-Pim-Mossel.jpg' ) ); ?>" alt="Beton cire toilet" loading="lazy">
-					<div class="oz-hp-ruimtes-card-content">
-						<div class="oz-hp-ruimtes-card-name">Toilet</div>
 					</div>
 				</a>
 
