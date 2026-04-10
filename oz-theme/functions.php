@@ -292,6 +292,22 @@ function oz_cart_drawer_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
 
 /**
+ * Enqueue homepage v2 CSS only on the front page.
+ * Styles are namespaced with .oz-hp- prefix so they can't bleed into other pages.
+ */
+function oz_homepage_v2_enqueue() {
+    if (is_admin() || ! is_front_page()) return;
+
+    wp_enqueue_style(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
+        [],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
+
+/**
  * Output cart drawer HTML template in the footer of every page.
  */
 function oz_cart_drawer_template() {

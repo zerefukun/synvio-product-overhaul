@@ -1,0 +1,266 @@
+/* Homepage v2 — staging redesign
+ * Namespaced with .oz-hp- prefix to avoid collision with Flatsome + legacy styles.
+ * Sections: ruimtes mozaiek (the editorial 6+1 grid with overlapping toilet card).
+ */
+
+.oz-hp-ruimtes {
+  padding: 64px 0;
+  font-family: 'Raleway', system-ui, sans-serif;
+}
+
+.oz-hp-ruimtes * {
+  box-sizing: border-box;
+}
+
+.oz-hp-ruimtes-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.oz-hp-ruimtes-eyebrow {
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #135350;
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.oz-hp-ruimtes-eyebrow::before,
+.oz-hp-ruimtes-eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background: #D4D0C8;
+}
+.oz-hp-ruimtes-eyebrow::before { right: calc(100% + 16px); }
+.oz-hp-ruimtes-eyebrow::after  { left:  calc(100% + 16px); }
+
+.oz-hp-ruimtes-heading {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 400;
+  color: #1A1A1A;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.oz-hp-ruimtes-heading em {
+  font-style: italic;
+  color: #135350;
+}
+
+.oz-hp-ruimtes-wrap {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.oz-hp-ruimtes-row1 {
+  display: grid;
+  grid-template-columns: 1.2fr 0.85fr 0.95fr;
+  grid-template-rows: 300px;
+  gap: 6px;
+}
+
+.oz-hp-ruimtes-row2 {
+  display: grid;
+  grid-template-columns: 0.8fr 1.3fr 0.9fr;
+  grid-template-rows: 220px;
+  gap: 6px;
+  margin-top: 6px;
+  position: relative;
+}
+
+.oz-hp-ruimtes-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-decoration: none;
+}
+
+.oz-hp-ruimtes-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-img {
+  transform: scale(1.06);
+}
+
+.oz-hp-ruimtes-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.2) 40%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+
+.oz-hp-ruimtes-card:hover::after {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.15) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.oz-hp-ruimtes-card-content {
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+  color: #FFF;
+}
+
+.oz-hp-ruimtes-card-name {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  transform: translateY(4px);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-name {
+  transform: translateY(0);
+}
+
+.oz-hp-ruimtes-card-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 260px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease 0.05s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+}
+
+.oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.oz-hp-ruimtes-card-cta {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 18px;
+  background: #135350;
+  color: #FFF;
+  font-family: 'Raleway', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 2px;
+  text-decoration: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease 0.1s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, background 0.2s;
+}
+
+.oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.oz-hp-ruimtes-card-cta:hover {
+  background: #1A6B67;
+  color: #FFF;
+}
+
+.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-name {
+  font-size: 18px;
+}
+
+.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-content {
+  padding: 18px;
+}
+
+/* Toilet: overlapping accent card — floats over the grid */
+.oz-hp-ruimtes-overlap {
+  position: absolute;
+  top: -60px;
+  right: 80px;
+  width: 150px;
+  height: 180px;
+  z-index: 5;
+  border: 4px solid #FAFAF9;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+/* Tablet breakpoint */
+@media (max-width: 800px) {
+  .oz-hp-ruimtes { padding: 40px 0; }
+  .oz-hp-ruimtes-header { margin-bottom: 32px; }
+  .oz-hp-ruimtes-eyebrow::before,
+  .oz-hp-ruimtes-eyebrow::after { display: none; }
+
+  .oz-hp-ruimtes-row1 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 220px;
+  }
+
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .oz-hp-ruimtes-row2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 180px 180px;
+  }
+
+  .oz-hp-ruimtes-overlap {
+    position: relative;
+    top: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    border: none;
+    box-shadow: none;
+    grid-column: 1 / -1;
+  }
+
+  .oz-hp-ruimtes-card-name { font-size: 18px; }
+  .oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-name { font-size: 16px; }
+  .oz-hp-ruimtes-card-desc { opacity: 1; transform: none; }
+  .oz-hp-ruimtes-card-cta { opacity: 1; transform: none; }
+}
+
+/* Mobile breakpoint */
+@media (max-width: 480px) {
+  .oz-hp-ruimtes-row1,
+  .oz-hp-ruimtes-row2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card,
+  .oz-hp-ruimtes-row2 .oz-hp-ruimtes-card {
+    min-height: 200px;
+  }
+
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child {
+    grid-column: 1;
+    min-height: 240px;
+  }
+}
