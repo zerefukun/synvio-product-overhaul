@@ -1,0 +1,109 @@
+name: Deploy BCW Plugin + Theme (STAGING)
+
+on:
+  push:
+    branches:
+      - staging
+    paths:
+      - "oz-variations-bcw/**"
+      - "oz-theme/**"
+      - ".github/workflows/deploy-bcw-staging.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-bcw-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH access
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+          BCW_SSH_KEY: ${{ secrets.BCW_SSH_KEY }}
+        run: |
+          set -eu
+
+          : "${BCW_HOST:?Missing secret BCW_HOST}"
+          : "${BCW_USER:?Missing secret BCW_USER}"
+          : "${BCW_SSH_KEY:?Missing secret BCW_SSH_KEY}"
+
+          port="${BCW_PORT:-22}"
+
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$BCW_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -p "$port" -H "$BCW_HOST" >> ~/.ssh/known_hosts
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build JS bundles
+        working-directory: oz-variations-bcw
+        run: npm ci && npm run build
+
+      - name: Ensure staging directories exist
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
+            "mkdir -p /home/betoncire/staging/wp-content/plugins/oz-variations-bcw \
+                      /home/betoncire/staging/wp-content/themes/OzTheme"
+
+      - name: Deploy plugin files to staging
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude ".DS_Store" \
+            --exclude "node_modules" \
+            --exclude "src" \
+            --exclude "package.json" \
+            --exclude "package-lock.json" \
+            --exclude "esbuild.config.mjs" \
+            --exclude "*.map" \
+            -e "ssh -p $port" \
+            ./oz-variations-bcw/ \
+            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/plugins/oz-variations-bcw/"
+
+      - name: Deploy child theme to staging
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".DS_Store" \
+            -e "ssh -p $port" \
+            ./oz-theme/ \
+            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/themes/OzTheme/"
