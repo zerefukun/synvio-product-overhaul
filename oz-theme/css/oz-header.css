@@ -230,11 +230,9 @@ button.oz-menu-drawer__category-link {
   stroke: var(--oz-hdr-charcoal) !important;
 }
 
-/* Hide drawer header contents — the main header X replaces the close button.
-   Keep the header's height as a spacer so the X has room above menu items. */
-.oz-menu-drawer.is-open .oz-menu-drawer__close,
-.oz-menu-drawer.is-open .oz-menu-drawer__logo,
-.oz-menu-drawer.is-open .oz-menu-drawer__account {
+/* Hide the drawer's own close button — the main header X replaces it.
+   Logo + account stay visible in the drawer header (like Gulcanhome). */
+.oz-menu-drawer.is-open .oz-menu-drawer__close {
   visibility: hidden;
 }
 
