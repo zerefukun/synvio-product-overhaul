@@ -222,6 +222,14 @@
   color: var(--white);
 }
 
+.oz-hp-hero-glass .oz-hp-eyebrow {
+  color: rgba(255,255,255,.5);
+  margin-bottom: 8px;
+}
+
+.oz-hp-hero-glass .oz-hp-eyebrow::before,
+.oz-hp-hero-glass .oz-hp-eyebrow::after { display: none; }
+
 .oz-hp-hero-glass-title {
   font-family: var(--ff-heading);
   font-size: 18px;

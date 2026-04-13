@@ -36,8 +36,9 @@ $up = home_url( '/wp-content/uploads' );
 			</div>
 		</div>
 		<div class="oz-hp-hero-glass">
+			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
 			<div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
-			<p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren. Gratis thuisgestuurd.</p>
+			<p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren uit onze lijn. We sturen ze gratis naar je toe.</p>
 			<a href="/kleurstalen/" class="oz-hp-btn oz-hp-btn--teal" style="width:100%;text-align:center">Stalen aanvragen</a>
 		</div>
 	</div>
