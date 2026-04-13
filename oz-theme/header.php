@@ -196,10 +196,9 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</nav>
 			<?php endif; ?>
 
-		</div>
-
 		<?php
-		/* Render submenu panels */
+		/* Submenu drill-down panels — inside __content so they only cover
+		   the scrollable area, leaving the drawer header (close/logo/account) visible. */
 		if ( ! empty( $top_items ) ) :
 			$submenu_index = 0;
 			foreach ( $top_items as $item ) :
@@ -233,6 +232,8 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</ul>
 		</div>
 		<?php endforeach; endif; ?>
+
+		</div>
 
 	</div>
 </div>

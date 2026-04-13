@@ -601,13 +601,16 @@ body.oz-header-overlay-page {
   transition: transform .2s;
 }
 
-/* ── Submenu drill-down panels ── */
+/* ── Submenu drill-down panels ──
+   Positioned inside __content (not __panel) so they only cover the
+   scrollable area — the drawer header (close/logo/account) stays visible. */
 .oz-menu-drawer__subcategory {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 2;
   background: var(--oz-hdr-bg);
   transform: translateX(100%);
   transition: transform var(--oz-hdr-transition);
