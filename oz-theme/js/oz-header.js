@@ -135,8 +135,15 @@
     }, { passive: true });
   }
 
-  /* ── Predictive search ── */
+  /* ── Predictive search ──
+     Uses: debounce (300ms) + AbortController (cancel stale requests)
+           + in-memory LRU cache (skip API for repeated queries)
+           + active query guard (ignore out-of-order responses). */
   var debounceTimer = null;
+  var activeAbort = null;       /* AbortController for in-flight request */
+  var activeQuery = '';          /* latest query we care about */
+  var searchCache = new Map();   /* query → products array */
+  var CACHE_MAX = 30;            /* evict oldest after this many entries */
   var siteUrl = (typeof ozHeaderData !== 'undefined' && ozHeaderData.siteUrl)
     ? ozHeaderData.siteUrl
     : window.location.origin;
@@ -145,13 +152,22 @@
     searchInput.addEventListener('input', function () {
       var q = searchInput.value.trim();
 
-      /* Show/hide clear button */
       if (searchClear) searchClear.style.display = q.length ? 'flex' : 'none';
 
       clearTimeout(debounceTimer);
 
       if (q.length < 2) {
+        activeQuery = '';
+        cancelInflight();
         hideResults();
+        return;
+      }
+
+      /* If we already have cached results for this exact query, show instantly */
+      if (searchCache.has(q)) {
+        activeQuery = q;
+        cancelInflight();
+        renderResults(q, searchCache.get(q));
         return;
       }
 
@@ -163,9 +179,18 @@
     searchClear.addEventListener('click', function () {
       searchInput.value = '';
       searchClear.style.display = 'none';
+      activeQuery = '';
+      cancelInflight();
       hideResults();
       searchInput.focus();
     });
+  }
+
+  function cancelInflight() {
+    if (activeAbort) {
+      activeAbort.abort();
+      activeAbort = null;
+    }
   }
 
   function hideResults() {
@@ -175,60 +200,88 @@
   }
 
   function fetchResults(query) {
+    /* Cancel any previous in-flight request */
+    cancelInflight();
+
+    activeQuery = query;
+
+    /* Check cache before hitting the network */
+    if (searchCache.has(query)) {
+      renderResults(query, searchCache.get(query));
+      return;
+    }
+
     if (loadingSection) loadingSection.style.display = 'block';
     if (resultsSection) resultsSection.style.display = 'none';
     if (noResultsSection) noResultsSection.style.display = 'none';
 
-    /* Use WC REST API v3 product search */
+    var controller = new AbortController();
+    activeAbort = controller;
+
     var url = siteUrl + '/wp-json/wc/store/v1/products?search=' +
       encodeURIComponent(query) + '&per_page=6';
 
-    fetch(url)
+    fetch(url, { signal: controller.signal })
       .then(function (r) { return r.json(); })
       .then(function (products) {
-        if (loadingSection) loadingSection.style.display = 'none';
+        /* Stale guard: if user typed something newer, discard this response */
+        if (query !== activeQuery) return;
 
-        if (!products || !products.length) {
-          if (noResultsSection) {
-            noResultsSection.style.display = 'block';
-            if (queryText) queryText.textContent = query;
-          }
-          return;
+        /* Cache the result (evict oldest if at capacity) */
+        if (searchCache.size >= CACHE_MAX) {
+          searchCache.delete(searchCache.keys().next().value);
         }
+        searchCache.set(query, products || []);
 
-        /* Render product cards */
-        resultsGrid.innerHTML = '';
-        products.forEach(function (p) {
-          var img = (p.images && p.images[0]) ? p.images[0].src : '';
-          var price = p.prices
-            ? (p.prices.price
-              ? '&euro;' + (parseInt(p.prices.price, 10) / 100).toFixed(2).replace('.', ',')
-              : '')
-            : '';
-
-          var card = document.createElement('a');
-          card.href = p.permalink || '#';
-          card.className = 'oz-search-drawer__product';
-          card.innerHTML =
-            '<div class="oz-search-drawer__product-img">' +
-              (img ? '<img src="' + img + '" alt="" loading="lazy">' : '') +
-            '</div>' +
-            '<div class="oz-search-drawer__product-title">' + (p.name || '') + '</div>' +
-            '<div class="oz-search-drawer__product-price">' + price + '</div>';
-          resultsGrid.appendChild(card);
-        });
-
-        if (resultsSection) resultsSection.style.display = 'block';
-        if (viewAllLink) {
-          viewAllLink.href = siteUrl + '/?s=' + encodeURIComponent(query) + '&post_type=product';
-        }
-
-        /* Save to recent */
-        saveRecent(query);
+        renderResults(query, products || []);
       })
-      .catch(function () {
+      .catch(function (err) {
+        /* AbortError is expected when we cancel — not an actual failure */
+        if (err && err.name === 'AbortError') return;
         if (loadingSection) loadingSection.style.display = 'none';
       });
+  }
+
+  function renderResults(query, products) {
+    if (loadingSection) loadingSection.style.display = 'none';
+
+    if (!products || !products.length) {
+      if (noResultsSection) {
+        noResultsSection.style.display = 'block';
+        if (queryText) queryText.textContent = query;
+      }
+      if (resultsSection) resultsSection.style.display = 'none';
+      return;
+    }
+
+    resultsGrid.innerHTML = '';
+    products.forEach(function (p) {
+      var img = (p.images && p.images[0]) ? p.images[0].src : '';
+      var price = p.prices
+        ? (p.prices.price
+          ? '&euro;' + (parseInt(p.prices.price, 10) / 100).toFixed(2).replace('.', ',')
+          : '')
+        : '';
+
+      var card = document.createElement('a');
+      card.href = p.permalink || '#';
+      card.className = 'oz-search-drawer__product';
+      card.innerHTML =
+        '<div class="oz-search-drawer__product-img">' +
+          (img ? '<img src="' + img + '" alt="" loading="lazy">' : '') +
+        '</div>' +
+        '<div class="oz-search-drawer__product-title">' + (p.name || '') + '</div>' +
+        '<div class="oz-search-drawer__product-price">' + price + '</div>';
+      resultsGrid.appendChild(card);
+    });
+
+    if (resultsSection) resultsSection.style.display = 'block';
+    if (noResultsSection) noResultsSection.style.display = 'none';
+    if (viewAllLink) {
+      viewAllLink.href = siteUrl + '/?s=' + encodeURIComponent(query) + '&post_type=product';
+    }
+
+    saveRecent(query);
   }
 
   /* ── Recent searches (localStorage) ── */
