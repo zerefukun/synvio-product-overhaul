@@ -16,49 +16,9 @@ do_action( 'flatsome_before_page' );
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<main id="content" class="oz-hp" role="main">
+<div id="content" class="oz-hp" role="main">
 
-<?php /* ================================================================
-       S01 — GLASS NAV
-       Floating glassmorphism bar from wireframe. Replaces Flatsome header
-       visually (CSS hides #header). Logo inverted to white via CSS filter.
-       ================================================================ */ ?>
-<nav class="oz-hp-nav" aria-label="Hoofdnavigatie">
-	<div class="oz-hp-nav-inner">
-		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="oz-hp-nav-logo">
-			<?php
-			$custom_logo_id = get_theme_mod( 'custom_logo' );
-			if ( $custom_logo_id ) :
-				$logo_url = wp_get_attachment_image_url( $custom_logo_id, 'medium' );
-			?>
-				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
-			<?php else : ?>
-				<span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
-			<?php endif; ?>
-		</a>
-
-		<div class="oz-hp-nav-links">
-			<a href="/ruimtes/">Ruimtes</a>
-			<a href="/product-categorie/">Producten</a>
-			<a href="/kleurenoverzicht/">Kleuren</a>
-			<a href="/inspiratie/">Inspiratie</a>
-			<a href="/kennisbank/">Kennisbank</a>
-		</div>
-
-		<div class="oz-hp-nav-actions">
-			<a href="/?s=" class="oz-hp-nav-icon" aria-label="Zoeken">
-				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-			</a>
-			<a href="/kleurstalen/" class="oz-hp-nav-stalen">Kleurstalen</a>
-			<a href="/winkelwagen/" class="oz-hp-nav-icon" aria-label="Winkelwagen">
-				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
-			</a>
-			<button class="oz-hp-nav-toggle" aria-label="Menu" onclick="this.closest('.oz-hp-nav').classList.toggle('is-open')">
-				<span></span><span></span><span></span>
-			</button>
-		</div>
-	</div>
-</nav>
+<?php /* S01 — Glass nav removed. Sitewide oz-header in header.php replaces it. */ ?>
 
 <?php /* ================================================================
        S02 — HERO
@@ -671,7 +631,7 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-</main>
+</div>
 
 <?php
 do_action( 'flatsome_after_page' );

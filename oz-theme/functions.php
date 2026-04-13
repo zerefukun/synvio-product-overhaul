@@ -308,6 +308,39 @@ function oz_homepage_v2_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
 
 /**
+ * Enqueue custom header CSS + JS on all frontend pages.
+ * Replaces Flatsome's header entirely — our header.php provides the markup.
+ */
+function oz_header_enqueue() {
+    if (is_admin()) return;
+
+    wp_enqueue_style(
+        'oz-header',
+        get_stylesheet_directory_uri() . '/css/oz-header.css',
+        [],
+        filemtime(get_stylesheet_directory() . '/css/oz-header.css')
+    );
+
+    wp_enqueue_script(
+        'oz-header',
+        get_stylesheet_directory_uri() . '/js/oz-header.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/oz-header.js'),
+        true
+    );
+
+    wp_localize_script('oz-header', 'ozHeaderData', [
+        'siteUrl' => home_url(),
+    ]);
+}
+add_action('wp_enqueue_scripts', 'oz_header_enqueue');
+
+/**
+ * Register the primary nav menu used by our custom header.
+ */
+register_nav_menu('oz-primary', 'Primary Menu (OZ Header)');
+
+/**
  * Output cart drawer HTML template in the footer of every page.
  */
 function oz_cart_drawer_template() {
