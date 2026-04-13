@@ -138,9 +138,11 @@
 /* ================================================================
    S02 — HERO
    ================================================================ */
+/* Full-viewport hero — charcoal fallback behind image */
 .oz-hp-hero {
   position: relative;
-  min-height: 85vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   overflow: hidden;

@@ -6,7 +6,7 @@
 
 :root {
   --oz-hdr-height: 60px;
-  --oz-hdr-height-desktop: 70px;
+  --oz-hdr-height-desktop: 76px;
   --oz-hdr-bg: #FFF;
   --oz-hdr-color: #1A1A1A;
   --oz-hdr-teal: #135350;
@@ -38,7 +38,8 @@
 }
 
 /* SVGs: Flatsome sets svg:not(:root){overflow:hidden} and may reset fill/stroke.
-   Only target our icon SVGs — don't override inline/img SVGs. */
+   Only target our icon SVGs — don't override inline/img SVGs.
+   NOTE: no `display` here — that breaks the hamburger/X toggle. */
 .oz-header__svg,
 .oz-header__icon svg,
 .oz-menu-drawer__close svg,
@@ -53,7 +54,6 @@
   overflow: visible !important;
   fill: none !important;
   stroke: currentColor !important;
-  display: block;
 }
 
 /* Buttons: Flatsome overrides font, padding, appearance on all buttons */
@@ -118,13 +118,12 @@
               box-shadow var(--oz-hdr-transition);
 }
 
+/* Full-width header — icons pushed to edges, no boxed constraint */
 .oz-header__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 16px;
 }
 
@@ -174,21 +173,23 @@
   background: rgba(0,0,0,.05);
 }
 
-.oz-header__svg {
+/* Hamburger/X toggle: both SVGs live inside the same button.
+   Default: hamburger visible, X hidden.
+   When .menu-open: hamburger hidden, X visible. */
+#oz-menu-trigger .oz-header__svg {
   display: block;
 }
 
-/* Close X icon hidden by default, shown when menu is open */
-.oz-header__svg--close {
-  display: none;
+#oz-menu-trigger .oz-header__svg--close {
+  display: none !important;
 }
 
-.oz-header.menu-open #oz-menu-trigger .oz-header__svg:first-child {
-  display: none;
+.oz-header.menu-open #oz-menu-trigger .oz-header__svg:not(.oz-header__svg--close) {
+  display: none !important;
 }
 
 .oz-header.menu-open #oz-menu-trigger .oz-header__svg--close {
-  display: block;
+  display: block !important;
 }
 
 /* Logo */
@@ -199,7 +200,7 @@
 }
 
 .oz-header__logo img {
-  height: 36px;
+  height: 40px;
   width: auto;
   display: block;
 }
@@ -244,8 +245,9 @@
   color: #FFF !important;
 }
 
+/* Invert logo to white + subtle shadow so it reads against bright hero areas */
 .oz-header--overlay .oz-header__logo img {
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0,0,0,.3));
 }
 
 .oz-header--overlay .oz-header__icon:hover {
@@ -945,7 +947,7 @@ body.oz-drawer-open {
   }
 
   .oz-header__logo img {
-    height: 42px;
+    height: 52px;
   }
 
   .oz-header__desktop-only {
