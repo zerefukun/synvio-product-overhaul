@@ -1191,6 +1191,11 @@
 @media (max-width: 800px) {
   .oz-hp-section { padding: 56px 0; }
 
+  /* On narrow viewports the landscape image crops heavily from the sides.
+     Shift focal point right to keep the bathtub + plant visible. */
+  .oz-hp-hero { min-height: 85vh; min-height: 85dvh; }
+  .oz-hp-hero-bg { object-position: 60% center; }
+
   .oz-hp-hero-inner { flex-direction: column; text-align: center; padding-top: 100px; }
   .oz-hp-hero-glass { width: 100%; max-width: 320px; }
   .oz-hp-hero-desc { margin-left: auto; margin-right: auto; }
