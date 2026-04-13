@@ -602,15 +602,15 @@ body.oz-header-overlay-page {
 }
 
 /* ── Submenu drill-down panels ──
-   Positioned inside __content (not __panel) so they only cover the
-   scrollable area — the drawer header (close/logo/account) stays visible. */
+   Cover the full __panel. The back-header has padding-top matching
+   the main header height, so the floating X sits in that spacer
+   and the back button sits in the row below. */
 .oz-menu-drawer__subcategory {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2;
   background: var(--oz-hdr-bg);
   transform: translateX(100%);
   transition: transform var(--oz-hdr-transition);
@@ -624,9 +624,19 @@ body.oz-header-overlay-page {
   transform: translateX(0);
 }
 
+/* Row 1: empty spacer matching the drawer header height so the
+   main header's floating X button sits here without collision.
+   Row 2 (__back-header itself): the actual "< Ruimtes" back button. */
 .oz-menu-drawer__back-header {
   padding: 16px 20px;
+  padding-top: calc(var(--oz-hdr-height) + 16px);
   border-bottom: 1px solid var(--oz-hdr-stone);
+}
+
+@media (min-width: 768px) {
+  .oz-menu-drawer__back-header {
+    padding-top: calc(var(--oz-hdr-height-desktop) + 16px);
+  }
 }
 
 .oz-menu-drawer__back-button {

@@ -196,9 +196,12 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</nav>
 			<?php endif; ?>
 
+		</div>
+
 		<?php
-		/* Submenu drill-down panels — inside __content so they only cover
-		   the scrollable area, leaving the drawer header (close/logo/account) visible. */
+		/* Submenu drill-down panels — cover the full __panel.
+		   Row 1 of back-header is a spacer matching main header height
+		   (the floating X button lives there). Row 2 is the actual back button. */
 		if ( ! empty( $top_items ) ) :
 			$submenu_index = 0;
 			foreach ( $top_items as $item ) :
@@ -232,8 +235,6 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</ul>
 		</div>
 		<?php endforeach; endif; ?>
-
-		</div>
 
 	</div>
 </div>
