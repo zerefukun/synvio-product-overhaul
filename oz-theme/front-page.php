@@ -24,7 +24,7 @@ $up = home_url( '/wp-content/uploads' );
        S02 — HERO
        ================================================================ */ ?>
 <section class="oz-hp-hero">
-	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.webp" ); ?>" alt="" loading="eager">
+	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.webp" ); ?>" alt="" loading="eager" fetchpriority="high" data-no-lazy="1">
 	<div class="oz-hp-hero-inner">
 		<div class="oz-hp-hero-text">
 			<h1 class="oz-hp-hero-title">Beton Cire.</h1>
@@ -70,14 +70,14 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S04 — RUIMTES MOZAIEK
        ================================================================ */ ?>
-<section class="oz-hp-ruimtes oz-hp-section">
+<section class="oz-hp-ruimtes oz-hp-section" data-reveal>
 	<div class="oz-hp-ruimtes-header">
 		<div class="oz-hp-ruimtes-eyebrow">Toepassingen</div>
 		<h2 class="oz-hp-ruimtes-heading">Waar wil je Beton Cire <em>gebruiken?</em></h2>
 		<p class="oz-hp-ruimtes-intro">Van badkamer tot keuken, van vloer tot meubel: beton cire geeft elke ruimte een naadloze, moderne betonlook. Kies je ruimte en ontdek wat er mogelijk is.</p>
 	</div>
 	<div class="oz-hp-ruimtes-wrap">
-		<div class="oz-hp-ruimtes-row1">
+		<div class="oz-hp-ruimtes-row1" data-reveal-stagger>
 			<a href="/ruimtes/beton-cire-badkamer/" class="oz-hp-ruimtes-card">
 				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/ruimte-badkamer-2.webp" ); ?>" alt="Beton cire badkamer" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content">
@@ -103,7 +103,7 @@ $up = home_url( '/wp-content/uploads' );
 				</div>
 			</a>
 		</div>
-		<div class="oz-hp-ruimtes-row2">
+		<div class="oz-hp-ruimtes-row2" data-reveal-stagger>
 			<a href="/ruimtes/beton-cire-vloer/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
 				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/ruimtes-vloer-voorbeeld-3-1.webp" ); ?>" alt="Beton cire vloer" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Vloer</div></div>
@@ -127,7 +127,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S05 — PRODUCT: ALL-IN-ONE
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Onze lijnen</div>
 		<h2 class="oz-hp-heading">Welke Beton Cire past <em>bij jou?</em></h2>
@@ -206,12 +206,12 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S07b — ZO WERKT HET
        ================================================================ */ ?>
-<section class="oz-hp-section">
+<section class="oz-hp-section" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">In 4 stappen klaar</div>
 		<h2 class="oz-hp-heading">Zo werkt het</h2>
 	</div>
-	<div class="oz-hp-steps-grid">
+	<div class="oz-hp-steps-grid" data-reveal-stagger>
 		<div class="oz-hp-step">
 			<div class="oz-hp-step-num">1</div>
 			<div class="oz-hp-step-title">Kies je kleur</div>
@@ -238,7 +238,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S07c — BEFORE / AFTER
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Resultaat</div>
 		<h2 class="oz-hp-heading">Voor &amp; na</h2>
@@ -262,7 +262,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S08 — MICROCEMENT + KLEURSTALEN
        ================================================================ */ ?>
-<section class="oz-hp-section" style="padding:0">
+<section class="oz-hp-section" style="padding:0" data-reveal>
 	<div class="oz-hp-split">
 		<div class="oz-hp-split-micro">
 			<div class="oz-hp-eyebrow">Cementbasis</div>
@@ -284,7 +284,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S09 — VERGELIJKTABEL
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Vergelijken</div>
 		<h2 class="oz-hp-heading">Welke past <em>bij jou?</em></h2>
@@ -309,7 +309,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S10 — ERVARINGEN
        ================================================================ */ ?>
-<section class="oz-hp-section">
+<section class="oz-hp-section" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Ervaringen</div>
 		<h2 class="oz-hp-heading">Wat klanten <em>zeggen</em></h2>
@@ -341,7 +341,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S11 — SHOWROOM
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-showroom">
 		<div class="oz-hp-showroom-images">
 			<div class="oz-hp-showroom-img oz-hp-showroom-img--tall">
@@ -369,7 +369,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S14 — POPULAIRE PRODUCTEN (carousel)
        ================================================================ */ ?>
-<section class="oz-hp-section">
+<section class="oz-hp-section" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Bestsellers</div>
 		<h2 class="oz-hp-heading">Populaire <em>producten</em></h2>
@@ -403,7 +403,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S20 — INSPIRATIE
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Portfolio</div>
 		<h2 class="oz-hp-heading">Beton cire <em>inspiratie</em></h2>
@@ -428,7 +428,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S24 — KENNISBANK
        ================================================================ */ ?>
-<section class="oz-hp-section">
+<section class="oz-hp-section" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Kennisbank</div>
 		<h2 class="oz-hp-heading">Lees meer in onze <em>kennisbank</em></h2>
@@ -466,7 +466,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S25 — FAQ
        ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand" id="faq">
+<section class="oz-hp-section oz-hp-section--sand" id="faq" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">FAQ</div>
 		<h2 class="oz-hp-heading">Veelgestelde <em>vragen</em></h2>
@@ -518,6 +518,26 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 </div>
+
+<script>
+/* Scroll-reveal: add .is-visible when elements enter viewport */
+(function(){
+  var els = document.querySelectorAll('[data-reveal],[data-reveal-stagger]');
+  if (!els.length || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('is-visible'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
 
 <?php
 do_action( 'flatsome_after_page' );

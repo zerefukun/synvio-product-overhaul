@@ -37,10 +37,19 @@
   box-sizing: border-box;
 }
 
-/* SVGs: Flatsome sets svg:not(:root){overflow:hidden} and may reset fill/stroke */
-.oz-header svg,
-.oz-menu-drawer svg,
-.oz-search-drawer svg {
+/* SVGs: Flatsome sets svg:not(:root){overflow:hidden} and may reset fill/stroke.
+   Only target our icon SVGs — don't override inline/img SVGs. */
+.oz-header__svg,
+.oz-header__icon svg,
+.oz-menu-drawer__close svg,
+.oz-menu-drawer__account svg,
+.oz-menu-drawer__category-arrow svg,
+.oz-menu-drawer__back-button svg,
+.oz-menu-drawer__subcategory-link svg,
+.oz-search-drawer__close svg,
+.oz-search-drawer__search-icon,
+.oz-search-drawer__clear svg,
+.oz-search-drawer__view-all svg {
   overflow: visible !important;
   fill: none !important;
   stroke: currentColor !important;
@@ -190,7 +199,7 @@
 }
 
 .oz-header__logo img {
-  height: 28px;
+  height: 36px;
   width: auto;
   display: block;
 }
@@ -244,7 +253,7 @@
 }
 
 /* Overlay SVGs must be white */
-.oz-header--overlay svg {
+.oz-header--overlay .oz-header__svg {
   stroke: #FFF !important;
 }
 
@@ -260,7 +269,7 @@
   color: var(--oz-hdr-charcoal) !important;
 }
 
-.oz-header--overlay.is-stuck svg {
+.oz-header--overlay.is-stuck .oz-header__svg {
   stroke: var(--oz-hdr-charcoal) !important;
 }
 
@@ -936,7 +945,7 @@ body.oz-drawer-open {
   }
 
   .oz-header__logo img {
-    height: 32px;
+    height: 42px;
   }
 
   .oz-header__desktop-only {
@@ -966,6 +975,46 @@ body.oz-drawer-open {
 /* ================================================================
    FOOTER
    ================================================================ */
+
+/* Trust bar at top of footer */
+.oz-footer__trust {
+  background: var(--oz-hdr-sand);
+  border-bottom: 1px solid var(--oz-hdr-stone);
+}
+
+.oz-footer__trust-inner {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+}
+
+.oz-footer__trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-hdr-charcoal);
+  white-space: nowrap;
+}
+
+.oz-footer__trust-item svg {
+  flex-shrink: 0;
+  color: var(--oz-hdr-teal);
+  overflow: visible !important;
+}
+
+.oz-footer__trust-item svg path,
+.oz-footer__trust-item svg rect,
+.oz-footer__trust-item svg circle,
+.oz-footer__trust-item svg line {
+  stroke: var(--oz-hdr-teal) !important;
+  fill: none !important;
+}
 
 /* Hide Flatsome footer if any leaks through hooks */
 #footer.footer-wrapper {
@@ -1012,7 +1061,30 @@ body.oz-drawer-open {
   font-style: italic;
   font-size: 14px;
   color: rgba(255,255,255,.35);
-  margin: 0;
+  margin: 0 0 16px;
+}
+
+.oz-footer__contact {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.oz-footer__contact p {
+  margin: 0 0 10px;
+}
+
+.oz-footer__contact a {
+  color: rgba(255,255,255,.6) !important;
+  transition: color .15s;
+}
+
+.oz-footer__contact a:hover {
+  color: #FFF !important;
+}
+
+.oz-footer__legal {
+  font-size: 11px;
+  color: rgba(255,255,255,.2);
 }
 
 .oz-footer__heading {
@@ -1058,6 +1130,17 @@ body.oz-drawer-open {
 }
 
 @media (max-width: 800px) {
+  .oz-footer__trust-inner {
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    justify-content: flex-start;
+  }
+
+  .oz-footer__trust-item {
+    white-space: normal;
+    font-size: 12px;
+  }
+
   .oz-footer__inner {
     grid-template-columns: 1fr 1fr;
     gap: 32px;
