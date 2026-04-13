@@ -198,8 +198,7 @@ button.oz-menu-drawer__category-link {
 }
 
 /* When menu is open, float the header above the drawer so the X is visible.
-   Header goes transparent. Center + right groups hidden.
-   Left group (X + search) stays visible and dark. */
+   Header goes transparent. ALL groups hidden — only #oz-menu-trigger (X) shows. */
 .oz-header.menu-open {
   z-index: 1002;
   background: transparent !important;
@@ -208,25 +207,26 @@ button.oz-menu-drawer__category-link {
   pointer-events: none;
 }
 
-/* Hide logo and account/cart — NOT the left group */
+/* Hide every header group — left (search+hamburger), center (logo), right (account+cart) */
+.oz-header.menu-open .oz-header__left,
 .oz-header.menu-open .oz-header__center,
 .oz-header.menu-open .oz-header__right {
   visibility: hidden;
 }
 
-/* Left group (X + search) stays visible and clickable */
-.oz-header.menu-open .oz-header__left {
+/* Only the X button itself is visible and clickable */
+.oz-header.menu-open #oz-menu-trigger {
   visibility: visible;
   pointer-events: auto;
 }
 
-/* Force dark icons on the drawer's white panel.
+/* Force dark X on the drawer's white panel.
    Must beat .oz-header--overlay:not(.is-stuck) specificity (0,4,0). */
-.oz-header.menu-open .oz-header__left .oz-header__icon {
+.oz-header.menu-open .oz-header__left #oz-menu-trigger {
   color: var(--oz-hdr-charcoal) !important;
 }
 
-.oz-header.menu-open .oz-header__left .oz-header__svg {
+.oz-header.menu-open .oz-header__left #oz-menu-trigger .oz-header__svg {
   stroke: var(--oz-hdr-charcoal) !important;
 }
 
