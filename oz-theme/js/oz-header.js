@@ -138,12 +138,14 @@
   /* ── Predictive search ──
      Uses: debounce (300ms) + AbortController (cancel stale requests)
            + in-memory LRU cache (skip API for repeated queries)
+           + prefix superset filtering (Algolia pattern)
            + active query guard (ignore out-of-order responses). */
   var debounceTimer = null;
   var activeAbort = null;       /* AbortController for in-flight request */
   var activeQuery = '';          /* latest query we care about */
   var searchCache = new Map();   /* query → products array */
   var CACHE_MAX = 30;            /* evict oldest after this many entries */
+  var PER_PAGE = 6;              /* must match the per_page in the fetch URL */
   var siteUrl = (typeof ozHeaderData !== 'undefined' && ozHeaderData.siteUrl)
     ? ozHeaderData.siteUrl
     : window.location.origin;
@@ -163,11 +165,28 @@
         return;
       }
 
-      /* If we already have cached results for this exact query, show instantly */
+      /* Exact cache hit — show instantly */
       if (searchCache.has(q)) {
         activeQuery = q;
         cancelInflight();
         renderResults(q, searchCache.get(q));
+        return;
+      }
+
+      /* Prefix superset: if a shorter prefix returned < PER_PAGE results,
+         its set is exhaustive — filter client-side, skip the API call.
+         E.g. "beton" returned 3 results → "betong" filters those 3 locally. */
+      var prefixHit = findExhaustivePrefix(q);
+      if (prefixHit) {
+        activeQuery = q;
+        cancelInflight();
+        var qLower = q.toLowerCase();
+        var filtered = prefixHit.filter(function (p) {
+          return (p.name || '').toLowerCase().indexOf(qLower) !== -1;
+        });
+        /* Cache the derived result so future exact lookups are instant */
+        cacheResult(q, filtered);
+        renderResults(q, filtered);
         return;
       }
 
@@ -184,6 +203,30 @@
       hideResults();
       searchInput.focus();
     });
+  }
+
+  /* Walk backwards through prefixes of `query` looking for a cached result
+     that returned fewer than PER_PAGE items (meaning the server gave us ALL
+     matches). If found, we can filter client-side — zero network cost. */
+  function findExhaustivePrefix(query) {
+    for (var len = query.length - 1; len >= 2; len--) {
+      var prefix = query.substring(0, len);
+      if (searchCache.has(prefix)) {
+        var cached = searchCache.get(prefix);
+        if (cached.length < PER_PAGE) return cached;
+        /* If prefix returned PER_PAGE results, the set may be truncated —
+           the server might have more matches for the longer query. Stop. */
+        return null;
+      }
+    }
+    return null;
+  }
+
+  function cacheResult(query, products) {
+    if (searchCache.size >= CACHE_MAX) {
+      searchCache.delete(searchCache.keys().next().value);
+    }
+    searchCache.set(query, products);
   }
 
   function cancelInflight() {
@@ -211,6 +254,18 @@
       return;
     }
 
+    /* Prefix superset: filter cached shorter-prefix results client-side */
+    var prefixHit = findExhaustivePrefix(query);
+    if (prefixHit) {
+      var qLower = query.toLowerCase();
+      var filtered = prefixHit.filter(function (p) {
+        return (p.name || '').toLowerCase().indexOf(qLower) !== -1;
+      });
+      cacheResult(query, filtered);
+      renderResults(query, filtered);
+      return;
+    }
+
     if (loadingSection) loadingSection.style.display = 'block';
     if (resultsSection) resultsSection.style.display = 'none';
     if (noResultsSection) noResultsSection.style.display = 'none';
@@ -219,7 +274,7 @@
     activeAbort = controller;
 
     var url = siteUrl + '/wp-json/wc/store/v1/products?search=' +
-      encodeURIComponent(query) + '&per_page=6';
+      encodeURIComponent(query) + '&per_page=' + PER_PAGE;
 
     fetch(url, { signal: controller.signal })
       .then(function (r) { return r.json(); })
@@ -227,11 +282,7 @@
         /* Stale guard: if user typed something newer, discard this response */
         if (query !== activeQuery) return;
 
-        /* Cache the result (evict oldest if at capacity) */
-        if (searchCache.size >= CACHE_MAX) {
-          searchCache.delete(searchCache.keys().next().value);
-        }
-        searchCache.set(query, products || []);
+        cacheResult(query, products || []);
 
         renderResults(query, products || []);
       })
