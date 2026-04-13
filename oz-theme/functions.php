@@ -336,9 +336,56 @@ function oz_header_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_header_enqueue');
 
 /**
- * Register the primary nav menu used by our custom header.
+ * Register nav menus used by our custom header + drawer.
  */
-register_nav_menu('oz-primary', 'Primary Menu (OZ Header)');
+register_nav_menus([
+    'oz-primary'        => 'Primary Menu (OZ Header)',
+    'oz-drawer-footer'  => 'Drawer Footer Links',
+]);
+
+/**
+ * Customizer: drawer banner image + overlay text.
+ * Appearance > Customize > Menu Drawer Banner
+ */
+function oz_drawer_banner_customizer( $wp_customize ) {
+    $wp_customize->add_section('oz_drawer_banner', [
+        'title'    => 'Menu Drawer Banner',
+        'priority' => 35,
+    ]);
+
+    /* Banner image */
+    $wp_customize->add_setting('oz_drawer_banner_image', [
+        'default'           => '',
+        'sanitize_callback' => 'esc_url_raw',
+    ]);
+    $wp_customize->add_control( new WP_Customize_Image_Control($wp_customize, 'oz_drawer_banner_image', [
+        'label'   => 'Banner Image',
+        'section' => 'oz_drawer_banner',
+    ]));
+
+    /* Overlay line 1 (small text, e.g. brand name) */
+    $wp_customize->add_setting('oz_drawer_banner_line1', [
+        'default'           => 'Beton Cire Webshop',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('oz_drawer_banner_line1', [
+        'label'   => 'Line 1 (small)',
+        'section' => 'oz_drawer_banner',
+        'type'    => 'text',
+    ]);
+
+    /* Overlay line 2 (large tagline) */
+    $wp_customize->add_setting('oz_drawer_banner_line2', [
+        'default'           => 'Voor elke ruimte',
+        'sanitize_callback' => 'sanitize_text_field',
+    ]);
+    $wp_customize->add_control('oz_drawer_banner_line2', [
+        'label'   => 'Line 2 (large)',
+        'section' => 'oz_drawer_banner',
+        'type'    => 'text',
+    ]);
+}
+add_action('customize_register', 'oz_drawer_banner_customizer');
 
 /**
  * Output cart drawer HTML template in the footer of every page.

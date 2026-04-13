@@ -12,6 +12,11 @@ $logo_id    = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 $logo_url   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 $site_name  = get_bloginfo( 'name' );
 $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
+
+/* Drawer banner (Customizer: Appearance > Customize > Menu Drawer Banner) */
+$banner_img   = get_theme_mod( 'oz_drawer_banner_image', '' );
+$banner_line1 = get_theme_mod( 'oz_drawer_banner_line1', 'Beton Cire Webshop' );
+$banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> class="no-js">
@@ -98,6 +103,22 @@ $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_conte
 
 		<!-- Scrollable menu content -->
 		<div class="oz-menu-drawer__content" id="oz-menu-content">
+
+			<?php /* Banner image with overlay text (configurable in Customizer) */ ?>
+			<?php if ( $banner_img ) : ?>
+			<div class="oz-menu-drawer__banner">
+				<img src="<?php echo esc_url( $banner_img ); ?>" alt="" loading="lazy">
+				<div class="oz-menu-drawer__banner-text">
+					<?php if ( $banner_line1 ) : ?>
+						<span class="oz-menu-drawer__banner-line1"><?php echo esc_html( $banner_line1 ); ?></span>
+					<?php endif; ?>
+					<?php if ( $banner_line2 ) : ?>
+						<span class="oz-menu-drawer__banner-line2"><?php echo esc_html( $banner_line2 ); ?></span>
+					<?php endif; ?>
+				</div>
+			</div>
+			<?php endif; ?>
+
 			<ul class="oz-menu-drawer__categories" id="oz-menu-main">
 				<?php
 				$menu_items = wp_get_nav_menu_items( 'header-menu' );
@@ -161,6 +182,20 @@ $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_conte
 				</li>
 				<?php endforeach; endif; ?>
 			</ul>
+
+			<?php /* Footer links (WP menu: Drawer Footer Links) */ ?>
+			<?php if ( has_nav_menu( 'oz-drawer-footer' ) ) : ?>
+			<nav class="oz-menu-drawer__footer" aria-label="Extra links">
+				<?php wp_nav_menu([
+					'theme_location' => 'oz-drawer-footer',
+					'container'      => false,
+					'menu_class'     => 'oz-menu-drawer__footer-list',
+					'depth'          => 1,
+					'fallback_cb'    => false,
+				]); ?>
+			</nav>
+			<?php endif; ?>
+
 		</div>
 
 		<?php

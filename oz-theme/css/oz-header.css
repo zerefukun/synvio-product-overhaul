@@ -443,13 +443,89 @@ body.oz-header-overlay-page {
   background: rgba(0,0,0,.05);
 }
 
-/* Scrollable menu content */
+/* Scrollable menu content — flex column so footer links stick to bottom */
 .oz-menu-drawer__content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   position: relative;
+}
+
+/* Banner image with overlay text (like Gulcanhome) */
+.oz-menu-drawer__banner {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+}
+
+.oz-menu-drawer__banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-menu-drawer__banner-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.4) 100%);
+  color: #fff;
+}
+
+.oz-menu-drawer__banner-line1 {
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 12px;
+  letter-spacing: .04em;
+  opacity: .8;
+}
+
+.oz-menu-drawer__banner-line2 {
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 18px;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+/* Footer links at bottom of drawer (Klantenservice, Retourneren, etc.) */
+.oz-menu-drawer__footer {
+  margin-top: auto;
+  padding: 16px 20px 24px;
+  border-top: 1px solid var(--oz-hdr-stone);
+}
+
+.oz-menu-drawer__footer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.oz-menu-drawer__footer-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.oz-menu-drawer__footer-list a {
+  display: block;
+  padding: 8px 0;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 13px;
+  color: var(--oz-hdr-charcoal);
+  text-decoration: none;
+  opacity: .7;
+  transition: opacity .2s;
+}
+
+.oz-menu-drawer__footer-list a:hover {
+  opacity: 1;
 }
 
 /* Category list */
