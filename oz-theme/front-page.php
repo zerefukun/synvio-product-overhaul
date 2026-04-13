@@ -74,6 +74,7 @@ $up = home_url( '/wp-content/uploads' );
 	<div class="oz-hp-ruimtes-header">
 		<div class="oz-hp-ruimtes-eyebrow">Toepassingen</div>
 		<h2 class="oz-hp-ruimtes-heading">Waar wil je Beton Cire <em>gebruiken?</em></h2>
+		<p class="oz-hp-ruimtes-intro">Van badkamer tot keuken, van vloer tot meubel: beton cire geeft elke ruimte een naadloze, moderne betonlook. Kies je ruimte en ontdek wat er mogelijk is.</p>
 	</div>
 	<div class="oz-hp-ruimtes-wrap">
 		<div class="oz-hp-ruimtes-row1">
@@ -133,8 +134,8 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 
 	<div class="oz-hp-product">
-		<div class="oz-hp-product-visual">
-			<img src="<?php echo esc_url( "$up/2026/04/Landscape-All-In-One-Met-Onderkant-Donker-4.webp" ); ?>" alt="Beton Cire All-In-One" loading="lazy">
+		<div class="oz-hp-product-visual oz-hp-product-visual--box">
+			<img src="<?php echo esc_url( "$up/2026/03/Beton-Cire-box.webp" ); ?>" alt="Beton Cire All-In-One verpakking" loading="lazy">
 		</div>
 		<div class="oz-hp-product-info">
 			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
@@ -157,8 +158,8 @@ $up = home_url( '/wp-content/uploads' );
        S06 — PRODUCT: ORIGINAL (reversed)
        ================================================================ */ ?>
 	<div class="oz-hp-product oz-hp-product--reverse">
-		<div class="oz-hp-product-visual">
-			<img src="<?php echo esc_url( "$up/2024/01/All-In-One.png" ); ?>" alt="Beton Cire Original" loading="lazy">
+		<div class="oz-hp-product-visual oz-hp-product-visual--box">
+			<img src="<?php echo esc_url( "$up/2026/03/Original-Box.webp" ); ?>" alt="Beton Cire Original verpakking" loading="lazy">
 		</div>
 		<div class="oz-hp-product-info">
 			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
@@ -181,8 +182,8 @@ $up = home_url( '/wp-content/uploads' );
        S07 — PRODUCT: LAVASTEEN
        ================================================================ */ ?>
 	<div class="oz-hp-product">
-		<div class="oz-hp-product-visual">
-			<img src="<?php echo esc_url( "$up/2024/02/ruimte-badkamer-2.webp" ); ?>" alt="Beton Cire Lavasteen" loading="lazy">
+		<div class="oz-hp-product-visual oz-hp-product-visual--box">
+			<img src="<?php echo esc_url( "$up/2026/03/Lavasteen-Box.webp" ); ?>" alt="Beton Cire Lavasteen verpakking" loading="lazy">
 		</div>
 		<div class="oz-hp-product-info">
 			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
@@ -363,30 +364,7 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* ================================================================
-       S12 — WAT IS BETON CIRE?
-       ================================================================ */ ?>
-<section class="oz-hp-section">
-	<div class="oz-hp-text-block">
-		<h2>Wat is Beton Cire?</h2>
-		<p>Beton Cire vindt zijn oorsprong in Frankrijk en wordt al ruim 25 jaar toegepast. De letterlijke vertaling is 'gewreven beton', wat verwijst naar de manier waarop het aangebracht wordt. Onze Beton cire is onderhoud vrij en gaat jaren mee.</p>
-		<p>Beton cire is onder de doe het zelvers een steeds populairder wordende vorm van betonstuc, op basis van cement, met watervaste eigenschappen en een strakke betonlook. Het is geschikt voor bijna alle ondergronden, zoals hout, cement of gips, en kan online worden gekocht bij ons. Het is de ideale keuze voor een moderne en stijlvolle afwerking.</p>
-		<p>Of je nu op zoek bent naar een prachtige vloer of een waterdichte betonlook voor je badkamer, het product biedt een veelzijdige oplossing. Bezoek onze showroom voor meer informatie en ontdek ons mooie product voor alle objecten. De decoratieve stuc kan ook worden aangebracht over tegels. De tegels hoeven niet te worden gesloopt en kunnen blijven zitten, zolang ze maar vast zitten. Er wordt een egalisatie laag aangebracht over de tegels voordat het kan worden aangebracht.</p>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S13 — KOPEN & PRIJSFACTOREN
-       ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
-	<div class="oz-hp-text-block">
-		<h2>Beton cire kopen, of bestellen en prijsfactoren</h2>
-		<p>Beton Cire kopen in onze fysieke winkels als via de online webshop. We hebben alles op voorraad. Binnen 15 minuten loop je met je bestelling de deur uit. Klanten hebben de mogelijkheid om uit diverse kleuren te kiezen, en er zijn traditionele varianten waarbij pigmenten zelf gemengd moeten worden als ook kant-en-klare varianten waarbij de pigmenten al gemengd zijn.</p>
-		<p>Bij een online aankoop bij de Beton cire webshop ontvangt de klant een totaalpakket. In het keuze menu kun je een totaal pakket selecteren, met de kleur naar wens en hoe waterdicht het object moet zijn. Hier kun je kiezen uit meerdere pu topcoat lagen. Denk aan een badkamer die zeer waterdicht moet zijn.</p>
-		<p>Bij de Beton Cire Webshop in Den Haag vind je alles wat je nodig hebt voor jouw beton cire projecten. Beton cire, een veelzijdige en duurzame afwerking, is ideaal voor vloeren, muren, en meubels, zowel binnen als buiten. De webshop biedt een breed scala aan kleuren en afwerkingen, zodat je altijd het perfecte product vindt dat aansluit bij jouw wensen.</p>
-		<p>Onze webshop levert door heel Europa, Belgie, Duitsland, Frankrijk en Spanje. Maar ook buiten de EU. Bestellingen die op werkdagen voor 14.00 uur worden gedaan worden dezelfde dag nog uitgeleverd aan onze logistieke partij.</p>
-	</div>
-</section>
+<?php /* S12-S13 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
        S14 — POPULAIRE PRODUCTEN (carousel)
@@ -421,65 +399,7 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* ================================================================
-       S16 — DIY OF PROFESSIONEEL
-       ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
-	<div class="oz-hp-text-block">
-		<h2>Beton cire aanbrengen DIY, of toch professioneel laten aanbrengen</h2>
-		<p>Het Beton cire aanbrengen kan zelf gedaan worden door doe-het-zelvers of uitbesteed aan een professional, afhankelijk van ervaring en gewenste resultaten. Het zelf aanbrengen biedt de vrijheid om creatief te zijn in de toepassing en zelf voor een groot deel bepalen hoe het er uit komt te zien en veel geld te besparen. Nagenoeg voor alle oppervlakte en de vele mogelijkheden de juiste keuze voor je renovatie.</p>
-		<p>Is het lastig om zelf Beton cire of Microcement aan te brengen? Het is goed te doen door iedereen die een beetje handig is. Afhankelijk van je toepassing, kennis en ervaring kun je kiezen voor beton cire All in one, en EasyLine Kant-en-klare Beton cire. Deze varianten zijn reeds voorgemengd en kan makkelijk worden aangebracht op een schone, egale en gelijkzuigende ondergrond.</p>
-		<p>Tip van Patrick, onze specialist: Bestel altijd iets meer dan je denkt nodig te hebben! Zo heb je altijd een beetje over om eventuele oneffenheden die tijdens het aanbrengen van zijn ontstaan snel te kunnen verhelpen.</p>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S17 — WATERDICHT MAKEN
-       ================================================================ */ ?>
-<section class="oz-hp-section">
-	<div class="oz-hp-text-block">
-		<h2>Beton Cire en Microcement waterdicht maken</h2>
-		<p>Het waterdicht maken van Beton cire en microcement is het allerbelangrijkste aspect van het hele proces. Het waterdicht maken gebeurd door middel van onze polyurtehane top coat. Pu is de afkorting. Pu bestaat uit een A en een B komponent die elkaar versterken en deze pu zorgt er voor dat het object volledig waterdicht wordt. Door de waterdichtheid biedt het de mogelijkheid om het toe te passen in de badkamer. Dat maakt het geschikt voor vele toepassingen. Dan wil je toch nooit meer tegels hebben.</p>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S18 — PRODUCTKEUZE GIDS
-       ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
-	<div class="oz-hp-text-block">
-		<h2>Kies het juiste product voor je doe-het-zelf project</h2>
-		<p>Afhankelijk van je project kun je kiezen uit verschillende soorten. Wij bieden verschillende soorten Beton cire aan, maar ook Microcement en Lavasteen gietvloeren. Ze zijn allemaal kant en klaar gemixed op kleur. Bovendien kunnen ze allemaal met een extra matte pu topcoat geleverd worden.</p>
-
-		<h3>Beton Cire Original en microcement kant-en-klaar</h3>
-		<p>Fijne structuur. Snel droog en klaar. Hard. Wil je zelf aan de slag en wil je het super glad hebben en de echte betonlook krijgen, dan raden wij jou zeker aan te kiezen voor Beton cire Original of microcement. Met deze kant en klare pasta ben je super snel klaar.</p>
-
-		<h3>Beton Cire Easyline</h3>
-		<p>Drukke tekening door grof en fijn. Easyline heeft 2 verschillende lagen. De eerste laag is grof en de tweede laag is fijn. Daardoor zie je de eerste grove laag door de fijne tweede laag heen en dat geeft een drukke tekening.</p>
-
-		<h3>Beton Cire All in one</h3>
-		<p>Drukke tekening door schuren. Bij de All in one heb je ook dezelfde extra stap als bij de Easyline. Deze heeft ook langer de tijd nodig om te drogen.</p>
-
-		<h3>Lavasteen gietvloeren</h3>
-		<p>Ook voor wanden. Extreem hard. De lavasteen gietvloeren bestaan uit een A en een B component. Deze variant is veruit het hardste product op de markt. Bovendien is deze van zich zelf waterdicht, dus perfect voor douche vloeren en buiten.</p>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S19 — PROFESSIONEEL AANBRENGEN
-       ================================================================ */ ?>
-<section class="oz-hp-section">
-	<div class="oz-hp-text-block">
-		<h2>Professioneel laten aanbrengen</h2>
-		<p>Het inschakelen van een professional voor het aanbrengen heeft verschillende voordelen. Beton cire waterdicht krijgen is een handigheid die we je of je specialist bij kunnen brengen met een workshop op maat.</p>
-		<ul class="oz-hp-product-features" style="max-width:400px">
-			<li>Het bespaart tijd</li>
-			<li>Je bent verzekerd van een mooi en duurzaam resultaat</li>
-			<li>Je bespaart jezelf de moeite</li>
-		</ul>
-		<p style="margin-top:20px"><a href="/offerte/" class="oz-hp-btn oz-hp-btn--teal">Offerte aanvragen</a></p>
-	</div>
-</section>
+<?php /* S16-S19 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
        S20 — INSPIRATIE
@@ -505,50 +425,7 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* ================================================================
-       S21 — BELANGRIJKSTE PUNTEN
-       ================================================================ */ ?>
-<section class="oz-hp-section">
-	<div class="oz-hp-points">
-		<div class="oz-hp-text-block" style="padding:0">
-			<h2>Creeer een unieke stijl met Beton Cire</h2>
-			<p>Beton cire is een duurzame keuze voor zowel vloeren, muur, badkamers of toilet. Lees hier hoe je het kunt toepassen en onderhouden.</p>
-			<p>Waterbestendig, veelzijdig materiaal geschikt voor vloeren, muren en keukenbladen, en biedt een moderne, stijlvolle uitstraling. Het waterdicht afwerken gebeurd met een 2 componenten pu coating. Je object is bestand tegen water en vlekken.</p>
-			<p>Het materiaal is verkrijgbaar door de kleurpigment in meer dan 5000 kleuren en verschillende afwerkingsmogelijkheden, zoals structuur of juist glad, wat aanpassing aan persoonlijke voorkeuren mogelijk maakt.</p>
-		</div>
-		<div class="oz-hp-points-img">
-			<img src="<?php echo esc_url( "$up/2024/01/Toilet-NA-Pim-Mossel.jpg" ); ?>" alt="Beton cire in toilet en douche" loading="lazy">
-		</div>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S22 — RUIMTE-TOEPASSINGEN (4 SEO texts)
-       ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand">
-	<div class="oz-hp-section-header">
-		<div class="oz-hp-eyebrow">Ruimtes</div>
-		<h2 class="oz-hp-heading">Toepassingen per <em>ruimte</em></h2>
-	</div>
-	<div class="oz-hp-ruimte-grid">
-		<div class="oz-hp-ruimte-item">
-			<h3>Beton Cire badkamer</h3>
-			<p>Beton Cire is bij een juiste behandeling volledig waterdicht, waardoor het ideaal is voor natte ruimtes zoals badkamers. Dankzij de vochtwerende en niet-poreuze eigenschappen is het bestand tegen de groei van schimmels en bacterien, waardoor een hygienischer omgeving ontstaat. De naadloze toepassing vermindert het onderhoud en verbetert de hygiene, omdat er geen voegen zijn waar vuil of bacterien zich kunnen ophopen.</p>
-		</div>
-		<div class="oz-hp-ruimte-item">
-			<h3>Beton Cire vloeren</h3>
-			<p>Het is geschikt voor vloeren en kan op vrijwel ieder type dekvloer gelegd worden, mits de vloer stevig, vlak, droog, stof- en vetvrij is. Het biedt met gepast onderhoud en bescherming een hoge duurzaamheid. Een Beton cire vloer in je huiskamer gecombineerd met minimalistisch aantal meubels geeft een geweldige luxe uitstraling voor het gehele oppervlak.</p>
-		</div>
-		<div class="oz-hp-ruimte-item">
-			<h3>Beton Cire wanden</h3>
-			<p>Als wanden en muren is het de juiste keuze en biedt het slijtvaste en vloeistofdichte oppervlakken die onderhoudsvriendelijk zijn. Het is geschikt voor wanden in diverse ruimtes, zoals in je badkamer, woonkamer of trappengat en kan gecombineerd worden met andere materialen voor esthetische contrasten.</p>
-		</div>
-		<div class="oz-hp-ruimte-item">
-			<h3>Beton Cire keukenbladen en spatschermen</h3>
-			<p>Beton Cire is een zeer gewild materiaal voor gebruik voor keukens aanrechtbladen en spatschermen dankzij zijn waterdichte karakteristieken. Het biedt een naadloze en vochtwerende betonlook afwerking waarmee het risico op lekkage en vochtschade vermindert.</p>
-		</div>
-	</div>
-</section>
+<?php /* S21-S22 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
        S24 — KENNISBANK
