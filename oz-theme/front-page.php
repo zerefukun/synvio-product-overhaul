@@ -39,7 +39,7 @@ $up = home_url( '/wp-content/uploads' );
 			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
 			<div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
 			<p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren uit onze lijn. We sturen ze gratis naar je toe.</p>
-			<a href="/kleurstalen/" class="oz-hp-btn oz-hp-btn--teal" style="width:100%;text-align:center">Stalen aanvragen</a>
+			<a href="/kleurstalen/" class="oz-hp-hero-glass-link">Stalen aanvragen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
 		</div>
 	</div>
 </section>
