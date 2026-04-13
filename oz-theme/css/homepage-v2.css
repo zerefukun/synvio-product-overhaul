@@ -1,15 +1,417 @@
-/* Homepage v2 — staging redesign
- * Namespaced with .oz-hp- prefix to avoid collision with Flatsome + legacy styles.
- * Sections: ruimtes mozaiek (the editorial 6+1 grid with overlapping toilet card).
- */
+/* ================================================================
+   Homepage v2 — Beton Ciré Webshop (staging redesign)
+   Namespaced .oz-hp-* to avoid Flatsome collisions.
+   Design: editorial luxury — warm neutrals, teal accent, generous space.
+   ================================================================ */
 
-.oz-hp-ruimtes {
-  padding: 64px 0;
-  font-family: 'Raleway', system-ui, sans-serif;
+/* ── Tokens ── */
+.oz-hp {
+  --teal: #135350;
+  --teal-dark: #0E3E3C;
+  --teal-mist: #E8F0F0;
+  --sand: #F5F4F0;
+  --stone: #E5E5E3;
+  --charcoal: #1A1A1A;
+  --text: #555;
+  --text-light: #888;
+  --white: #FFF;
+  --ff-heading: 'DM Serif Display', Georgia, serif;
+  --ff-body: 'Raleway', system-ui, sans-serif;
+  --max-w: 1100px;
+  --gap: 20px;
 }
 
-.oz-hp-ruimtes * {
+.oz-hp {
+  font-family: var(--ff-body);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.oz-hp *,
+.oz-hp *::before,
+.oz-hp *::after {
   box-sizing: border-box;
+}
+
+.oz-hp img { max-width: 100%; height: auto; }
+
+/* ── Shared patterns ── */
+.oz-hp-container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-section {
+  padding: 80px 0;
+}
+
+.oz-hp-section--sand { background: var(--sand); }
+.oz-hp-section--dark { background: var(--charcoal); color: var(--white); }
+.oz-hp-section--teal-mist { background: var(--teal-mist); }
+
+.oz-hp-section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.oz-hp-eyebrow {
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.oz-hp-eyebrow::before,
+.oz-hp-eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background: var(--stone);
+}
+.oz-hp-eyebrow::before { right: calc(100% + 16px); }
+.oz-hp-eyebrow::after  { left:  calc(100% + 16px); }
+
+.oz-hp-heading {
+  font-family: var(--ff-heading);
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 400;
+  color: var(--charcoal);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.oz-hp-heading em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.oz-hp-section--dark .oz-hp-heading { color: var(--white); }
+.oz-hp-section--dark .oz-hp-eyebrow { color: var(--teal-mist); }
+.oz-hp-section--dark .oz-hp-eyebrow::before,
+.oz-hp-section--dark .oz-hp-eyebrow::after { background: rgba(255,255,255,.15); }
+
+.oz-hp-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: background .2s, transform .15s;
+  cursor: pointer;
+  border: none;
+}
+
+.oz-hp-btn:hover { transform: translateY(-1px); }
+
+.oz-hp-btn--teal {
+  background: var(--teal);
+  color: var(--white);
+}
+.oz-hp-btn--teal:hover { background: #1A6B67; color: var(--white); }
+
+.oz-hp-btn--outline {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: var(--white);
+}
+.oz-hp-btn--outline:hover { border-color: var(--white); color: var(--white); }
+
+.oz-hp-btn--dark {
+  background: var(--charcoal);
+  color: var(--white);
+}
+
+/* ================================================================
+   HIDE FLATSOME HEADER
+   This CSS only loads on is_front_page() so it won't affect other pages.
+   We keep get_header() for wp_head() side-effects but hide the visual nav.
+   ================================================================ */
+#header,
+#header .header-wrapper,
+.header-wrapper {
+  display: none !important;
+}
+
+/* ================================================================
+   S01 — GLASS NAV (floating glassmorphism bar)
+   ================================================================ */
+.oz-hp-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 14px 0;
+  background: rgba(26, 26, 26, .55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.oz-hp-nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Logo — inverted to white via CSS filter */
+.oz-hp-nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.oz-hp-nav-logo img {
+  height: 26px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.oz-hp-nav-logo span {
+  font-family: var(--ff-heading);
+  font-size: 18px;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+/* Center links */
+.oz-hp-nav-links {
+  display: flex;
+  gap: 28px;
+}
+
+.oz-hp-nav-links a {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.65);
+  text-decoration: none;
+  letter-spacing: .3px;
+  transition: color .2s;
+  white-space: nowrap;
+}
+
+.oz-hp-nav-links a:hover { color: var(--white); }
+
+/* Right actions: search, kleurstalen CTA, cart, hamburger */
+.oz-hp-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.oz-hp-nav-icon {
+  color: rgba(255,255,255,.6);
+  transition: color .2s;
+  display: flex;
+  align-items: center;
+}
+
+.oz-hp-nav-icon:hover { color: var(--white); }
+
+.oz-hp-nav-stalen {
+  display: inline-block;
+  padding: 7px 18px;
+  font-family: var(--ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: var(--white);
+  background: var(--teal);
+  border-radius: 3px;
+  text-decoration: none;
+  transition: background .2s;
+  white-space: nowrap;
+}
+
+.oz-hp-nav-stalen:hover { background: #1A6B67; color: var(--white); }
+
+/* Hamburger — hidden on desktop */
+.oz-hp-nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.oz-hp-nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  background: rgba(255,255,255,.7);
+  border-radius: 1px;
+  transition: transform .3s, opacity .3s;
+}
+
+/* Hamburger → X animation when open */
+.oz-hp-nav.is-open .oz-hp-nav-toggle span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.oz-hp-nav.is-open .oz-hp-nav-toggle span:nth-child(2) { opacity: 0; }
+.oz-hp-nav.is-open .oz-hp-nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ================================================================
+   S02 — HERO
+   ================================================================ */
+.oz-hp-hero {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--charcoal);
+}
+
+.oz-hp-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .55;
+}
+
+.oz-hp-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 120px var(--gap) 80px;
+  width: 100%;
+}
+
+.oz-hp-hero-text {
+  max-width: 540px;
+  color: var(--white);
+}
+
+.oz-hp-hero-title {
+  font-family: var(--ff-heading);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--white);
+}
+
+.oz-hp-hero-sub {
+  font-family: var(--ff-heading);
+  font-size: clamp(18px, 2.5vw, 24px);
+  font-weight: 400;
+  font-style: italic;
+  color: rgba(255,255,255,.55);
+  margin: 0 0 20px;
+}
+
+.oz-hp-hero-desc {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.5);
+  max-width: 420px;
+  margin-bottom: 28px;
+}
+
+.oz-hp-hero-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Glass kleurstalen card */
+.oz-hp-hero-glass {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 28px 24px;
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--white);
+}
+
+.oz-hp-hero-glass-title {
+  font-family: var(--ff-heading);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.oz-hp-hero-glass-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,.45);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* ================================================================
+   S03 — TRUST BAR (scrolling marquee)
+   ================================================================ */
+.oz-hp-trust {
+  background: var(--charcoal);
+  padding: 14px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.oz-hp-trust-track {
+  display: inline-flex;
+  animation: oz-hp-marquee 30s linear infinite;
+}
+
+.oz-hp-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 32px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+}
+
+.oz-hp-trust-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+}
+
+@keyframes oz-hp-marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ================================================================
+   S04 — RUIMTES MOZAIEK
+   ================================================================ */
+.oz-hp-ruimtes {
+  padding: 80px 0;
 }
 
 .oz-hp-ruimtes-header {
@@ -18,12 +420,12 @@
 }
 
 .oz-hp-ruimtes-eyebrow {
-  font-family: 'Raleway', sans-serif;
+  font-family: var(--ff-body);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 4px;
   text-transform: uppercase;
-  color: #135350;
+  color: var(--teal);
   margin-bottom: 12px;
   position: relative;
   display: inline-block;
@@ -36,30 +438,26 @@
   top: 50%;
   width: 40px;
   height: 1px;
-  background: #D4D0C8;
+  background: var(--stone);
 }
 .oz-hp-ruimtes-eyebrow::before { right: calc(100% + 16px); }
 .oz-hp-ruimtes-eyebrow::after  { left:  calc(100% + 16px); }
 
 .oz-hp-ruimtes-heading {
-  font-family: 'DM Serif Display', Georgia, serif;
+  font-family: var(--ff-heading);
   font-size: clamp(24px, 3.5vw, 36px);
   font-weight: 400;
-  color: #1A1A1A;
+  color: var(--charcoal);
   line-height: 1.2;
   margin: 0;
 }
 
-.oz-hp-ruimtes-heading em {
-  font-style: italic;
-  color: #135350;
-}
+.oz-hp-ruimtes-heading em { font-style: italic; color: var(--teal); }
 
 .oz-hp-ruimtes-wrap {
-  position: relative;
-  max-width: 1100px;
+  max-width: var(--max-w);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--gap);
 }
 
 .oz-hp-ruimtes-row1 {
@@ -93,7 +491,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform .6s cubic-bezier(.16,1,.3,1);
 }
 
 .oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-img {
@@ -104,126 +502,839 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.65) 0%,
-    rgba(0, 0, 0, 0.2) 40%,
-    rgba(0, 0, 0, 0.05) 100%
-  );
-  transition: background 0.4s ease;
+  background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.2) 40%, rgba(0,0,0,.05) 100%);
+  transition: background .4s;
   z-index: 1;
 }
 
 .oz-hp-ruimtes-card:hover::after {
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.15) 50%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, rgba(0,0,0,.15) 50%, rgba(0,0,0,0) 100%);
 }
 
-.oz-hp-ruimtes-card-content {
-  position: relative;
-  z-index: 2;
-  padding: 24px;
-  color: #FFF;
-}
-
-.oz-hp-ruimtes-card-name {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: 0.3px;
-  transform: translateY(4px);
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.oz-hp-ruimtes-card:hover .oz-hp-ruimtes-card-name {
-  transform: translateY(0);
-}
-
-.oz-hp-ruimtes-card-desc {
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
-  margin-top: 6px;
-  max-width: 260px;
-}
+.oz-hp-ruimtes-card-content { position: relative; z-index: 2; padding: 24px; color: #FFF; }
+.oz-hp-ruimtes-card-name { font-family: var(--ff-heading); font-size: 22px; font-weight: 400; }
+.oz-hp-ruimtes-card-desc { font-size: 12px; color: rgba(255,255,255,.85); line-height: 1.5; margin-top: 6px; max-width: 260px; }
 
 .oz-hp-ruimtes-card-cta {
   display: inline-block;
   margin-top: 12px;
   padding: 6px 18px;
-  background: #135350;
+  background: var(--teal);
   color: #FFF;
-  font-family: 'Raleway', sans-serif;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: .5px;
   border-radius: 2px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background .2s;
+}
+.oz-hp-ruimtes-card-cta:hover { background: #1A6B67; color: #FFF; }
+
+.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-name { font-size: 18px; }
+.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-content { padding: 18px; }
+
+/* ================================================================
+   S05-S07 — PRODUCT SHOWCASES (alternating layout)
+   ================================================================ */
+.oz-hp-product {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
 }
 
-.oz-hp-ruimtes-card-cta:hover {
-  background: #1A6B67;
-  color: #FFF;
+.oz-hp-product + .oz-hp-product { margin-top: 80px; }
+
+.oz-hp-product--reverse .oz-hp-product-visual { order: 2; }
+.oz-hp-product--reverse .oz-hp-product-info  { order: 1; }
+
+.oz-hp-product-visual {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: var(--sand);
 }
 
-.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-name {
+.oz-hp-product-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oz-hp-product-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 8px;
+}
+
+.oz-hp-product-name {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 4px;
+}
+
+.oz-hp-product-rating {
+  font-size: 12px;
+  color: var(--teal);
+  margin-bottom: 16px;
+}
+
+.oz-hp-product-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+}
+
+.oz-hp-product-features li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.oz-hp-product-features li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: .4;
+}
+
+.oz-hp-product-price {
+  font-family: var(--ff-heading);
+  font-size: 28px;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+
+.oz-hp-product-price span {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* ================================================================
+   S07b — ZO WERKT HET (4 steps)
+   ================================================================ */
+.oz-hp-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-step {
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: 4px;
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.oz-hp-step:hover {
+  border-color: var(--teal);
+  box-shadow: 0 8px 30px rgba(19,83,80,.08);
+}
+
+.oz-hp-step-num {
+  font-family: var(--ff-heading);
+  font-size: 42px;
+  color: var(--teal);
+  opacity: .2;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.oz-hp-step-title {
+  font-family: var(--ff-heading);
   font-size: 18px;
+  color: var(--charcoal);
+  margin-bottom: 8px;
 }
 
-.oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-content {
-  padding: 18px;
+.oz-hp-step-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-light);
 }
 
-/* Tablet breakpoint */
+/* ================================================================
+   S07c — BEFORE / AFTER
+   ================================================================ */
+.oz-hp-ba-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-ba-card {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.oz-hp-ba-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oz-hp-ba-label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 4px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+.oz-hp-ba-label--before { background: rgba(0,0,0,.5); color: #FFF; }
+.oz-hp-ba-label--after  { background: var(--teal); color: #FFF; }
+
+.oz-hp-ba-quote {
+  text-align: center;
+  max-width: 560px;
+  margin: 28px auto 0;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-ba-quote p {
+  font-family: var(--ff-heading);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--charcoal);
+  margin: 0 0 8px;
+}
+
+.oz-hp-ba-quote cite {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* ================================================================
+   S08 — MICROCEMENT + KLEURSTALEN SPLIT
+   ================================================================ */
+.oz-hp-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  min-height: 400px;
+}
+
+.oz-hp-split-micro {
+  background: var(--charcoal);
+  color: var(--white);
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.oz-hp-split-micro .oz-hp-eyebrow { color: rgba(255,255,255,.4); }
+.oz-hp-split-micro .oz-hp-eyebrow::before,
+.oz-hp-split-micro .oz-hp-eyebrow::after { background: rgba(255,255,255,.1); }
+
+.oz-hp-split-micro h3 {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--white);
+  margin: 8px 0 16px;
+}
+
+.oz-hp-split-micro p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 20px;
+  max-width: 360px;
+}
+
+.oz-hp-split-micro .oz-hp-meta {
+  font-size: 11px;
+  color: rgba(255,255,255,.3);
+  margin-bottom: 24px;
+}
+
+.oz-hp-split-stalen {
+  background: var(--teal-mist);
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.oz-hp-split-stalen .oz-hp-eyebrow { color: var(--teal); }
+
+.oz-hp-split-stalen h3 {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--teal);
+  margin: 8px 0 16px;
+}
+
+.oz-hp-split-stalen p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--teal-dark);
+  margin-bottom: 20px;
+  max-width: 360px;
+}
+
+.oz-hp-split-stalen .oz-hp-meta {
+  font-size: 11px;
+  color: var(--teal);
+  opacity: .6;
+  margin-bottom: 24px;
+}
+
+/* ================================================================
+   S09 — VERGELIJKTABEL
+   ================================================================ */
+.oz-hp-table-wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.oz-hp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 700px;
+}
+
+.oz-hp-table th,
+.oz-hp-table td {
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--stone);
+}
+
+.oz-hp-table th {
+  font-family: var(--ff-heading);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--charcoal);
+  background: var(--sand);
+  position: sticky;
+  top: 0;
+}
+
+.oz-hp-table th:first-child,
+.oz-hp-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: var(--charcoal);
+  position: sticky;
+  left: 0;
+  background: var(--white);
+  z-index: 1;
+}
+
+.oz-hp-table th:first-child { background: var(--sand); z-index: 2; }
+
+.oz-hp-table tbody tr:hover td { background: var(--sand); }
+
+/* ================================================================
+   S10 — REVIEWS
+   ================================================================ */
+.oz-hp-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-review {
+  background: var(--sand);
+  padding: 28px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.oz-hp-review-text {
+  font-size: 14px;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--text);
+  flex: 1;
+  margin-bottom: 16px;
+}
+
+.oz-hp-review-author {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.oz-hp-reviews-score {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.oz-hp-reviews-score-num {
+  font-family: var(--ff-heading);
+  font-size: 36px;
+  color: var(--teal);
+}
+
+.oz-hp-reviews-score-label {
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* ================================================================
+   S11 — SHOWROOM
+   ================================================================ */
+.oz-hp-showroom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-showroom-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.oz-hp-showroom-img {
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.oz-hp-showroom-img--tall { grid-row: 1 / 3; aspect-ratio: 3/4; }
+
+.oz-hp-showroom-img img { width: 100%; height: 100%; object-fit: cover; }
+
+.oz-hp-showroom-text h3 {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+}
+
+.oz-hp-showroom-text p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+/* ================================================================
+   S12-S13, S16-S19, S21 — SEO TEXT SECTIONS
+   ================================================================ */
+.oz-hp-text-block {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-text-block h2,
+.oz-hp-text-block h3 {
+  font-family: var(--ff-heading);
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 16px;
+}
+
+.oz-hp-text-block h2 { font-size: clamp(22px, 3vw, 30px); }
+.oz-hp-text-block h3 { font-size: clamp(18px, 2.5vw, 24px); }
+
+.oz-hp-text-block p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  margin: 0 0 16px;
+}
+
+.oz-hp-text-block p:last-child { margin-bottom: 0; }
+
+/* ================================================================
+   S14 — POPULAR PRODUCTS CAROUSEL
+   ================================================================ */
+.oz-hp-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap) 16px;
+}
+
+.oz-hp-carousel-track::-webkit-scrollbar { display: none; }
+
+.oz-hp-carousel-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: 4px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.oz-hp-carousel-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 8px 24px rgba(19,83,80,.08);
+}
+
+.oz-hp-carousel-card-img {
+  aspect-ratio: 1;
+  background: var(--sand);
+  overflow: hidden;
+}
+
+.oz-hp-carousel-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s;
+}
+
+.oz-hp-carousel-card:hover .oz-hp-carousel-card-img img { transform: scale(1.05); }
+
+.oz-hp-carousel-card-body {
+  padding: 16px;
+}
+
+.oz-hp-carousel-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 4px;
+}
+
+.oz-hp-carousel-card-price {
+  font-family: var(--ff-heading);
+  font-size: 18px;
+  color: var(--teal);
+}
+
+/* ================================================================
+   S20 — INSPIRATIE (asymmetric grid)
+   ================================================================ */
+.oz-hp-inspo-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  min-height: 400px;
+}
+
+.oz-hp-inspo-main { grid-row: 1 / 3; }
+
+.oz-hp-inspo-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.oz-hp-inspo-card img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+.oz-hp-inspo-card:hover img { transform: scale(1.04); }
+
+/* ================================================================
+   S22 — RUIMTE-TOEPASSINGEN (4 text blocks)
+   ================================================================ */
+.oz-hp-ruimte-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-ruimte-item {
+  background: var(--sand);
+  padding: 28px;
+  border-radius: 4px;
+}
+
+.oz-hp-ruimte-item h3 {
+  font-family: var(--ff-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 10px;
+}
+
+.oz-hp-ruimte-item p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ================================================================
+   S24 — KENNISBANK (6 article cards)
+   ================================================================ */
+.oz-hp-kb-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-kb-card {
+  display: block;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: 4px;
+  padding: 24px;
+  text-decoration: none;
+  transition: border-color .3s, box-shadow .3s;
+}
+
+.oz-hp-kb-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 8px 24px rgba(19,83,80,.08);
+}
+
+.oz-hp-kb-card-title {
+  font-family: var(--ff-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+
+.oz-hp-kb-card-excerpt {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-light);
+}
+
+.oz-hp-kb-card-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: var(--teal);
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   S25 — FAQ (accordion)
+   ================================================================ */
+.oz-hp-faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-faq-item {
+  border-bottom: 1px solid var(--stone);
+}
+
+.oz-hp-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ff-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--charcoal);
+  text-align: left;
+  gap: 16px;
+}
+
+.oz-hp-faq-q:hover { color: var(--teal); }
+
+.oz-hp-faq-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.oz-hp-faq-icon::before,
+.oz-hp-faq-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+  transition: transform .3s;
+}
+
+.oz-hp-faq-icon::before { width: 100%; height: 2px; top: 50%; transform: translateY(-50%); }
+.oz-hp-faq-icon::after  { width: 2px; height: 100%; left: 50%; transform: translateX(-50%); }
+
+.oz-hp-faq-item.is-open .oz-hp-faq-icon::after { transform: translateX(-50%) scaleY(0); }
+
+.oz-hp-faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease, padding .4s;
+}
+
+.oz-hp-faq-item.is-open .oz-hp-faq-a {
+  max-height: 600px;
+  padding-bottom: 20px;
+}
+
+.oz-hp-faq-a p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ================================================================
+   S21 — BELANGRIJKSTE PUNTEN (split: text + image)
+   ================================================================ */
+.oz-hp-points {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-points-img {
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.oz-hp-points-img img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
 @media (max-width: 800px) {
-  .oz-hp-ruimtes { padding: 40px 0; }
-  .oz-hp-ruimtes-header { margin-bottom: 32px; }
+  /* Glass nav: mobile dropdown */
+  .oz-hp-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(26,26,26,.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+
+  .oz-hp-nav.is-open .oz-hp-nav-links { display: flex; }
+
+  .oz-hp-nav-links a {
+    padding: 14px var(--gap);
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+
+  .oz-hp-nav-toggle { display: flex; }
+  .oz-hp-nav-stalen { display: none; }
+
+  .oz-hp-section { padding: 56px 0; }
+
+  .oz-hp-hero-inner { flex-direction: column; text-align: center; padding-top: 100px; }
+  .oz-hp-hero-glass { width: 100%; max-width: 320px; }
+  .oz-hp-hero-desc { margin-left: auto; margin-right: auto; }
+  .oz-hp-hero-ctas { justify-content: center; }
+
   .oz-hp-ruimtes-eyebrow::before,
-  .oz-hp-ruimtes-eyebrow::after { display: none; }
+  .oz-hp-ruimtes-eyebrow::after,
+  .oz-hp-eyebrow::before,
+  .oz-hp-eyebrow::after { display: none; }
 
-  .oz-hp-ruimtes-row1 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 260px 260px;
-  }
+  .oz-hp-ruimtes-row1 { grid-template-columns: 1fr 1fr; grid-template-rows: 260px 260px; }
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child { grid-column: 1 / -1; }
+  .oz-hp-ruimtes-row2 { grid-template-columns: 1fr 1fr; grid-template-rows: 180px 180px; }
 
-  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child {
-    grid-column: 1 / -1;
-  }
+  .oz-hp-product { grid-template-columns: 1fr; gap: 24px; }
+  .oz-hp-product--reverse .oz-hp-product-visual { order: 0; }
+  .oz-hp-product + .oz-hp-product { margin-top: 56px; }
 
-  .oz-hp-ruimtes-row2 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 180px 180px;
-  }
+  .oz-hp-steps-grid { grid-template-columns: 1fr 1fr; }
+  .oz-hp-ba-grid { grid-template-columns: 1fr; }
 
-  .oz-hp-ruimtes-card-name { font-size: 20px; }
-  .oz-hp-ruimtes-card--compact .oz-hp-ruimtes-card-name { font-size: 16px; }
+  .oz-hp-split { grid-template-columns: 1fr; }
+  .oz-hp-split-micro,
+  .oz-hp-split-stalen { padding: 40px 28px; }
+
+  .oz-hp-reviews-grid { grid-template-columns: 1fr; }
+
+  .oz-hp-showroom { grid-template-columns: 1fr; }
+  .oz-hp-showroom-images { order: -1; }
+
+  .oz-hp-inspo-grid { grid-template-columns: 1fr; grid-template-rows: 280px 180px 180px; }
+  .oz-hp-inspo-main { grid-row: auto; }
+
+  .oz-hp-ruimte-grid { grid-template-columns: 1fr; }
+  .oz-hp-kb-grid { grid-template-columns: 1fr; }
+
+  .oz-hp-points { grid-template-columns: 1fr; }
 }
 
-/* Mobile breakpoint */
 @media (max-width: 480px) {
-  .oz-hp-ruimtes-row1 {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-  }
+  .oz-hp-section { padding: 40px 0; }
+  .oz-hp-section-header { margin-bottom: 32px; }
 
-  .oz-hp-ruimtes-row2 {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 160px 160px;
-  }
+  .oz-hp-ruimtes-row1 { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card { min-height: 240px; }
+  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child { grid-column: 1; }
 
-  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card,
-  .oz-hp-ruimtes-row2 .oz-hp-ruimtes-card {
-    min-height: 220px;
-  }
-
-  .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child {
-    grid-column: 1;
-    min-height: 260px;
-  }
+  .oz-hp-steps-grid { grid-template-columns: 1fr; }
+  .oz-hp-carousel-card { flex: 0 0 220px; }
 }
