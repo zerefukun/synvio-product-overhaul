@@ -71,6 +71,11 @@
   padding: 0;
 }
 
+/* Category link buttons need their own padding back (Flatsome reset kills it) */
+button.oz-menu-drawer__category-link {
+  padding: 10px 20px !important;
+}
+
 /* Inputs: Flatsome and WooCommerce reset [type=search] */
 .oz-search-drawer input[type="search"] {
   -webkit-appearance: none !important;
@@ -193,7 +198,7 @@
 }
 
 /* When menu is open, float the header above the drawer so the X is visible.
-   Make the bar itself invisible — only the X button is interactive. */
+   Header goes transparent, all children hidden except the X button. */
 .oz-header.menu-open {
   z-index: 1002;
   background: transparent !important;
@@ -202,9 +207,22 @@
   pointer-events: none;
 }
 
-/* Only the hamburger-turned-X stays clickable */
+/* Hide all header groups — search, logo, account, cart */
+.oz-header.menu-open .oz-header__left,
+.oz-header.menu-open .oz-header__center,
+.oz-header.menu-open .oz-header__right {
+  visibility: hidden;
+}
+
+/* Only the hamburger-turned-X stays visible and clickable */
 .oz-header.menu-open #oz-menu-trigger {
+  visibility: visible;
   pointer-events: auto;
+  color: var(--oz-hdr-charcoal) !important;
+}
+
+.oz-header.menu-open #oz-menu-trigger .oz-header__svg--close {
+  stroke: var(--oz-hdr-charcoal) !important;
 }
 
 /* Hide the drawer's own close button — the header X replaces it */
@@ -254,28 +272,28 @@
   display: none;
 }
 
-/* ── Overlay header mode (homepage hero) ── */
-.oz-header--overlay {
-  background: transparent;
+/* ── Overlay header mode (homepage hero) ──
+   Dark gradient so original logo reads against the hero image.
+   White icons for contrast. On scroll (is-stuck), reverts to solid white. */
+.oz-header--overlay:not(.is-stuck) {
+  background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 70%, transparent 100%);
   border-bottom-color: transparent;
 }
 
-.oz-header--overlay .oz-header__icon,
-.oz-header--overlay .oz-header__logo-text {
+.oz-header--overlay:not(.is-stuck) .oz-header__icon,
+.oz-header--overlay:not(.is-stuck) .oz-header__logo-text {
   color: #FFF !important;
 }
 
-/* Keep original logo on overlay — don't invert to white */
-.oz-header--overlay .oz-header__logo img {
+.oz-header--overlay:not(.is-stuck) .oz-header__logo img {
   filter: none;
 }
 
-.oz-header--overlay .oz-header__icon:hover {
+.oz-header--overlay:not(.is-stuck) .oz-header__icon:hover {
   background: rgba(255,255,255,.12);
 }
 
-/* Overlay SVGs must be white */
-.oz-header--overlay .oz-header__svg {
+.oz-header--overlay:not(.is-stuck) .oz-header__svg {
   stroke: #FFF !important;
 }
 
