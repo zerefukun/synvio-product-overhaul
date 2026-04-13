@@ -606,18 +606,17 @@
 /* ================================================================
    S08 — MICROCEMENT + KLEURSTALEN SPLIT
    ================================================================ */
+/* Full-bleed backgrounds: colors touch viewport edges, content stays boxed */
 .oz-hp-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  max-width: var(--max-w);
-  margin: 0 auto;
   min-height: 400px;
 }
 
 .oz-hp-split-micro {
   background: var(--charcoal);
   color: var(--white);
-  padding: 60px 48px;
+  padding: 60px 48px 60px max(48px, calc((100vw - var(--max-w)) / 2 + 48px));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -651,7 +650,7 @@
 
 .oz-hp-split-stalen {
   background: var(--teal-mist);
-  padding: 60px 48px;
+  padding: 60px max(48px, calc((100vw - var(--max-w)) / 2 + 48px)) 60px 48px;
   display: flex;
   flex-direction: column;
   justify-content: center;

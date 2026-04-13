@@ -885,3 +885,117 @@ body.oz-drawer-open {
     max-width: 100%;
   }
 }
+
+
+/* ================================================================
+   FOOTER
+   ================================================================ */
+
+/* Hide Flatsome footer if any leaks through hooks */
+#footer.footer-wrapper {
+  display: none !important;
+}
+
+.oz-footer {
+  background: var(--oz-hdr-charcoal);
+  color: rgba(255,255,255,.6);
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.oz-footer__inner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px 48px;
+}
+
+.oz-footer__logo {
+  display: inline-block;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
+.oz-footer__logo img {
+  height: 28px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.oz-footer__logo span {
+  font-family: var(--oz-hdr-ff-heading);
+  font-size: 18px;
+  color: #FFF;
+}
+
+.oz-footer__tagline {
+  font-family: var(--oz-hdr-ff-heading);
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255,255,255,.35);
+  margin: 0;
+}
+
+.oz-footer__heading {
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  margin: 0 0 16px;
+}
+
+.oz-footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.oz-footer__links li {
+  margin-bottom: 10px;
+}
+
+.oz-footer__links a {
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+  transition: color .15s;
+}
+
+.oz-footer__links a:hover {
+  color: #FFF;
+}
+
+.oz-footer__bottom {
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,.25);
+}
+
+.oz-footer__bottom p {
+  margin: 0;
+}
+
+@media (max-width: 800px) {
+  .oz-footer__inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    padding: 48px 20px 32px;
+  }
+
+  .oz-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 479px) {
+  .oz-footer__inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
