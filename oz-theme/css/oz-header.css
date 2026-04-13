@@ -303,11 +303,13 @@ button.oz-menu-drawer__category-link {
   stroke: #FFF !important;
 }
 
-/* Sticky solid state when scrolled */
+/* Sticky glass state when scrolled */
 .oz-header--overlay.is-stuck {
-  background: var(--oz-hdr-bg);
-  border-bottom-color: var(--oz-hdr-stone);
-  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom-color: rgba(0,0,0,.06);
+  box-shadow: 0 1px 8px rgba(0,0,0,.06);
 }
 
 .oz-header--overlay.is-stuck .oz-header__icon,
