@@ -31,7 +31,7 @@ $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_conte
        HEADER BAR
        On homepage: transparent overlay mode (--overlay). Elsewhere: solid.
        ================================================================ */ ?>
-<header class="oz-header<?php echo $is_home ? ' oz-header--overlay' : ''; ?>" id="oz-header">
+<header class="oz-header" id="oz-header">
 	<div class="oz-header__inner">
 
 		<!-- Left: hamburger + search -->

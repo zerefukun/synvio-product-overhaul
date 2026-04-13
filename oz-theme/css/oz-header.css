@@ -192,6 +192,26 @@
   display: block !important;
 }
 
+/* When menu is open, float the header above the drawer so the X is visible.
+   Make the bar itself invisible — only the X button is interactive. */
+.oz-header.menu-open {
+  z-index: 1002;
+  background: transparent !important;
+  border-bottom-color: transparent !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+/* Only the hamburger-turned-X stays clickable */
+.oz-header.menu-open #oz-menu-trigger {
+  pointer-events: auto;
+}
+
+/* Hide the drawer's own close button — the header X replaces it */
+.oz-menu-drawer.is-open .oz-menu-drawer__close {
+  visibility: hidden;
+}
+
 /* Logo */
 .oz-header__logo {
   display: flex;
@@ -245,9 +265,9 @@
   color: #FFF !important;
 }
 
-/* Invert logo to white + subtle shadow so it reads against bright hero areas */
+/* Keep original logo on overlay — don't invert to white */
 .oz-header--overlay .oz-header__logo img {
-  filter: brightness(0) invert(1) drop-shadow(0 1px 3px rgba(0,0,0,.3));
+  filter: none;
 }
 
 .oz-header--overlay .oz-header__icon:hover {

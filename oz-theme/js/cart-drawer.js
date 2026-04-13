@@ -979,6 +979,16 @@
             }, true);
         }
 
+        /* Custom OZ header cart icon (replaces Flatsome header entirely) */
+        var ozCartIcon = document.getElementById('oz-cart-icon');
+        if (ozCartIcon) {
+            ozCartIcon.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openDrawer('cart_icon');
+            }, true);
+        }
+
         /**
          * Hook into WooCommerce add-to-cart events.
          * WC fires 'added_to_cart' on jQuery body after AJAX add-to-cart.
