@@ -1006,30 +1006,63 @@
 }
 
 /* ================================================================
-   S24 — KENNISBANK (6 article cards)
+   S24 — KENNISBANK (horizontal scrollable carousel)
    ================================================================ */
-.oz-hp-kb-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.oz-hp-kb-carousel {
+  display: flex;
   gap: 20px;
-  max-width: var(--max-w);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--gap) 16px;
+  max-width: calc(var(--max-w) + var(--gap) * 2);
   margin: 0 auto;
-  padding: 0 var(--gap);
+  scrollbar-width: none;
 }
 
+.oz-hp-kb-carousel::-webkit-scrollbar { display: none; }
+
 .oz-hp-kb-card {
-  display: block;
+  flex: 0 0 300px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
   background: var(--white);
   border: 1px solid var(--stone);
-  border-radius: 4px;
-  padding: 24px;
+  border-radius: 8px;
+  overflow: hidden;
   text-decoration: none;
-  transition: border-color .3s, box-shadow .3s;
+  transition: border-color .3s, box-shadow .3s, transform .2s;
 }
 
 .oz-hp-kb-card:hover {
   border-color: var(--teal);
   box-shadow: 0 8px 24px rgba(19,83,80,.08);
+  transform: translateY(-3px);
+}
+
+.oz-hp-kb-card-img {
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.oz-hp-kb-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s;
+}
+
+.oz-hp-kb-card:hover .oz-hp-kb-card-img img {
+  transform: scale(1.04);
+}
+
+.oz-hp-kb-card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .oz-hp-kb-card-title {
@@ -1038,12 +1071,14 @@
   font-weight: 400;
   color: var(--charcoal);
   margin-bottom: 8px;
+  line-height: 1.3;
 }
 
 .oz-hp-kb-card-excerpt {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--text-light);
+  flex: 1;
 }
 
 .oz-hp-kb-card-link {
@@ -1054,6 +1089,7 @@
   letter-spacing: .5px;
   color: var(--teal);
   text-transform: uppercase;
+  transition: gap .2s;
 }
 
 /* ================================================================
@@ -1187,7 +1223,7 @@
   .oz-hp-inspo-main { grid-row: auto; }
 
   .oz-hp-ruimte-grid { grid-template-columns: 1fr; }
-  .oz-hp-kb-grid { grid-template-columns: 1fr; }
+  .oz-hp-kb-carousel .oz-hp-kb-card { flex: 0 0 260px; }
 
   .oz-hp-points { grid-template-columns: 1fr; }
 }

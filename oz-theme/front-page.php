@@ -399,7 +399,6 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* S16-S19 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
        S20 — INSPIRATIE
@@ -425,7 +424,6 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* S21-S22 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
        S24 — KENNISBANK
@@ -435,22 +433,33 @@ $up = home_url( '/wp-content/uploads' );
 		<div class="oz-hp-eyebrow">Kennisbank</div>
 		<h2 class="oz-hp-heading">Lees meer in onze <em>kennisbank</em></h2>
 	</div>
-	<div class="oz-hp-kb-grid">
+	<div class="oz-hp-kb-carousel">
 		<?php
 		$kb_articles = get_posts([
 			'post_type'      => 'post',
-			'posts_per_page' => 6,
+			'posts_per_page' => 10,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
 		]);
 		foreach ( $kb_articles as $article ) :
+			$thumb = get_the_post_thumbnail_url( $article->ID, 'medium' );
 		?>
 		<a href="<?php echo esc_url( get_permalink( $article ) ); ?>" class="oz-hp-kb-card">
-			<div class="oz-hp-kb-card-title"><?php echo esc_html( $article->post_title ); ?></div>
-			<div class="oz-hp-kb-card-excerpt"><?php echo esc_html( wp_trim_words( $article->post_content, 18 ) ); ?></div>
-			<span class="oz-hp-kb-card-link">Lees meer &rarr;</span>
+			<?php if ( $thumb ) : ?>
+			<div class="oz-hp-kb-card-img">
+				<img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy">
+			</div>
+			<?php endif; ?>
+			<div class="oz-hp-kb-card-body">
+				<div class="oz-hp-kb-card-title"><?php echo esc_html( $article->post_title ); ?></div>
+				<div class="oz-hp-kb-card-excerpt"><?php echo esc_html( wp_trim_words( $article->post_content, 20 ) ); ?></div>
+				<span class="oz-hp-kb-card-link">Lees meer &rarr;</span>
+			</div>
 		</a>
 		<?php endforeach; ?>
+	</div>
+	<div style="text-align:center;margin-top:32px">
+		<a href="/kennisbank/" class="oz-hp-btn oz-hp-btn--teal">Alle artikelen bekijken</a>
 	</div>
 </section>
 

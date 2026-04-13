@@ -27,6 +27,73 @@
   display: none !important;
 }
 
+/* ── FLATSOME ISOLATION ──
+   Flatsome's global resets nuke SVG strokes, button styles, input appearance.
+   We force our own values on EVERYTHING inside our header/drawers. */
+.oz-header *,
+.oz-menu-drawer *,
+.oz-search-drawer *,
+.oz-footer * {
+  box-sizing: border-box;
+}
+
+/* SVGs: Flatsome sets svg:not(:root){overflow:hidden} and may reset fill/stroke */
+.oz-header svg,
+.oz-menu-drawer svg,
+.oz-search-drawer svg {
+  overflow: visible !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  display: block;
+}
+
+/* Buttons: Flatsome overrides font, padding, appearance on all buttons */
+.oz-header button,
+.oz-menu-drawer button,
+.oz-search-drawer button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Inputs: Flatsome and WooCommerce reset [type=search] */
+.oz-search-drawer input[type="search"] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-family: var(--oz-hdr-ff-body) !important;
+  font-size: 14px !important;
+  color: var(--oz-hdr-charcoal) !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+}
+
+.oz-search-drawer input[type="search"]::placeholder {
+  color: var(--oz-hdr-text-muted) !important;
+}
+
+/* Links inside our components: kill Flatsome's color/underline resets */
+.oz-header a,
+.oz-menu-drawer a,
+.oz-search-drawer a,
+.oz-footer a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* ── Header bar ── */
 .oz-header {
   position: fixed;
@@ -77,20 +144,20 @@
   flex: 1;
 }
 
-/* Icon button base */
+/* Icon button base — color set explicitly to override Flatsome inheritance */
 .oz-header__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 42px;
   height: 42px;
-  border: none;
+  border: none !important;
   background: none;
   cursor: pointer;
-  color: var(--oz-hdr-charcoal);
+  color: var(--oz-hdr-charcoal) !important;
   border-radius: 50%;
   transition: background .15s;
-  text-decoration: none;
+  text-decoration: none !important;
   position: relative;
 }
 
@@ -165,7 +232,7 @@
 
 .oz-header--overlay .oz-header__icon,
 .oz-header--overlay .oz-header__logo-text {
-  color: #FFF;
+  color: #FFF !important;
 }
 
 .oz-header--overlay .oz-header__logo img {
@@ -174,6 +241,11 @@
 
 .oz-header--overlay .oz-header__icon:hover {
   background: rgba(255,255,255,.12);
+}
+
+/* Overlay SVGs must be white */
+.oz-header--overlay svg {
+  stroke: #FFF !important;
 }
 
 /* Sticky solid state when scrolled */
@@ -185,7 +257,11 @@
 
 .oz-header--overlay.is-stuck .oz-header__icon,
 .oz-header--overlay.is-stuck .oz-header__logo-text {
-  color: var(--oz-hdr-charcoal);
+  color: var(--oz-hdr-charcoal) !important;
+}
+
+.oz-header--overlay.is-stuck svg {
+  stroke: var(--oz-hdr-charcoal) !important;
 }
 
 .oz-header--overlay.is-stuck .oz-header__logo img {
