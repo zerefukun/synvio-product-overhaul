@@ -230,14 +230,12 @@ button.oz-menu-drawer__category-link {
   stroke: var(--oz-hdr-charcoal) !important;
 }
 
-/* Hide entire drawer header — the main header X replaces the close button,
-   and no logo/account should show when the drawer is open */
-.oz-menu-drawer.is-open .oz-menu-drawer__header {
+/* Hide drawer header contents — the main header X replaces the close button.
+   Keep the header's height as a spacer so the X has room above menu items. */
+.oz-menu-drawer.is-open .oz-menu-drawer__close,
+.oz-menu-drawer.is-open .oz-menu-drawer__logo,
+.oz-menu-drawer.is-open .oz-menu-drawer__account {
   visibility: hidden;
-  height: 0;
-  padding: 0;
-  border: none;
-  overflow: hidden;
 }
 
 /* Logo */
