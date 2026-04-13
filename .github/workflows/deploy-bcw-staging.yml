@@ -107,3 +107,15 @@ jobs:
             -e "ssh -p $port" \
             ./oz-theme/ \
             "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/themes/OzTheme/"
+
+      - name: Purge LiteSpeed cache
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
+            "cd /home/betoncire/staging && wp litespeed-purge all 2>/dev/null || true"
