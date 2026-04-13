@@ -153,7 +153,7 @@
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  height: 100% !important; /* beats .oz-hp img { height: auto } and Flatsome img reset */
   object-fit: cover;
   opacity: .55;
 }
