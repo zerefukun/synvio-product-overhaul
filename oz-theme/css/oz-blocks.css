@@ -963,9 +963,11 @@
   box-shadow: 0 0 0 3px var(--oz-accent-light);
 }
 
-/* ── Pagination (WP .nav-links + WC .woocommerce-pagination) ── */
+/* ── Pagination (WP .nav-links + WC .woocommerce-pagination) ──
+   WC uses .woocommerce nav.woocommerce-pagination ul (0-3-4).
+   Prefix with .woocommerce to win the specificity battle. */
 .nav-links,
-.woocommerce-pagination ul.page-numbers {
+.woocommerce nav.woocommerce-pagination ul {
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -975,7 +977,7 @@
 }
 
 .nav-links .page-numbers,
-.woocommerce-pagination li .page-numbers {
+.woocommerce nav.woocommerce-pagination ul li .page-numbers {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -988,17 +990,19 @@
   font-weight: 500;
   text-decoration: none;
   color: var(--oz-text-body);
+  background: transparent;
   transition: all var(--oz-transition);
 }
 
 .nav-links a.page-numbers:hover,
-.woocommerce-pagination li a.page-numbers:hover {
+.woocommerce nav.woocommerce-pagination ul li a.page-numbers:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
+  background: transparent;
 }
 
 .nav-links .page-numbers.current,
-.woocommerce-pagination li .page-numbers.current {
+.woocommerce nav.woocommerce-pagination ul li span.page-numbers.current {
   background: var(--oz-accent);
   color: #FFF;
   border-color: var(--oz-accent);
@@ -1006,7 +1010,7 @@
 
 /* Dots separator */
 .nav-links .page-numbers.dots,
-.woocommerce-pagination li .page-numbers.dots {
+.woocommerce nav.woocommerce-pagination ul li .page-numbers.dots {
   border-color: transparent;
   background: none;
   min-width: auto;
@@ -1017,8 +1021,8 @@
 /* Next/prev arrows */
 .nav-links .page-numbers.next,
 .nav-links .page-numbers.prev,
-.woocommerce-pagination li a.next,
-.woocommerce-pagination li a.prev {
+.woocommerce nav.woocommerce-pagination ul li a.next,
+.woocommerce nav.woocommerce-pagination ul li a.prev {
   font-size: var(--oz-text-base);
 }
 
