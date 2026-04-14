@@ -991,7 +991,7 @@ body.woocommerce nav.woocommerce-pagination ul {
   text-decoration: none;
   color: var(--oz-text-body);
   background: transparent;
-  transition: all var(--oz-transition);
+  transition: border-color var(--oz-transition), color var(--oz-transition), background var(--oz-transition);
 }
 
 .nav-links a.page-numbers:hover,

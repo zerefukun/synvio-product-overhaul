@@ -331,7 +331,7 @@
 .oz-timeline .wp-block-columns::before {
   content: counter(oz-step);
   position: absolute;
-  left: -46px;
+  left: -56px;
   top: 28px;
   width: 36px;
   height: 36px;
