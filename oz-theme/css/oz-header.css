@@ -1141,6 +1141,7 @@ body.oz-header-overlay-page {
   visibility: hidden;
   transition: opacity .2s, visibility .2s;
   z-index: 100;
+  max-width: calc(100vw - 48px);  /* prevent overflow on smaller desktops */
 }
 
 /* Show on hover or keyboard focus-within */
@@ -1169,26 +1170,61 @@ body.oz-header-overlay-page {
   transform: rotate(180deg);
 }
 
+/* Panel inner: flex row of columns (multi-column for Producten, auto for Ruimtes) */
 .oz-mega__inner {
   background: #FFF;
   border-radius: var(--oz-radius-lg, 12px);
   box-shadow: var(--oz-shadow-lg, 0 8px 32px rgba(0,0,0,.12));
-  padding: 24px;
+  padding: 28px 32px;
+  display: flex;
+  gap: 32px;
+  min-width: 200px;
+}
+
+/* When no .oz-mega__column children exist (flat links like Ruimtes),
+   wrap into a 2-column grid automatically */
+.oz-mega__inner:not(:has(.oz-mega__column)) {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
-  min-width: 280px;
+  padding: 24px;
 }
 
+/* Category column: heading + child links stacked vertically */
+.oz-mega__column {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+}
+
+/* Category heading — bold, links to parent category */
+.oz-mega__heading {
+  display: block;
+  padding: 8px 12px;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--oz-hdr-teal);
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.oz-mega__heading:hover {
+  color: var(--oz-hdr-charcoal);
+}
+
+/* Individual link inside a column or flat panel */
 .oz-mega__link {
   display: block;
-  padding: 10px 16px;
+  padding: 8px 12px;
   font-family: var(--oz-hdr-ff-body);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--oz-hdr-charcoal);
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: background .15s, color .15s;
   white-space: nowrap;
 }

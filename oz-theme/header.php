@@ -71,7 +71,7 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 				'container_class' => 'oz-nav',
 				'container_id'    => '',
 				'menu_class'      => 'oz-nav__list',
-				'depth'           => 2,
+				'depth'           => 3,
 				'walker'          => new Oz_Mega_Menu_Walker(),
 				'fallback_cb'     => false,
 				'items_wrap'      => '<ul class="%2$s">%3$s</ul>',
