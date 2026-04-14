@@ -404,18 +404,31 @@
      - Touch devices: first tap opens, second tap navigates */
   var megaItems = document.querySelectorAll('.oz-nav__item.has-mega');
 
-  /* Escape inside mega panel returns focus to trigger */
+  /* Escape closes mega panel (.is-mega-closed overrides :focus-within in CSS) */
   megaItems.forEach(function (item) {
     item.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
+        item.classList.add('is-mega-closed');
         var link = item.querySelector('.oz-nav__link');
         if (link) link.focus();
       }
     });
+
+    /* Clear the closed state when mouse re-enters or focus leaves entirely */
+    item.addEventListener('mouseenter', function () {
+      item.classList.remove('is-mega-closed');
+    });
+    item.addEventListener('focusout', function (e) {
+      if (!item.contains(e.relatedTarget)) {
+        item.classList.remove('is-mega-closed');
+      }
+    });
   });
 
-  /* Touch-friendly: toggle mega on first tap, navigate on second */
-  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  /* Touch-friendly: toggle mega on first tap, navigate on second.
+     Uses pointer:coarse to avoid catching hybrid laptops with touchscreens. */
+  var isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  if (isCoarsePointer) {
     megaItems.forEach(function (item) {
       var link = item.querySelector('.oz-nav__link');
       if (!link) return;

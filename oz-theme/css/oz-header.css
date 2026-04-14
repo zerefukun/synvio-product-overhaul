@@ -107,7 +107,7 @@ button.oz-menu-drawer__category-link {
   padding: 0 16px;
 }
 
-/* Left group: hamburger + search */
+/* Left group: mobile buttons + logo (logo centered via absolute on mobile) */
 .oz-header__left {
   display: flex;
   align-items: center;
@@ -115,7 +115,14 @@ button.oz-menu-drawer__category-link {
   flex: 1;
 }
 
-/* Center group: logo */
+/* Mobile: center the logo absolutely in the header bar */
+.oz-header__logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Center group: desktop nav (hidden on mobile) */
 .oz-header__center {
   display: flex;
   align-items: center;
@@ -271,7 +278,7 @@ button.oz-menu-drawer__category-link {
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-header__logo img {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-header__icon:hover {
@@ -1149,6 +1156,12 @@ body.oz-header-overlay-page {
   visibility: visible;
 }
 
+/* Escape key: JS adds .is-mega-closed to override :focus-within */
+.oz-nav__item.is-mega-closed .oz-mega__panel {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 /* Chevron flips when panel is open */
 .oz-nav__item.has-mega:hover .oz-nav__chevron,
 .oz-nav__item.has-mega:focus-within .oz-nav__chevron,
@@ -1240,6 +1253,12 @@ body.oz-drawer-open {
   .oz-header__right { flex: 0 0 auto; }
 
   .oz-header__inner { padding: 0 32px; }
+
+  /* Logo flows normally in the left group on desktop */
+  .oz-header__logo {
+    position: static;
+    transform: none;
+  }
 }
 
 

@@ -31,12 +31,13 @@
 
 /* Hero outline button: white text + border on dark overlay */
 .oz-ruimte__hero .wp-block-button.is-style-outline .wp-block-button__link {
-  color: #FFF;
-  border-color: #FFF;
+  color: #FFF !important;
+  border-color: #FFF !important;
+  background: transparent !important;
 }
 
 .oz-ruimte__hero .wp-block-button.is-style-outline .wp-block-button__link:hover {
-  background: rgba(255,255,255,.15);
+  background: rgba(255,255,255,.15) !important;
 }
 
 @media (max-width: 767px) {

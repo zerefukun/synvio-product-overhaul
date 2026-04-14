@@ -150,34 +150,45 @@
   gap: var(--oz-gap) !important;
 }
 
-/* ── Core Blocks: Buttons ── */
+/* ── Core Blocks: Buttons ──
+   Override WP core defaults (dark grey bg, 9999px radius, 100% width).
+   Unstyled buttons default to fill (accent bg, white text). */
 .wp-block-button__link {
   font-family: var(--oz-ff-body);
   font-weight: 600;
   font-size: 14px;
-  border-radius: var(--oz-radius);
-  padding: 12px 28px;
+  border-radius: var(--oz-radius) !important;
+  padding: 12px 28px !important;
   transition: all var(--oz-transition);
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+  width: auto !important;
+  display: inline-block;
+}
+
+.wp-block-button__link:hover {
+  background: var(--oz-accent-hover) !important;
 }
 
 .wp-block-button.is-style-fill .wp-block-button__link {
-  background: var(--oz-accent);
-  color: var(--oz-accent-text);
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
 }
 
 .wp-block-button.is-style-fill .wp-block-button__link:hover {
-  background: var(--oz-accent-hover);
+  background: var(--oz-accent-hover) !important;
 }
 
 .wp-block-button.is-style-outline .wp-block-button__link {
-  border: 2px solid var(--oz-border);
-  color: var(--oz-text-primary);
-  background: transparent;
+  border: 2px solid var(--oz-border) !important;
+  color: var(--oz-text-primary) !important;
+  background: transparent !important;
 }
 
 .wp-block-button.is-style-outline .wp-block-button__link:hover {
-  border-color: var(--oz-accent);
-  color: var(--oz-accent);
+  border-color: var(--oz-accent) !important;
+  color: var(--oz-accent) !important;
+  background: transparent !important;
 }
 
 /* ── Core Blocks: Separator ── */
