@@ -83,7 +83,7 @@ $top_cats = get_terms([
                                                 <?php echo esc_html( $child->name ); ?>
                                                 <span class="oz-cat-nav__count"><?php echo esc_html( $child->count ); ?></span>
                                             </a>
-                                            <?php if ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) && ( $child_active || $child_ancestor ) ) : ?>
+                                            <?php if ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) ) : ?>
                                                 <ul class="oz-cat-nav__sub">
                                                     <?php foreach ( $grandchildren as $gc ) :
                                                         $gc_cls = ( $current_cat_id === $gc->term_id ) ? ' is-active' : '';
