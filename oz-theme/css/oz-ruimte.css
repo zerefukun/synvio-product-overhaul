@@ -20,6 +20,23 @@
   border-radius: 0;
 }
 
+/* Hero inner content stays within boxed width */
+.oz-ruimte__hero .wp-block-cover__inner-container {
+  max-width: var(--oz-max-w);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+
+/* Hero outline button: white text + border on dark overlay */
+.oz-ruimte__hero .wp-block-button.is-style-outline .wp-block-button__link {
+  color: #FFF;
+  border-color: #FFF;
+}
+
+.oz-ruimte__hero .wp-block-button.is-style-outline .wp-block-button__link:hover {
+  background: rgba(255,255,255,.15);
+}
+
 @media (max-width: 767px) {
   .oz-ruimte__hero .wp-block-cover {
     min-height: 50vh;
@@ -51,9 +68,21 @@
   line-height: 1.75;
 }
 
-/* Center headings + text in single-column sections */
+/* Center headings + text in single-column (non-columns) sections */
 .oz-ruimte .oz-section > .oz-container > .wp-block-group {
   max-width: 800px;
+}
+
+/* Standalone paragraphs center when not inside columns */
+.oz-ruimte .oz-section > .oz-container > p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Headings in standalone sections center too */
+.oz-ruimte .oz-section > .oz-container > h2,
+.oz-ruimte .oz-section > .oz-container > h3 {
+  text-align: center;
 }
 
 /* ── Columns layout — image + text side by side ── */
