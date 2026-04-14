@@ -404,12 +404,12 @@
   margin: 0 0 8px;
 }
 
-.woocommerce-breadcrumb a {
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb a {
   color: var(--oz-text-muted);
   text-decoration: none;
 }
 
-.woocommerce-breadcrumb a:hover {
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb a:hover {
   color: var(--oz-accent);
 }
 
@@ -963,15 +963,19 @@
   box-shadow: 0 0 0 3px var(--oz-accent-light);
 }
 
-/* ── Pagination ── */
-.nav-links {
+/* ── Pagination (WP .nav-links + WC .woocommerce-pagination) ── */
+.nav-links,
+.woocommerce-pagination ul.page-numbers {
   display: flex;
   justify-content: center;
   gap: 8px;
   margin: 40px 0;
+  list-style: none;
+  padding: 0;
 }
 
-.nav-links .page-numbers {
+.nav-links .page-numbers,
+.woocommerce-pagination li .page-numbers {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -980,22 +984,42 @@
   padding: 0 12px;
   border: 1px solid var(--oz-border);
   border-radius: var(--oz-radius);
-  font-size: 14px;
+  font-size: var(--oz-text-sm);
   font-weight: 500;
   text-decoration: none;
   color: var(--oz-text-body);
   transition: all var(--oz-transition);
 }
 
-.nav-links .page-numbers:hover {
+.nav-links a.page-numbers:hover,
+.woocommerce-pagination li a.page-numbers:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
 }
 
-.nav-links .page-numbers.current {
+.nav-links .page-numbers.current,
+.woocommerce-pagination li .page-numbers.current {
   background: var(--oz-accent);
   color: #FFF;
   border-color: var(--oz-accent);
+}
+
+/* Dots separator */
+.nav-links .page-numbers.dots,
+.woocommerce-pagination li .page-numbers.dots {
+  border-color: transparent;
+  background: none;
+  min-width: auto;
+  padding: 0 4px;
+  color: var(--oz-text-muted);
+}
+
+/* Next/prev arrows */
+.nav-links .page-numbers.next,
+.nav-links .page-numbers.prev,
+.woocommerce-pagination li a.next,
+.woocommerce-pagination li a.prev {
+  font-size: var(--oz-text-base);
 }
 
 /* ── WooCommerce: Notices ── */
