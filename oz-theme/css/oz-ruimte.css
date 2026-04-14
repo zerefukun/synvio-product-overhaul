@@ -136,9 +136,120 @@
   object-fit: cover;
 }
 
+/* ── Product comparison cards ──
+   Targets columns sections with alignfull groups (product showcases).
+   Each column becomes a card with centered content. */
+.oz-ruimte .oz-section .alignfull .wp-block-columns .wp-block-column {
+  background: var(--oz-bg-page);
+  border: 1px solid var(--oz-border-light);
+  border-radius: var(--oz-radius-lg);
+  padding: 32px 24px;
+  text-align: center;
+  transition: box-shadow var(--oz-transition);
+}
+
+.oz-ruimte .oz-section .alignfull .wp-block-columns .wp-block-column:hover {
+  box-shadow: var(--oz-shadow-md);
+}
+
+/* Product card images */
+.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-image {
+  margin-bottom: 20px;
+}
+
+.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-image img {
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: var(--oz-radius);
+  max-height: 200px;
+  width: auto;
+  margin: 0 auto;
+}
+
+/* Product card title */
+.oz-ruimte .oz-section .alignfull .wp-block-column h3 {
+  font-size: var(--oz-text-lg);
+  margin-bottom: 4px;
+}
+
+/* Feature list inside product cards: left-aligned, teal check marks */
+.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-list {
+  text-align: left;
+  padding-left: 1.2em;
+  margin: 16px 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* Pricing text */
+.oz-ruimte .oz-section .alignfull .wp-block-column > p:last-of-type {
+  font-size: var(--oz-text-base);
+  color: var(--oz-text-primary);
+  margin-top: 16px;
+}
+
+.oz-ruimte .oz-section .alignfull .wp-block-column > p:last-of-type strong {
+  font-size: var(--oz-text-lg);
+}
+
 /* ── Buttons in ruimte context ── */
 .oz-ruimte .wp-block-buttons {
   margin-top: 24px;
+}
+
+/* ── Navigation / TOC section ──
+   Ordered list used as anchor links. Restyle as horizontal pill nav. */
+.oz-ruimte .oz-section ol.wp-block-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  justify-content: center;
+}
+
+.oz-ruimte .oz-section ol.wp-block-list li {
+  margin: 0;
+}
+
+.oz-ruimte .oz-section ol.wp-block-list li::marker {
+  content: '';
+}
+
+.oz-ruimte .oz-section ol.wp-block-list li a {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 1px solid var(--oz-border);
+  border-radius: 100px;
+  font-size: var(--oz-text-sm);
+  font-weight: 600;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  transition: all var(--oz-transition);
+}
+
+.oz-ruimte .oz-section ol.wp-block-list li a:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+  background: var(--oz-accent-light);
+}
+
+/* ── Mid-page CTA covers (non-hero) ──
+   Cover blocks after the first hero are compact banners, not full-height. */
+.oz-ruimte .oz-ruimte__hero:not(:first-child) .wp-block-cover {
+  min-height: 320px;
+  border-radius: var(--oz-radius-lg);
+  overflow: hidden;
+}
+
+/* CTA cover text stays compact */
+.oz-ruimte .oz-ruimte__hero:not(:first-child) .wp-block-cover__inner-container {
+  text-align: center;
+  max-width: 600px;
+}
+
+.oz-ruimte .oz-ruimte__hero:not(:first-child) .wp-block-cover h3 {
+  font-size: var(--oz-text-xl);
 }
 
 /* ── Separator / divider ── */
@@ -149,10 +260,31 @@
   opacity: 0.4;
 }
 
-/* ── Eyebrow pattern: small heading above main heading ── */
+/* ── Eyebrow pattern: h6 above main heading matches .oz-eyebrow ── */
 .oz-ruimte .oz-section h6 {
+  font-family: var(--oz-ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
   color: var(--oz-accent);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* ── Heading em: teal italic accent (matches homepage pattern) ── */
+.oz-ruimte h2 em,
+.oz-ruimte h3 em {
+  font-style: italic;
+  color: var(--oz-accent);
+}
+
+/* ── Subtitle: .has-small-font-size used as label under headings ── */
+.oz-ruimte .has-small-font-size {
+  font-size: var(--oz-text-sm);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--oz-text-muted);
+  font-weight: 600;
 }
 
 /* ================================================================
