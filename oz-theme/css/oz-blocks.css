@@ -397,8 +397,8 @@
 }
 
 /* ── WooCommerce: Breadcrumbs ── */
-/* Scoped to .oz-shop__main to beat WC's .woocommerce .woocommerce-breadcrumb */
-.oz-shop__main .woocommerce-breadcrumb {
+/* 0-3-0 specificity to beat WC's .woocommerce .woocommerce-breadcrumb (0-2-0) */
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb {
   font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
   margin: 0 0 8px;
