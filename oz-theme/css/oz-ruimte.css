@@ -154,3 +154,124 @@
   color: var(--oz-accent);
   margin-bottom: 8px;
 }
+
+/* ================================================================
+   TIMELINE — Vertical step-by-step process (stappen-plan).
+   Applied automatically when a group block with anchor "stappen-plan"
+   is detected by page-ruimte.php. The group + following columns
+   blocks are wrapped in a single .oz-timeline container.
+   ================================================================ */
+.oz-timeline {
+  position: relative;
+  padding-left: 56px;
+  counter-reset: oz-step;
+}
+
+/* Vertical accent line running down the left side */
+.oz-timeline::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  background: var(--oz-accent, #135350);
+  opacity: 0.18;
+  border-radius: 1px;
+}
+
+/* Each columns block is a step card */
+.oz-timeline .wp-block-columns {
+  position: relative;
+  counter-increment: oz-step;
+  margin-bottom: 32px;
+  padding: 28px 32px;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: var(--oz-radius-lg, 12px);
+  border: 1px solid rgba(0,0,0,.04);
+}
+
+.oz-timeline .wp-block-columns:last-child {
+  margin-bottom: 0;
+}
+
+/* Numbered circle on the timeline line */
+.oz-timeline .wp-block-columns::before {
+  content: counter(oz-step);
+  position: absolute;
+  left: -46px;
+  top: 28px;
+  width: 36px;
+  height: 36px;
+  background: var(--oz-accent, #135350);
+  color: #FFF;
+  font-family: var(--oz-ff-body, 'Raleway', sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 36px;
+  text-align: center;
+  border-radius: 50%;
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(19,83,80,.2);
+}
+
+/* Step heading inside the card */
+.oz-timeline .wp-block-columns h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--oz-text-primary, #1A1A1A);
+}
+
+/* Step body text */
+.oz-timeline .wp-block-columns p {
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: none;
+}
+
+/* Step images get consistent sizing */
+.oz-timeline .wp-block-columns .wp-block-image img {
+  border-radius: var(--oz-radius, 8px);
+  max-height: 240px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* The stappen-plan group renders inside the timeline — reset its padding
+   so it doesn't add extra nesting visually */
+.oz-timeline > .wp-block-group {
+  padding: 0;
+  margin: 0;
+}
+
+/* ── Timeline: mobile (< 768px) ── */
+@media (max-width: 767px) {
+  .oz-timeline {
+    padding-left: 44px;
+  }
+
+  .oz-timeline::before {
+    left: 14px;
+  }
+
+  .oz-timeline .wp-block-columns {
+    padding: 20px;
+  }
+
+  .oz-timeline .wp-block-columns::before {
+    left: -36px;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    line-height: 28px;
+    top: 20px;
+  }
+
+  .oz-timeline .wp-block-columns h2 {
+    font-size: 18px;
+  }
+
+  .oz-timeline .wp-block-columns .wp-block-image img {
+    max-height: 180px;
+  }
+}
