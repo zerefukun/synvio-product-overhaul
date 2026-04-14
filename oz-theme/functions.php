@@ -86,6 +86,16 @@ function oz_design_system_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
 
 /**
+ * Remove WooCommerce default layout CSS — we provide our own grid via oz-blocks.css.
+ * WC's float-based layout conflicts with our CSS Grid product cards.
+ */
+function oz_dequeue_wc_layout_styles() {
+    wp_dequeue_style('woocommerce-layout');
+    wp_dequeue_style('woocommerce-smallscreen');
+}
+add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
+
+/**
  * Load Flatsome shortcode compatibility layer.
  * Existing pages use Flatsome UX Builder shortcodes extensively.
  * These stubs output semantic HTML with our design classes.
@@ -1077,52 +1087,38 @@ function oz_cart_drawer_format_upsell($product_id) {
 }
 
 /**
- * Standalone FAQ schema output.
- * Scans the rendered page content for accordion patterns (our shortcode stubs
- * and native <details> elements) and outputs deduplicated FAQPage schema.
+ * FAQ schema output.
+ * Accordion shortcode stubs call oz_faq_schema_add() during rendering
+ * to accumulate Q&A pairs. This footer hook outputs deduplicated FAQPage schema.
+ * No redundant do_shortcode() — piggybacks on the normal render pass.
  */
-function oz_faq_schema() {
-    if (!is_singular()) return;
-
-    $post = get_post();
-    if (!$post || empty($post->post_content)) return;
-
-    /* Render shortcodes so we can parse the output */
-    $rendered = do_shortcode($post->post_content);
-
-    $faqs = [];
-    $seen = [];
-
-    /* Pattern 1: <details><summary>Q</summary>A</details> */
-    if (preg_match_all('/<details[^>]*>\s*<summary[^>]*>(.*?)<\/summary>(.*?)<\/details>/si', $rendered, $matches, PREG_SET_ORDER)) {
-        foreach ($matches as $m) {
-            $q = wp_strip_all_tags(trim($m[1]));
-            $a = wp_kses_post(trim($m[2]));
-            if ($q && $a && !isset($seen[$q])) {
-                $seen[$q] = true;
-                $faqs[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]];
-            }
-        }
-    }
-
-    /* Pattern 2: our accordion shortcode stubs use .oz-accordion__item > .oz-accordion__title + .oz-accordion__content */
-    if (preg_match_all('/<div[^>]*class="[^"]*oz-accordion__title[^"]*"[^>]*>(.*?)<\/div>\s*<div[^>]*class="[^"]*oz-accordion__content[^"]*"[^>]*>(.*?)<\/div>/si', $rendered, $matches, PREG_SET_ORDER)) {
-        foreach ($matches as $m) {
-            $q = wp_strip_all_tags(trim($m[1]));
-            $a = wp_kses_post(trim($m[2]));
-            if ($q && $a && !isset($seen[$q])) {
-                $seen[$q] = true;
-                $faqs[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]];
-            }
-        }
-    }
-
-    if (empty($faqs)) return;
-
-    $json = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqs];
-    echo '<script type="application/ld+json">' . wp_json_encode($json) . '</script>';
+function oz_faq_schema_add( $question, $answer ) {
+    global $oz_faq_items;
+    if ( ! is_array( $oz_faq_items ) ) $oz_faq_items = [];
+    $oz_faq_items[] = [ 'q' => $question, 'a' => $answer ];
 }
-add_action('wp_footer', 'oz_faq_schema');
+
+function oz_faq_schema_output() {
+    global $oz_faq_items;
+    if ( empty( $oz_faq_items ) ) return;
+
+    $seen   = [];
+    $unique = [];
+    foreach ( $oz_faq_items as $faq ) {
+        $q = wp_strip_all_tags( trim( $faq['q'] ) );
+        $a = wp_kses_post( trim( $faq['a'] ) );
+        if ( $q && $a && ! isset( $seen[ $q ] ) ) {
+            $seen[ $q ] = true;
+            $unique[]   = [ '@type' => 'Question', 'name' => $q, 'acceptedAnswer' => [ '@type' => 'Answer', 'text' => $a ] ];
+        }
+    }
+
+    if ( empty( $unique ) ) return;
+
+    $json = [ '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $unique ];
+    echo '<script type="application/ld+json">' . wp_json_encode( $json ) . '</script>';
+}
+add_action( 'wp_footer', 'oz_faq_schema_output' );
 
 /**
  * Remove block editor scripts from the frontend.

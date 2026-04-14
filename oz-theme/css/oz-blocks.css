@@ -298,7 +298,14 @@
 }
 
 /* ── WooCommerce: Product Card ── */
+/* Reset WC's float layout — our grid handles positioning */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product,
 .oz-product-card {
+  width: auto;
+  float: none;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
