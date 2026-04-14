@@ -1304,9 +1304,8 @@ function oz_remove_bloat_styles_from_frontend() {
     wp_dequeue_style('wp-preferences');
     wp_dequeue_style('popup-maker-block-library-style');
 
-    /* WP classic theme compat + theme.json global styles — we use our own design system */
+    /* WP classic theme compat — we use our own design system */
     wp_dequeue_style('classic-theme-styles');
-    wp_dequeue_style('global-styles');
 
     /* Font Awesome — not used in our theme, 4 handleiding pages
        used a fa-file-pdf icon but we'll replace with inline SVG */
@@ -1341,3 +1340,31 @@ function oz_remove_bloat_styles_from_frontend() {
     }
 }
 add_action('wp_enqueue_scripts', 'oz_remove_bloat_styles_from_frontend', 9999);
+
+/**
+ * Remove WP global styles (theme.json inline CSS).
+ * WP generates these via wp_enqueue_global_styles which runs at wp_enqueue_scripts priority 10.
+ * Dequeuing the handle at 9999 doesn't always work because it's inline CSS, so we
+ * remove the action that generates it entirely.
+ */
+remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
+remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
+
+/**
+ * Final dequeue at wp_print_styles — catches styles that WC Blocks
+ * re-enqueues after wp_enqueue_scripts.
+ */
+function oz_final_style_cleanup() {
+    if (is_admin()) return;
+
+    $is_wc_page = function_exists('is_woocommerce') && (
+        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
+    );
+    if (!$is_wc_page) {
+        wp_dequeue_style('wc-blocks-style');
+        wp_dequeue_style('wc-blocks-vendors-style');
+    }
+
+    wp_dequeue_style('global-styles');
+}
+add_action('wp_print_styles', 'oz_final_style_cleanup', 9999);
