@@ -20,7 +20,7 @@ if ( empty( $product ) || ! $product->is_visible() ) {
 	<a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="oz-product-card__link">
 
 		<div class="oz-product-card__image">
-			<?php echo $product->get_image( 'woocommerce_thumbnail', [ 'class' => 'oz-product-card__img', 'loading' => 'lazy' ] ); ?>
+			<?php echo $product->get_image( 'woocommerce_thumbnail', [ 'class' => 'oz-product-card__img' ] ); ?>
 			<?php if ( $product->is_on_sale() ) : ?>
 				<span class="oz-product-card__badge">Sale</span>
 			<?php endif; ?>
