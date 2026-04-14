@@ -102,6 +102,31 @@ function oz_design_system_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
 
 /**
+ * Enqueue scroll-reveal animation CSS + JS on all frontend pages.
+ * Unified system: watches [data-reveal], [data-reveal-stagger], [data-reveal-img].
+ * Adds .oz-visible via IntersectionObserver.
+ */
+function oz_animations_enqueue() {
+    if (is_admin()) return;
+
+    wp_enqueue_style(
+        'oz-animations',
+        get_stylesheet_directory_uri() . '/css/oz-animations.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-animations.css')
+    );
+
+    wp_enqueue_script(
+        'oz-animations',
+        get_stylesheet_directory_uri() . '/js/oz-animations.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/oz-animations.js'),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_animations_enqueue', 6);
+
+/**
  * Remove WooCommerce default layout CSS — we provide our own grid via oz-blocks.css.
  * WC's float-based layout conflicts with our CSS Grid product cards.
  */
@@ -110,6 +135,15 @@ function oz_dequeue_wc_layout_styles() {
     wp_dequeue_style('woocommerce-smallscreen');
 }
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
+
+/**
+ * Remove WooCommerce default content wrappers.
+ * Our archive-product.php has its own layout, and header.php already provides <main>.
+ * Without this, WC outputs a nested <main class="site-main"> that breaks DOM nesting
+ * and causes double padding on the shop grid.
+ */
+remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
 
 /**
  * Shop sidebar walker — collapsible category nav from a curated WP menu.
@@ -408,6 +442,22 @@ function oz_homepage_v2_enqueue() {
     );
 }
 add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
+
+/**
+ * Enqueue ruimte page styles when the Ruimte template is active.
+ * Handles full-width sections, hero cover, image treatments.
+ */
+function oz_ruimte_enqueue() {
+    if (is_admin() || ! is_page_template('page-ruimte.php')) return;
+
+    wp_enqueue_style(
+        'oz-ruimte',
+        get_stylesheet_directory_uri() . '/css/oz-ruimte.css',
+        ['oz-design-system', 'oz-animations'],
+        filemtime(get_stylesheet_directory() . '/css/oz-ruimte.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
 
 /**
  * Enqueue custom header CSS + JS on all frontend pages.
