@@ -398,9 +398,9 @@
 
 /* ── WooCommerce: Breadcrumbs ── */
 .woocommerce-breadcrumb {
-  font-size: 13px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
-  padding: 16px 0 0;
+  margin: 0 0 8px;
 }
 
 .woocommerce-breadcrumb a {
@@ -414,17 +414,17 @@
 
 /* ── WooCommerce: Shop Layout (sidebar + grid) ── */
 .oz-shop__header {
-  padding: 32px 0 24px;
+  padding: 16px 0 20px;
 }
 
 .oz-shop__title {
-  margin-bottom: 12px;
+  font-size: var(--oz-text-2xl);
+  margin-bottom: 4px;
 }
 
 /*
- * Full-width layout wrapper.
- * On desktop: sidebar sits outside the boxed content area (in the left margin),
- * product grid stays inside the normal container width.
+ * Single grid: sidebar left, main content right.
+ * Breadcrumb, header, toolbar, and grid share the same main column.
  * On mobile: single column, sidebar hidden behind toggle.
  */
 .oz-shop__layout {
@@ -436,10 +436,9 @@
     display: grid;
     grid-template-columns: 220px 1fr;
     gap: 0;
-    /* Let the main column define its own max-width */
     max-width: calc(var(--oz-max-w) + 220px + 40px);
     margin: 0 auto;
-    padding: 0 var(--oz-gap);
+    padding: 32px var(--oz-gap) 0;
   }
 }
 
@@ -680,7 +679,7 @@
 }
 
 .woocommerce-result-count {
-  font-size: 14px;
+  font-size: var(--oz-text-sm);
   color: var(--oz-text-muted);
 }
 
@@ -689,14 +688,14 @@
   border: 1px solid var(--oz-border);
   border-radius: var(--oz-radius);
   font-family: var(--oz-ff-body);
-  font-size: 14px;
+  font-size: var(--oz-text-sm);
   background: var(--oz-bg-page);
   cursor: pointer;
 }
 
-/* On mobile the main area gets container padding */
+/* On mobile the main area gets container padding + top spacing */
 .oz-shop__main {
-  padding: 0 var(--oz-gap);
+  padding: 24px var(--oz-gap) 0;
 }
 
 @media (min-width: 1024px) {

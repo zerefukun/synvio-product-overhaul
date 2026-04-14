@@ -1,8 +1,9 @@
 <?php
 /**
  * Shop / product category page.
- * Sidebar sits outside the boxed content area (left edge of viewport).
- * Product grid stays inside the normal container.
+ * Single grid layout: sidebar left, main content right.
+ * Breadcrumb, header, toolbar, and product grid all live in the
+ * main column so they share the same left edge.
  * On mobile the sidebar collapses behind a toggle button.
  *
  * Sidebar uses the 'oz-shop-sidebar' nav menu (Appearance > Menus)
@@ -19,19 +20,7 @@ get_header();
 $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 ?>
 
-<!-- Boxed content: breadcrumbs + page header get container padding -->
-<div class="oz-shop__top oz-container">
-    <?php do_action( 'woocommerce_before_main_content' ); ?>
-
-    <header class="oz-shop__header">
-        <?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
-            <h1 class="oz-shop__title"><?php woocommerce_page_title(); ?></h1>
-        <?php endif; ?>
-        <?php do_action( 'woocommerce_archive_description' ); ?>
-    </header>
-</div>
-
-<!-- Full-width layout: sidebar outside container, products inside -->
+<!-- Sidebar + main content in one grid so breadcrumb/title/grid all align -->
 <div class="oz-shop__layout">
 
     <!-- Sidebar: curated nav menu -->
@@ -57,8 +46,18 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
         <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
     </aside>
 
-    <!-- Main: boxed content area with toolbar + product grid -->
+    <!-- Main: breadcrumb, header, toolbar, product grid — all aligned -->
     <div class="oz-shop__main">
+
+        <?php do_action( 'woocommerce_before_main_content' ); ?>
+
+        <header class="oz-shop__header">
+            <span class="oz-eyebrow">Collectie</span>
+            <?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
+                <h1 class="oz-shop__title"><?php woocommerce_page_title(); ?></h1>
+            <?php endif; ?>
+            <?php do_action( 'woocommerce_archive_description' ); ?>
+        </header>
 
         <?php if ( woocommerce_product_loop() ) : ?>
 
