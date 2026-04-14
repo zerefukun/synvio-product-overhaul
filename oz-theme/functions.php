@@ -1,5 +1,106 @@
 <?php
 
+/* ================================================================
+   OZ THEME — Standalone WordPress + WooCommerce theme
+   No parent theme. All styling via oz-design-system.css + component CSS.
+   ================================================================ */
+
+/**
+ * Theme setup — register supports, menus, image sizes.
+ * Runs on after_setup_theme so WordPress is ready.
+ */
+function oz_theme_setup() {
+    add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');
+    add_theme_support('custom-logo', ['height' => 80, 'width' => 240, 'flex-height' => true, 'flex-width' => true]);
+    add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script']);
+    add_theme_support('responsive-embeds');
+    add_theme_support('align-wide');
+    add_theme_support('editor-styles');
+    add_theme_support('wp-block-styles');
+
+    /* WooCommerce */
+    add_theme_support('woocommerce');
+    add_theme_support('wc-product-gallery-zoom');
+    add_theme_support('wc-product-gallery-lightbox');
+    add_theme_support('wc-product-gallery-slider');
+
+    /* Editor styles — mirrors frontend design system */
+    add_editor_style('css/oz-editor.css');
+
+    /* Block color palette matching design tokens */
+    add_theme_support('editor-color-palette', [
+        ['name' => 'Accent (Teal)',   'slug' => 'oz-accent',       'color' => '#135350'],
+        ['name' => 'Accent Hover',    'slug' => 'oz-accent-hover', 'color' => '#0E3E3C'],
+        ['name' => 'Accent Light',    'slug' => 'oz-accent-light', 'color' => '#E8F0F0'],
+        ['name' => 'CTA (Orange)',    'slug' => 'oz-cta',          'color' => '#E67C00'],
+        ['name' => 'Text Primary',    'slug' => 'oz-text-primary', 'color' => '#1A1A1A'],
+        ['name' => 'Text Body',       'slug' => 'oz-text-body',    'color' => '#555555'],
+        ['name' => 'Background Warm', 'slug' => 'oz-bg-warm',      'color' => '#F5F4F0'],
+        ['name' => 'Background Page', 'slug' => 'oz-bg-page',      'color' => '#FFFFFF'],
+        ['name' => 'Border',          'slug' => 'oz-border',       'color' => '#E5E5E3'],
+    ]);
+
+    /* Block font sizes matching type scale */
+    add_theme_support('editor-font-sizes', [
+        ['name' => 'Small',   'slug' => 'small',   'size' => 12],
+        ['name' => 'Normal',  'slug' => 'normal',  'size' => 16],
+        ['name' => 'Medium',  'slug' => 'medium',  'size' => 20],
+        ['name' => 'Large',   'slug' => 'large',   'size' => 25],
+        ['name' => 'X-Large', 'slug' => 'x-large', 'size' => 31],
+        ['name' => 'Huge',    'slug' => 'huge',    'size' => 39],
+    ]);
+}
+add_action('after_setup_theme', 'oz_theme_setup');
+
+/**
+ * Enqueue design system CSS on all frontend pages.
+ * Loads first so component CSS can rely on the tokens and reset.
+ */
+function oz_design_system_enqueue() {
+    if (is_admin()) return;
+
+    wp_enqueue_style(
+        'oz-design-system',
+        get_stylesheet_directory_uri() . '/css/oz-design-system.css',
+        [],
+        filemtime(get_stylesheet_directory() . '/css/oz-design-system.css')
+    );
+
+    /* Google Fonts — Raleway + DM Serif Display */
+    wp_enqueue_style(
+        'oz-google-fonts',
+        'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
+        [],
+        null
+    );
+
+    /* Block styles for Gutenberg content */
+    wp_enqueue_style(
+        'oz-blocks',
+        get_stylesheet_directory_uri() . '/css/oz-blocks.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-blocks.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
+
+/**
+ * Load Flatsome shortcode compatibility layer.
+ * Existing pages use Flatsome UX Builder shortcodes extensively.
+ * These stubs output semantic HTML with our design classes.
+ */
+if (file_exists(get_stylesheet_directory() . '/inc/flatsome-shortcodes.php')) {
+    require_once get_stylesheet_directory() . '/inc/flatsome-shortcodes.php';
+}
+
+/**
+ * Load block patterns for Gutenberg.
+ */
+if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
+    require_once get_stylesheet_directory() . '/inc/block-patterns.php';
+}
+
 /**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
  * Free tool, loads async, no performance impact.
@@ -109,29 +210,7 @@ function oz_defer_swiper_css($tag, $handle) {
 }
 add_filter('style_loader_tag', 'oz_defer_swiper_css', 10, 2);
 
-/**
- * Add aria-labels to Flatsome banner links that have no accessible name.
- * Flatsome's [ux_banner link="..."] generates <a class="fill"> wrappers
- * with no text content — screen readers can't identify them.
- * Extracts a label from the URL slug (e.g. "beton-cire-badkamer" -> "Badkamer").
- */
-function oz_add_banner_aria_labels($content) {
-    // Match Flatsome's banner fill links: <a class="fill" href="..."><div class="fill banner-link"></div></a>
-    return preg_replace_callback(
-        '/<a\s+class="fill"\s+href="([^"]+)">\s*<div\s+class="fill banner-link"><\/div>\s*<\/a>/',
-        function ($m) {
-            $url = $m[1];
-            // Extract last URL segment as label
-            $path = trim(parse_url($url, PHP_URL_PATH), '/');
-            $slug = basename($path);
-            // Clean slug: "beton-cire-badkamer" -> "Beton cire badkamer"
-            $label = ucfirst(str_replace('-', ' ', $slug));
-            return '<a class="fill" href="' . esc_url($url) . '" aria-label="' . esc_attr($label) . '"><div class="fill banner-link"></div></a>';
-        },
-        $content
-    );
-}
-add_filter('the_content', 'oz_add_banner_aria_labels', 999);
+/* Flatsome banner aria-labels removed — shortcode stubs handle accessibility. */
 
 /* M² Calculator removed — Phase 4 cleanup (was dead code, no products use it) */
 /* Oz Handleiding removed — no longer used */
@@ -193,10 +272,8 @@ function oz_apply_attribution_fallback($order) {
 }
 
 
-/* Disable Flatsome's built-in mini-cart dropdown entirely.
- * When true, Flatsome renders the cart icon as a plain <a> link.
- * Our JS intercepts .header-cart-link clicks to open our drawer instead. */
-add_filter('flatsome_disable_mini_cart', '__return_true');
+/* Flatsome mini-cart filter removed — no parent theme, no Flatsome mini-cart.
+ * Our header.php renders its own cart icon; cart-drawer.js opens the drawer. */
 
 /**
  * Get the WooCommerce free shipping minimum amount.
@@ -252,13 +329,7 @@ function oz_cart_drawer_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/cart-drawer.css')
     );
 
-    // Google Fonts (may already be enqueued by plugin, but wp_enqueue is idempotent by handle)
-    wp_enqueue_style(
-        'oz-google-fonts-drawer',
-        'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
-        [],
-        null
-    );
+    /* Google Fonts now loaded by oz_design_system_enqueue() */
 
     // Shared Swiper CDN loader — used by cart drawer and product page USP ticker
     wp_enqueue_script(
@@ -1006,46 +1077,52 @@ function oz_cart_drawer_format_upsell($product_id) {
 }
 
 /**
- * Override Flatsome's FAQ schema output to deduplicate questions.
- * Flatsome accumulates FAQ items in a global array across all rendered
- * accordions on the page, causing massive duplication on category/listing pages.
- * This replaces Flatsome's hook with a deduplicating version.
+ * Standalone FAQ schema output.
+ * Scans the rendered page content for accordion patterns (our shortcode stubs
+ * and native <details> elements) and outputs deduplicated FAQPage schema.
  */
-function oz_dedup_faq_schema() {
-    global $flatsome_accordion_faq_schema;
+function oz_faq_schema() {
+    if (!is_singular()) return;
 
-    if (empty($flatsome_accordion_faq_schema)) {
-        return;
-    }
+    $post = get_post();
+    if (!$post || empty($post->post_content)) return;
 
-    // Deduplicate by question text
+    /* Render shortcodes so we can parse the output */
+    $rendered = do_shortcode($post->post_content);
+
+    $faqs = [];
     $seen = [];
-    $unique = [];
-    foreach ($flatsome_accordion_faq_schema as $faq) {
-        $key = wp_strip_all_tags($faq['question']);
-        if (isset($seen[$key])) continue;
-        $seen[$key] = true;
-        $unique[] = [
-            '@type'          => 'Question',
-            'name'           => $key,
-            'acceptedAnswer' => [
-                '@type' => 'Answer',
-                'text'  => wp_kses_post($faq['answer']),
-            ],
-        ];
+
+    /* Pattern 1: <details><summary>Q</summary>A</details> */
+    if (preg_match_all('/<details[^>]*>\s*<summary[^>]*>(.*?)<\/summary>(.*?)<\/details>/si', $rendered, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $m) {
+            $q = wp_strip_all_tags(trim($m[1]));
+            $a = wp_kses_post(trim($m[2]));
+            if ($q && $a && !isset($seen[$q])) {
+                $seen[$q] = true;
+                $faqs[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]];
+            }
+        }
     }
 
-    $json = [
-        '@context'   => 'https://schema.org',
-        '@type'      => 'FAQPage',
-        'mainEntity' => $unique,
-    ];
+    /* Pattern 2: our accordion shortcode stubs use .oz-accordion__item > .oz-accordion__title + .oz-accordion__content */
+    if (preg_match_all('/<div[^>]*class="[^"]*oz-accordion__title[^"]*"[^>]*>(.*?)<\/div>\s*<div[^>]*class="[^"]*oz-accordion__content[^"]*"[^>]*>(.*?)<\/div>/si', $rendered, $matches, PREG_SET_ORDER)) {
+        foreach ($matches as $m) {
+            $q = wp_strip_all_tags(trim($m[1]));
+            $a = wp_kses_post(trim($m[2]));
+            if ($q && $a && !isset($seen[$q])) {
+                $seen[$q] = true;
+                $faqs[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]];
+            }
+        }
+    }
 
+    if (empty($faqs)) return;
+
+    $json = ['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $faqs];
     echo '<script type="application/ld+json">' . wp_json_encode($json) . '</script>';
 }
-// Remove Flatsome's original (duplicating) FAQ schema output, replace with deduped version
-remove_action('wp_footer', 'flatsome_print_faq_schema');
-add_action('wp_footer', 'oz_dedup_faq_schema');
+add_action('wp_footer', 'oz_faq_schema');
 
 /**
  * Remove block editor scripts from the frontend.
@@ -1062,8 +1139,8 @@ add_action('wp_enqueue_scripts', 'oz_dequeue_frontend_block_editor', 100);
 
 /**
  * Remove plugin scripts that load on every page but are only needed in specific contexts.
- * Reduces blocking JS count from ~40 to ~33 on non-product pages,
- * letting flatsome.js (mega menu) execute sooner.
+ * Reduces blocking JS on non-product pages by removing scripts
+ * that are only needed in specific contexts.
  */
 function oz_dequeue_unnecessary_scripts() {
     if (is_admin()) return;

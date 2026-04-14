@@ -11,7 +11,7 @@
  */
 
 get_header();
-do_action( 'flatsome_before_page' );
+do_action( 'oz_before_content' );
 
 $up = home_url( '/wp-content/uploads' );
 ?>
@@ -541,5 +541,5 @@ $up = home_url( '/wp-content/uploads' );
 </script>
 
 <?php
-do_action( 'flatsome_after_page' );
+do_action( 'oz_after_content' );
 get_footer();

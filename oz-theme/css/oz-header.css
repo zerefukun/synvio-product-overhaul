@@ -1,45 +1,25 @@
 /* ================================================================
-   OZ HEADER — Custom sitewide header replacing Flatsome
-   Adapted from Gulcanhome nav patterns for BCW.
-   Tokens mirror homepage-v2.css design system.
+   OZ HEADER — Custom sitewide header, menu drawer, search drawer.
+   Uses design tokens from oz-design-system.css.
    ================================================================ */
 
+/* Header-specific tokens (extend design system) */
 :root {
   --oz-hdr-height: 60px;
   --oz-hdr-height-desktop: 76px;
-  --oz-hdr-bg: #FFF;
-  --oz-hdr-color: #1A1A1A;
-  --oz-hdr-teal: #135350;
-  --oz-hdr-charcoal: #1A1A1A;
-  --oz-hdr-sand: #F5F4F0;
-  --oz-hdr-stone: #E5E5E3;
-  --oz-hdr-text-muted: #888;
-  --oz-hdr-ff-heading: 'DM Serif Display', Georgia, serif;
-  --oz-hdr-ff-body: 'Raleway', system-ui, sans-serif;
-  --oz-hdr-transition: .3s cubic-bezier(.4,0,.2,1);
+  --oz-hdr-bg: var(--oz-bg-page, #FFF);
+  --oz-hdr-color: var(--oz-text-primary, #1A1A1A);
+  --oz-hdr-teal: var(--oz-accent, #135350);
+  --oz-hdr-charcoal: var(--oz-text-primary, #1A1A1A);
+  --oz-hdr-sand: var(--oz-bg-warm, #F5F4F0);
+  --oz-hdr-stone: var(--oz-border, #E5E5E3);
+  --oz-hdr-text-muted: var(--oz-text-muted, #888);
+  --oz-hdr-ff-heading: var(--oz-ff-heading, 'DM Serif Display', Georgia, serif);
+  --oz-hdr-ff-body: var(--oz-ff-body, 'Raleway', system-ui, sans-serif);
+  --oz-hdr-transition: var(--oz-transition, .3s cubic-bezier(.4,0,.2,1));
 }
 
-/* Hide Flatsome header globally — our header.php replaces it,
-   but Flatsome may still inject stray wrappers via hooks */
-#header,
-#header .header-wrapper,
-.header-wrapper {
-  display: none !important;
-}
-
-/* ── FLATSOME ISOLATION ──
-   Flatsome's global resets nuke SVG strokes, button styles, input appearance.
-   We force our own values on EVERYTHING inside our header/drawers. */
-.oz-header *,
-.oz-menu-drawer *,
-.oz-search-drawer *,
-.oz-footer * {
-  box-sizing: border-box;
-}
-
-/* SVGs: Flatsome sets svg:not(:root){overflow:hidden} and may reset fill/stroke.
-   Only target our icon SVGs — don't override inline/img SVGs.
-   NOTE: no `display` here — that breaks the hamburger/X toggle. */
+/* ── Component resets ── */
 .oz-header__svg,
 .oz-header__icon svg,
 .oz-menu-drawer__close svg,
@@ -51,12 +31,11 @@
 .oz-search-drawer__search-icon,
 .oz-search-drawer__clear svg,
 .oz-search-drawer__view-all svg {
-  overflow: visible !important;
-  fill: none !important;
-  stroke: currentColor !important;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
 }
 
-/* Buttons: Flatsome overrides font, padding, appearance on all buttons */
 .oz-header button,
 .oz-menu-drawer button,
 .oz-search-drawer button {
@@ -64,42 +43,38 @@
   font-size: inherit;
   line-height: inherit;
   color: inherit;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   margin: 0;
   padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
-/* Category link buttons need their own padding back (Flatsome reset kills it) */
 button.oz-menu-drawer__category-link {
-  padding: 10px 20px !important;
+  padding: 10px 20px;
 }
 
-/* Inputs: Flatsome and WooCommerce reset [type=search] */
 .oz-search-drawer input[type="search"] {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  outline: none !important;
-  font-family: var(--oz-hdr-ff-body) !important;
-  font-size: 14px !important;
-  color: var(--oz-hdr-charcoal) !important;
-  height: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  appearance: none;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 14px;
+  color: var(--oz-hdr-charcoal);
+  height: 100%;
+  padding: 0;
+  margin: 0;
   width: 100%;
 }
 
 .oz-search-drawer input[type="search"]::placeholder {
-  color: var(--oz-hdr-text-muted) !important;
+  color: var(--oz-hdr-text-muted);
 }
 
-/* Links inside our components: kill Flatsome's color/underline resets */
 .oz-header a,
 .oz-menu-drawer a,
 .oz-search-drawer a,

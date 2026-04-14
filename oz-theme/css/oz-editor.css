@@ -1,0 +1,66 @@
+/* ================================================================
+   OZ EDITOR — Gutenberg editor styles
+   Mirrors frontend design system for accurate WYSIWYG preview.
+   Loaded via add_editor_style() in functions.php.
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap');
+
+.editor-styles-wrapper {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555555;
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3,
+.editor-styles-wrapper h4 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  color: #1A1A1A;
+  font-weight: 400;
+}
+
+.editor-styles-wrapper h1 { font-size: 39px; }
+.editor-styles-wrapper h2 { font-size: 31px; }
+.editor-styles-wrapper h3 { font-size: 25px; }
+.editor-styles-wrapper h4 { font-size: 20px; }
+
+.editor-styles-wrapper a {
+  color: #135350;
+}
+
+.editor-styles-wrapper .wp-block-button__link {
+  font-family: 'Raleway', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 12px 28px;
+}
+
+.editor-styles-wrapper .wp-block-quote {
+  border-left: 4px solid #135350;
+  padding: 16px 24px;
+  font-style: italic;
+}
+
+.editor-styles-wrapper .wp-block-separator {
+  border-top: 1px solid #E5E5E3;
+}
+
+.editor-styles-wrapper .wp-block-image img {
+  border-radius: 8px;
+}
+
+.editor-styles-wrapper .wp-block-table th {
+  background: #F5F4F0;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.editor-styles-wrapper .wp-block-table th,
+.editor-styles-wrapper .wp-block-table td {
+  padding: 12px 16px;
+  border: 1px solid #E5E5E3;
+}
