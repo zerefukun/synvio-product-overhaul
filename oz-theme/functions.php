@@ -127,7 +127,7 @@ function oz_animations_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_animations_enqueue', 6);
 
 /**
- * Remove WooCommerce default layout CSS — we provide our own grid via oz-blocks.css.
+ * Remove WooCommerce layout CSS sitewide — we provide our own grid via oz-blocks.css.
  * WC's float-based layout conflicts with our CSS Grid product cards.
  */
 function oz_dequeue_wc_layout_styles() {
@@ -138,20 +138,21 @@ add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
 
 /**
  * Dequeue WooCommerce + WC Blocks styles on non-WC pages.
- * Ruimte pages, regular pages, and posts don't need WC styling.
- * This avoids WC's button, form, and layout rules conflicting with our design system.
+ * Runs at priority 100 because WC Blocks re-enqueues after priority 20.
  */
 function oz_dequeue_wc_on_non_shop_pages() {
     if ( is_admin() ) return;
 
-    $is_wc_page = is_woocommerce() || is_cart() || is_checkout() || is_account_page();
+    $is_wc_page = function_exists('is_woocommerce') && (
+        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
+    );
     if ( $is_wc_page ) return;
 
     wp_dequeue_style('woocommerce-general');
     wp_dequeue_style('wc-blocks-style');
     wp_dequeue_style('wc-blocks-vendors-style');
 }
-add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 20);
+add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 100);
 
 /**
  * Remove WooCommerce default content wrappers.
@@ -237,22 +238,14 @@ function oz_custom_scripts() {
 }
 add_action('wp_enqueue_scripts', 'oz_custom_scripts');
 
-function load_font_awesome() {
-    wp_enqueue_style('font-awesome', '//use.fontawesome.com/releases/v5.8.1/css/all.css');
-}
-add_action('wp_enqueue_scripts', 'load_font_awesome');
-add_action('admin_enqueue_scripts', 'load_font_awesome');
-
 /**
  * Defer non-critical CSS by switching rel to preload + onload swap.
  * Prevents render-blocking for stylesheets that aren't needed above the fold.
  */
 function oz_defer_non_critical_css($tag, $handle) {
-    $defer_handles = ['font-awesome', 'fue-followups'];
+    $defer_handles = ['fue-followups'];
     if (in_array($handle, $defer_handles, true)) {
-        // preload + onload swap pattern: loads without blocking render
         $tag = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", $tag);
-        // noscript fallback for non-JS browsers
         $tag .= '<noscript>' . str_replace("rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", "rel='stylesheet'", $tag) . '</noscript>';
     }
     return $tag;
@@ -1293,23 +1286,58 @@ function oz_dequeue_unnecessary_scripts() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_unnecessary_scripts', 100);
 
 /**
- * Remove WordPress admin/editor CSS from the frontend.
- * These are enqueued by Gutenberg/block editor plugins and have no effect on the frontend,
- * but they block rendering (~77 KB total). Runs at priority 9999 to catch late enqueues.
+ * Remove WordPress/plugin bloat CSS from the frontend.
+ * Runs at priority 9999 to catch late enqueues.
  */
-function oz_remove_admin_styles_from_frontend() {
+function oz_remove_bloat_styles_from_frontend() {
     if (is_admin()) return;
 
-    // dashicons: admin toolbar icons — only needed for logged-in admins
+    /* Dashicons: admin toolbar icons — only needed for logged-in admins */
     if (!is_user_logged_in()) {
         wp_dequeue_style('dashicons');
         wp_deregister_style('dashicons');
     }
 
-    // Gutenberg block editor styles leaked onto the frontend by Popup Maker and other plugins
+    /* Gutenberg block editor styles leaked onto the frontend */
     wp_dequeue_style('wp-block-editor');
     wp_dequeue_style('wp-components');
     wp_dequeue_style('wp-preferences');
     wp_dequeue_style('popup-maker-block-library-style');
+
+    /* WP classic theme compat + theme.json global styles — we use our own design system */
+    wp_dequeue_style('classic-theme-styles');
+    wp_dequeue_style('global-styles');
+
+    /* Font Awesome — not used in our theme, 4 handleiding pages
+       used a fa-file-pdf icon but we'll replace with inline SVG */
+    wp_dequeue_style('font-awesome');
+    wp_deregister_style('font-awesome');
+
+    /* Contact Form 7 — only load on pages with forms */
+    $has_cf7 = false;
+    if (is_singular()) {
+        $post = get_post();
+        if ($post && strpos($post->post_content, 'contact-form-7') !== false) {
+            $has_cf7 = true;
+        }
+    }
+    if (!$has_cf7) {
+        wp_dequeue_style('contact-form-7');
+    }
+
+    /* Variation Price Display — only needed on product pages */
+    if (!is_product()) {
+        wp_dequeue_style('vpd-public');
+        wp_dequeue_script('vpd-public');
+    }
+
+    /* WC Blocks may re-enqueue even after priority 100 — final catch */
+    $is_wc_page = function_exists('is_woocommerce') && (
+        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
+    );
+    if (!$is_wc_page) {
+        wp_dequeue_style('wc-blocks-style');
+        wp_dequeue_style('wc-blocks-vendors-style');
+    }
 }
-add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);
+add_action('wp_enqueue_scripts', 'oz_remove_bloat_styles_from_frontend', 9999);
