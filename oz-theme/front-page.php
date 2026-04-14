@@ -30,18 +30,16 @@ $up = home_url( '/wp-content/uploads' );
 			<h1 class="oz-hp-hero-title">Beton Cire.</h1>
 			<p class="oz-hp-hero-sub">Naadloze betonlook. Zelf aangebracht.</p>
 			<p class="oz-hp-hero-desc">Kant-en-klare pasta in 50+ kleuren voor vloeren, wanden, badkamers en meubels. Vergelijk de lijnen, bestel online of bezoek onze showroom in Den Haag.</p>
-			<div class="oz-hp-hero-bottom">
-				<div class="oz-hp-hero-ctas">
-					<a href="/beton-cire-all-in-one-easyline-standaard-kleuren/" class="oz-hp-btn oz-hp-btn--teal">All-In-One Kant &amp; Klaar</a>
-					<a href="/product-categorie/microcement/" class="oz-hp-btn oz-hp-btn--outline">Microcement</a>
-				</div>
-				<div class="oz-hp-hero-glass">
-					<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
-					<div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
-					<p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren uit onze lijn. We sturen ze gratis naar je toe.</p>
-					<a href="/kleurstalen/" class="oz-hp-hero-glass-link">Stalen aanvragen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-				</div>
+			<div class="oz-hp-hero-ctas">
+				<a href="/beton-cire-all-in-one-easyline-standaard-kleuren/" class="oz-hp-btn oz-hp-btn--teal">All-In-One Kant &amp; Klaar</a>
+				<a href="/product-categorie/microcement/" class="oz-hp-btn oz-hp-btn--outline">Microcement</a>
 			</div>
+		</div>
+		<div class="oz-hp-hero-glass">
+			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
+			<div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
+			<p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren uit onze lijn. We sturen ze gratis naar je toe.</p>
+			<a href="/kleurstalen/" class="oz-hp-hero-glass-link">Stalen aanvragen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
 		</div>
 	</div>
 </section>
