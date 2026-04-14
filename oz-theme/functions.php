@@ -1353,6 +1353,7 @@ remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
 /**
  * Final dequeue at wp_print_styles — catches styles that WC Blocks
  * re-enqueues after wp_enqueue_scripts.
+ * Deregister forces WP to forget the handle entirely so it can't be re-enqueued.
  */
 function oz_final_style_cleanup() {
     if (is_admin()) return;
@@ -1362,7 +1363,9 @@ function oz_final_style_cleanup() {
     );
     if (!$is_wc_page) {
         wp_dequeue_style('wc-blocks-style');
+        wp_deregister_style('wc-blocks-style');
         wp_dequeue_style('wc-blocks-vendors-style');
+        wp_deregister_style('wc-blocks-vendors-style');
     }
 
     wp_dequeue_style('global-styles');
