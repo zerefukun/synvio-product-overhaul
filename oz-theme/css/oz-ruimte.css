@@ -238,10 +238,11 @@
 }
 
 /* The stappen-plan group renders inside the timeline — reset its padding
-   so it doesn't add extra nesting visually */
+   so it doesn't add extra nesting visually. Keep bottom margin so Step 1
+   (inside the group) has spacing before Step 2 (a sibling of the group). */
 .oz-timeline > .wp-block-group {
   padding: 0;
-  margin: 0;
+  margin: 0 0 32px 0;
 }
 
 /* ── Timeline: mobile (< 768px) ── */

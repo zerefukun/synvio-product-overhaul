@@ -137,6 +137,23 @@ function oz_dequeue_wc_layout_styles() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
 
 /**
+ * Dequeue WooCommerce + WC Blocks styles on non-WC pages.
+ * Ruimte pages, regular pages, and posts don't need WC styling.
+ * This avoids WC's button, form, and layout rules conflicting with our design system.
+ */
+function oz_dequeue_wc_on_non_shop_pages() {
+    if ( is_admin() ) return;
+
+    $is_wc_page = is_woocommerce() || is_cart() || is_checkout() || is_account_page();
+    if ( $is_wc_page ) return;
+
+    wp_dequeue_style('woocommerce-general');
+    wp_dequeue_style('wc-blocks-style');
+    wp_dequeue_style('wc-blocks-vendors-style');
+}
+add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 20);
+
+/**
  * Remove WooCommerce default content wrappers.
  * Our archive-product.php has its own layout, and header.php already provides <main>.
  * Without this, WC outputs a nested <main class="site-main"> that breaks DOM nesting
