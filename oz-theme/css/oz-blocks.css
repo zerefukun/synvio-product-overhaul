@@ -394,17 +394,25 @@
   margin-bottom: 12px;
 }
 
-/* Two-column layout: sidebar left, products right */
+/*
+ * Full-width layout wrapper.
+ * On desktop: sidebar sits outside the boxed content area (in the left margin),
+ * product grid stays inside the normal container width.
+ * On mobile: single column, sidebar hidden behind toggle.
+ */
 .oz-shop__layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 32px;
+  display: block;
 }
 
 @media (min-width: 1024px) {
   .oz-shop__layout {
-    grid-template-columns: 240px 1fr;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    /* Let the main column define its own max-width */
+    max-width: calc(var(--oz-max-w) + 220px + 40px);
+    margin: 0 auto;
+    padding: 0 var(--oz-gap);
   }
 }
 
@@ -413,7 +421,6 @@
   display: none;
 }
 
-/* Desktop: always visible as left column */
 @media (min-width: 1024px) {
   .oz-shop__sidebar {
     display: block;
@@ -422,6 +429,9 @@
     align-self: start;
     max-height: calc(100vh - var(--oz-hdr-height, 72px) - 48px);
     overflow-y: auto;
+    padding-right: 32px;
+    border-right: 1px solid var(--oz-border-light);
+    margin-right: 8px;
   }
 
   .oz-shop__filter-close {
@@ -566,11 +576,21 @@
   cursor: pointer;
 }
 
-/* With sidebar, product grid goes to 3 cols on desktop */
+/* On mobile the main area gets container padding */
+.oz-shop__main {
+  padding: 0 var(--oz-gap);
+}
+
 @media (min-width: 1024px) {
-  .oz-shop__main .woocommerce ul.products,
+  .oz-shop__main {
+    padding: 0;
+  }
+}
+
+/* Product grid keeps 4 cols — main area is the full container width */
+@media (min-width: 1024px) {
   .oz-shop__main ul.products {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
