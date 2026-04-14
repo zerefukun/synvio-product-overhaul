@@ -112,6 +112,11 @@ function oz_dequeue_wc_layout_styles() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
 
 /**
+ * Shop sidebar walker — collapsible category nav from a curated WP menu.
+ */
+require_once get_stylesheet_directory() . '/inc/class-shop-sidebar-walker.php';
+
+/**
  * Load Flatsome shortcode compatibility layer.
  * Existing pages use Flatsome UX Builder shortcodes extensively.
  * These stubs output semantic HTML with our design classes.
@@ -438,6 +443,7 @@ add_action('wp_enqueue_scripts', 'oz_header_enqueue');
 register_nav_menus([
     'oz-primary'        => 'Primary Menu (OZ Header)',
     'oz-drawer-footer'  => 'Drawer Footer Links',
+    'oz-shop-sidebar'   => 'Shop Sidebar Categories',
 ]);
 
 /**

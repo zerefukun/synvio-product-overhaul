@@ -5,6 +5,9 @@
  * Product grid stays inside the normal container.
  * On mobile the sidebar collapses behind a toggle button.
  *
+ * Sidebar uses the 'oz-shop-sidebar' nav menu (Appearance > Menus)
+ * so the structure is fully editable without code changes.
+ *
  * @package OzTheme
  */
 
@@ -12,130 +15,46 @@ defined( 'ABSPATH' ) || exit;
 
 get_header();
 
-/* Current category (if browsing a category) */
-$current_cat    = is_product_category() ? get_queried_object() : null;
-$current_cat_id = $current_cat ? $current_cat->term_id : 0;
-
-/* Build category tree for sidebar */
-$top_cats = get_terms([
-    'taxonomy'   => 'product_cat',
-    'hide_empty' => true,
-    'parent'     => 0,
-    'exclude'    => [ get_option('default_product_cat') ],
-    'orderby'    => 'name',
-]);
+/* Current page URL for active-state matching */
+$current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 ?>
 
-<?php do_action( 'woocommerce_before_main_content' ); ?>
+<!-- Boxed content: breadcrumbs + page header get container padding -->
+<div class="oz-shop__top oz-container">
+    <?php do_action( 'woocommerce_before_main_content' ); ?>
 
-<!-- Page header stays boxed -->
-<header class="oz-shop__header oz-container">
-    <?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
-        <h1 class="oz-shop__title"><?php woocommerce_page_title(); ?></h1>
-    <?php endif; ?>
-    <?php do_action( 'woocommerce_archive_description' ); ?>
-</header>
+    <header class="oz-shop__header">
+        <?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
+            <h1 class="oz-shop__title"><?php woocommerce_page_title(); ?></h1>
+        <?php endif; ?>
+        <?php do_action( 'woocommerce_archive_description' ); ?>
+    </header>
+</div>
 
 <!-- Full-width layout: sidebar outside container, products inside -->
 <div class="oz-shop__layout">
 
-    <!-- Sidebar: flush left, outside the boxed content area -->
+    <!-- Sidebar: curated nav menu -->
     <aside class="oz-shop__sidebar" id="shop-sidebar">
         <button class="oz-shop__filter-close" id="filter-close" type="button" aria-label="Filters sluiten">&times;</button>
         <nav class="oz-shop__categories" aria-label="Productcategorieën">
             <h2 class="oz-shop__sidebar-title">Categorieën</h2>
-            <ul class="oz-cat-nav">
-                <?php if ( ! empty( $top_cats ) && ! is_wp_error( $top_cats ) ) : ?>
-                    <?php foreach ( $top_cats as $cat ) :
-                        $is_active    = ( $current_cat_id === $cat->term_id );
-                        $is_ancestor  = $current_cat && term_is_ancestor_of( $cat->term_id, $current_cat_id, 'product_cat' );
-                        $active_cls   = ( $is_active || $is_ancestor ) ? ' is-active' : '';
-                        $has_children = false;
-
-                        $children = get_terms([
-                            'taxonomy'   => 'product_cat',
-                            'hide_empty' => true,
-                            'parent'     => $cat->term_id,
-                            'orderby'    => 'name',
-                        ]);
-                        $has_children = ( ! empty( $children ) && ! is_wp_error( $children ) );
-                        /* Auto-open if current page is inside this branch */
-                        $is_open = ( $is_active || $is_ancestor ) ? ' is-open' : '';
-                    ?>
-                        <li class="oz-cat-nav__item<?php echo esc_attr( $active_cls . $is_open ); ?><?php echo $has_children ? ' has-children' : ''; ?>">
-                            <div class="oz-cat-nav__row">
-                                <a href="<?php echo esc_url( get_term_link( $cat ) ); ?>" class="oz-cat-nav__link">
-                                    <?php echo esc_html( $cat->name ); ?>
-                                    <span class="oz-cat-nav__count"><?php echo esc_html( $cat->count ); ?></span>
-                                </a>
-                                <?php if ( $has_children ) : ?>
-                                    <button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">
-                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>
-                                    </button>
-                                <?php endif; ?>
-                            </div>
-                            <?php if ( $has_children ) : ?>
-                                <ul class="oz-cat-nav__sub">
-                                    <?php foreach ( $children as $child ) :
-                                        $child_active   = ( $current_cat_id === $child->term_id );
-                                        $child_ancestor = $current_cat && term_is_ancestor_of( $child->term_id, $current_cat_id, 'product_cat' );
-                                        $child_cls      = ( $child_active || $child_ancestor ) ? ' is-active' : '';
-
-                                        $grandchildren = get_terms([
-                                            'taxonomy'   => 'product_cat',
-                                            'hide_empty' => true,
-                                            'parent'     => $child->term_id,
-                                            'orderby'    => 'name',
-                                        ]);
-                                        $has_gc  = ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) );
-                                        $gc_open = ( $child_active || $child_ancestor ) ? ' is-open' : '';
-                                    ?>
-                                        <li class="oz-cat-nav__item<?php echo esc_attr( $child_cls . $gc_open ); ?><?php echo $has_gc ? ' has-children' : ''; ?>">
-                                            <div class="oz-cat-nav__row">
-                                                <a href="<?php echo esc_url( get_term_link( $child ) ); ?>" class="oz-cat-nav__link">
-                                                    <?php echo esc_html( $child->name ); ?>
-                                                    <span class="oz-cat-nav__count"><?php echo esc_html( $child->count ); ?></span>
-                                                </a>
-                                                <?php if ( $has_gc ) : ?>
-                                                    <button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">
-                                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>
-                                                    </button>
-                                                <?php endif; ?>
-                                            </div>
-                                            <?php if ( $has_gc ) : ?>
-                                                <ul class="oz-cat-nav__sub">
-                                                    <?php foreach ( $grandchildren as $gc ) :
-                                                        $gc_cls = ( $current_cat_id === $gc->term_id ) ? ' is-active' : '';
-                                                    ?>
-                                                        <li class="oz-cat-nav__item<?php echo esc_attr( $gc_cls ); ?>">
-                                                            <a href="<?php echo esc_url( get_term_link( $gc ) ); ?>" class="oz-cat-nav__link">
-                                                                <?php echo esc_html( $gc->name ); ?>
-                                                                <span class="oz-cat-nav__count"><?php echo esc_html( $gc->count ); ?></span>
-                                                            </a>
-                                                        </li>
-                                                    <?php endforeach; ?>
-                                                </ul>
-                                            <?php endif; ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </ul>
+            <?php
+            if ( has_nav_menu( 'oz-shop-sidebar' ) ) {
+                wp_nav_menu([
+                    'theme_location' => 'oz-shop-sidebar',
+                    'container'      => false,
+                    'menu_class'     => 'oz-cat-nav',
+                    'walker'         => new Oz_Shop_Sidebar_Walker( $current_url ),
+                    'depth'          => 4,
+                ]);
+            } else {
+                echo '<p class="oz-shop__no-menu">Ga naar Weergave &rarr; Menu&rsquo;s en wijs een menu toe aan &ldquo;Shop Sidebar Categories&rdquo;.</p>';
+            }
+            ?>
         </nav>
 
-        <?php
-        /*
-         * Optional widget area for additional filters (e.g. price filter).
-         * Category navigation is handled above — remove the WC "Product Categories"
-         * widget from Appearance > Widgets if it was added there.
-         */
-        if ( is_active_sidebar( 'shop-sidebar' ) ) {
-            dynamic_sidebar( 'shop-sidebar' );
-        }
-        ?>
+        <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
     </aside>
 
     <!-- Main: boxed content area with toolbar + product grid -->
@@ -193,8 +112,7 @@ $top_cats = get_terms([
     /* Category sub-list expand/collapse toggles */
     document.querySelectorAll('.oz-cat-nav__toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            var item = btn.closest('.oz-cat-nav__item');
-            item.classList.toggle('is-open');
+            btn.closest('.oz-cat-nav__item').classList.toggle('is-open');
         });
     });
 })();

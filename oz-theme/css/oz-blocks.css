@@ -385,9 +385,25 @@
   color: var(--oz-cta);
 }
 
+/* ── WooCommerce: Breadcrumbs ── */
+.woocommerce-breadcrumb {
+  font-size: 13px;
+  color: var(--oz-text-muted);
+  padding: 16px 0 0;
+}
+
+.woocommerce-breadcrumb a {
+  color: var(--oz-text-muted);
+  text-decoration: none;
+}
+
+.woocommerce-breadcrumb a:hover {
+  color: var(--oz-accent);
+}
+
 /* ── WooCommerce: Shop Layout (sidebar + grid) ── */
 .oz-shop__header {
-  padding: 48px 0 24px;
+  padding: 32px 0 24px;
 }
 
 .oz-shop__title {

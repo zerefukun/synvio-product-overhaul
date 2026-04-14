@@ -7,7 +7,7 @@
 
 get_header(); ?>
 
-<div class="oz-page">
+<div class="oz-page oz-container">
 	<?php while ( have_posts() ) : the_post(); ?>
 		<div class="oz-page__content">
 			<?php the_content(); ?>
