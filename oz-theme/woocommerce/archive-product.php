@@ -47,9 +47,10 @@ $top_cats = get_terms([
             <ul class="oz-cat-nav">
                 <?php if ( ! empty( $top_cats ) && ! is_wp_error( $top_cats ) ) : ?>
                     <?php foreach ( $top_cats as $cat ) :
-                        $is_active   = ( $current_cat_id === $cat->term_id );
-                        $is_ancestor = $current_cat && term_is_ancestor_of( $cat->term_id, $current_cat_id, 'product_cat' );
-                        $active_cls  = ( $is_active || $is_ancestor ) ? ' is-active' : '';
+                        $is_active    = ( $current_cat_id === $cat->term_id );
+                        $is_ancestor  = $current_cat && term_is_ancestor_of( $cat->term_id, $current_cat_id, 'product_cat' );
+                        $active_cls   = ( $is_active || $is_ancestor ) ? ' is-active' : '';
+                        $has_children = false;
 
                         $children = get_terms([
                             'taxonomy'   => 'product_cat',
@@ -57,33 +58,51 @@ $top_cats = get_terms([
                             'parent'     => $cat->term_id,
                             'orderby'    => 'name',
                         ]);
+                        $has_children = ( ! empty( $children ) && ! is_wp_error( $children ) );
+                        /* Auto-open if current page is inside this branch */
+                        $is_open = ( $is_active || $is_ancestor ) ? ' is-open' : '';
                     ?>
-                        <li class="oz-cat-nav__item<?php echo esc_attr( $active_cls ); ?>">
-                            <a href="<?php echo esc_url( get_term_link( $cat ) ); ?>" class="oz-cat-nav__link">
-                                <?php echo esc_html( $cat->name ); ?>
-                                <span class="oz-cat-nav__count"><?php echo esc_html( $cat->count ); ?></span>
-                            </a>
-                            <?php if ( ! empty( $children ) && ! is_wp_error( $children ) ) : ?>
+                        <li class="oz-cat-nav__item<?php echo esc_attr( $active_cls . $is_open ); ?><?php echo $has_children ? ' has-children' : ''; ?>">
+                            <div class="oz-cat-nav__row">
+                                <a href="<?php echo esc_url( get_term_link( $cat ) ); ?>" class="oz-cat-nav__link">
+                                    <?php echo esc_html( $cat->name ); ?>
+                                    <span class="oz-cat-nav__count"><?php echo esc_html( $cat->count ); ?></span>
+                                </a>
+                                <?php if ( $has_children ) : ?>
+                                    <button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                            <?php if ( $has_children ) : ?>
                                 <ul class="oz-cat-nav__sub">
                                     <?php foreach ( $children as $child ) :
-                                        $child_active    = ( $current_cat_id === $child->term_id );
-                                        $child_ancestor  = $current_cat && term_is_ancestor_of( $child->term_id, $current_cat_id, 'product_cat' );
-                                        $child_cls       = ( $child_active || $child_ancestor ) ? ' is-active' : '';
+                                        $child_active   = ( $current_cat_id === $child->term_id );
+                                        $child_ancestor = $current_cat && term_is_ancestor_of( $child->term_id, $current_cat_id, 'product_cat' );
+                                        $child_cls      = ( $child_active || $child_ancestor ) ? ' is-active' : '';
 
-                                        /* Grandchildren (3rd level: e.g. All-In-One > Beige) */
                                         $grandchildren = get_terms([
                                             'taxonomy'   => 'product_cat',
                                             'hide_empty' => true,
                                             'parent'     => $child->term_id,
                                             'orderby'    => 'name',
                                         ]);
+                                        $has_gc  = ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) );
+                                        $gc_open = ( $child_active || $child_ancestor ) ? ' is-open' : '';
                                     ?>
-                                        <li class="oz-cat-nav__item<?php echo esc_attr( $child_cls ); ?>">
-                                            <a href="<?php echo esc_url( get_term_link( $child ) ); ?>" class="oz-cat-nav__link">
-                                                <?php echo esc_html( $child->name ); ?>
-                                                <span class="oz-cat-nav__count"><?php echo esc_html( $child->count ); ?></span>
-                                            </a>
-                                            <?php if ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) ) : ?>
+                                        <li class="oz-cat-nav__item<?php echo esc_attr( $child_cls . $gc_open ); ?><?php echo $has_gc ? ' has-children' : ''; ?>">
+                                            <div class="oz-cat-nav__row">
+                                                <a href="<?php echo esc_url( get_term_link( $child ) ); ?>" class="oz-cat-nav__link">
+                                                    <?php echo esc_html( $child->name ); ?>
+                                                    <span class="oz-cat-nav__count"><?php echo esc_html( $child->count ); ?></span>
+                                                </a>
+                                                <?php if ( $has_gc ) : ?>
+                                                    <button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">
+                                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                            <?php if ( $has_gc ) : ?>
                                                 <ul class="oz-cat-nav__sub">
                                                     <?php foreach ( $grandchildren as $gc ) :
                                                         $gc_cls = ( $current_cat_id === $gc->term_id ) ? ' is-active' : '';
@@ -152,25 +171,32 @@ $top_cats = get_terms([
 
 <?php do_action( 'woocommerce_after_main_content' ); ?>
 
-<!-- Sidebar toggle for mobile -->
 <script>
 (function() {
+    /* Mobile sidebar toggle */
     var toggle = document.getElementById('filter-toggle');
     var close  = document.getElementById('filter-close');
     var sidebar = document.getElementById('shop-sidebar');
-    if (!toggle || !sidebar) return;
-
-    toggle.addEventListener('click', function() {
-        sidebar.classList.add('is-open');
-        document.body.style.overflow = 'hidden';
-    });
-
-    if (close) {
-        close.addEventListener('click', function() {
-            sidebar.classList.remove('is-open');
-            document.body.style.overflow = '';
+    if (toggle && sidebar) {
+        toggle.addEventListener('click', function() {
+            sidebar.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
         });
+        if (close) {
+            close.addEventListener('click', function() {
+                sidebar.classList.remove('is-open');
+                document.body.style.overflow = '';
+            });
+        }
     }
+
+    /* Category sub-list expand/collapse toggles */
+    document.querySelectorAll('.oz-cat-nav__toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var item = btn.closest('.oz-cat-nav__item');
+            item.classList.toggle('is-open');
+        });
+    });
 })();
 </script>
 

@@ -488,7 +488,14 @@
   margin-bottom: 2px;
 }
 
+/* Row: link + toggle button side by side */
+.oz-cat-nav__row {
+  display: flex;
+  align-items: center;
+}
+
 .oz-cat-nav__link {
+  flex: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -505,10 +512,36 @@
   color: var(--oz-accent);
 }
 
-.oz-cat-nav__item.is-active > .oz-cat-nav__link {
+.oz-cat-nav__item.is-active > .oz-cat-nav__row > .oz-cat-nav__link {
   background: var(--oz-accent-light, #E8F0F0);
   color: var(--oz-accent);
   font-weight: 600;
+}
+
+/* Toggle button for expand/collapse */
+.oz-cat-nav__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--oz-text-muted);
+  cursor: pointer;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition), transform 0.2s ease;
+}
+
+.oz-cat-nav__toggle:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-text-primary);
+}
+
+/* Rotate chevron when open */
+.oz-cat-nav__item.is-open > .oz-cat-nav__row > .oz-cat-nav__toggle {
+  transform: rotate(180deg);
 }
 
 .oz-cat-nav__count {
@@ -521,21 +554,36 @@
   text-align: center;
 }
 
-.oz-cat-nav__item.is-active > .oz-cat-nav__link .oz-cat-nav__count {
+.oz-cat-nav__item.is-active > .oz-cat-nav__row > .oz-cat-nav__link .oz-cat-nav__count {
   background: var(--oz-accent);
   color: #FFF;
 }
 
-/* Subcategory list */
+/* Subcategory list — collapsed by default, shown when is-open */
 .oz-cat-nav__sub {
   list-style: none;
   padding: 0 0 0 16px;
   margin: 0;
+  display: none;
+}
+
+.oz-cat-nav__item.is-open > .oz-cat-nav__sub {
+  display: block;
 }
 
 .oz-cat-nav__sub .oz-cat-nav__link {
   font-size: 13px;
   padding: 6px 12px;
+}
+
+/* 3rd level gets extra indent */
+.oz-cat-nav__sub .oz-cat-nav__sub {
+  padding-left: 12px;
+}
+
+.oz-cat-nav__sub .oz-cat-nav__sub .oz-cat-nav__link {
+  font-size: 12px;
+  padding: 5px 10px;
 }
 
 /* Sidebar widgets (registered via shop-sidebar widget area) */
