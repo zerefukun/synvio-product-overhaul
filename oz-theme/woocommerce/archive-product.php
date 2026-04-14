@@ -63,16 +63,40 @@ $top_cats = get_terms([
                                 <?php echo esc_html( $cat->name ); ?>
                                 <span class="oz-cat-nav__count"><?php echo esc_html( $cat->count ); ?></span>
                             </a>
-                            <?php if ( ! empty( $children ) && ! is_wp_error( $children ) && ( $is_active || $is_ancestor ) ) : ?>
+                            <?php if ( ! empty( $children ) && ! is_wp_error( $children ) ) : ?>
                                 <ul class="oz-cat-nav__sub">
                                     <?php foreach ( $children as $child ) :
-                                        $child_active = ( $current_cat_id === $child->term_id ) ? ' is-active' : '';
+                                        $child_active    = ( $current_cat_id === $child->term_id );
+                                        $child_ancestor  = $current_cat && term_is_ancestor_of( $child->term_id, $current_cat_id, 'product_cat' );
+                                        $child_cls       = ( $child_active || $child_ancestor ) ? ' is-active' : '';
+
+                                        /* Grandchildren (3rd level: e.g. All-In-One > Beige) */
+                                        $grandchildren = get_terms([
+                                            'taxonomy'   => 'product_cat',
+                                            'hide_empty' => true,
+                                            'parent'     => $child->term_id,
+                                            'orderby'    => 'name',
+                                        ]);
                                     ?>
-                                        <li class="oz-cat-nav__item<?php echo esc_attr( $child_active ); ?>">
+                                        <li class="oz-cat-nav__item<?php echo esc_attr( $child_cls ); ?>">
                                             <a href="<?php echo esc_url( get_term_link( $child ) ); ?>" class="oz-cat-nav__link">
                                                 <?php echo esc_html( $child->name ); ?>
                                                 <span class="oz-cat-nav__count"><?php echo esc_html( $child->count ); ?></span>
                                             </a>
+                                            <?php if ( ! empty( $grandchildren ) && ! is_wp_error( $grandchildren ) && ( $child_active || $child_ancestor ) ) : ?>
+                                                <ul class="oz-cat-nav__sub">
+                                                    <?php foreach ( $grandchildren as $gc ) :
+                                                        $gc_cls = ( $current_cat_id === $gc->term_id ) ? ' is-active' : '';
+                                                    ?>
+                                                        <li class="oz-cat-nav__item<?php echo esc_attr( $gc_cls ); ?>">
+                                                            <a href="<?php echo esc_url( get_term_link( $gc ) ); ?>" class="oz-cat-nav__link">
+                                                                <?php echo esc_html( $gc->name ); ?>
+                                                                <span class="oz-cat-nav__count"><?php echo esc_html( $gc->count ); ?></span>
+                                                            </a>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php endif; ?>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
