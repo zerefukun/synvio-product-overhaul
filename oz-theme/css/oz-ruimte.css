@@ -14,10 +14,12 @@
   position: relative;
 }
 
-/* Cover block inside hero: full viewport height on desktop */
+/* Cover block inside hero: full viewport height on desktop.
+   Top padding offsets content below the transparent overlay header. */
 .oz-ruimte__hero .wp-block-cover {
   min-height: 70vh;
   border-radius: 0;
+  padding-top: var(--oz-hdr-height-desktop, 76px);
 }
 
 /* Hero inner content stays within boxed width */

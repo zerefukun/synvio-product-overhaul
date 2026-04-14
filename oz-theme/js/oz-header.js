@@ -102,7 +102,10 @@
     unlockBody();
   }
 
+  /* Both desktop and mobile search triggers open the same drawer */
+  var searchTriggerMobile = document.getElementById('oz-search-trigger-mobile');
   if (searchTrigger) searchTrigger.addEventListener('click', openSearch);
+  if (searchTriggerMobile) searchTriggerMobile.addEventListener('click', openSearch);
   if (searchClose)   searchClose.addEventListener('click', closeSearch);
   if (searchOverlay) searchOverlay.addEventListener('click', closeSearch);
 
@@ -392,6 +395,42 @@
     searchForm.addEventListener('submit', function () {
       var q = searchInput.value.trim();
       if (q.length >= 2) saveRecent(q);
+    });
+  }
+
+  /* ── Mega menu: keyboard + touch support ──
+     CSS :hover/:focus-within handles mouse. This adds:
+     - Escape closes mega panel
+     - Touch devices: first tap opens, second tap navigates */
+  var megaItems = document.querySelectorAll('.oz-nav__item.has-mega');
+
+  /* Escape inside mega panel returns focus to trigger */
+  megaItems.forEach(function (item) {
+    item.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var link = item.querySelector('.oz-nav__link');
+        if (link) link.focus();
+      }
+    });
+  });
+
+  /* Touch-friendly: toggle mega on first tap, navigate on second */
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    megaItems.forEach(function (item) {
+      var link = item.querySelector('.oz-nav__link');
+      if (!link) return;
+      link.addEventListener('click', function (e) {
+        if (item.classList.contains('is-mega-open')) return; /* second tap navigates */
+        e.preventDefault();
+        megaItems.forEach(function (o) { o.classList.remove('is-mega-open'); });
+        item.classList.add('is-mega-open');
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.oz-nav__item.has-mega')) {
+        megaItems.forEach(function (item) { item.classList.remove('is-mega-open'); });
+      }
     });
   }
 

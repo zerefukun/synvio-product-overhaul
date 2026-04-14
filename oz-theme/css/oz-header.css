@@ -248,14 +248,18 @@ button.oz-menu-drawer__category-link {
   border-radius: 9px;
 }
 
-/* Account icon hidden on mobile */
+/* Responsive visibility: desktop elements hidden on mobile, vice versa */
 .oz-header__desktop-only {
   display: none;
 }
 
-/* ── Overlay header mode (homepage hero) ──
-   Dark gradient so original logo reads against the hero image.
-   White icons for contrast. On scroll (is-stuck), reverts to solid white. */
+.oz-header__mobile-only {
+  display: flex;
+}
+
+/* ── Overlay header mode (hero pages: homepage + ruimte) ──
+   Transparent header with white text/icons over dark hero images.
+   On scroll (is-stuck), reverts to frosted glass with dark text. */
 .oz-header--overlay:not(.is-stuck) {
   background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 70%, transparent 100%);
   border-bottom-color: transparent;
@@ -267,7 +271,7 @@ button.oz-menu-drawer__category-link {
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-header__logo img {
-  filter: none;
+  filter: brightness(0) invert(1);
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-header__icon:hover {
@@ -276,6 +280,19 @@ button.oz-menu-drawer__category-link {
 
 .oz-header--overlay:not(.is-stuck) .oz-header__svg {
   stroke: #FFF !important;
+}
+
+/* Desktop nav links go white on overlay */
+.oz-header--overlay:not(.is-stuck) .oz-nav__link {
+  color: #FFF;
+}
+
+.oz-header--overlay:not(.is-stuck) .oz-nav__link:hover {
+  background: rgba(255,255,255,.12);
+}
+
+.oz-header--overlay:not(.is-stuck) .oz-nav__chevron {
+  stroke: #FFF;
 }
 
 /* Sticky glass state when scrolled */
@@ -302,6 +319,19 @@ button.oz-menu-drawer__category-link {
 
 .oz-header--overlay.is-stuck .oz-header__icon:hover {
   background: rgba(0,0,0,.05);
+}
+
+/* Nav links revert to dark on scroll */
+.oz-header--overlay.is-stuck .oz-nav__link {
+  color: var(--oz-hdr-charcoal);
+}
+
+.oz-header--overlay.is-stuck .oz-nav__chevron {
+  stroke: var(--oz-hdr-charcoal);
+}
+
+.oz-header--overlay.is-stuck .oz-nav__item--cta .oz-nav__link {
+  color: var(--oz-cta, #E67C00);
 }
 
 /* Body offset so content doesn't sit behind fixed header */
@@ -1034,6 +1064,129 @@ body.oz-header-overlay-page {
 }
 
 /* ================================================================
+   DESKTOP NAVIGATION — horizontal nav with mega menu panels.
+   Hidden below 1024px (lives inside .oz-header__desktop-only).
+   CSS :hover/:focus-within drives the mega panels; JS only adds
+   keyboard (Escape) and touch (first-tap-opens) support.
+   ================================================================ */
+.oz-nav {
+  display: flex;
+  align-items: center;
+}
+
+.oz-nav__list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+}
+
+.oz-nav__item {
+  position: relative;
+}
+
+.oz-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--oz-hdr-charcoal);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+
+.oz-nav__link:hover {
+  background: rgba(0,0,0,.05);
+}
+
+.oz-nav__chevron {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  transition: transform .2s;
+}
+
+/* CTA nav item (accent color, e.g. "Offerte aanvragen") */
+.oz-nav__item--cta .oz-nav__link {
+  color: var(--oz-cta, #E67C00);
+  font-weight: 600;
+}
+
+.oz-nav__item--cta .oz-nav__link:hover {
+  background: rgba(230,124,0,.08);
+}
+
+/* ── Mega menu dropdown panel ── */
+.oz-mega__panel {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-top: 8px;           /* spacer prevents hover-gap between link and panel */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s, visibility .2s;
+  z-index: 100;
+}
+
+/* Show on hover or keyboard focus-within */
+.oz-nav__item.has-mega:hover .oz-mega__panel,
+.oz-nav__item.has-mega:focus-within .oz-mega__panel {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Touch devices: JS toggles .is-mega-open on first tap */
+.oz-nav__item.is-mega-open .oz-mega__panel {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Chevron flips when panel is open */
+.oz-nav__item.has-mega:hover .oz-nav__chevron,
+.oz-nav__item.has-mega:focus-within .oz-nav__chevron,
+.oz-nav__item.is-mega-open .oz-nav__chevron {
+  transform: rotate(180deg);
+}
+
+.oz-mega__inner {
+  background: #FFF;
+  border-radius: var(--oz-radius-lg, 12px);
+  box-shadow: var(--oz-shadow-lg, 0 8px 32px rgba(0,0,0,.12));
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  min-width: 280px;
+}
+
+.oz-mega__link {
+  display: block;
+  padding: 10px 16px;
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--oz-hdr-charcoal);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+
+.oz-mega__link:hover {
+  background: var(--oz-hdr-sand);
+  color: var(--oz-hdr-teal);
+}
+
+
+/* ================================================================
    SCROLL LOCK
    ================================================================ */
 body.oz-drawer-open {
@@ -1061,15 +1214,34 @@ body.oz-drawer-open {
     height: 52px;
   }
 
-  .oz-header__desktop-only {
-    display: flex;
-  }
-
   /* Search results: 3 columns on desktop */
   .oz-search-drawer__results-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ================================================================
+   DESKTOP NAV BREAKPOINT (1024px+)
+   Below 1024px: mobile layout — hamburger (left), logo (center), cart (right).
+   Above 1024px: desktop layout — logo (left), horizontal nav (center),
+   search + account + cart (right).
+   ================================================================ */
+@media (min-width: 1024px) {
+  .oz-header__mobile-only { display: none; }
+  .oz-header__desktop-only { display: flex; }
+
+  /* Left: just the logo (hamburger hidden via mobile-only) */
+  .oz-header__left { flex: 0 0 auto; }
+
+  /* Center: horizontal nav fills the middle space */
+  .oz-header__center { flex: 1; display: flex; justify-content: center; }
+
+  /* Right: search + account + cart, fixed width */
+  .oz-header__right { flex: 0 0 auto; }
+
+  .oz-header__inner { padding: 0 32px; }
+}
+
 
 /* ================================================================
    MOBILE (<480px)

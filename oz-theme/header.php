@@ -1,13 +1,16 @@
 <?php
 /**
- * Custom header — replaces Flatsome's header.php entirely.
- * Gulcanhome-inspired: hamburger + search | logo | account + cart.
- * Includes menu drawer + search drawer markup.
+ * Custom header.
+ *
+ * Desktop (1024px+): logo (left) | centered nav with mega menus | search + account + cart (right)
+ * Mobile  (<1024px): hamburger + search | centered logo | cart  (drawer nav)
+ *
+ * Overlay mode (transparent header over hero): homepage + ruimte template pages.
  *
  * @package OzTheme
  */
 
-$is_home    = is_front_page();
+$has_hero   = is_front_page() || is_page_template( 'page-ruimte.php' );
 $logo_id    = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 $logo_url   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 $site_name  = get_bloginfo( 'name' );
@@ -34,24 +37,22 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 
 <?php /* ================================================================
        HEADER BAR
-       On homepage: transparent overlay mode (--overlay). Elsewhere: solid.
+       Desktop (1024px+): logo left | nav center (mega menus) | icons right
+       Mobile  (<1024px): hamburger+search left | logo center | cart right
+       Overlay mode on pages with hero (homepage + ruimte).
        ================================================================ */ ?>
-<header class="oz-header<?php echo $is_home ? ' oz-header--overlay' : ''; ?>" id="oz-header">
+<header class="oz-header<?php echo $has_hero ? ' oz-header--overlay' : ''; ?>" id="oz-header">
 	<div class="oz-header__inner">
 
-		<!-- Left: hamburger + search -->
+		<!-- Left: hamburger (mobile) + logo -->
 		<div class="oz-header__left">
-			<button type="button" class="oz-header__icon" id="oz-menu-trigger" aria-label="Menu openen" aria-expanded="false" aria-controls="oz-menu-drawer">
+			<button type="button" class="oz-header__icon oz-header__mobile-only" id="oz-menu-trigger" aria-label="Menu openen" aria-expanded="false" aria-controls="oz-menu-drawer">
 				<svg class="oz-header__svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
 				<svg class="oz-header__svg oz-header__svg--close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 			</button>
-			<button type="button" class="oz-header__icon" id="oz-search-trigger" aria-label="Zoeken">
+			<button type="button" class="oz-header__icon oz-header__mobile-only" id="oz-search-trigger-mobile" aria-label="Zoeken">
 				<svg class="oz-header__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
 			</button>
-		</div>
-
-		<!-- Center: logo -->
-		<div class="oz-header__center">
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="oz-header__logo" aria-label="<?php echo esc_attr( $site_name ); ?>">
 				<?php if ( $logo_url ) : ?>
 					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="150" height="auto" loading="eager">
@@ -61,8 +62,28 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</a>
 		</div>
 
-		<!-- Right: account (desktop) + cart -->
+		<!-- Center: desktop navigation with mega menus (hidden on mobile) -->
+		<div class="oz-header__center oz-header__desktop-only">
+			<?php
+			wp_nav_menu([
+				'theme_location'  => 'oz-primary',
+				'container'       => 'nav',
+				'container_class' => 'oz-nav',
+				'container_id'    => '',
+				'menu_class'      => 'oz-nav__list',
+				'depth'           => 2,
+				'walker'          => new Oz_Mega_Menu_Walker(),
+				'fallback_cb'     => false,
+				'items_wrap'      => '<ul class="%2$s">%3$s</ul>',
+			]);
+			?>
+		</div>
+
+		<!-- Right: search (desktop) + account (desktop) + cart -->
 		<div class="oz-header__right">
+			<button type="button" class="oz-header__icon oz-header__desktop-only" id="oz-search-trigger" aria-label="Zoeken">
+				<svg class="oz-header__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+			</button>
 			<a href="<?php echo esc_url( get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ); ?>" class="oz-header__icon oz-header__desktop-only" aria-label="Mijn account">
 				<svg class="oz-header__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
 			</a>
@@ -121,7 +142,9 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 
 			<ul class="oz-menu-drawer__categories" id="oz-menu-main">
 				<?php
-				$menu_items = wp_get_nav_menu_items( 'header-menu' );
+				$locations  = get_nav_menu_locations();
+				$menu_id    = $locations['oz-primary'] ?? 0;
+				$menu_items = $menu_id ? wp_get_nav_menu_items( $menu_id ) : [];
 				if ( $menu_items ) :
 					/* Build parent → children map */
 					$children_map = [];

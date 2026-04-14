@@ -151,6 +151,11 @@ remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wra
 require_once get_stylesheet_directory() . '/inc/class-shop-sidebar-walker.php';
 
 /**
+ * Mega menu walker — desktop horizontal nav with dropdown panels.
+ */
+require_once get_stylesheet_directory() . '/inc/class-mega-menu-walker.php';
+
+/**
  * Load Flatsome shortcode compatibility layer.
  * Existing pages use Flatsome UX Builder shortcodes extensively.
  * These stubs output semantic HTML with our design classes.
