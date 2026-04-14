@@ -54,6 +54,22 @@ function oz_theme_setup() {
 add_action('after_setup_theme', 'oz_theme_setup');
 
 /**
+ * Register widget areas.
+ */
+function oz_widgets_init() {
+    register_sidebar([
+        'name'          => 'Shop Sidebar',
+        'id'            => 'shop-sidebar',
+        'description'   => 'Widgets below the category navigation on shop pages (e.g. price filter).',
+        'before_widget' => '<div id="%1$s" class="oz-sidebar-widget %2$s">',
+        'after_widget'  => '</div>',
+        'before_title'  => '<h3 class="oz-sidebar-widget__title">',
+        'after_title'   => '</h3>',
+    ]);
+}
+add_action('widgets_init', 'oz_widgets_init');
+
+/**
  * Enqueue design system CSS on all frontend pages.
  * Loads first so component CSS can rely on the tokens and reset.
  */

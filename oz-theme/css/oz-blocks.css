@@ -385,7 +385,7 @@
   color: var(--oz-cta);
 }
 
-/* ── WooCommerce: Shop Toolbar ── */
+/* ── WooCommerce: Shop Layout (sidebar + grid) ── */
 .oz-shop__header {
   padding: 48px 0 24px;
 }
@@ -394,6 +394,141 @@
   margin-bottom: 12px;
 }
 
+/* Two-column layout: sidebar left, products right */
+.oz-shop__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__layout {
+    grid-template-columns: 240px 1fr;
+    gap: 40px;
+  }
+}
+
+/* ── Sidebar ── */
+.oz-shop__sidebar {
+  display: none;
+}
+
+/* Desktop: always visible as left column */
+@media (min-width: 1024px) {
+  .oz-shop__sidebar {
+    display: block;
+    position: sticky;
+    top: calc(var(--oz-hdr-height, 72px) + 24px);
+    align-self: start;
+    max-height: calc(100vh - var(--oz-hdr-height, 72px) - 48px);
+    overflow-y: auto;
+  }
+
+  .oz-shop__filter-close {
+    display: none;
+  }
+}
+
+/* Mobile: slide-in overlay */
+.oz-shop__sidebar.is-open {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: var(--oz-bg-page);
+  z-index: 1000;
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: 4px 0 24px rgba(0,0,0,.15);
+}
+
+.oz-shop__filter-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.oz-shop__sidebar-title {
+  font-family: var(--oz-ff-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--oz-border-light);
+}
+
+/* Category navigation links */
+.oz-cat-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-cat-nav__item {
+  margin-bottom: 2px;
+}
+
+.oz-cat-nav__link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition);
+}
+
+.oz-cat-nav__link:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-accent);
+}
+
+.oz-cat-nav__item.is-active > .oz-cat-nav__link {
+  background: var(--oz-accent-light, #E8F0F0);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+.oz-cat-nav__count {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  background: var(--oz-bg-warm);
+  padding: 1px 8px;
+  border-radius: 10px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.oz-cat-nav__item.is-active > .oz-cat-nav__link .oz-cat-nav__count {
+  background: var(--oz-accent);
+  color: #FFF;
+}
+
+/* Subcategory list */
+.oz-cat-nav__sub {
+  list-style: none;
+  padding: 0 0 0 16px;
+  margin: 0;
+}
+
+.oz-cat-nav__sub .oz-cat-nav__link {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+/* ── Shop Toolbar ── */
 .oz-shop__toolbar {
   display: flex;
   justify-content: space-between;
@@ -401,6 +536,19 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+/* Filter toggle: visible on mobile, hidden on desktop */
+.oz-shop__filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__filter-toggle {
+    display: none;
+  }
 }
 
 .woocommerce-result-count {
@@ -416,6 +564,14 @@
   font-size: 14px;
   background: var(--oz-bg-page);
   cursor: pointer;
+}
+
+/* With sidebar, product grid goes to 3 cols on desktop */
+@media (min-width: 1024px) {
+  .oz-shop__main .woocommerce ul.products,
+  .oz-shop__main ul.products {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 /* ── WooCommerce: Cart Page ── */
