@@ -967,7 +967,7 @@
    WC uses .woocommerce nav.woocommerce-pagination ul (0-3-4).
    Prefix with .woocommerce to win the specificity battle. */
 .nav-links,
-.woocommerce nav.woocommerce-pagination ul {
+body.woocommerce nav.woocommerce-pagination ul {
   display: flex;
   justify-content: center;
   gap: 8px;
