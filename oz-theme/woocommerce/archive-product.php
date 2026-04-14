@@ -83,7 +83,16 @@ $top_cats = get_terms([
             </ul>
         </nav>
 
-        <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
+        <?php
+        /*
+         * Optional widget area for additional filters (e.g. price filter).
+         * Category navigation is handled above — remove the WC "Product Categories"
+         * widget from Appearance > Widgets if it was added there.
+         */
+        if ( is_active_sidebar( 'shop-sidebar' ) ) {
+            dynamic_sidebar( 'shop-sidebar' );
+        }
+        ?>
     </aside>
 
     <!-- Main: boxed content area with toolbar + product grid -->

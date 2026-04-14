@@ -538,6 +538,49 @@
   padding: 6px 12px;
 }
 
+/* Sidebar widgets (registered via shop-sidebar widget area) */
+.oz-sidebar-widget {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--oz-border-light);
+}
+
+.oz-sidebar-widget__title {
+  font-family: var(--oz-ff-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 12px;
+}
+
+/* Style WC widget lists that end up in the sidebar */
+.oz-sidebar-widget ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-sidebar-widget ul li a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition);
+}
+
+.oz-sidebar-widget ul li a:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-accent);
+}
+
+.oz-sidebar-widget ul li.current-cat > a {
+  background: var(--oz-accent-light, #E8F0F0);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
 /* ── Shop Toolbar ── */
 .oz-shop__toolbar {
   display: flex;
