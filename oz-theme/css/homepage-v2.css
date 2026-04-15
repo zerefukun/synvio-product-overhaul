@@ -103,6 +103,7 @@
 
 .oz-hp-btn {
   display: inline-block;
+  width: fit-content;
   padding: 12px 28px;
   font-family: var(--ff-body);
   font-size: 13px;

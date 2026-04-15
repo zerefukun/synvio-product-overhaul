@@ -127,12 +127,13 @@ function oz_animations_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_animations_enqueue', 6);
 
 /**
- * Remove WooCommerce layout CSS sitewide — we provide our own grid via oz-blocks.css.
- * WC's float-based layout conflicts with our CSS Grid product cards.
+ * Remove ALL WooCommerce default CSS sitewide — we provide our own via oz-blocks.css.
+ * WC's layout, general, and smallscreen styles all conflict with our design system.
  */
 function oz_dequeue_wc_layout_styles() {
     wp_dequeue_style('woocommerce-layout');
     wp_dequeue_style('woocommerce-smallscreen');
+    wp_dequeue_style('woocommerce-general');
 }
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
 

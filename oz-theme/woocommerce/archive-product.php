@@ -44,6 +44,17 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
         </nav>
 
         <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
+
+        <!-- Kleurstalen CTA banner -->
+        <div class="oz-shop__stalen-banner">
+            <img src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/img/kleurstalen-sidebar.jpg" alt="Kleurstalen beton cire" class="oz-shop__stalen-img" loading="lazy" width="280" height="160">
+            <div class="oz-shop__stalen-body">
+                <span class="oz-eyebrow">Gratis kleurstalen</span>
+                <h3 class="oz-shop__stalen-title">Zeker van je kleur?</h3>
+                <p class="oz-shop__stalen-text">Selecteer tot 4 kleuren en wij sturen ze gratis naar je toe.</p>
+                <a href="<?php echo esc_url( home_url( '/kleurstalen-aanvragen/' ) ); ?>" class="oz-btn oz-btn--primary oz-btn--sm">Stalen aanvragen</a>
+            </div>
+        </div>
     </aside>
 
     <!-- Main: breadcrumb, header, toolbar, product grid — all aligned -->
