@@ -567,8 +567,7 @@ function oz_fs_responsive_css() {
 }
 .oz-fs-banner--overlay .oz-fs-text-box,
 .oz-fs-banner--overlay .oz-fs-banner__link { position: relative; z-index: 2; }
-.oz-fs-row--collapse { gap: 0; }
-.oz-fs-row--full { max-width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); }
+/* --collapse and --full modifiers moved to oz-blocks.css (negative-margin gutter model) */
 .oz-fs-row--middle { align-items: center; }
 .oz-fs-col--left { text-align: left; }
 .oz-fs-col--center { text-align: center; }
