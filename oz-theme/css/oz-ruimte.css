@@ -82,9 +82,11 @@
   margin-right: auto;
 }
 
-/* Headings in standalone sections center too */
+/* Headings in standalone sections center too — both direct children and inside groups */
 .oz-ruimte .oz-section > .oz-container > h2,
-.oz-ruimte .oz-section > .oz-container > h3 {
+.oz-ruimte .oz-section > .oz-container > h3,
+.oz-ruimte .oz-section .wp-block-group h2,
+.oz-ruimte .oz-section .wp-block-group h3 {
   text-align: center;
 }
 
@@ -123,6 +125,13 @@
 .oz-ruimte .wp-block-image.alignfull img {
   border-radius: 0;
   width: 100%;
+}
+
+/* Alignfull groups render without .oz-container — constrain their inner content */
+.oz-ruimte .wp-block-group.alignfull > .wp-block-group__inner-container {
+  max-width: var(--oz-max-w);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
 }
 
 /* ── Gallery block ── */

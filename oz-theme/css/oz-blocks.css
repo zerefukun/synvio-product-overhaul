@@ -226,6 +226,22 @@
   min-height: 400px;
 }
 
+/* Headings inside covers inherit the container's color (white on dark overlays).
+   Needed because global-styles is dequeued, so .has-white-color has no rule. */
+.wp-block-cover h1,
+.wp-block-cover h2,
+.wp-block-cover h3,
+.wp-block-cover h4,
+.wp-block-cover h5,
+.wp-block-cover h6 {
+  color: inherit;
+}
+
+/* WP color preset: white text (global-styles dequeued, so we define it ourselves) */
+.has-white-color.has-text-color {
+  color: #FFF !important;
+}
+
 /* ── Core Blocks: Image ── */
 .wp-block-image img {
   border-radius: var(--oz-radius);
@@ -654,6 +670,49 @@
   background: var(--oz-accent-light, #E8F0F0);
   color: var(--oz-accent);
   font-weight: 600;
+}
+
+/* ── Kleurstalen sidebar banner ── */
+.oz-shop__stalen-banner {
+  margin-top: 24px;
+  border-radius: var(--oz-radius-lg, 12px);
+  overflow: hidden;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border: 1px solid var(--oz-border-light, #E8E8E6);
+}
+
+.oz-shop__stalen-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-shop__stalen-body {
+  padding: 20px;
+}
+
+.oz-shop__stalen-body .oz-eyebrow {
+  margin-bottom: 8px;
+}
+
+.oz-shop__stalen-title {
+  font-family: var(--oz-ff-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 8px;
+}
+
+.oz-shop__stalen-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--oz-text-muted);
+  margin: 0 0 16px;
+}
+
+.oz-shop__stalen-banner .oz-btn {
+  width: fit-content;
 }
 
 /* ── Shop Toolbar ── */
