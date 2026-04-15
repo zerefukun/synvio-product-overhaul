@@ -98,6 +98,11 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 
 </div>
 
+<!-- Fixed decorative image for wide desktops (right gutter) -->
+<div class="oz-shop__deco" aria-hidden="true">
+    <img src="<?php echo esc_url( content_url( '/uploads/2024/02/Badkamer-vloer-en-wand-Original-1050-Homebystuart.webp' ) ); ?>" alt="" loading="lazy" width="600" height="800">
+</div>
+
 <?php do_action( 'woocommerce_after_main_content' ); ?>
 
 <script>

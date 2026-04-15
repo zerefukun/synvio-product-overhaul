@@ -730,6 +730,35 @@
   width: fit-content;
 }
 
+/* ── Fixed decorative image in right gutter on wide desktops ── */
+.oz-shop__deco {
+  display: none;
+}
+
+@media (min-width: 1440px) {
+  .oz-shop__deco {
+    display: block;
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: clamp(180px, 15vw, 340px);
+    height: 70vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .oz-shop__deco img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--oz-radius-lg, 12px) 0 0 var(--oz-radius-lg, 12px);
+    opacity: 0.18;
+    mask-image: linear-gradient(to right, transparent, black 30%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
+  }
+}
+
 /* ── Shop Toolbar ── */
 .oz-shop__toolbar {
   display: flex;
