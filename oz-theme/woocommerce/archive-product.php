@@ -149,13 +149,21 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
         }
     }
 
-    /* Hide deco image when footer comes into view */
+    /* Deco image: clip at footer boundary so it never overlaps */
     var deco = document.querySelector('.oz-shop__deco');
     var footer = document.getElementById('oz-footer');
-    if (deco && footer && window.IntersectionObserver) {
-        new IntersectionObserver(function(entries) {
-            deco.classList.toggle('is-hidden', entries[0].isIntersecting);
-        }, { threshold: 0 }).observe(footer);
+    if (deco && footer) {
+        var onScroll = function() {
+            var footerTop = footer.getBoundingClientRect().top;
+            var vh = window.innerHeight;
+            if (footerTop < vh) {
+                deco.style.bottom = (vh - footerTop) + 'px';
+            } else {
+                deco.style.bottom = '0';
+            }
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
     }
 
     /* Append current orderby to sidebar category links */

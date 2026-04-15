@@ -757,12 +757,6 @@
     mask-image: linear-gradient(to right, transparent, black 30%);
     -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
   }
-
-  /* Fade out when footer is visible */
-  .oz-shop__deco.is-hidden {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
 }
 
 /* ── Shop Toolbar ── */
