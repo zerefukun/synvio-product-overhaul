@@ -63,9 +63,10 @@ function oz_fs_col( $atts, $content = '' ) {
 
 	$style = '';
 	$span  = intval( $a['span'] );
-	$width = round( ( $span / 12 ) * 100, 2 );
+	/* Floor to avoid rounding overflow (6 * 16.67% = 100.02% wraps) */
+	$width = floor( ( $span / 12 ) * 10000 ) / 100;
 
-	$style .= "flex: 0 0 {$width}%; max-width: {$width}%;";
+	$style .= "flex: 0 1 {$width}%; max-width: {$width}%;";
 
 	if ( $a['bg_color'] ) $style .= 'background-color:' . esc_attr( $a['bg_color'] ) . ';';
 	if ( $a['padding'] )  $style .= 'padding:' . esc_attr( $a['padding'] ) . ';';
@@ -85,7 +86,7 @@ function oz_fs_col( $atts, $content = '' ) {
 	$sm_style = '';
 	if ( $a['span__sm'] ) {
 		$sm_span  = intval( $a['span__sm'] );
-		$sm_width = round( ( $sm_span / 12 ) * 100, 2 );
+		$sm_width = floor( ( $sm_span / 12 ) * 10000 ) / 100;
 		$sm_style = "--oz-fs-col-sm: {$sm_width}%;";
 	}
 	if ( $a['padding__sm'] ) {
