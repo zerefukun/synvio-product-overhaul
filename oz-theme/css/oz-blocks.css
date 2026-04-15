@@ -1393,7 +1393,7 @@ body.woocommerce nav.woocommerce-pagination ul {
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all var(--oz-transition);
+  transition: background var(--oz-transition), color var(--oz-transition), border-color var(--oz-transition), opacity var(--oz-transition);
 }
 
 .oz-fs-button--primary {
@@ -1446,11 +1446,11 @@ body.woocommerce nav.woocommerce-pagination ul {
   background: var(--oz-text-body);
 }
 
-/* Arrow icon inside buttons */
+/* Arrow icon inside buttons — only GPU-composited properties */
 .oz-fs-button__icon {
   font-size: 1.3em;
   line-height: 1;
-  transition: transform var(--oz-transition), opacity var(--oz-transition), margin var(--oz-transition);
+  transition: transform var(--oz-transition), opacity var(--oz-transition);
 }
 
 .oz-fs-button:hover .oz-fs-button__icon {
@@ -1460,18 +1460,36 @@ body.woocommerce nav.woocommerce-pagination ul {
 /* Reveal-on-hover: hidden until parent hovered */
 .oz-fs-button__icon--reveal {
   opacity: 0;
-  margin-left: -8px;
+  transform: translateX(-8px);
 }
 
 .oz-fs-button:hover .oz-fs-button__icon--reveal {
   opacity: 1;
-  margin-left: 0;
+  transform: translateX(4px);
 }
 
-/* Mobile: columns use --oz-fs-col-sm width if set, else stack full-width */
+/* ── Row / column modifiers (migrated from inline PHP) ── */
+.oz-fs-row--middle { align-items: center; }
+.oz-fs-col--left   { text-align: left; }
+.oz-fs-col--center { text-align: center; }
+.oz-fs-col--right  { text-align: right; }
+.oz-fs-col--light  { color: #FFF; }
+.oz-fs-section--dark { color: #FFF; }
+
+/* ── Video responsive embed ── */
+.oz-fs-video { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+.oz-fs-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* ── Responsive column overrides ── */
 @media (max-width: 767px) {
+  .oz-fs-col--hide-mobile { display: none !important; }
   .oz-fs-col {
     flex: 0 0 var(--oz-fs-col-sm, 100%) !important;
     max-width: var(--oz-fs-col-sm, 100%) !important;
   }
+  .oz-fs-col[style*="--oz-fs-col-padding-sm"] { padding: var(--oz-fs-col-padding-sm) !important; }
+}
+
+@media (min-width: 768px) {
+  .oz-fs-col--show-mobile-only { display: none !important; }
 }

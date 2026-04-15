@@ -403,7 +403,7 @@ function oz_fs_accordion( $atts, $content = '' ) {
 	if ( $a['title'] ) {
 		$open  = ( $a['open'] === 'true' ) ? ' is-open' : '';
 		$out   = '<div class="oz-fs-accordion__item' . $open . '">';
-		$out  .= '<div class="oz-fs-accordion__title" onclick="this.parentElement.classList.toggle(\'is-open\')">' . esc_html( $a['title'] ) . '</div>';
+		$out  .= '<div class="oz-fs-accordion__title">' . esc_html( $a['title'] ) . '</div>';
 		$out  .= '<div class="oz-fs-accordion__content">' . do_shortcode( $content ) . '</div>';
 		$out  .= '</div>';
 		return $out;
@@ -577,39 +577,9 @@ function oz_fs_col_grid( $atts, $content = '' ) {
 }
 add_shortcode( 'col_grid', 'oz_fs_col_grid' );
 
-/* ── Responsive visibility CSS ── */
-function oz_fs_responsive_css() {
-	echo '<style>
-@media (max-width: 767px) {
-  .oz-fs-col--hide-mobile { display: none !important; }
-  .oz-fs-col { flex: 0 0 var(--oz-fs-col-sm, 100%) !important; max-width: var(--oz-fs-col-sm, 100%) !important; }
-  .oz-fs-col[style*="--oz-fs-col-padding-sm"] { padding: var(--oz-fs-col-padding-sm) !important; }
-}
-@media (min-width: 768px) {
-  .oz-fs-col--show-mobile-only { display: none !important; }
-}
-.oz-fs-banner--overlay::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0, var(--oz-fs-overlay, 0));
-  pointer-events: none;
-  z-index: 1;
-}
-.oz-fs-banner--overlay .oz-fs-text-box,
-.oz-fs-banner--overlay .oz-fs-banner__link { position: relative; z-index: 2; }
-/* --collapse and --full modifiers moved to oz-blocks.css (negative-margin gutter model) */
-.oz-fs-row--middle { align-items: center; }
-.oz-fs-col--left { text-align: left; }
-.oz-fs-col--center { text-align: center; }
-.oz-fs-col--right { text-align: right; }
-.oz-fs-col--light { color: #FFF; }
-.oz-fs-section--dark { color: #FFF; }
-.oz-fs-video { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
-.oz-fs-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-</style>';
-}
-add_action( 'wp_head', 'oz_fs_responsive_css', 99 );
+/* All static Flatsome-stub CSS now lives in oz-blocks.css.
+   Removed oz_fs_responsive_css() to eliminate duplicate/conflicting
+   inline rules (overlay ::before, mobile columns, alignment helpers). */
 
 /* ── Accordion JS ── */
 function oz_fs_accordion_js() {
