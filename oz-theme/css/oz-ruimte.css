@@ -84,13 +84,24 @@
 }
 
 /* Headings in standalone sections center too — direct children or inside top-level groups.
-   The > chains exclude timeline-nested groups and headings inside columns. */
+   The > chains exclude timeline-nested groups and headings inside columns.
+   h6 = eyebrow labels, centered in the same contexts. */
 .oz-ruimte .oz-section > .oz-container > h2,
 .oz-ruimte .oz-section > .oz-container > h3,
+.oz-ruimte .oz-section > .oz-container > h6,
 .oz-ruimte .oz-section > .oz-container > .wp-block-group > h2,
 .oz-ruimte .oz-section > .oz-container > .wp-block-group > h3,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > h6,
 .oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h2,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h3 {
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h3,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h6 {
+  text-align: center;
+}
+
+/* Alignfull groups render without .oz-container — center their headings + eyebrows directly */
+.oz-ruimte .oz-section > .wp-block-group.alignfull h2,
+.oz-ruimte .oz-section > .wp-block-group.alignfull h3,
+.oz-ruimte .oz-section > .wp-block-group.alignfull h6 {
   text-align: center;
 }
 
