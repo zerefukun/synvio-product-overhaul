@@ -198,7 +198,10 @@ function oz_fs_ux_banner( $atts, $content = '' ) {
 			$slug  = basename( trim( parse_url( $a['link'], PHP_URL_PATH ), '/' ) );
 			$label = ucfirst( str_replace( '-', ' ', $slug ) );
 		}
-		return '<div class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '"><a href="' . esc_url( $a['link'] ) . '" class="oz-fs-banner__link" aria-label="' . esc_attr( $label ) . '">' . $inner . '</a></div>';
+		/* Link overlay is an empty sibling, NOT wrapping content.
+		   Wrapping causes nested <a> when text_box contains [button],
+		   triggering the adoption agency algorithm which duplicates elements. */
+		return '<div class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '"><a href="' . esc_url( $a['link'] ) . '" class="oz-fs-banner__link" aria-label="' . esc_attr( $label ) . '"></a>' . $inner . '</div>';
 	}
 
 	return '<div class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '">' . $inner . '</div>';
