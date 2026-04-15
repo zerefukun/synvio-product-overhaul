@@ -739,13 +739,13 @@
   .oz-shop__deco {
     display: block;
     position: fixed;
-    top: 50%;
+    top: 0;
     right: 0;
-    transform: translateY(-50%);
+    bottom: 0;
     width: clamp(180px, 15vw, 340px);
-    height: 70vh;
     z-index: 0;
     pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
   .oz-shop__deco img {
@@ -756,6 +756,12 @@
     opacity: 0.18;
     mask-image: linear-gradient(to right, transparent, black 30%);
     -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
+  }
+
+  /* Fade out when footer is visible */
+  .oz-shop__deco.is-hidden {
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 }
 

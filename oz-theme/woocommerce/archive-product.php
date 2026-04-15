@@ -149,6 +149,15 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
         }
     }
 
+    /* Hide deco image when footer comes into view */
+    var deco = document.querySelector('.oz-shop__deco');
+    var footer = document.getElementById('oz-footer');
+    if (deco && footer && window.IntersectionObserver) {
+        new IntersectionObserver(function(entries) {
+            deco.classList.toggle('is-hidden', entries[0].isIntersecting);
+        }, { threshold: 0 }).observe(footer);
+    }
+
     /* Append current orderby to sidebar category links */
     var currentOrder = new URLSearchParams(window.location.search).get('orderby')
                     || sessionStorage.getItem(SORT_KEY);
