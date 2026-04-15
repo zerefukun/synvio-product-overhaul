@@ -179,7 +179,14 @@ function oz_fs_ux_banner( $atts, $content = '' ) {
 	}
 
 	if ( $a['bg_overlay'] ) {
-		$style .= '--oz-fs-overlay:' . esc_attr( $a['bg_overlay'] ) . ';';
+		/* Flatsome stores bg_overlay as either a bare decimal (0.3) or a full
+		   rgba string (rgba(0,0,0,0.3)). Normalize to a full color value so
+		   the CSS custom property is always valid for `background:`. */
+		$ov = $a['bg_overlay'];
+		if ( is_numeric( $ov ) ) {
+			$ov = 'rgba(0,0,0,' . floatval( $ov ) . ')';
+		}
+		$style .= '--oz-fs-overlay:' . esc_attr( $ov ) . ';';
 		$classes .= ' oz-fs-banner--overlay';
 	}
 
