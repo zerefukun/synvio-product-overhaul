@@ -1457,8 +1457,10 @@ body.woocommerce nav.woocommerce-pagination ul {
   margin-left: 0;
 }
 
+/* Mobile: columns use --oz-fs-col-sm width if set, else stack full-width */
 @media (max-width: 767px) {
-  .oz-fs-row {
-    flex-direction: column;
+  .oz-fs-col {
+    flex: 0 0 var(--oz-fs-col-sm, 100%) !important;
+    max-width: var(--oz-fs-col-sm, 100%) !important;
   }
 }
