@@ -130,6 +130,35 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
             btn.closest('.oz-cat-nav__item').classList.toggle('is-open');
         });
     });
+
+    /* Persist sort order across category navigation */
+    var orderbySelect = document.querySelector('select.orderby');
+    var SORT_KEY = 'oz_shop_orderby';
+
+    if (orderbySelect) {
+        /* Save selection to sessionStorage on change */
+        orderbySelect.addEventListener('change', function() {
+            sessionStorage.setItem(SORT_KEY, this.value);
+        });
+
+        /* On page load: restore saved sort if URL doesn't already have one */
+        var urlParams = new URLSearchParams(window.location.search);
+        var saved = sessionStorage.getItem(SORT_KEY);
+        if (saved && !urlParams.has('orderby') && saved !== orderbySelect.value) {
+            window.location.search = '?orderby=' + saved;
+        }
+    }
+
+    /* Append current orderby to sidebar category links */
+    var currentOrder = new URLSearchParams(window.location.search).get('orderby')
+                    || sessionStorage.getItem(SORT_KEY);
+    if (currentOrder && currentOrder !== 'menu_order') {
+        document.querySelectorAll('.oz-cat-nav__link').forEach(function(link) {
+            var url = new URL(link.href, window.location.origin);
+            url.searchParams.set('orderby', currentOrder);
+            link.href = url.toString();
+        });
+    }
 })();
 </script>
 
