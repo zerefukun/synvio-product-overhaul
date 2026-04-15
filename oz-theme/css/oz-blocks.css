@@ -1126,12 +1126,41 @@ body.woocommerce nav.woocommerce-pagination ul {
   padding: 40px;
   background-size: cover;
   background-position: center;
+  border-radius: var(--oz-radius-lg);
+  text-align: center;
+}
+
+.oz-fs-section h1 {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .oz-fs-banner {
   position: relative;
   overflow: hidden;
-  border-radius: var(--oz-radius);
+  border-radius: var(--oz-radius-lg);
+}
+
+/* Gradient overlay for text readability on image banners.
+   Banners with --overlay use ::before instead (set via shortcode). */
+.oz-fs-banner:not(.oz-fs-banner--overlay)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0.1) 0%,
+    rgba(0,0,0,0.4) 45%,
+    rgba(0,0,0,0.4) 55%,
+    rgba(0,0,0,0.1) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity var(--oz-transition);
+}
+
+.oz-fs-banner:hover:not(.oz-fs-banner--overlay)::after {
+  opacity: 0.7;
 }
 
 .oz-fs-banner__img {
@@ -1140,8 +1169,12 @@ body.woocommerce nav.woocommerce-pagination ul {
   object-fit: cover;
 }
 
+/* Banner link fills entire card for clickability.
+   Browser auto-closes nested <a> tags, so this link is empty but still navigable. */
 .oz-fs-banner__link {
-  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   text-decoration: none;
   color: inherit;
 }
@@ -1149,11 +1182,30 @@ body.woocommerce nav.woocommerce-pagination ul {
 .oz-fs-text-box {
   position: absolute;
   padding: 20px;
+  z-index: 2;
 }
 
 .oz-fs-text-box--center { text-align: center; }
 .oz-fs-text-box--left { text-align: left; }
 .oz-fs-text-box--right { text-align: right; }
+
+/* Banner text: white on dark overlay */
+.oz-fs-banner h2,
+.oz-fs-banner h3 {
+  color: #FFF;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.oz-fs-banner h2 a,
+.oz-fs-banner h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.oz-fs-banner p {
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
 
 .oz-fs-gap {
   display: block;
