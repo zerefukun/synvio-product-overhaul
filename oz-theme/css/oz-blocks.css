@@ -531,6 +531,21 @@
   margin-bottom: 2px;
 }
 
+/* Top-level parent headings: always open, not clickable */
+.oz-cat-nav__heading {
+  display: block;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--oz-text-muted);
+}
+
+.oz-cat-nav__item--heading + .oz-cat-nav__item--heading {
+  margin-top: 16px;
+}
+
 /* Row: link + toggle button side by side */
 .oz-cat-nav__row {
   display: flex;

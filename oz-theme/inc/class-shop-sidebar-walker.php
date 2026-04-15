@@ -42,26 +42,36 @@ class Oz_Shop_Sidebar_Walker extends Walker_Nav_Menu {
         $is_ancestor = in_array( 'current-menu-ancestor', (array) $item->classes, true )
                     || in_array( 'current-menu-parent', (array) $item->classes, true );
 
+        /* Top-level parents (depth 0 with children) are section headings:
+           always open, not clickable, no toggle button. */
+        $is_heading = ( $depth === 0 && $has_children );
+
         $classes = 'oz-cat-nav__item';
+        if ( $is_heading )                   $classes .= ' is-open oz-cat-nav__item--heading';
         if ( $is_active )                    $classes .= ' is-active';
-        if ( $is_active || $is_ancestor )    $classes .= ' is-open';
+        if ( ! $is_heading && ( $is_active || $is_ancestor ) ) $classes .= ' is-open';
         if ( $has_children )                 $classes .= ' has-children';
 
         $output .= '<li class="' . esc_attr( $classes ) . '">';
 
-        if ( $has_children ) {
-            $output .= '<div class="oz-cat-nav__row">';
-        }
+        if ( $is_heading ) {
+            /* Non-clickable heading label */
+            $output .= '<span class="oz-cat-nav__heading">' . esc_html( $item->title ) . '</span>';
+        } else {
+            if ( $has_children ) {
+                $output .= '<div class="oz-cat-nav__row">';
+            }
 
-        $output .= '<a href="' . esc_url( $item->url ) . '" class="oz-cat-nav__link">';
-        $output .= esc_html( $item->title );
-        $output .= '</a>';
+            $output .= '<a href="' . esc_url( $item->url ) . '" class="oz-cat-nav__link">';
+            $output .= esc_html( $item->title );
+            $output .= '</a>';
 
-        if ( $has_children ) {
-            $output .= '<button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">';
-            $output .= '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>';
-            $output .= '</button>';
-            $output .= '</div>';
+            if ( $has_children ) {
+                $output .= '<button class="oz-cat-nav__toggle" type="button" aria-label="Subcategorieën tonen">';
+                $output .= '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,4.5 6,7.5 9,4.5"/></svg>';
+                $output .= '</button>';
+                $output .= '</div>';
+            }
         }
     }
 
