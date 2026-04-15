@@ -1110,16 +1110,20 @@ body.woocommerce nav.woocommerce-pagination ul {
   margin-bottom: 4px;
 }
 
-/* ── Flatsome Shortcode Stubs ── */
+/* ── Flatsome Shortcode Stubs ──
+   Uses negative-margin gutters (not CSS gap) because shortcode columns
+   have inline flex-basis percentages that assume 100% total width. */
 .oz-fs-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--oz-gap);
+  margin: 0 calc(var(--oz-gap) / -2);
 }
 
 .oz-fs-col {
   flex: 1 1 0%;
   min-width: 0;
+  padding: 0 calc(var(--oz-gap) / 2);
+  margin-bottom: var(--oz-gap);
 }
 
 .oz-fs-section {
@@ -1196,15 +1200,16 @@ body.woocommerce nav.woocommerce-pagination ul {
   text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-.oz-fs-banner h2 a,
-.oz-fs-banner h3 a {
-  color: inherit;
-  text-decoration: none;
-}
-
 .oz-fs-banner p {
   color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* All links inside banner text: inherit white, no underline.
+   Overrides .oz-page a which sets teal + underline. */
+.oz-fs-banner .oz-fs-text-box a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .oz-fs-gap {
