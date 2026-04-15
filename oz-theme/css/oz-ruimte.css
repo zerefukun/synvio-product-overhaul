@@ -82,11 +82,12 @@
   margin-right: auto;
 }
 
-/* Headings in standalone sections center too — both direct children and inside groups */
+/* Headings in standalone sections center too — direct children or inside top-level groups.
+   The > .oz-container > .wp-block-group chain excludes timeline-nested groups. */
 .oz-ruimte .oz-section > .oz-container > h2,
 .oz-ruimte .oz-section > .oz-container > h3,
-.oz-ruimte .oz-section .wp-block-group h2,
-.oz-ruimte .oz-section .wp-block-group h3 {
+.oz-ruimte .oz-section > .oz-container > .wp-block-group h2,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group h3 {
   text-align: center;
 }
 
