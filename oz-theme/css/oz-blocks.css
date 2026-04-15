@@ -1212,18 +1212,17 @@ body.woocommerce nav.woocommerce-pagination ul {
   border-radius: var(--oz-radius-lg);
 }
 
-/* Gradient overlay for text readability on image banners.
-   Banners with --overlay use ::before instead (set via shortcode). */
+/* Bottom-weighted gradient for text readability on image banners.
+   Banners with --overlay use ::before with custom color instead. */
 .oz-fs-banner:not(.oz-fs-banner--overlay)::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(0,0,0,0.1) 0%,
-    rgba(0,0,0,0.4) 45%,
-    rgba(0,0,0,0.4) 55%,
-    rgba(0,0,0,0.1) 100%
+    transparent 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.5) 100%
   );
   pointer-events: none;
   z-index: 0;
@@ -1232,6 +1231,27 @@ body.woocommerce nav.woocommerce-pagination ul {
 
 .oz-fs-banner:hover:not(.oz-fs-banner--overlay)::after {
   opacity: 0.7;
+}
+
+/* Explicit overlay via bg_overlay shortcode attribute.
+   Color value comes from --oz-fs-overlay custom property on the element. */
+.oz-fs-banner--overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--oz-fs-overlay);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hover lift for cards with hover="zoom" */
+.oz-fs-banner--hover-zoom {
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.oz-fs-banner--hover-zoom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 
 .oz-fs-banner__img {
@@ -1259,6 +1279,18 @@ body.woocommerce nav.woocommerce-pagination ul {
 .oz-fs-text-box--center { text-align: center; }
 .oz-fs-text-box--left { text-align: left; }
 .oz-fs-text-box--right { text-align: right; }
+
+/* Dark text in pill-style text boxes (overrides banner white text) */
+.oz-fs-text-box--dark h2,
+.oz-fs-text-box--dark h3,
+.oz-fs-text-box--dark p {
+  color: var(--oz-text-primary);
+  text-shadow: none;
+}
+
+.oz-fs-text-box--depth {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
 
 /* Banner text: white on dark overlay */
 .oz-fs-banner h2,
@@ -1377,6 +1409,58 @@ body.woocommerce nav.woocommerce-pagination ul {
   border: 2px solid var(--oz-border);
   color: var(--oz-text-primary);
   background: transparent;
+}
+
+.oz-fs-button--link {
+  background: transparent;
+  padding: 0;
+  color: var(--oz-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.oz-fs-button--link:hover {
+  color: var(--oz-accent-hover);
+}
+
+/* White link button for use on dark overlays */
+.oz-fs-button--white.oz-fs-button--link {
+  color: #FFF;
+}
+
+.oz-fs-button--white.oz-fs-button--link:hover {
+  opacity: 0.85;
+}
+
+.oz-fs-button--secondary {
+  background: var(--oz-text-primary);
+  color: #FFF;
+}
+
+.oz-fs-button--secondary:hover {
+  background: var(--oz-text-body);
+}
+
+/* Arrow icon inside buttons */
+.oz-fs-button__icon {
+  font-size: 1.3em;
+  line-height: 1;
+  transition: transform var(--oz-transition), opacity var(--oz-transition), margin var(--oz-transition);
+}
+
+.oz-fs-button:hover .oz-fs-button__icon {
+  transform: translateX(4px);
+}
+
+/* Reveal-on-hover: hidden until parent hovered */
+.oz-fs-button__icon--reveal {
+  opacity: 0;
+  margin-left: -8px;
+}
+
+.oz-fs-button:hover .oz-fs-button__icon--reveal {
+  opacity: 1;
+  margin-left: 0;
 }
 
 @media (max-width: 767px) {

@@ -214,13 +214,17 @@ function oz_fs_text_box( $atts, $content = '' ) {
 		'position_x'  => '50',
 		'position_y'  => '50',
 		'text_color'  => '',
+		'bg'          => '',
+		'radius'      => '',
+		'depth'       => '',
 		'animate'     => '',
 	], $atts );
 
 	$style = '';
 	if ( $a['padding'] )    $style .= 'padding:' . esc_attr( $a['padding'] ) . ';';
-	if ( $a['text_color'] ) $style .= 'color:' . esc_attr( $a['text_color'] ) . ';';
 	if ( $a['width'] )      $style .= 'max-width:' . esc_attr( $a['width'] ) . '%;';
+	if ( $a['bg'] )         $style .= 'background:' . esc_attr( $a['bg'] ) . ';';
+	if ( $a['radius'] )     $style .= 'border-radius:' . esc_attr( $a['radius'] ) . 'px;';
 
 	$style .= 'position:absolute;';
 	$style .= 'left:' . esc_attr( $a['position_x'] ) . '%;';
@@ -228,6 +232,15 @@ function oz_fs_text_box( $atts, $content = '' ) {
 	$style .= 'transform:translate(-' . esc_attr( $a['position_x'] ) . '%,-' . esc_attr( $a['position_y'] ) . '%);';
 
 	$classes = 'oz-fs-text-box oz-fs-text-box--' . esc_attr( $a['text_align'] );
+
+	/* "dark" is a Flatsome keyword, not a CSS color — map to a modifier class */
+	if ( $a['text_color'] === 'dark' ) {
+		$classes .= ' oz-fs-text-box--dark';
+	} elseif ( $a['text_color'] ) {
+		$style .= 'color:' . esc_attr( $a['text_color'] ) . ';';
+	}
+
+	if ( $a['depth'] ) $classes .= ' oz-fs-text-box--depth';
 
 	return '<div class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '">' . do_shortcode( $content ) . '</div>';
 }
@@ -256,15 +269,18 @@ add_shortcode( 'ux_text', 'oz_fs_ux_text' );
 /* ── Button ── */
 function oz_fs_button( $atts, $content = '' ) {
 	$a = shortcode_atts( [
-		'text'     => '',
-		'link'     => '#',
-		'style'    => 'primary',
-		'color'    => '',
-		'size'     => '',
-		'radius'   => '',
-		'target'   => '_self',
-		'padding'  => '',
-		'icon'     => '',
+		'text'         => '',
+		'link'         => '#',
+		'style'        => 'primary',
+		'color'        => '',
+		'size'         => '',
+		'radius'       => '',
+		'target'       => '_self',
+		'padding'      => '',
+		'icon'         => '',
+		'icon_reveal'  => '',
+		'letter_case'  => '',
+		'expand'       => '',
 	], $atts );
 
 	$text = $a['text'] ?: wp_strip_all_tags( $content );
@@ -280,11 +296,22 @@ function oz_fs_button( $atts, $content = '' ) {
 		$classes .= ' oz-fs-button--primary';
 	}
 
+	if ( $a['color'] === 'white' ) $classes .= ' oz-fs-button--white';
+	if ( $a['color'] === 'secondary' ) $classes .= ' oz-fs-button--secondary';
+
+	/* Arrow icon after text */
+	$icon_html = '';
+	if ( $a['icon'] === 'icon-angle-right' ) {
+		$reveal = $a['icon_reveal'] ? ' oz-fs-button__icon--reveal' : '';
+		$icon_html = ' <span class="oz-fs-button__icon' . $reveal . '" aria-hidden="true">&#8250;</span>';
+	}
+
 	$style = '';
 	if ( $a['radius'] ) $style .= 'border-radius:' . esc_attr( $a['radius'] ) . 'px;';
 	if ( $a['padding'] ) $style .= 'padding:' . esc_attr( $a['padding'] ) . ';';
+	if ( $a['letter_case'] === 'lowercase' ) $style .= 'text-transform:none;';
 
-	return '<a href="' . esc_url( $a['link'] ) . '" class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '" target="' . esc_attr( $a['target'] ) . '">' . esc_html( $text ) . '</a>';
+	return '<a href="' . esc_url( $a['link'] ) . '" class="' . esc_attr( $classes ) . '" style="' . esc_attr( $style ) . '" target="' . esc_attr( $a['target'] ) . '">' . esc_html( $text ) . $icon_html . '</a>';
 }
 add_shortcode( 'button', 'oz_fs_button' );
 
