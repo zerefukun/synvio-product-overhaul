@@ -125,6 +125,39 @@
   object-fit: cover;
 }
 
+/* ── Checklists inside group blocks (gereedschap, voorbereiden, etc.) ── */
+.oz-ruimte .wp-block-group ul.wp-block-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.oz-ruimte .wp-block-group ul.wp-block-list li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.oz-ruimte .wp-block-group ul.wp-block-list li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  color: var(--oz-accent);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* Sub-headings (h3) after a columns or list block get a visual divider */
+.oz-ruimte .wp-block-group .wp-block-columns + h3,
+.oz-ruimte .wp-block-group .wp-block-list + h3 {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--oz-border-light, rgba(0,0,0,.08));
+}
+
 /* ── Standalone images ── */
 .oz-ruimte .oz-section .wp-block-image img {
   border-radius: var(--oz-radius-lg, 12px);
