@@ -261,6 +261,12 @@
   max-width: 600px;
 }
 
+/* Covers with columns inside need full width for side-by-side layout */
+.oz-ruimte .oz-ruimte__hero:not(:first-child) .wp-block-cover__inner-container:has(.wp-block-columns) {
+  max-width: var(--oz-max-w);
+  text-align: left;
+}
+
 .oz-ruimte .oz-ruimte__hero:not(:first-child) .wp-block-cover h3 {
   font-size: var(--oz-text-xl);
 }
