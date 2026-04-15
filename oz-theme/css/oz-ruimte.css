@@ -74,6 +74,7 @@
 /* Center headings + text in single-column (non-columns) sections */
 .oz-ruimte .oz-section > .oz-container > .wp-block-group {
   max-width: 800px;
+  margin: 0 auto;
 }
 
 /* Standalone paragraphs center when not inside columns */
@@ -83,11 +84,13 @@
 }
 
 /* Headings in standalone sections center too — direct children or inside top-level groups.
-   The > .oz-container > .wp-block-group chain excludes timeline-nested groups. */
+   The > chains exclude timeline-nested groups and headings inside columns. */
 .oz-ruimte .oz-section > .oz-container > h2,
 .oz-ruimte .oz-section > .oz-container > h3,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group h2,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group h3 {
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > h2,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > h3,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h2,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h3 {
   text-align: center;
 }
 
