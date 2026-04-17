@@ -38,6 +38,52 @@ class OZ_Frontend_Display {
 
         // Output product config as JS data (after enqueue, priority 20)
         add_action('wp_enqueue_scripts', [__CLASS__, 'localize_product_data'], 20);
+
+        // Exclude mode-toggle products (K&K ↔ ZM) from LiteSpeed page cache.
+        // LS was serving ZM HTML under the K&K URL (and vice-versa) — likely
+        // cache-key bleed from a poisoned entry. Excluding these URLs stops
+        // recurrence until we can diagnose the LS config root cause.
+        add_action('template_redirect', [__CLASS__, 'disable_cache_for_toggle_products']);
+    }
+
+    /**
+     * Disable full-page caching for products whose line has a formula toggle
+     * (currently: Original K&K + Original ZM). These pages share client-side
+     * state via pushState and have been observed bleeding cached HTML
+     * between the two URLs. Cache exclusion is surgical — only lines with
+     * `mode_toggle` config are affected; the rest of the shop keeps caching.
+     */
+    public static function disable_cache_for_toggle_products() {
+        if (!is_product()) {
+            return;
+        }
+
+        $product = wc_get_product(get_the_ID());
+        if (!$product instanceof WC_Product) {
+            return;
+        }
+
+        $line_key = OZ_Product_Line_Config::detect($product);
+        if (!$line_key) {
+            return;
+        }
+
+        $mode_toggle = OZ_Product_Line_Config::get_mode_toggle_config($line_key);
+        if (!$mode_toggle) {
+            return;
+        }
+
+        // LiteSpeed Cache plugin — official API action
+        do_action('litespeed_control_set_nocache', 'bcw-formula-toggle');
+
+        // LiteSpeed web server header — works even if LSCWP plugin is absent
+        if (!headers_sent()) {
+            header('X-LiteSpeed-Cache-Control: no-cache');
+            header('Cache-Control: no-cache, max-age=0, no-store, must-revalidate', true);
+        }
+
+        // WordPress standard no-cache headers (covers other page caches)
+        nocache_headers();
     }
 
     // redirect_base_products() and exclude_base_products_from_sitemap() removed.
