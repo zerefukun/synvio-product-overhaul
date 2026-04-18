@@ -433,15 +433,21 @@ $up = home_url( '/wp-content/uploads' );
 				<div class="oz-hp-learn-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
 					<div itemprop="text">
 						<?php echo wp_kses_post( $topic['teaser'] ); ?>
-						<div class="oz-hp-learn-more">
+						<?php if ( 'full' === $layout ) : ?>
 							<?php echo wp_kses_post( $topic['more'] ); ?>
-						</div>
+						<?php else : ?>
+							<div class="oz-hp-learn-more">
+								<?php echo wp_kses_post( $topic['more'] ); ?>
+							</div>
+						<?php endif; ?>
 					</div>
 				</div>
+				<?php if ( 'full' !== $layout ) : ?>
 				<button type="button" class="oz-hp-learn-toggle" aria-expanded="false" onclick="const row=this.closest('.oz-hp-learn-row');const open=row.classList.toggle('is-open');this.setAttribute('aria-expanded',open);this.querySelector('.oz-hp-learn-toggle-label').textContent=open?'Minder tonen':'Lees meer';">
 					<span class="oz-hp-learn-toggle-label">Lees meer</span>
 					<span class="oz-hp-learn-toggle-icon" aria-hidden="true"></span>
 				</button>
+				<?php endif; ?>
 			</div>
 		</article>
 		<?php endforeach; ?>
