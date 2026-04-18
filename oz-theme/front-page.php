@@ -369,8 +369,9 @@ $up = home_url( '/wp-content/uploads' );
 		$topics = [
 			[
 				'q'      => 'Wat is Beton Ciré?',
-				'img'    => '2024/02/Woonkamer-wand.webp',
-				'alt'    => 'Beton Ciré wand in een woonkamer met warme, naadloze betonlook',
+				'layout' => 'img-left',
+				'img'    => '2024/02/Vloer-beton-cire-all-in-one.png',
+				'alt'    => 'Beton Ciré All-In-One vloer met naadloze betonlook',
 				'teaser' => '<p>Beton Cir&eacute; vindt zijn oorsprong in Frankrijk en wordt al ruim 25 jaar toegepast. De letterlijke vertaling is &lsquo;gewreven beton&rsquo;, wat verwijst naar de manier waarop het aangebracht wordt. Onze Beton Cir&eacute; is onderhoudsvrij en gaat jaren mee.</p>',
 				'more'   => '<p>Beton Cir&eacute; is onder doe-het-zelvers een steeds populairder wordende vorm van betonstuc op basis van cement, met watervaste eigenschappen en een strakke betonlook. Het is geschikt voor bijna alle ondergronden &mdash; hout, cement of gips &mdash; en kan online worden gekocht bij ons. Het is de ideale keuze voor een moderne en stijlvolle afwerking. Of je nu op zoek bent naar een prachtige vloer of een waterdichte betonlook voor je badkamer, het product biedt een veelzijdige oplossing.</p>
 				            <p>De decoratieve stuc kan ook worden aangebracht over tegels. De tegels hoeven niet te worden gesloopt en kunnen blijven zitten, zolang ze maar vast zitten. Er wordt eerst een egalisatielaag aangebracht over de tegels voordat Beton Cir&eacute; wordt aangebracht.</p>
@@ -378,16 +379,16 @@ $up = home_url( '/wp-content/uploads' );
 			],
 			[
 				'q'      => 'Beton Ciré kopen, bestellen en prijsfactoren',
-				'img'    => '2026/04/Landscape-All-In-One-Met-Onderkant-Donker-4.webp',
-				'alt'    => 'Beton Ciré All-In-One kant-en-klaar pakket',
+				'layout' => 'img-right',
+				'img'    => '2024/02/ruimte-badkamer-2.webp',
+				'alt'    => 'Beton Ciré badkamer uit onze webshop-collectie',
 				'teaser' => '<p>Beton Cir&eacute; koop je in onze showroom in Den Haag &eacute;n via de online webshop. We hebben alles op voorraad &mdash; binnen 15 minuten loop je met je bestelling de deur uit. Bestellingen voor 14:00 op werkdagen gaan dezelfde werkdag nog de deur uit.</p>',
 				'more'   => '<p>Klanten kunnen uit diverse kleuren kiezen. Er zijn traditionele varianten waarbij pigmenten zelf gemengd moeten worden en kant-en-klare varianten waarbij de pigmenten al gemengd zijn. Bij een online aankoop ontvang je een totaalpakket. In het keuzemenu selecteer je het pakket met de kleur naar wens en hoe waterdicht het object moet zijn &mdash; hier kies je uit meerdere PU-topcoatlagen. Denk aan een badkamer die zeer waterdicht moet zijn.</p>
 				            <p>Bij de Beton Cir&eacute; Webshop in Den Haag vind je alles wat je nodig hebt voor jouw projecten: een veelzijdige en duurzame afwerking, ideaal voor vloeren, muren en meubels, zowel binnen als buiten. Je krijgt deskundig advies en ondersteuning bij je aankoop. Onze webshop levert door heel Europa &mdash; Belgi&euml;, Duitsland, Frankrijk, Spanje &mdash; maar ook daarbuiten.</p>',
 			],
 			[
 				'q'      => 'Zelf aanbrengen of professioneel laten doen?',
-				'img'    => '2024/01/All-In-One.png',
-				'alt'    => 'Beton Ciré aanbrengen met de stucadoorsspaan',
+				'layout' => 'full',
 				'teaser' => '<p>Beton Cir&eacute; aanbrengen kan zelf gedaan worden door doe-het-zelvers of uitbesteed aan een professional &mdash; afhankelijk van ervaring en gewenst resultaat. Zelf aanbrengen biedt creatieve vrijheid en bespaart kosten.</p>',
 				'more'   => '<p>Is het lastig om zelf Beton Cir&eacute; of Microcement aan te brengen? Het is goed te doen door iedereen die een beetje handig is. Afhankelijk van toepassing, kennis en ervaring kun je kiezen voor Beton Cir&eacute; All-In-One of Easyline &mdash; deze varianten zijn voorgemengd en eenvoudig aan te brengen op een schone, egale en gelijkzuigende ondergrond.</p>
 				            <p class="oz-hp-tip"><strong>Tip van Patrick, onze specialist:</strong> bestel altijd iets meer dan je denkt nodig te hebben. Zo heb je altijd een beetje over om eventuele oneffenheden die tijdens het aanbrengen zijn ontstaan snel te kunnen verhelpen. En toch geven we genoeg mee voor het aantal vierkante meter die je bestelt.</p>
@@ -396,15 +397,17 @@ $up = home_url( '/wp-content/uploads' );
 			],
 			[
 				'q'      => 'Beton Ciré en Microcement waterdicht maken',
-				'img'    => '2024/02/ruimte-badkamer-2.webp',
-				'alt'    => 'Waterdichte Beton Ciré badkamer met PU-topcoat afwerking',
+				'layout' => 'img-left',
+				'img'    => '2023/12/foto-13.png',
+				'alt'    => 'Waterdichte PU-topcoat laag over Beton Ciré',
 				'teaser' => '<p>Het waterdicht maken van Beton Cir&eacute; en Microcement is het allerbelangrijkste aspect van het hele proces. Dat gebeurt met onze polyurethaan (PU) topcoat.</p>',
 				'more'   => '<p>PU bestaat uit een A- en B-component die elkaar versterken. Deze zorgen ervoor dat het object volledig waterdicht wordt. Door die waterdichtheid biedt Beton Cir&eacute; de mogelijkheid om toegepast te worden in de badkamer &mdash; geen tegels meer nodig. Dat maakt het geschikt voor vele toepassingen.</p>',
 			],
 			[
 				'q'      => 'Kies het juiste product voor je project',
-				'img'    => '2026/03/beton-cire-original.webp',
-				'alt'    => 'Beton Ciré Original, Microcement en Easyline naast elkaar',
+				'layout' => 'img-right',
+				'img'    => '2024/03/Beton-cire-wand-jpg-e1711016471264.webp',
+				'alt'    => 'Beton Ciré wand met duidelijke tekening',
 				'teaser' => '<p>Afhankelijk van je project kun je kiezen uit verschillende soorten. Wij bieden diverse Beton Cir&eacute;-varianten, maar ook Microcement en Lavasteen gietvloeren &mdash; allemaal kant-en-klaar gemixed op kleur, allemaal leverbaar met extra matte PU-topcoat.</p>',
 				'more'   => '<ul class="oz-hp-learn-bullets">
 				                <li><strong>Beton Cir&eacute; Original &amp; Microcement</strong> &mdash; fijne structuur, snel droog, hard. Wil je zelf aan de slag en het super glad hebben met een echte betonlook, dan is dit de juiste keuze. Met deze kant-en-klare pasta ben je snel klaar.</li>
@@ -417,11 +420,14 @@ $up = home_url( '/wp-content/uploads' );
 		];
 
 		foreach ( $topics as $topic ) :
+			$layout = $topic['layout'] ?? 'img-left';
 		?>
-		<article class="oz-hp-learn-row" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+		<article class="oz-hp-learn-row oz-hp-learn-row--<?php echo esc_attr( $layout ); ?>" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+			<?php if ( 'full' !== $layout ) : ?>
 			<div class="oz-hp-learn-media">
 				<img src="<?php echo esc_url( $up . '/' . $topic['img'] ); ?>" alt="<?php echo esc_attr( $topic['alt'] ); ?>" loading="lazy">
 			</div>
+			<?php endif; ?>
 			<div class="oz-hp-learn-text">
 				<h3 class="oz-hp-learn-title" itemprop="name"><?php echo esc_html( $topic['q'] ); ?></h3>
 				<div class="oz-hp-learn-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
