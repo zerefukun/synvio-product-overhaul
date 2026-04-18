@@ -175,6 +175,15 @@
   width: 100%;
 }
 
+/* Wider card row — breaks out of .oz-container to ~1360px (vs 1100px default)
+   so 4-col application cards get more breathing room while staying centered */
+.oz-ruimte .oz-section .wp-block-columns.oz-toepassingen {
+  width: min(1360px, calc(100vw - (2 * var(--oz-gap))));
+  max-width: none;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
 /* Alignfull groups render without .oz-container — constrain their inner content */
 .oz-ruimte .wp-block-group.alignfull > .wp-block-group__inner-container {
   max-width: var(--oz-max-w);
