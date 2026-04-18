@@ -188,6 +188,16 @@
   color: var(--white);
 }
 
+.oz-hp-hero-title-tag {
+  display: block;
+  font-family: var(--ff-heading);
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 400;
+  color: rgba(255,255,255,.78);
+  margin-top: 10px;
+  letter-spacing: .01em;
+}
+
 .oz-hp-hero-sub {
   font-family: var(--ff-heading);
   font-size: clamp(18px, 2.5vw, 24px);
@@ -1357,6 +1367,179 @@
 }
 
 .oz-hp-faq-a .oz-hp-btn { margin-top: 4px; }
+
+/* ================================================================
+   S14 — MEER WETEN (alternating image/text rows with "Lees meer")
+   ================================================================ */
+.oz-hp-learn-list {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: 88px;
+}
+
+.oz-hp-learn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.oz-hp-learn-row:nth-child(even) .oz-hp-learn-media { order: 2; }
+
+.oz-hp-learn-media img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.oz-hp-learn-title {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 0 0 18px;
+  color: var(--charcoal);
+}
+
+.oz-hp-learn-body p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text);
+  margin: 0;
+}
+
+.oz-hp-learn-body p + p,
+.oz-hp-learn-body p + ul,
+.oz-hp-learn-body ul + p { margin-top: 14px; }
+
+.oz-hp-learn-more {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .5s ease, margin-top .3s;
+}
+
+.oz-hp-learn-row.is-open .oz-hp-learn-more {
+  max-height: 2000px;
+  margin-top: 14px;
+}
+
+.oz-hp-learn-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-hp-learn-bullets li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.oz-hp-learn-bullets li + li { margin-top: 10px; }
+
+.oz-hp-learn-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: .55;
+}
+
+.oz-hp-learn-body .oz-hp-link {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+.oz-hp-learn-body .oz-hp-link:hover { color: #1A6B67; }
+
+.oz-hp-learn-body .oz-hp-tip {
+  background: rgba(32, 135, 129, 0.06);
+  border-left: 3px solid var(--teal);
+  padding: 14px 18px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.oz-hp-learn-body .oz-hp-btn { display: inline-block; margin-top: 4px; }
+
+.oz-hp-learn-toggle {
+  margin-top: 18px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--teal);
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.oz-hp-learn-toggle:hover { color: var(--teal-dark); }
+
+.oz-hp-learn-toggle-icon {
+  width: 12px;
+  height: 12px;
+  position: relative;
+}
+
+.oz-hp-learn-toggle-icon::before,
+.oz-hp-learn-toggle-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+}
+
+.oz-hp-learn-toggle-icon::before {
+  width: 100%;
+  height: 2px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.oz-hp-learn-toggle-icon::after {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: transform .3s;
+}
+
+.oz-hp-learn-row.is-open .oz-hp-learn-toggle-icon::after {
+  transform: translateX(-50%) scaleY(0);
+}
+
+@media (max-width: 880px) {
+  .oz-hp-learn-list { gap: 56px; }
+  .oz-hp-learn-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .oz-hp-learn-row:nth-child(even) .oz-hp-learn-media { order: 0; }
+  .oz-hp-learn-media img { aspect-ratio: 16 / 10; }
+  .oz-hp-learn-title { margin-bottom: 12px; }
+}
 
 /* ================================================================
    S21 — BELANGRIJKSTE PUNTEN (split: text + image)

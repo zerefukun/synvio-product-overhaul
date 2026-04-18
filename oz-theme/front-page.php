@@ -27,8 +27,8 @@ $up = home_url( '/wp-content/uploads' );
 	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.webp" ); ?>" alt="" loading="eager" fetchpriority="high" data-no-lazy="1">
 	<div class="oz-hp-hero-inner">
 		<div class="oz-hp-hero-text">
-			<h1 class="oz-hp-hero-title">Een unieke stijl met Beton Ciré</h1>
-			<p class="oz-hp-hero-sub">Dé trend voor vloeren en wanden. Naadloze betonlook, zelf aangebracht.</p>
+			<h1 class="oz-hp-hero-title">Een unieke stijl met Beton Ciré<span class="oz-hp-hero-title-tag">Dé trend voor vloeren en wanden</span></h1>
+			<p class="oz-hp-hero-sub">Naadloze betonlook, zelf aangebracht.</p>
 			<p class="oz-hp-hero-desc">Voor in alle ruimtes: badkamer, toilet, vloer, muur &amp; trap. Kant-en-klare pasta in 50+ kleuren &mdash; bestel online of bezoek onze showroom in Den Haag.</p>
 			<div class="oz-hp-hero-ctas">
 				<a href="/ruimtes/" class="oz-hp-btn oz-hp-btn--teal">Meer informatie</a>
@@ -355,64 +355,89 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* S12-S13 SEO text removed — this content belongs in kennisbank blog posts */ ?>
 
 <?php /* ================================================================
-       S14 — MEER WETEN (collapsible topics)
+       S14 — MEER WETEN (alternating image/text rows with "Lees meer")
        ================================================================ */ ?>
 <section class="oz-hp-section" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Achtergrond</div>
 		<h2 class="oz-hp-heading">Meer weten over <em>Beton Ciré</em></h2>
-		<p class="oz-hp-section-intro">Alles over onze producten, het aanbrengen, prijs en waterdichtheid. Klik open wat je wilt lezen.</p>
+		<p class="oz-hp-section-intro">Alles over onze producten, het aanbrengen, prijs en waterdichtheid &mdash; op &eacute;&eacute;n plek.</p>
 	</div>
-	<div class="oz-hp-faq-list">
+	<div class="oz-hp-learn-list" itemscope itemtype="https://schema.org/FAQPage">
 
 		<?php
 		$topics = [
 			[
-				'q' => 'Wat is Beton Ciré?',
-				'a' => '<p>Beton Ciré vindt zijn oorsprong in Frankrijk en wordt al ruim 25 jaar toegepast. De letterlijke vertaling is &lsquo;gewreven beton&rsquo;, wat verwijst naar de manier waarop het aangebracht wordt. Onze Beton Ciré is onderhoudsvrij en gaat jaren mee.</p>
-				        <p>Het is een steeds populairdere vorm van betonstuc op basis van cement, met watervaste eigenschappen en een strakke betonlook. Geschikt voor bijna alle ondergronden &mdash; hout, cement of gips &mdash; en kan ook over bestaande tegels worden aangebracht. De tegels hoeven niet gesloopt te worden, zolang ze vast zitten; er wordt eerst een egalisatielaag aangebracht.</p>
-				        <p><a href="/kennisbank/wat-is-beton-cire/" class="oz-hp-link">Lees het volledige artikel in de kennisbank &rarr;</a></p>',
+				'q'      => 'Wat is Beton Ciré?',
+				'img'    => '2024/02/Woonkamer-wand.webp',
+				'alt'    => 'Beton Ciré wand in een woonkamer met warme, naadloze betonlook',
+				'teaser' => '<p>Beton Cir&eacute; vindt zijn oorsprong in Frankrijk en wordt al ruim 25 jaar toegepast. De letterlijke vertaling is &lsquo;gewreven beton&rsquo;, wat verwijst naar de manier waarop het aangebracht wordt. Onze Beton Cir&eacute; is onderhoudsvrij en gaat jaren mee.</p>',
+				'more'   => '<p>Beton Cir&eacute; is onder doe-het-zelvers een steeds populairder wordende vorm van betonstuc op basis van cement, met watervaste eigenschappen en een strakke betonlook. Het is geschikt voor bijna alle ondergronden &mdash; hout, cement of gips &mdash; en kan online worden gekocht bij ons. Het is de ideale keuze voor een moderne en stijlvolle afwerking. Of je nu op zoek bent naar een prachtige vloer of een waterdichte betonlook voor je badkamer, het product biedt een veelzijdige oplossing.</p>
+				            <p>De decoratieve stuc kan ook worden aangebracht over tegels. De tegels hoeven niet te worden gesloopt en kunnen blijven zitten, zolang ze maar vast zitten. Er wordt eerst een egalisatielaag aangebracht over de tegels voordat Beton Cir&eacute; wordt aangebracht.</p>
+				            <p><a href="/kennisbank/wat-is-beton-cire/" class="oz-hp-link">Lees het volledige artikel in de kennisbank &rarr;</a></p>',
 			],
 			[
-				'q' => 'Beton Ciré kopen: prijs en levering',
-				'a' => '<p>Beton Ciré koop je online of in onze showroom in Den Haag. Alles op voorraad &mdash; binnen 15 minuten loop je met je bestelling de deur uit. Bij een online bestelling ontvang je een compleet pakket met de kleur naar wens en het juiste aantal PU-toplagen voor jouw waterdichtheidseis (denk aan een badkamer die extra waterdicht moet zijn).</p>
-				        <p>Bestellingen voor 14:00 op werkdagen gaan dezelfde werkdag de deur uit. Wij leveren door heel Europa &mdash; Belgi&euml;, Duitsland, Frankrijk, Spanje &mdash; en ook daarbuiten.</p>',
+				'q'      => 'Beton Ciré kopen, bestellen en prijsfactoren',
+				'img'    => '2026/04/Landscape-All-In-One-Met-Onderkant-Donker-4.webp',
+				'alt'    => 'Beton Ciré All-In-One kant-en-klaar pakket',
+				'teaser' => '<p>Beton Cir&eacute; koop je in onze showroom in Den Haag &eacute;n via de online webshop. We hebben alles op voorraad &mdash; binnen 15 minuten loop je met je bestelling de deur uit. Bestellingen voor 14:00 op werkdagen gaan dezelfde werkdag nog de deur uit.</p>',
+				'more'   => '<p>Klanten kunnen uit diverse kleuren kiezen. Er zijn traditionele varianten waarbij pigmenten zelf gemengd moeten worden en kant-en-klare varianten waarbij de pigmenten al gemengd zijn. Bij een online aankoop ontvang je een totaalpakket. In het keuzemenu selecteer je het pakket met de kleur naar wens en hoe waterdicht het object moet zijn &mdash; hier kies je uit meerdere PU-topcoatlagen. Denk aan een badkamer die zeer waterdicht moet zijn.</p>
+				            <p>Bij de Beton Cir&eacute; Webshop in Den Haag vind je alles wat je nodig hebt voor jouw projecten: een veelzijdige en duurzame afwerking, ideaal voor vloeren, muren en meubels, zowel binnen als buiten. Je krijgt deskundig advies en ondersteuning bij je aankoop. Onze webshop levert door heel Europa &mdash; Belgi&euml;, Duitsland, Frankrijk, Spanje &mdash; maar ook daarbuiten.</p>',
 			],
 			[
-				'q' => 'Zelf aanbrengen of professioneel laten aanbrengen?',
-				'a' => '<p>Beton Ciré aanbrengen kan prima zelf. Met onze All-In-One of Easyline pakketten is de pasta voorgemengd en goed te doen door iedereen die een beetje handig is. Je bespaart kosten en bepaalt zelf het resultaat.</p>
-				        <p>Liever niet zelf met spaan, schuren of primer aan de slag? Laat het dan professioneel aanbrengen &mdash; je bent verzekerd van een mooi en duurzaam resultaat, en bespaart jezelf de moeite.</p>
-				        <p class="oz-hp-tip"><strong>Tip van Patrick, onze specialist:</strong> bestel altijd iets meer dan je denkt nodig te hebben. Zo kun je eventuele oneffenheden tijdens het aanbrengen snel bijwerken.</p>
-				        <p><a href="/offerte/" class="oz-hp-btn oz-hp-btn--teal">Offerte aanvragen</a></p>',
+				'q'      => 'Zelf aanbrengen of professioneel laten doen?',
+				'img'    => '2024/01/All-In-One.png',
+				'alt'    => 'Beton Ciré aanbrengen met de stucadoorsspaan',
+				'teaser' => '<p>Beton Cir&eacute; aanbrengen kan zelf gedaan worden door doe-het-zelvers of uitbesteed aan een professional &mdash; afhankelijk van ervaring en gewenst resultaat. Zelf aanbrengen biedt creatieve vrijheid en bespaart kosten.</p>',
+				'more'   => '<p>Is het lastig om zelf Beton Cir&eacute; of Microcement aan te brengen? Het is goed te doen door iedereen die een beetje handig is. Afhankelijk van toepassing, kennis en ervaring kun je kiezen voor Beton Cir&eacute; All-In-One of Easyline &mdash; deze varianten zijn voorgemengd en eenvoudig aan te brengen op een schone, egale en gelijkzuigende ondergrond.</p>
+				            <p class="oz-hp-tip"><strong>Tip van Patrick, onze specialist:</strong> bestel altijd iets meer dan je denkt nodig te hebben. Zo heb je altijd een beetje over om eventuele oneffenheden die tijdens het aanbrengen zijn ontstaan snel te kunnen verhelpen. En toch geven we genoeg mee voor het aantal vierkante meter die je bestelt.</p>
+				            <p>Het inschakelen van een professional heeft voordelen: het bespaart tijd als je niet handig bent met een stucadoorsspaan, schuren of primer aanbrengen. Je bent verzekerd van een mooi en duurzaam resultaat en bespaart jezelf de moeite.</p>
+				            <p><a href="/offerte/" class="oz-hp-btn oz-hp-btn--teal">Offerte aanvragen</a></p>',
 			],
 			[
-				'q' => 'Waterdicht maken met PU-topcoat',
-				'a' => '<p>Het waterdicht maken is het allerbelangrijkste aspect van het hele proces. Dat gebeurt met onze polyurethaan (PU) topcoat. PU bestaat uit een A- en B-component die elkaar versterken en zorgen dat het object volledig waterdicht wordt.</p>
-				        <p>Door die waterdichtheid is Beton Ciré perfect toepasbaar in de badkamer &mdash; geen tegels meer nodig. Dat maakt het geschikt voor vele toepassingen.</p>',
+				'q'      => 'Beton Ciré en Microcement waterdicht maken',
+				'img'    => '2024/02/ruimte-badkamer-2.webp',
+				'alt'    => 'Waterdichte Beton Ciré badkamer met PU-topcoat afwerking',
+				'teaser' => '<p>Het waterdicht maken van Beton Cir&eacute; en Microcement is het allerbelangrijkste aspect van het hele proces. Dat gebeurt met onze polyurethaan (PU) topcoat.</p>',
+				'more'   => '<p>PU bestaat uit een A- en B-component die elkaar versterken. Deze zorgen ervoor dat het object volledig waterdicht wordt. Door die waterdichtheid biedt Beton Cir&eacute; de mogelijkheid om toegepast te worden in de badkamer &mdash; geen tegels meer nodig. Dat maakt het geschikt voor vele toepassingen.</p>',
 			],
 			[
-				'q' => 'Welke variant past bij mijn project?',
-				'a' => '<ul class="oz-hp-faq-bullets">
-				            <li><strong>Beton Ciré Original / Microcement</strong> &mdash; fijne structuur, snel droog, hard. Voor een gladde, echte betonlook.</li>
-				            <li><strong>Easyline</strong> &mdash; drukke tekening door een grove &eacute;n fijne laag. Langere droogtijd, met extra presealer-stap.</li>
-				            <li><strong>All-In-One</strong> &mdash; drukke tekening door schuren. Net als Easyline, eenvoudig te verwerken.</li>
-				            <li><strong>Lavasteen gietvloer</strong> &mdash; A/B-componenten, veruit het hardste product. Van zichzelf waterdicht &mdash; perfect voor doucheruimtes en buiten.</li>
-				        </ul>
-				        <p>Met Microcement, Original en Lavasteen stuur je meer op de tekening; Easyline en All-In-One geven altijd een drukkere tekening.</p>',
+				'q'      => 'Kies het juiste product voor je project',
+				'img'    => '2026/03/beton-cire-original.webp',
+				'alt'    => 'Beton Ciré Original, Microcement en Easyline naast elkaar',
+				'teaser' => '<p>Afhankelijk van je project kun je kiezen uit verschillende soorten. Wij bieden diverse Beton Cir&eacute;-varianten, maar ook Microcement en Lavasteen gietvloeren &mdash; allemaal kant-en-klaar gemixed op kleur, allemaal leverbaar met extra matte PU-topcoat.</p>',
+				'more'   => '<ul class="oz-hp-learn-bullets">
+				                <li><strong>Beton Cir&eacute; Original &amp; Microcement</strong> &mdash; fijne structuur, snel droog, hard. Wil je zelf aan de slag en het super glad hebben met een echte betonlook, dan is dit de juiste keuze. Met deze kant-en-klare pasta ben je snel klaar.</li>
+				                <li><strong>Beton Cir&eacute; Easyline</strong> &mdash; drukke tekening door grof en fijn. Easyline heeft 2 lagen: de eerste grof, de tweede fijn. Daardoor schemert de grove laag door de fijne heen en ontstaat een drukke tekening. Langere droogtijd, met een extra presealer-stap voordat de PU aangebracht wordt.</li>
+				                <li><strong>Beton Cir&eacute; All-In-One</strong> &mdash; drukke tekening door schuren. Net als Easyline een extra stap en langere droogtijd, maar eenvoudig aan te brengen.</li>
+				                <li><strong>Lavasteen gietvloer</strong> &mdash; A/B-componenten, veruit het hardste product op de markt. Van zichzelf waterdicht, perfect voor doucheruimtes en buiten. Ook geschikt voor wanden.</li>
+				            </ul>
+				            <p>Met Microcement, Beton Cir&eacute; Original en Lavasteen kun je meer sturen op welke tekening je wilt maken. Met Easyline en All-In-One is de tekening vrijwel altijd druk. Wil je meer controle over de samenstelling, dan kun je kiezen voor Beton Cir&eacute; Original zelf mengen &mdash; meer of minder aanmaakvloeistof zorgt voor een hardere of zachtere pasta.</p>',
 			],
 		];
 
 		foreach ( $topics as $topic ) :
 		?>
-		<div class="oz-hp-faq-item">
-			<button class="oz-hp-faq-q" onclick="this.parentElement.classList.toggle('is-open')">
-				<?php echo esc_html( $topic['q'] ); ?>
-				<span class="oz-hp-faq-icon" aria-hidden="true"></span>
-			</button>
-			<div class="oz-hp-faq-a">
-				<?php echo wp_kses_post( $topic['a'] ); ?>
+		<article class="oz-hp-learn-row" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+			<div class="oz-hp-learn-media">
+				<img src="<?php echo esc_url( $up . '/' . $topic['img'] ); ?>" alt="<?php echo esc_attr( $topic['alt'] ); ?>" loading="lazy">
 			</div>
-		</div>
+			<div class="oz-hp-learn-text">
+				<h3 class="oz-hp-learn-title" itemprop="name"><?php echo esc_html( $topic['q'] ); ?></h3>
+				<div class="oz-hp-learn-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+					<div itemprop="text">
+						<?php echo wp_kses_post( $topic['teaser'] ); ?>
+						<div class="oz-hp-learn-more">
+							<?php echo wp_kses_post( $topic['more'] ); ?>
+						</div>
+					</div>
+				</div>
+				<button type="button" class="oz-hp-learn-toggle" aria-expanded="false" onclick="const row=this.closest('.oz-hp-learn-row');const open=row.classList.toggle('is-open');this.setAttribute('aria-expanded',open);this.querySelector('.oz-hp-learn-toggle-label').textContent=open?'Minder tonen':'Lees meer';">
+					<span class="oz-hp-learn-toggle-label">Lees meer</span>
+					<span class="oz-hp-learn-toggle-icon" aria-hidden="true"></span>
+				</button>
+			</div>
+		</article>
 		<?php endforeach; ?>
 
 	</div>
