@@ -88,8 +88,10 @@ function payloadToFormData(payload) {
  */
 function displayColor(colorName) {
   if (!colorName) return '';
-  // ZM mode: strip to number code only (e.g. "Elephant Skin 1004" -> "1004")
-  if (S.formulaMode === 'target' || (P.productLine && P.productLine.indexOf('-zm') !== -1)) {
+  // Strip to 4-digit code only when the *currently displayed* line is ZM.
+  // toggleFormula keeps P.productLine in sync with the active mode, so this
+  // works on both pages (K&K toggled to ZM, and ZM as direct landing).
+  if (P.productLine && P.productLine.indexOf('-zm') !== -1) {
     var match = colorName.match(/\b(\d{4})\s*$/);
     if (match) return match[1];
   }
