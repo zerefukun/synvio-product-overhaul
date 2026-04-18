@@ -925,54 +925,12 @@
 .oz-hp-table tbody tr:hover td { background: var(--sand); }
 
 /* ================================================================
-   S10 — REVIEWS
+   S10 — REVIEWS (Trustindex widget)
    ================================================================ */
-.oz-hp-reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+.oz-hp-trustindex {
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 0 var(--gap);
-}
-
-.oz-hp-review {
-  background: var(--sand);
-  padding: 28px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-}
-
-.oz-hp-review-text {
-  font-size: 14px;
-  font-style: italic;
-  line-height: 1.7;
-  color: var(--text);
-  flex: 1;
-  margin-bottom: 16px;
-}
-
-.oz-hp-review-author {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--charcoal);
-}
-
-.oz-hp-reviews-score {
-  text-align: center;
-  margin-top: 32px;
-}
-
-.oz-hp-reviews-score-num {
-  font-family: var(--ff-heading);
-  font-size: 36px;
-  color: var(--teal);
-}
-
-.oz-hp-reviews-score-label {
-  font-size: 13px;
-  color: var(--text-light);
 }
 
 /* ================================================================
@@ -1757,8 +1715,6 @@
   .oz-hp-split { grid-template-columns: 1fr; }
   .oz-hp-split-micro,
   .oz-hp-split-stalen { padding: 40px 28px; }
-
-  .oz-hp-reviews-grid { grid-template-columns: 1fr; }
 
   .oz-hp-showroom { grid-template-columns: 1fr; }
   .oz-hp-showroom-images { order: -1; }
