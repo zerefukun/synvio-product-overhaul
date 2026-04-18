@@ -385,6 +385,13 @@ function renderStickySummary() {
   if (DOM.stickyDOptions) {
     var parts = [];
 
+    // Formula mode label (K&K / ZM) — first so client/admin can see mode
+    // matches URL, diagnostic aid against pushState/cache desync
+    if (P.modeToggle && P.modeToggle.labelSelf && P.modeToggle.labelTarget) {
+      var modeLabel = S.formulaMode === 'target' ? P.modeToggle.labelTarget : P.modeToggle.labelSelf;
+      parts.push(modeLabel);
+    }
+
     // PU layers — always show, even "Geen PU"
     if (S.puLayers !== null && S.puLayers !== undefined) {
       if (S.puLayers === 0) {
