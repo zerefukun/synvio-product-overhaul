@@ -172,7 +172,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-ruimtes-row2" data-reveal-stagger>
 			<a href="/ruimtes/beton-cire-vloer/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/ruimtes-vloer-voorbeeld-3-1.webp" ); ?>" alt="Beton cire vloer" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-vloer.webp" ); ?>" alt="Beton cire vloer" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Vloer</div></div>
 			</a>
 			<a href="/ruimtes/beton-cire-wand/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
@@ -184,7 +184,7 @@ $up = home_url( '/wp-content/uploads' );
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Trap</div></div>
 			</a>
 			<a href="/ruimtes/beton-cire-meubel/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Tv-Meubel-1004-Original.webp" ); ?>" alt="Beton cire meubels" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-meubel.webp" ); ?>" alt="Beton cire meubels" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Meubels</div></div>
 			</a>
 		</div>
@@ -491,10 +491,10 @@ $up = home_url( '/wp-content/uploads' );
 			<img src="<?php echo esc_url( "$up/2024/02/ruimte-badkamer-2.webp" ); ?>" alt="Beton cire badkamer inspiratie" loading="lazy">
 		</div>
 		<div class="oz-hp-inspo-card">
-			<img src="<?php echo esc_url( "$up/2024/02/Keuken-Marloes-daily.webp" ); ?>" alt="Beton cire keuken inspiratie" loading="lazy">
+			<img src="<?php echo esc_url( "$up/2024/02/Beton-cire-original-keuken-kleur-1006.webp" ); ?>" alt="Beton Ciré Original keuken in kleur 1006" loading="lazy">
 		</div>
 		<div class="oz-hp-inspo-card">
-			<img src="<?php echo esc_url( "$up/2024/02/Tv-Meubel-1004-Original.webp" ); ?>" alt="Beton cire meubel inspiratie" loading="lazy">
+			<img src="<?php echo esc_url( "$up/2024/02/beton-cire-trapgat-wand-original-kleur1005.webp" ); ?>" alt="Beton Ciré Original wand in trapgat, kleur 1005" loading="lazy">
 		</div>
 	</div>
 	<div style="text-align:center;margin-top:32px">
