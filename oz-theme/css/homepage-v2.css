@@ -628,7 +628,19 @@
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--teal);
-  margin-bottom: 16px;
+  margin-bottom: 10px;
+}
+
+.oz-hp-pcard-rating {
+  font-size: 12px;
+  color: var(--teal);
+  text-align: center;
+  margin: 0 0 14px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(19, 83, 80, 0.15);
+  border-bottom: 1px solid rgba(19, 83, 80, 0.15);
+  width: 100%;
+  letter-spacing: 0.3px;
 }
 
 .oz-hp-pcard-features {

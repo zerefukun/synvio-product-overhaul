@@ -81,28 +81,12 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 	<div class="oz-hp-products-3col" data-reveal-stagger>
 		<div class="oz-hp-pcard">
-			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-easyline-kant-en-klaar/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/Easyline.png" ); ?>" alt="Beton Ciré Easyline" loading="lazy">
-			</a>
-			<h3 class="oz-hp-pcard-name">Beton Ciré Easyline</h3>
-			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
-			<ul class="oz-hp-pcard-features">
-				<li>Badkamerwanden, natte cellen</li>
-				<li>Huiskamervloeren en meubels</li>
-				<li>Grove en Fijne laag</li>
-				<li>Slechts twee dagen werk</li>
-				<li>36 kleuren en RAL en NCS</li>
-				<li>Voor binnen</li>
-			</ul>
-			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;28/1m&sup2;</strong> per 5m&sup2;</div>
-			<a href="/beton-cire-easyline-kant-en-klaar/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré Easyline</a>
-		</div>
-		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-easyline-all-in-one/">
 				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/All-In-One.png" ); ?>" alt="Beton Ciré All-In-One" loading="lazy">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré All-In-One</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<div class="oz-hp-pcard-rating">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</div>
 			<ul class="oz-hp-pcard-features">
 				<li>Badkamerwanden, natte cellen</li>
 				<li>Huiskamervloeren en meubels</li>
@@ -120,6 +104,7 @@ $up = home_url( '/wp-content/uploads' );
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré Original</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<div class="oz-hp-pcard-rating">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★★</div>
 			<ul class="oz-hp-pcard-features">
 				<li>Badkamerwanden, natte cellen</li>
 				<li>Huiskamervloeren en meubels</li>
@@ -130,6 +115,24 @@ $up = home_url( '/wp-content/uploads' );
 			</ul>
 			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;31</strong> per 1m&sup2;</div>
 			<a href="/beton-cire-original/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré Original</a>
+		</div>
+		<div class="oz-hp-pcard">
+			<a class="oz-hp-pcard-img-wrap" href="/lavasteen-gietvloer/">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/lavasteen-epoxystone.avif" ); ?>" alt="Beton Ciré Lavasteen" loading="lazy">
+			</a>
+			<h3 class="oz-hp-pcard-name">Beton Ciré Lavasteen</h3>
+			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<div class="oz-hp-pcard-rating">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★★</div>
+			<ul class="oz-hp-pcard-features">
+				<li>Badkamer vloeren en wanden</li>
+				<li>Voor horeca, huiskamer vloeren</li>
+				<li>Extreem hard door epoxy</li>
+				<li>2 tot 3 dagen werk</li>
+				<li>Keuze uit 20 nieuwe kleuren</li>
+				<li>Voor binnen en buiten</li>
+			</ul>
+			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;47/1m&sup2;</strong> per 5m&sup2;</div>
+			<a href="/lavasteen-gietvloer/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré Lavasteen</a>
 		</div>
 	</div>
 </section>
