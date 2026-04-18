@@ -1403,7 +1403,7 @@
 }
 
 .oz-hp-learn-row--full .oz-hp-learn-text {
-  padding: 96px 80px 96px max(24px, calc((100vw - 1100px) / 2 + 48px));
+  padding: 64px 80px 64px max(24px, calc((100vw - 1100px) / 2 + 48px));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1421,7 +1421,7 @@
 .oz-hp-learn-row--full .oz-hp-learn-media {
   order: 2;
   height: 100%;
-  min-height: 480px;
+  min-height: 360px;
 }
 
 .oz-hp-learn-row--full .oz-hp-learn-media img {
