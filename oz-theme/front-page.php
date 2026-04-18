@@ -76,7 +76,7 @@ $up = home_url( '/wp-content/uploads' );
 <section class="oz-hp-ruimtes oz-hp-section" data-reveal>
 	<div class="oz-hp-ruimtes-header">
 		<div class="oz-hp-ruimtes-eyebrow">Toepassingen</div>
-		<h2 class="oz-hp-ruimtes-heading">Waar wil je Beton Cire <em>gebruiken?</em></h2>
+		<h2 class="oz-hp-ruimtes-heading">Waar wil je Beton Ciré <em>gebruiken?</em></h2>
 		<p class="oz-hp-ruimtes-intro">Van badkamer tot keuken, van vloer tot meubel: beton cire geeft elke ruimte een naadloze, moderne betonlook. Kies je ruimte en ontdek wat er mogelijk is.</p>
 	</div>
 	<div class="oz-hp-ruimtes-wrap">
