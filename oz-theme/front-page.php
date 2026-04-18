@@ -646,12 +646,40 @@ $up = home_url( '/wp-content/uploads' );
 				'a' => 'Beton Cire heeft een duurzame afwerking, mits het goed wordt aangebracht. Het blijft jarenlang mooi en geeft een stoere en industriele betonlook. De waterdichte eigenschappen en de functionaliteit maken het een makkelijke keuze. Bovendien ziet het er ook heel mooi uit.',
 			],
 			[
-				'q' => 'Welke soorten Beton cire zijn er?',
+				'q' => 'Welke verschillende soorten Beton cire zijn er?',
 				'a' => 'Er zijn 3 verschillende soorten en wij hebben ze alle drie. Bovendien hebben we microcement en Lavasteen. Het verschil zit hem in gemak, tekening, moeilijkheidsgraad en prijs. Onze pakketten bestaan altijd uit een aantal stappen met de daarbij behorende producten.',
+			],
+			[
+				'q' => 'Kun je boren in Beton cire?',
+				'a' => 'Ja, maar let op wat eronder zit. In de Beton cire zelf kun je prima boren &mdash; een onvormvaste ondergrond of tegelwand kan echter scheuren. Begin met een klein boortje zodat je punt niet wegloopt, en zet je boormachine niet op kloppen voordat je door de glazuurlaag heen bent. Kit het boorgaatje na afloop af.',
 			],
 			[
 				'q' => 'Is Beton cire kwetsbaar?',
 				'a' => 'Het hangt af van de gebruikte topcoat en het merk Beton cire. Onze varianten zijn erg hard en worden afgewerkt met een 2-componenten PU-topcoat die krasongevoelig is. Die topcoat is getest op UV-bestendigheid, hittebestendigheid, krasgevoeligheid en verwerkbaarheid. Een toplak is nooit hufter-proof, maar bij normaal gebruik blijft Beton cire jarenlang mooi.',
+			],
+			[
+				'q' => 'Welke stuc onder Beton cire?',
+				'a' => 'In droge ruimtes zoals woonkamer of toilet werkt een gipsgebonden stuc (roodband of MP75) prima. In natte ruimtes is een cementgebonden stuc verplicht &mdash; cement verzeept niet onder vocht, gips wel. Onze egalisatie-stuc hecht over tegels en hout en is geschikt voor extreem natte ruimtes.',
+			],
+			[
+				'q' => 'Hoe dik is Beton cire?',
+				'a' => 'Beton Cir&eacute; wordt in 1 tot 3 mm aangebracht, afhankelijk van de spaanslagen die de verwerker laat staan. De lager gelegen delen zijn meestal 1&ndash;2 mm, hoger gelegen delen tot 3 mm dik. Het is een decoratieve afwerking &mdash; geen opvulmiddel. Gaten en oneffenheden eerst vullen met een daarvoor geschikt product.',
+			],
+			[
+				'q' => 'Welke kleuren Beton cire zijn er?',
+				'a' => 'We hebben 80 standaardkleuren en kunnen bijna elke RAL- of NCS-kleur op maat maken &mdash; samen zo\'n 8000 mogelijkheden. Vraag gratis kleurstalen aan om de kleur in je eigen ruimte te beoordelen; kleuren zien er op locatie vaak anders uit door licht en omgeving.',
+			],
+			[
+				'q' => 'Heb ik kimband nodig voor Beton cire?',
+				'a' => 'Kimband is nodig in natte ruimtes, vooral bij aansluitingen van wand naar vloer. Als die aansluiting toch scheurt, scheurt het achter de kimband &mdash; je Beton cire afwerking blijft intact en waterdicht.',
+			],
+			[
+				'q' => 'Hoe kan ik mijn Beton cire schoonmaken en onderhouden?',
+				'a' => 'Stofzuig of stofwis minstens twee keer per week en dweil wekelijks met een PH-neutraal schoonmaakmiddel. Gebruik nooit een schuurspons of agressief reinigingsmiddel &mdash; deze beschadigen de topcoat. Voor dieper onderhoud staat een uitgebreide gids in onze kennisbank.',
+			],
+			[
+				'q' => 'Waar moet je opletten als je Beton cire of Microcement gaat aanbrengen?',
+				'a' => 'Werk altijd in een schone, droge, stofvrije en tochtvrije ruimte. Tocht laat de pasta te snel drogen &mdash; dan kun je niet meer netjes afwerken. Zorg daarnaast voor voldoende licht om oneffenheden op tijd te zien en bij te werken. Lees vooraf onze voorbereidingspagina en technische handleiding.',
 			],
 			[
 				'q' => 'Wat zijn de nadelen van Beton cire?',
