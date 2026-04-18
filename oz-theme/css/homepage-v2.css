@@ -1403,7 +1403,10 @@
 }
 
 .oz-hp-learn-row--full .oz-hp-learn-text {
-  padding: 88px 80px 88px max(20px, calc((100vw - 1100px) / 2 + 20px));
+  padding-top: 88px;
+  padding-bottom: 88px;
+  padding-right: 80px;
+  padding-left: max(20px, calc((100vw - 1100px) / 2 + 20px));
   display: flex;
   flex-direction: column;
   justify-content: center;
