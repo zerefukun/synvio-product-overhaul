@@ -157,7 +157,7 @@ $up = home_url( '/wp-content/uploads' );
 				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Keuken-Marloes-daily.webp" ); ?>" alt="Beton cire keuken" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Keuken</div>
-					<div class="oz-hp-ruimtes-card-desc">Aanrecht, spatscherm en vloer in naadloze betonlook. Waterbestendig en vlekvrij.</div>
+					<div class="oz-hp-ruimtes-card-desc">Keukenbladen, aanrecht en spatschermen in naadloze betonlook. Waterbestendig en vlekvrij.</div>
 					<span class="oz-hp-ruimtes-card-cta">Meer informatie</span>
 				</div>
 			</a>
@@ -352,7 +352,29 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 </section>
 
-<?php /* S12-S13 SEO text removed — this content belongs in kennisbank blog posts */ ?>
+<?php /* ================================================================
+       S13 — BELANGRIJKSTE PUNTEN (3 TL;DR bullets)
+       ================================================================ */ ?>
+<section class="oz-hp-section oz-hp-keypoints" data-reveal>
+	<div class="oz-hp-section-header">
+		<div class="oz-hp-eyebrow">Samengevat</div>
+		<h2 class="oz-hp-heading">Belangrijkste <em>punten</em></h2>
+	</div>
+	<ul class="oz-hp-keypoints-list">
+		<li>
+			<strong>Waterdicht &amp; veelzijdig.</strong>
+			Beton Cir&eacute; is geschikt voor vloeren, wanden, keukenbladen en badkamers. De 2-componenten PU-topcoat maakt het volledig bestand tegen water en vlekken.
+		</li>
+		<li>
+			<strong>5000+ kleuren, vrijheid in afwerking.</strong>
+			Via de kleurpigment is elke tint mogelijk. Kies glad of met structuur &mdash; aanpasbaar aan elk interieur.
+		</li>
+		<li>
+			<strong>Zelf aanbrengen of laten doen.</strong>
+			Kant-en-klare pakketten (All-In-One, Easyline) zijn DIY-vriendelijk; voor complexe projecten schakel je een professional in.
+		</li>
+	</ul>
+</section>
 
 <?php /* ================================================================
        S14 — MEER WETEN (alternating image/text rows with "Lees meer")
@@ -391,7 +413,7 @@ $up = home_url( '/wp-content/uploads' );
 				'layout' => 'full',
 				'img'    => '2024/02/Woonkamer-wand.webp',
 				'alt'    => 'Zelf aangebrachte Beton Ciré wand in een woonkamer',
-				'teaser' => '<p>Beton Cir&eacute; aanbrengen kan zelf gedaan worden door doe-het-zelvers of uitbesteed aan een professional &mdash; afhankelijk van ervaring en gewenst resultaat. Zelf aanbrengen biedt creatieve vrijheid en bespaart kosten.</p>',
+				'teaser' => '<p>Beton Cir&eacute; aanbrengen kan zelf gedaan worden door doe-het-zelvers (DIY) of uitbesteed aan een professional &mdash; afhankelijk van ervaring en gewenst resultaat. Zelf aanbrengen biedt creatieve vrijheid en bespaart kosten.</p>',
 				'more'   => '<p>Is het lastig om zelf Beton Cir&eacute; of Microcement aan te brengen? Het is goed te doen door iedereen die een beetje handig is. Afhankelijk van toepassing, kennis en ervaring kun je kiezen voor Beton Cir&eacute; All-In-One of Easyline &mdash; deze varianten zijn voorgemengd en eenvoudig aan te brengen op een schone, egale en gelijkzuigende ondergrond.</p>
 				            <p class="oz-hp-tip"><strong>Tip van Patrick, onze specialist:</strong> bestel altijd iets meer dan je denkt nodig te hebben. Zo heb je altijd een beetje over om eventuele oneffenheden die tijdens het aanbrengen zijn ontstaan snel te kunnen verhelpen. En toch geven we genoeg mee voor het aantal vierkante meter die je bestelt.</p>
 				            <p>Het inschakelen van een professional heeft voordelen: het bespaart tijd als je niet handig bent met een stucadoorsspaan, schuren of primer aanbrengen. Je bent verzekerd van een mooi en duurzaam resultaat en bespaart jezelf de moeite.</p>
@@ -554,6 +576,14 @@ $up = home_url( '/wp-content/uploads' );
 			[
 				'q' => 'Welke soorten Beton cire zijn er?',
 				'a' => 'Er zijn 3 verschillende soorten en wij hebben ze alle drie. Bovendien hebben we microcement en Lavasteen. Het verschil zit hem in gemak, tekening, moeilijkheidsgraad en prijs. Onze pakketten bestaan altijd uit een aantal stappen met de daarbij behorende producten.',
+			],
+			[
+				'q' => 'Is Beton cire kwetsbaar?',
+				'a' => 'Het hangt af van de gebruikte topcoat en het merk Beton cire. Onze varianten zijn erg hard en worden afgewerkt met een 2-componenten PU-topcoat die krasongevoelig is. Die topcoat is getest op UV-bestendigheid, hittebestendigheid, krasgevoeligheid en verwerkbaarheid. Een toplak is nooit hufter-proof, maar bij normaal gebruik blijft Beton cire jarenlang mooi.',
+			],
+			[
+				'q' => 'Wat zijn de nadelen van Beton cire?',
+				'a' => 'Er zijn twee aandachtspunten. Zet geen hete pan direct op een Beton cire keukenblad &mdash; gebruik altijd een onderzetter. En zorg dat er geen open vuur tegen de betonlook aan komt, bijvoorbeeld brandend hout uit een openhaard dat op de vloer valt. Verder is Beton cire waterdicht, krasongevoelig en geschikt voor vrijwel elke ruimte.',
 			],
 		];
 
