@@ -51,11 +51,13 @@ $up = home_url( '/wp-content/uploads' );
 	<div class="oz-hp-trust-track">
 		<?php
 		$usps = [
+			'Voor 14:00 besteld, dezelfde werkdag verzonden',
 			'Geen ervaring nodig',
 			'Complete pakketten',
 			'420.000+ m² door klanten aangebracht',
 			'4.8/5.0 Google Reviews',
-			'Zelfde dag verzonden',
+			'Altijd een specialist beschikbaar',
+			'Project ondersteuning',
 			'Showroom Den Haag',
 		];
 		/* Duplicate for seamless loop */
