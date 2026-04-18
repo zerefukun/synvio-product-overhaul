@@ -456,6 +456,14 @@ function oz_homepage_v2_enqueue() {
         [],
         filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
     );
+
+    wp_enqueue_script(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/js/homepage-v2.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/homepage-v2.js'),
+        true
+    );
 }
 add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
 

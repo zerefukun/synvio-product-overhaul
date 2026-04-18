@@ -1287,11 +1287,18 @@
 /* ================================================================
    S24 — KENNISBANK (horizontal scrollable carousel)
    ================================================================ */
+.oz-hp-kb-wrap {
+  position: relative;
+  max-width: calc(var(--max-w) + 120px);
+  margin: 0 auto;
+}
+
 .oz-hp-kb-carousel {
   display: flex;
   gap: 20px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   padding: 0 var(--gap) 16px;
   max-width: calc(var(--max-w) + var(--gap) * 2);
@@ -1300,6 +1307,52 @@
 }
 
 .oz-hp-kb-carousel::-webkit-scrollbar { display: none; }
+
+.oz-hp-kb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--stone);
+  background: #fff;
+  color: var(--teal);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(19, 83, 80, 0.08);
+  transition: background .2s, color .2s, transform .2s, opacity .2s;
+}
+
+.oz-hp-kb-nav:hover {
+  background: var(--teal);
+  color: #fff;
+}
+
+.oz-hp-kb-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.oz-hp-kb-nav:disabled:hover {
+  background: #fff;
+  color: var(--teal);
+}
+
+.oz-hp-kb-nav svg {
+  width: 22px;
+  height: 22px;
+}
+
+.oz-hp-kb-nav--prev { left: 0; }
+.oz-hp-kb-nav--next { right: 0; }
+
+@media (max-width: 880px) {
+  .oz-hp-kb-nav { display: none; }
+}
 
 .oz-hp-kb-card {
   flex: 0 0 300px;

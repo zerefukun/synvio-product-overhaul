@@ -1,0 +1,37 @@
+(function () {
+  'use strict';
+
+  var wraps = document.querySelectorAll('.oz-hp-kb-wrap');
+  if (!wraps.length) return;
+
+  wraps.forEach(function (wrap) {
+    var carousel = wrap.querySelector('.oz-hp-kb-carousel');
+    var prev = wrap.querySelector('.oz-hp-kb-nav--prev');
+    var next = wrap.querySelector('.oz-hp-kb-nav--next');
+    if (!carousel || !prev || !next) return;
+
+    function step() {
+      var card = carousel.querySelector('.oz-hp-kb-card');
+      if (!card) return 300;
+      var styles = window.getComputedStyle(carousel);
+      var gap = parseFloat(styles.columnGap || styles.gap) || 20;
+      return card.getBoundingClientRect().width + gap;
+    }
+
+    function updateState() {
+      var max = carousel.scrollWidth - carousel.clientWidth - 1;
+      prev.disabled = carousel.scrollLeft <= 0;
+      next.disabled = carousel.scrollLeft >= max;
+    }
+
+    function scrollByDir(dir) {
+      carousel.scrollBy({ left: step() * dir, behavior: 'smooth' });
+    }
+
+    prev.addEventListener('click', function () { scrollByDir(-1); });
+    next.addEventListener('click', function () { scrollByDir(1); });
+    carousel.addEventListener('scroll', updateState, { passive: true });
+    window.addEventListener('resize', updateState);
+    updateState();
+  });
+})();

@@ -575,30 +575,38 @@ $up = home_url( '/wp-content/uploads' );
 		<div class="oz-hp-eyebrow">Kennisbank</div>
 		<h2 class="oz-hp-heading">Lees meer in onze <em>kennisbank</em></h2>
 	</div>
-	<div class="oz-hp-kb-carousel">
-		<?php
-		$kb_articles = get_posts([
-			'post_type'      => 'post',
-			'posts_per_page' => 10,
-			'orderby'        => 'date',
-			'order'          => 'DESC',
-		]);
-		foreach ( $kb_articles as $article ) :
-			$thumb = get_the_post_thumbnail_url( $article->ID, 'medium' );
-		?>
-		<a href="<?php echo esc_url( get_permalink( $article ) ); ?>" class="oz-hp-kb-card">
-			<?php if ( $thumb ) : ?>
-			<div class="oz-hp-kb-card-img">
-				<img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy">
-			</div>
-			<?php endif; ?>
-			<div class="oz-hp-kb-card-body">
-				<div class="oz-hp-kb-card-title"><?php echo esc_html( $article->post_title ); ?></div>
-				<div class="oz-hp-kb-card-excerpt"><?php echo esc_html( wp_trim_words( $article->post_content, 20 ) ); ?></div>
-				<span class="oz-hp-kb-card-link">Lees meer &rarr;</span>
-			</div>
-		</a>
-		<?php endforeach; ?>
+	<div class="oz-hp-kb-wrap">
+		<button type="button" class="oz-hp-kb-nav oz-hp-kb-nav--prev" aria-label="Vorige artikelen" data-dir="-1">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+		</button>
+		<div class="oz-hp-kb-carousel">
+			<?php
+			$kb_articles = get_posts([
+				'post_type'      => 'post',
+				'posts_per_page' => 10,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			]);
+			foreach ( $kb_articles as $article ) :
+				$thumb = get_the_post_thumbnail_url( $article->ID, 'medium' );
+			?>
+			<a href="<?php echo esc_url( get_permalink( $article ) ); ?>" class="oz-hp-kb-card">
+				<?php if ( $thumb ) : ?>
+				<div class="oz-hp-kb-card-img">
+					<img src="<?php echo esc_url( $thumb ); ?>" alt="" loading="lazy">
+				</div>
+				<?php endif; ?>
+				<div class="oz-hp-kb-card-body">
+					<div class="oz-hp-kb-card-title"><?php echo esc_html( $article->post_title ); ?></div>
+					<div class="oz-hp-kb-card-excerpt"><?php echo esc_html( wp_trim_words( $article->post_content, 20 ) ); ?></div>
+					<span class="oz-hp-kb-card-link">Lees meer &rarr;</span>
+				</div>
+			</a>
+			<?php endforeach; ?>
+		</div>
+		<button type="button" class="oz-hp-kb-nav oz-hp-kb-nav--next" aria-label="Volgende artikelen" data-dir="1">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+		</button>
 	</div>
 	<div style="text-align:center;margin-top:32px">
 		<a href="/kennisbank/" class="oz-hp-btn oz-hp-btn--teal">Alle artikelen bekijken</a>
