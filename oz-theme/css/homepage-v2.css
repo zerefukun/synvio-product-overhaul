@@ -550,6 +550,121 @@
 }
 
 /* ================================================================
+   S04 — PRODUCT LINES (3-col card grid)
+   ================================================================ */
+.oz-hp-section-intro {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+  max-width: 560px;
+  margin: 12px auto 0;
+}
+
+.oz-hp-products-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-pcard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: 6px;
+  padding: 28px 24px;
+  transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s;
+}
+
+.oz-hp-pcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.08);
+}
+
+.oz-hp-pcard-img-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+.oz-hp-pcard-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,.1));
+}
+
+.oz-hp-pcard-name {
+  font-family: var(--ff-heading);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin: 0 0 4px;
+}
+
+.oz-hp-pcard-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 16px;
+}
+
+.oz-hp-pcard-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  text-align: left;
+  width: 100%;
+}
+
+.oz-hp-pcard-features li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text);
+}
+
+.oz-hp-pcard-features li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: .45;
+}
+
+.oz-hp-pcard-price {
+  font-family: var(--ff-body);
+  font-size: 14px;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+.oz-hp-pcard-price strong {
+  font-family: var(--ff-heading);
+  font-size: 20px;
+  color: var(--teal);
+  font-weight: 400;
+  margin-right: 4px;
+}
+
+/* ================================================================
    S07b — ZO WERKT HET (4 steps)
    ================================================================ */
 .oz-hp-steps-grid {
@@ -1248,6 +1363,7 @@
   .oz-hp-product + .oz-hp-product { margin-top: 56px; }
 
   .oz-hp-steps-grid { grid-template-columns: 1fr 1fr; }
+  .oz-hp-products-3col { grid-template-columns: 1fr 1fr; gap: 24px; }
   .oz-hp-ba-grid { grid-template-columns: 1fr; }
 
   .oz-hp-split { grid-template-columns: 1fr; }
@@ -1277,6 +1393,7 @@
   .oz-hp-ruimtes-row1 .oz-hp-ruimtes-card:first-child { grid-column: 1; }
 
   .oz-hp-steps-grid { grid-template-columns: 1fr; }
+  .oz-hp-products-3col { grid-template-columns: 1fr; }
   .oz-hp-carousel-card { flex: 0 0 220px; }
 }
 

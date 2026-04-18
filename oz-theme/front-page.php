@@ -71,7 +71,71 @@ $up = home_url( '/wp-content/uploads' );
 </div>
 
 <?php /* ================================================================
-       S04 — RUIMTES MOZAIEK
+       S04 — PRODUCT LINES (3-col grid)
+       ================================================================ */ ?>
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
+	<div class="oz-hp-section-header">
+		<div class="oz-hp-eyebrow">Collectie</div>
+		<h2 class="oz-hp-heading">Onze producten voor de <em>badkamer</em></h2>
+		<p class="oz-hp-section-intro">Kies het product dat het beste bij jouw project past. Alle producten zijn waterdicht en geschikt voor natte ruimtes.</p>
+	</div>
+	<div class="oz-hp-products-3col" data-reveal-stagger>
+		<div class="oz-hp-pcard">
+			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-easyline-kant-en-klaar/">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/Easyline.png" ); ?>" alt="Beton Ciré Easyline" loading="lazy">
+			</a>
+			<h3 class="oz-hp-pcard-name">Beton Ciré Easyline</h3>
+			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<ul class="oz-hp-pcard-features">
+				<li>Badkamerwanden, natte cellen</li>
+				<li>Huiskamervloeren en meubels</li>
+				<li>Grove en Fijne laag</li>
+				<li>Slechts twee dagen werk</li>
+				<li>36 kleuren en RAL en NCS</li>
+				<li>Voor binnen</li>
+			</ul>
+			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;28/1m&sup2;</strong> per 5m&sup2;</div>
+			<a href="/beton-cire-easyline-kant-en-klaar/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré Easyline</a>
+		</div>
+		<div class="oz-hp-pcard">
+			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-easyline-all-in-one/">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/All-In-One.png" ); ?>" alt="Beton Ciré All-In-One" loading="lazy">
+			</a>
+			<h3 class="oz-hp-pcard-name">Beton Ciré All-In-One</h3>
+			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<ul class="oz-hp-pcard-features">
+				<li>Badkamerwanden, natte cellen</li>
+				<li>Huiskamervloeren en meubels</li>
+				<li>Hard met een fijne structuur</li>
+				<li>Slechts twee dagen werk</li>
+				<li>36 kleuren en RAL en NCS</li>
+				<li>Voor binnen</li>
+			</ul>
+			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;28</strong> per 1m&sup2;</div>
+			<a href="/beton-cire-easyline-all-in-one/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré All-In-One</a>
+		</div>
+		<div class="oz-hp-pcard">
+			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-original/">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/beton-cire-original.webp" ); ?>" alt="Beton Ciré Original" loading="lazy">
+			</a>
+			<h3 class="oz-hp-pcard-name">Beton Ciré Original</h3>
+			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
+			<ul class="oz-hp-pcard-features">
+				<li>Badkamerwanden, natte cellen</li>
+				<li>Huiskamervloeren en meubels</li>
+				<li>Zeer hard, fijne structuur</li>
+				<li>Snelste klaar</li>
+				<li>90 kleuren + RAL en NCS</li>
+				<li>Voor binnen en buiten</li>
+			</ul>
+			<div class="oz-hp-pcard-price"><strong>Vanaf &euro;31</strong> per 1m&sup2;</div>
+			<a href="/beton-cire-original/" class="oz-hp-btn oz-hp-btn--teal">Beton Ciré Original</a>
+		</div>
+	</div>
+</section>
+
+<?php /* ================================================================
+       S05 — RUIMTES MOZAIEK
        ================================================================ */ ?>
 <section class="oz-hp-ruimtes oz-hp-section" data-reveal>
 	<div class="oz-hp-ruimtes-header">
@@ -123,85 +187,6 @@ $up = home_url( '/wp-content/uploads' );
 				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Tv-Meubel-1004-Original.webp" ); ?>" alt="Beton cire meubels" loading="lazy">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Meubels</div></div>
 			</a>
-		</div>
-	</div>
-</section>
-
-<?php /* ================================================================
-       S05 — PRODUCT: ALL-IN-ONE
-       ================================================================ */ ?>
-<section class="oz-hp-section oz-hp-section--sand" data-reveal>
-	<div class="oz-hp-section-header">
-		<div class="oz-hp-eyebrow">Onze lijnen</div>
-		<h2 class="oz-hp-heading">Welke Beton Cire past <em>bij jou?</em></h2>
-	</div>
-
-	<div class="oz-hp-product">
-		<div class="oz-hp-product-visual oz-hp-product-visual--box">
-			<img src="<?php echo esc_url( "$up/2026/03/Beton-Cire-box.webp" ); ?>" alt="Beton Cire All-In-One verpakking" loading="lazy">
-		</div>
-		<div class="oz-hp-product-info">
-			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
-			<h3 class="oz-hp-product-name">Beton Cire All-In-One</h3>
-			<div class="oz-hp-product-rating">Makkelijkheid: 5/5 &nbsp;|&nbsp; Duurzaamheid: 5/5 &nbsp;|&nbsp; Betaalbaarheid: 4/5</div>
-			<ul class="oz-hp-product-features">
-				<li>Badkamerwanden, natte cellen</li>
-				<li>Huiskamervloeren en meubels</li>
-				<li>Hard met een fijne structuur</li>
-				<li>Slechts twee dagen werk</li>
-				<li>36 kleuren en RAL en NCS</li>
-				<li>Voor binnen</li>
-			</ul>
-			<div class="oz-hp-product-price">&euro;28 <span>per 1m&sup2;</span></div>
-			<a href="/beton-cire-all-in-one-easyline-standaard-kleuren/" class="oz-hp-btn oz-hp-btn--teal">Beton Cire All-In-One</a>
-		</div>
-	</div>
-
-<?php /* ================================================================
-       S06 — PRODUCT: ORIGINAL (reversed)
-       ================================================================ */ ?>
-	<div class="oz-hp-product oz-hp-product--reverse">
-		<div class="oz-hp-product-visual oz-hp-product-visual--box">
-			<img src="<?php echo esc_url( "$up/2026/03/Original-Box.webp" ); ?>" alt="Beton Cire Original verpakking" loading="lazy">
-		</div>
-		<div class="oz-hp-product-info">
-			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
-			<h3 class="oz-hp-product-name">Beton Cire Original</h3>
-			<div class="oz-hp-product-rating">Makkelijkheid: 5/5 &nbsp;|&nbsp; Duurzaamheid: 5/5 &nbsp;|&nbsp; Betaalbaarheid: 5/5</div>
-			<ul class="oz-hp-product-features">
-				<li>Badkamerwanden, natte cellen</li>
-				<li>Huiskamervloeren en meubels</li>
-				<li>Zeer hard, fijne structuur</li>
-				<li>Snelste klaar</li>
-				<li>90 kleuren + RAL en NCS</li>
-				<li>Voor binnen en buiten</li>
-			</ul>
-			<div class="oz-hp-product-price">&euro;31 <span>per 1m&sup2;</span></div>
-			<a href="/beton-cire-original-kleuren/" class="oz-hp-btn oz-hp-btn--teal">Beton Cire Original</a>
-		</div>
-	</div>
-
-<?php /* ================================================================
-       S07 — PRODUCT: LAVASTEEN
-       ================================================================ */ ?>
-	<div class="oz-hp-product">
-		<div class="oz-hp-product-visual oz-hp-product-visual--box">
-			<img src="<?php echo esc_url( "$up/2026/03/Lavasteen-Box.webp" ); ?>" alt="Beton Cire Lavasteen verpakking" loading="lazy">
-		</div>
-		<div class="oz-hp-product-info">
-			<div class="oz-hp-product-label">Kant &amp; Klaar</div>
-			<h3 class="oz-hp-product-name">Beton Cire Lavasteen</h3>
-			<div class="oz-hp-product-rating">Makkelijkheid: 5/5 &nbsp;|&nbsp; Duurzaamheid: 5/5 &nbsp;|&nbsp; Betaalbaarheid: 5/5</div>
-			<ul class="oz-hp-product-features">
-				<li>Badkamer vloeren en wanden</li>
-				<li>Voor horeca, huiskamer vloeren</li>
-				<li>Extreem hard door epoxy</li>
-				<li>2 tot 3 dagen werk</li>
-				<li>Keuze uit 20 nieuwe kleuren</li>
-				<li>Voor binnen en buiten</li>
-			</ul>
-			<div class="oz-hp-product-price">&euro;47/m&sup2; <span>per 5m&sup2;</span></div>
-			<a href="/product-categorie/lavasteen/" class="oz-hp-btn oz-hp-btn--teal">Beton Cire Lavasteen</a>
 		</div>
 	</div>
 </section>
