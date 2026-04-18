@@ -389,6 +389,8 @@ $up = home_url( '/wp-content/uploads' );
 			[
 				'q'      => 'Zelf aanbrengen of professioneel laten doen?',
 				'layout' => 'full',
+				'img'    => '2024/02/Woonkamer-wand.webp',
+				'alt'    => 'Zelf aangebrachte Beton Ciré wand in een woonkamer',
 				'teaser' => '<p>Beton Cir&eacute; aanbrengen kan zelf gedaan worden door doe-het-zelvers of uitbesteed aan een professional &mdash; afhankelijk van ervaring en gewenst resultaat. Zelf aanbrengen biedt creatieve vrijheid en bespaart kosten.</p>',
 				'more'   => '<p>Is het lastig om zelf Beton Cir&eacute; of Microcement aan te brengen? Het is goed te doen door iedereen die een beetje handig is. Afhankelijk van toepassing, kennis en ervaring kun je kiezen voor Beton Cir&eacute; All-In-One of Easyline &mdash; deze varianten zijn voorgemengd en eenvoudig aan te brengen op een schone, egale en gelijkzuigende ondergrond.</p>
 				            <p class="oz-hp-tip"><strong>Tip van Patrick, onze specialist:</strong> bestel altijd iets meer dan je denkt nodig te hebben. Zo heb je altijd een beetje over om eventuele oneffenheden die tijdens het aanbrengen zijn ontstaan snel te kunnen verhelpen. En toch geven we genoeg mee voor het aantal vierkante meter die je bestelt.</p>
@@ -423,11 +425,9 @@ $up = home_url( '/wp-content/uploads' );
 			$layout = $topic['layout'] ?? 'img-left';
 		?>
 		<article class="oz-hp-learn-row oz-hp-learn-row--<?php echo esc_attr( $layout ); ?>" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-			<?php if ( 'full' !== $layout ) : ?>
 			<div class="oz-hp-learn-media">
 				<img src="<?php echo esc_url( $up . '/' . $topic['img'] ); ?>" alt="<?php echo esc_attr( $topic['alt'] ); ?>" loading="lazy">
 			</div>
-			<?php endif; ?>
 			<div class="oz-hp-learn-text">
 				<h3 class="oz-hp-learn-title" itemprop="name"><?php echo esc_html( $topic['q'] ); ?></h3>
 				<div class="oz-hp-learn-body" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
