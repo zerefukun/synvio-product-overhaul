@@ -79,10 +79,11 @@ function oz_render_block_sections( $content ) {
 			echo '</section>';
 
 		} elseif ( $name === 'core/columns' ) {
+			$is_full = ! empty( $block['attrs']['align'] ) && $block['attrs']['align'] === 'full';
 			echo '<section class="oz-section' . $bg . '" data-reveal-stagger>';
-			echo '<div class="oz-container">';
+			if ( ! $is_full ) echo '<div class="oz-container">';
 			echo $rendered;
-			echo '</div>';
+			if ( ! $is_full ) echo '</div>';
 			echo '</section>';
 
 		} elseif ( $name === 'core/group' && ! empty( $block['attrs']['align'] ) && $block['attrs']['align'] === 'full' ) {
