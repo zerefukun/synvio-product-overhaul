@@ -305,9 +305,27 @@ $up = home_url( '/wp-content/uploads' );
 		<div class="oz-hp-eyebrow">Ervaringen</div>
 		<h2 class="oz-hp-heading">Wat klanten <em>zeggen</em></h2>
 	</div>
-	<div class="oz-hp-trustindex">
-		<div data-layout-id="4" data-set-id="light-background" data-pid="1062d392034891778e364df39bb" data-language="nl"></div>
-		<script defer async src="//cdn.trustindex.io/loader.js?1062d392034891778e364df39bb"></script>
+	<div class="oz-hp-reviews-grid">
+		<div class="oz-hp-review">
+			<p class="oz-hp-review-text">"PU topcoat op ons aanrecht, 5 lagen. Na 2 weken nog steeds prachtig."</p>
+			<div class="oz-hp-review-author">Raggy W. &mdash; Maart 2026</div>
+		</div>
+		<div class="oz-hp-review">
+			<p class="oz-hp-review-text">"Ontzettend fijne zaak. Vriendelijk, zeer goede uitleg."</p>
+			<div class="oz-hp-review-author">Jacqueline H. &mdash; Feb 2026</div>
+		</div>
+		<div class="oz-hp-review">
+			<p class="oz-hp-review-text">"Prachtige eettafel gemaakt. Mooi materiaal, fijn te verwerken."</p>
+			<div class="oz-hp-review-author">Dennis S. &mdash; Jan 2026</div>
+		</div>
+		<div class="oz-hp-review">
+			<p class="oz-hp-review-text">"Ongelofelijke service. Professioneel en vriendelijk advies op maat."</p>
+			<div class="oz-hp-review-author">Elisabeth P. &mdash; Feb 2026</div>
+		</div>
+	</div>
+	<div class="oz-hp-reviews-score">
+		<div class="oz-hp-reviews-score-num">4.8 / 5.0</div>
+		<div class="oz-hp-reviews-score-label">200+ Google Reviews</div>
 	</div>
 </section>
 
