@@ -71,6 +71,13 @@
   line-height: 1.75;
 }
 
+/* Center-aligned paragraphs: also center the element itself, otherwise the
+   720px max-width leaves the text visually left-anchored. */
+.oz-ruimte p.has-text-align-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* Center headings + text in single-column (non-columns) sections */
 .oz-ruimte .oz-section > .oz-container > .wp-block-group {
   max-width: 800px;
