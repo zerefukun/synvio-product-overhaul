@@ -191,6 +191,12 @@ if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
 }
 
 /**
+ * Load block-section renderer used by page-ruimte.php and single.php
+ * (for stucsoorten category posts).
+ */
+require_once get_stylesheet_directory() . '/inc/block-sections-renderer.php';
+
+/**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
  * Free tool, loads async, no performance impact.
  * Dashboard: https://clarity.microsoft.com
@@ -468,11 +474,16 @@ function oz_homepage_v2_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
 
 /**
- * Enqueue ruimte page styles when the Ruimte template is active.
- * Handles full-width sections, hero cover, image treatments.
+ * Enqueue ruimte page styles when the Ruimte template is active OR when
+ * viewing a stucsoorten-category single post (same block-section layout).
  */
 function oz_ruimte_enqueue() {
-    if (is_admin() || ! is_page_template('page-ruimte.php')) return;
+    if (is_admin()) return;
+
+    $needs_ruimte_css = is_page_template('page-ruimte.php')
+        || ( is_single() && has_category( 'stucsoorten' ) );
+
+    if ( ! $needs_ruimte_css ) return;
 
     wp_enqueue_style(
         'oz-ruimte',
