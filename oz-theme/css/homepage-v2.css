@@ -1630,6 +1630,14 @@
     border-left-color: #FFF;
     color: #FFF;
   }
+  .oz-hp-learn-row--full .oz-hp-btn--teal {
+    background: #FFF;
+    color: var(--teal);
+  }
+  .oz-hp-learn-row--full .oz-hp-btn--teal:hover {
+    background: var(--teal-mist);
+    color: var(--teal);
+  }
 }
 
 /* ================================================================
