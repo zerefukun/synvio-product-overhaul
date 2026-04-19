@@ -214,8 +214,11 @@
 }
 
 /* Alignfull columns (card grids) — break out of container but still center
-   with sane max-width and side gutter on wide viewports */
-.oz-ruimte .oz-section > .wp-block-columns.alignfull {
+   with sane max-width and side gutter on wide viewports. Matches columns both
+   as direct children of the section and as children of the toepassingen group
+   wrapper (which uses display:contents). */
+.oz-ruimte .oz-section > .wp-block-columns.alignfull,
+.oz-ruimte .oz-ruimte-toepassingen .wp-block-columns.alignfull {
   max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
