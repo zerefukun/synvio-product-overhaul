@@ -57,7 +57,7 @@ function oz_render_block_sections( $content ) {
 		if ( in_array( $i, $timeline_indices, true ) && $i !== $timeline_indices[0] ) continue;
 
 		$name     = $block['blockName'];
-		$rendered = render_block( $block );
+		$rendered = do_shortcode( render_block( $block ) );
 		$bg       = ( $section_i % 2 === 1 ) ? ' oz-section--warm' : '';
 
 		if ( in_array( $i, $timeline_indices, true ) ) {
@@ -68,7 +68,7 @@ function oz_render_block_sections( $content ) {
 			foreach ( $timeline_indices as $ti ) {
 				if ( $ti === $i ) continue;
 				if ( empty( $blocks[ $ti ]['blockName'] ) ) continue;
-				echo render_block( $blocks[ $ti ] );
+				echo do_shortcode( render_block( $blocks[ $ti ] ) );
 			}
 			echo '</div>';
 			echo '</div>';

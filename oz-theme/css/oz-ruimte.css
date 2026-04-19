@@ -1063,3 +1063,135 @@
   max-width: 720px;
   margin: 24px auto 0;
 }
+
+/* ================================================================
+   CONTACT page — form + showroom columns + map embed
+   ================================================================ */
+
+/* Contact form section: soft background to separate from hero */
+.oz-ruimte .oz-section.oz-contact-form {
+  background: var(--oz-surface-soft, #f7f5f2);
+}
+
+.oz-ruimte .oz-section.oz-contact-form .wp-block-columns {
+  gap: 48px;
+}
+
+.oz-ruimte .oz-section.oz-contact-form h2 {
+  margin-top: 0;
+}
+
+/* WPForms styling inside contact form column */
+.oz-ruimte .oz-section.oz-contact-form .wpforms-container {
+  max-width: 100%;
+  margin: 16px 0 0;
+}
+
+.oz-ruimte .oz-section.oz-contact-form .wpforms-field input[type="text"],
+.oz-ruimte .oz-section.oz-contact-form .wpforms-field input[type="email"],
+.oz-ruimte .oz-section.oz-contact-form .wpforms-field input[type="tel"],
+.oz-ruimte .oz-section.oz-contact-form .wpforms-field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  font-size: 15px;
+  background: #fff;
+}
+
+.oz-ruimte .oz-section.oz-contact-form .wpforms-field textarea {
+  min-height: 140px;
+}
+
+.oz-ruimte .oz-section.oz-contact-form .wpforms-submit {
+  padding: 14px 28px;
+  background: var(--oz-accent);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-contact-form .wpforms-submit:hover {
+  background: var(--oz-accent-hover, #2a2a2a);
+}
+
+/* Showroom columns: image + opening hours */
+.oz-ruimte .oz-section.oz-contact-showroom .wp-block-columns {
+  gap: 48px;
+  align-items: center;
+}
+
+.oz-ruimte .oz-section.oz-contact-showroom .wp-block-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+.oz-ruimte .oz-section.oz-contact-showroom h2 {
+  margin-top: 0;
+}
+
+/* Full-bleed Google Maps embed */
+.oz-ruimte .oz-section.oz-contact-map {
+  padding: 0;
+}
+
+.oz-ruimte .oz-section.oz-contact-map .oz-map-embed {
+  width: 100%;
+  line-height: 0;
+}
+
+.oz-ruimte .oz-section.oz-contact-map iframe {
+  display: block;
+  width: 100%;
+  height: 450px;
+  border: 0;
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-section.oz-contact-form .wp-block-columns,
+  .oz-ruimte .oz-section.oz-contact-showroom .wp-block-columns {
+    gap: 32px;
+  }
+  .oz-ruimte .oz-section.oz-contact-map iframe {
+    height: 340px;
+  }
+}
+
+/* ================================================================
+   MOBILE READABILITY — left-align body text on small screens
+   Centered text at narrow widths breaks reading rhythm.
+   Hero stays as-authored (display text is fine centered).
+   ================================================================ */
+@media (max-width: 767px) {
+  .oz-ruimte .oz-section p.has-text-align-center,
+  .oz-ruimte .oz-section h2.has-text-align-center,
+  .oz-ruimte .oz-section h3.has-text-align-center,
+  .oz-ruimte .oz-section h4.has-text-align-center,
+  .oz-ruimte .oz-section h5.has-text-align-center,
+  .oz-ruimte .oz-section h6.has-text-align-center,
+  .oz-ruimte .oz-section > .oz-container > h2,
+  .oz-ruimte .oz-section > .oz-container > h3,
+  .oz-ruimte .oz-section > .oz-container > h6,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > h2,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > h3,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > h6,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h2,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h3,
+  .oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h6,
+  .oz-ruimte .oz-section > .wp-block-group.alignfull h2,
+  .oz-ruimte .oz-section > .wp-block-group.alignfull h3,
+  .oz-ruimte .oz-section > .wp-block-group.alignfull h6 {
+    text-align: left !important;
+  }
+
+  /* Center-aligned wp:buttons: keep buttons full-width / left-stacked */
+  .oz-ruimte .oz-section .wp-block-buttons.is-content-justification-center {
+    justify-content: flex-start;
+  }
+}
