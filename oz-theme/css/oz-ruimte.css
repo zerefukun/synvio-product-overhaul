@@ -1005,3 +1005,61 @@
 .oz-ruimte .oz-section > .oz-container > .wp-block-group:has(> .wp-block-group__inner-container > .wp-block-details) h2 {
   text-align: center;
 }
+
+/* ── Kleur swatch grid ──
+   Grid of 50 color swatches on /original-kleurstalen/ and similar pages.
+   Opt-in via wrapper className "oz-kleur-grid-wrap" with inner .oz-kleur-grid. */
+.oz-ruimte .oz-kleur-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.oz-ruimte .oz-kleur-swatch {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--oz-border-light);
+  border-radius: var(--oz-radius);
+  overflow: hidden;
+  transition: box-shadow var(--oz-transition), transform var(--oz-transition);
+}
+
+.oz-ruimte .oz-kleur-swatch:hover {
+  box-shadow: var(--oz-shadow-md);
+  transform: translateY(-2px);
+}
+
+.oz-ruimte .oz-kleur-swatch img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.oz-ruimte .oz-kleur-swatch figcaption {
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.oz-ruimte .oz-kleur-swatch figcaption strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+}
+
+.oz-ruimte .oz-kleur-swatch figcaption span {
+  display: block;
+  color: var(--oz-text-muted, #666);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Kleurstalen order form section */
+.oz-ruimte .oz-section .oz-kleur-form .wpcf7 {
+  max-width: 720px;
+  margin: 24px auto 0;
+}
