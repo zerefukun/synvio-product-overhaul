@@ -108,7 +108,7 @@ $site_name = get_bloginfo( 'name' );
 			<h4 class="oz-footer__heading">Navigatie</h4>
 			<ul class="oz-footer__links">
 				<li><a href="/">Home</a></li>
-				<li><a href="/winkel/">Producten</a></li>
+				<li><a href="/producten/">Producten</a></li>
 				<li><a href="/kennisbank/">Kennisbank</a></li>
 				<li><a href="/kleuren/">Kleuren</a></li>
 				<li><a href="/kleurstalen-aanvragen/">Kleurstalen aanvragen</a></li>
@@ -129,7 +129,6 @@ $site_name = get_bloginfo( 'name' );
 				<li><a href="/verzending/">Verzending &amp; Retourneren</a></li>
 				<li><a href="/algemene-voorwaarden/">Algemene voorwaarden</a></li>
 				<li><a href="/privacybeleid/">Privacy beleid</a></li>
-				<li><a href="/nieuwsbrief/">Nieuwsbrief</a></li>
 			</ul>
 		</div>
 
