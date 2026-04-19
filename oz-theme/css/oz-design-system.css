@@ -339,6 +339,10 @@ strong, b {
   display: inline-block;
 }
 
+.oz-eyebrow.has-text-align-center {
+  display: block;
+}
+
 /* ── Cards ── */
 .oz-card {
   background: var(--oz-bg-page);
