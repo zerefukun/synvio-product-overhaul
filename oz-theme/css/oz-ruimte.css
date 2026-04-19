@@ -261,23 +261,42 @@
   color: #fff;
 }
 
-.oz-banner-text--teal {
-  background: var(--oz-accent);
+.oz-banner-text--dark h3 { color: #fff; }
+.oz-banner-text--dark p { color: rgba(255, 255, 255, .82); }
+.oz-banner-text--dark .oz-banner-btn {
   color: #fff;
+  border-bottom-color: rgba(255, 255, 255, .4);
+}
+.oz-banner-card:hover .oz-banner-text--dark .oz-banner-btn {
+  border-bottom-color: #fff;
+}
+
+/* Pale teal-mist card — dark teal text on light background */
+.oz-banner-text--teal {
+  background: #E8F0F0;
+  color: var(--oz-accent);
+}
+
+.oz-banner-text--teal h3 { color: var(--oz-accent); }
+.oz-banner-text--teal p { color: rgba(19, 83, 80, .78); }
+.oz-banner-text--teal .oz-banner-btn {
+  color: var(--oz-accent);
+  border-bottom-color: rgba(19, 83, 80, .3);
+}
+.oz-banner-card:hover .oz-banner-text--teal .oz-banner-btn {
+  border-bottom-color: var(--oz-accent);
 }
 
 .oz-banner-text h3 {
   font-family: var(--oz-ff-heading);
   font-size: clamp(24px, 2.4vw, 34px);
   font-weight: 400;
-  color: #fff;
   margin: 0 0 14px;
 }
 
 .oz-banner-text p {
   font-size: 15px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, .82);
   margin: 0 0 24px;
 }
 
@@ -289,15 +308,13 @@
   font-weight: 600;
   letter-spacing: .5px;
   text-transform: uppercase;
-  color: #fff;
   padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, .4);
+  border-bottom: 1px solid;
   width: fit-content;
   transition: border-color .2s ease, gap .2s ease;
 }
 
 .oz-banner-card:hover .oz-banner-btn {
-  border-color: #fff;
   gap: 14px;
 }
 
