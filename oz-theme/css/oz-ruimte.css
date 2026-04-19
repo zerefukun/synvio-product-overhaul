@@ -208,21 +208,34 @@
   box-sizing: border-box;
 }
 
-/* Ruimte banner cards — cover block with image bg + dark overlay + centered text */
-.oz-ruimte-banner-row .wp-block-column {
+/* Ruimte banner row — full-bleed 2-col, images touch viewport edges */
+.oz-ruimte .oz-section:has(> .oz-ruimte-banner-row) {
   padding: 0;
 }
 
+.oz-ruimte .oz-section > .wp-block-columns.oz-ruimte-banner-row {
+  max-width: none;
+  padding: 0;
+  gap: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.oz-ruimte-banner-row .wp-block-column {
+  padding: 0;
+  margin: 0;
+}
+
 .oz-ruimte .wp-block-cover.oz-ruimte-banner {
-  border-radius: var(--oz-radius-lg, 12px);
+  border-radius: 0;
   overflow: hidden;
   min-height: 320px;
   padding: 32px 24px;
-  transition: transform var(--oz-transition, .2s ease);
+  transition: filter var(--oz-transition, .2s ease);
 }
 
 .oz-ruimte .wp-block-cover.oz-ruimte-banner:hover {
-  transform: translateY(-2px);
+  filter: brightness(1.08);
 }
 
 .oz-ruimte .wp-block-cover.oz-ruimte-banner .wp-block-cover__inner-container {
