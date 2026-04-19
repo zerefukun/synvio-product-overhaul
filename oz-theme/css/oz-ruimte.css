@@ -210,9 +210,9 @@
 }
 
 /* ── Product comparison cards ──
-   Targets columns sections with alignfull groups (product showcases).
+   Opt-in via className "oz-product-cards" on the columns block.
    Each column becomes a card with centered content. */
-.oz-ruimte .oz-section .alignfull .wp-block-columns .wp-block-column {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column {
   background: var(--oz-bg-page);
   border: 1px solid var(--oz-border-light);
   border-radius: var(--oz-radius-lg);
@@ -221,16 +221,15 @@
   transition: box-shadow var(--oz-transition);
 }
 
-.oz-ruimte .oz-section .alignfull .wp-block-columns .wp-block-column:hover {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column:hover {
   box-shadow: var(--oz-shadow-md);
 }
 
-/* Product card images */
-.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-image {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-image {
   margin-bottom: 20px;
 }
 
-.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-image img {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-image img {
   aspect-ratio: 1;
   object-fit: contain;
   border-radius: var(--oz-radius);
@@ -239,14 +238,12 @@
   margin: 0 auto;
 }
 
-/* Product card title */
-.oz-ruimte .oz-section .alignfull .wp-block-column h3 {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column h3 {
   font-size: var(--oz-text-lg);
   margin-bottom: 4px;
 }
 
-/* Feature list inside product cards: left-aligned, teal check marks */
-.oz-ruimte .oz-section .alignfull .wp-block-column .wp-block-list {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-list {
   text-align: left;
   padding-left: 1.2em;
   margin: 16px 0;
@@ -254,14 +251,13 @@
   line-height: 1.8;
 }
 
-/* Pricing text */
-.oz-ruimte .oz-section .alignfull .wp-block-column > p:last-of-type {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column > p:last-of-type {
   font-size: var(--oz-text-base);
   color: var(--oz-text-primary);
   margin-top: 16px;
 }
 
-.oz-ruimte .oz-section .alignfull .wp-block-column > p:last-of-type strong {
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column > p:last-of-type strong {
   font-size: var(--oz-text-lg);
 }
 
