@@ -507,6 +507,7 @@ function oz_ruimte_enqueue() {
     if (is_admin()) return;
 
     $needs_ruimte_css = is_page_template('page-ruimte.php')
+        || is_page_template('sitemap-template.php')
         || ( is_single() && has_category( 'stucsoorten' ) );
 
     if ( ! $needs_ruimte_css ) return;
