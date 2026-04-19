@@ -1596,6 +1596,287 @@
 }
 
 /* ================================================================
+   OFFERTE PAGE — CF7 quote form + sidebar info card
+   ================================================================ */
+
+/* Soft-background section around the form split */
+.oz-ruimte .oz-section.oz-offerte-form {
+  background: var(--oz-surface-soft, #f7f5f2);
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-split {
+  gap: 48px;
+  align-items: flex-start;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-form__col {
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #e5e0d9);
+  border-radius: 12px;
+  padding: 36px 36px 28px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-form__col h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+/* Right-side info card: sticky on desktop, stacked cells */
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info {
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #e5e0d9);
+  border-radius: 12px;
+  padding: 28px 28px 24px;
+  position: sticky;
+  top: 100px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info h3 {
+  margin: 0 0 6px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info .wp-block-separator {
+  border-color: var(--oz-border-light, #e5e0d9);
+  margin: 20px 0;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info .oz-eyebrow {
+  margin-bottom: 6px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info p {
+  margin: 0 0 8px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-contact {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-contact a {
+  color: var(--oz-text-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .oz-offerte-contact a:hover {
+  border-bottom-color: var(--oz-accent);
+}
+
+/* CF7 form styling */
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 {
+  margin-top: 20px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 0 0 4px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .row > [class*="col-xs-12"] {
+  width: 100%;
+  padding: 0;
+  min-width: 0;
+}
+
+/* Single-column rows (full-width fields) */
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .row:has(> .col-xs-12:only-child) {
+  grid-template-columns: 1fr;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--oz-text-muted, #6b6560);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 label > br {
+  display: none;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-form-control-wrap {
+  display: block;
+  margin-top: 6px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="text"],
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="email"],
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="tel"],
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 15px;
+  font-family: var(--oz-ff-body);
+  color: var(--oz-text-primary);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.4;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="text"]:focus,
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="email"]:focus,
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="tel"]:focus,
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 textarea:focus {
+  outline: none;
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 14px;
+  font-family: var(--oz-ff-body);
+  cursor: pointer;
+}
+
+/* Checkbox groups: Reden + toestemming */
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-checkbox,
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-acceptance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-list-item {
+  margin: 0;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-list-item label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 999px;
+  background: #fafafa;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  margin: 0;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-list-item label:hover {
+  background: #fff;
+  border-color: var(--oz-accent);
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-list-item input[type="checkbox"] {
+  accent-color: var(--oz-accent);
+  margin: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 small {
+  display: block;
+  font-size: 12px;
+  color: var(--oz-text-muted, #6b6560);
+  line-height: 1.5;
+  margin-top: 6px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-submit {
+  display: inline-block;
+  padding: 14px 34px;
+  background: var(--oz-accent);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-family: var(--oz-ff-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background .15s ease, transform .1s ease;
+  margin-top: 12px;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-submit:hover {
+  background: var(--oz-accent-hover, #2a2a2a);
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .wpcf7-submit:active {
+  transform: translateY(1px);
+}
+
+/* Validation messages */
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7-not-valid-tip {
+  display: block;
+  color: #c14141;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7-response-output {
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 14px;
+  margin: 16px 0 0;
+}
+
+/* Last-row submit alignment (WPCF7 uses end-xs) */
+.oz-ruimte .oz-section.oz-offerte-form .wpcf7 .end-xs {
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .oz-ruimte .oz-section.oz-offerte-form .oz-offerte-split {
+    gap: 28px;
+  }
+  .oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info {
+    position: static;
+  }
+  .oz-ruimte .oz-section.oz-offerte-form .oz-offerte-form__col {
+    padding: 28px 22px 24px;
+  }
+}
+
+@media (max-width: 560px) {
+  .oz-ruimte .oz-section.oz-offerte-form .wpcf7 .row {
+    grid-template-columns: 1fr;
+  }
+  .oz-ruimte .oz-section.oz-offerte-form .oz-offerte-form__col {
+    padding: 22px 18px 20px;
+  }
+  .oz-ruimte .oz-section.oz-offerte-form .oz-offerte-info {
+    padding: 22px 20px 18px;
+  }
+}
+
+/* ================================================================
    MOBILE READABILITY — left-align body text on small screens
    Centered text at narrow widths breaks reading rhythm.
    Hero stays as-authored (display text is fine centered).
