@@ -829,29 +829,29 @@
   }
 }
 
-/* ── Kleurstalen section: image left, text right ── */
-.oz-ruimte .oz-ruimte-kleurstalen .wp-block-columns {
+/* ── Den Haag closing: image left, text right ── */
+.oz-ruimte .oz-ruimte-denhaag .wp-block-columns {
   gap: 48px;
   align-items: center;
 }
 
-.oz-ruimte .oz-ruimte-kleurstalen .oz-ruimte-meubels-image {
+.oz-ruimte .oz-ruimte-denhaag .oz-ruimte-meubels-image {
   margin: 0;
 }
 
-.oz-ruimte .oz-ruimte-kleurstalen .oz-ruimte-meubels-image img {
+.oz-ruimte .oz-ruimte-denhaag .oz-ruimte-meubels-image img {
   width: 100%;
   height: auto;
   border-radius: var(--oz-radius-lg, 12px);
   display: block;
 }
 
-.oz-ruimte .oz-ruimte-kleurstalen h2 {
+.oz-ruimte .oz-ruimte-denhaag p {
   margin-top: 0;
 }
 
 @media (max-width: 767px) {
-  .oz-ruimte .oz-ruimte-kleurstalen .wp-block-columns {
+  .oz-ruimte .oz-ruimte-denhaag .wp-block-columns {
     gap: 24px;
   }
 }
