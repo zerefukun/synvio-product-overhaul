@@ -46,14 +46,16 @@
   }
 }
 
-/* ── Section spacing tuning for ruimte pages ── */
+/* ── Section spacing tuning for ruimte pages ──
+   Consistent 88px top/bottom on desktop so every section shares the same
+   vertical rhythm. Full-bleed banner rows opt out via their own override. */
 .oz-ruimte .oz-section {
-  padding: 72px 0;
+  padding: 56px 0;
 }
 
 @media (min-width: 768px) {
   .oz-ruimte .oz-section {
-    padding: 96px 0;
+    padding: 88px 0;
   }
 }
 
@@ -206,12 +208,6 @@
   margin-right: auto;
   padding: 0 var(--oz-gap);
   box-sizing: border-box;
-}
-
-/* Card-row sections need less vertical breathing room — the full-bleed
-   imagery already gives the page visual rhythm. */
-.oz-ruimte .oz-section:has(> .wp-block-columns.alignfull) {
-  padding: 40px 0;
 }
 
 /* Ruimte banner row — full-bleed 2-card split.
