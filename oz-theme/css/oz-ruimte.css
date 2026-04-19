@@ -271,9 +271,18 @@
   font-size: var(--oz-text-lg);
 }
 
-/* ── Buttons in ruimte context ── */
+/* ── Buttons in ruimte context ──
+   WP core's is-layout-flex CSS isn't loaded on block-section-rendered pages,
+   so replicate flex behavior + centering for button rows. */
 .oz-ruimte .wp-block-buttons {
   margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.oz-ruimte .wp-block-buttons.is-content-justification-center {
+  justify-content: center;
 }
 
 /* ── Navigation / TOC section ──
