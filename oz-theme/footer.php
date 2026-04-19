@@ -89,9 +89,13 @@ $site_name = get_bloginfo( 'name' );
 			</div>
 		</div>
 
+		<?php
+		$oz_chevron = '<svg class="oz-footer__chevron" width="10" height="8" viewBox="0 0 10 8" fill="none" aria-hidden="true"><path d="m2 2 3 3 3-3" stroke="currentColor" stroke-width="1.5"/></svg>';
+		?>
+
 		<!-- Column 2: Producten -->
-		<div class="oz-footer__col">
-			<h4 class="oz-footer__heading">Producten</h4>
+		<details class="oz-footer__col oz-footer__accordion">
+			<summary class="oz-footer__heading">Producten<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/beton-cire-easyline-all-in-one/">All-In-One</a></li>
 				<li><a href="/beton-cire-easyline-kant-en-klaar/">Easyline</a></li>
@@ -101,11 +105,11 @@ $site_name = get_bloginfo( 'name' );
 				<li><a href="/product-categorie/primer/">Primer</a></li>
 				<li><a href="/product-categorie/pu-coating/">PU Coating</a></li>
 			</ul>
-		</div>
+		</details>
 
 		<!-- Column 3: Navigatie -->
-		<div class="oz-footer__col">
-			<h4 class="oz-footer__heading">Navigatie</h4>
+		<details class="oz-footer__col oz-footer__accordion">
+			<summary class="oz-footer__heading">Navigatie<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/">Home</a></li>
 				<li><a href="/producten/">Producten</a></li>
@@ -116,11 +120,11 @@ $site_name = get_bloginfo( 'name' );
 				<li><a href="/sitemap/">Sitemap</a></li>
 				<li><a href="/beton-cire-showroom/">Locatie</a></li>
 			</ul>
-		</div>
+		</details>
 
 		<!-- Column 4: Klantenservice -->
-		<div class="oz-footer__col">
-			<h4 class="oz-footer__heading">Klantenservice</h4>
+		<details class="oz-footer__col oz-footer__accordion">
+			<summary class="oz-footer__heading">Klantenservice<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/offerte/">Offerte aanvragen</a></li>
 				<li><a href="/klantervaringen/">Klantervaringen</a></li>
@@ -130,7 +134,23 @@ $site_name = get_bloginfo( 'name' );
 				<li><a href="/algemene-voorwaarden/">Algemene voorwaarden</a></li>
 				<li><a href="/privacybeleid/">Privacy beleid</a></li>
 			</ul>
-		</div>
+		</details>
+
+		<!-- Column 5: Openingstijden -->
+		<details class="oz-footer__col oz-footer__accordion">
+			<summary class="oz-footer__heading">Openingstijden<?php echo $oz_chevron; ?></summary>
+			<table class="oz-footer__hours">
+				<tbody>
+					<tr><th>Maandag</th><td>9:00 &ndash; 15:30</td></tr>
+					<tr><th>Dinsdag</th><td>9:00 &ndash; 15:30</td></tr>
+					<tr><th>Woensdag</th><td>11:00 &ndash; 15:30</td></tr>
+					<tr><th>Donderdag</th><td>9:00 &ndash; 15:30</td></tr>
+					<tr><th>Vrijdag</th><td>9:00 &ndash; 15:30</td></tr>
+					<tr><th>Zaterdag</th><td>11:00 &ndash; 13:00</td></tr>
+					<tr><th>Zondag</th><td><span class="oz-footer__closed">Gesloten</span></td></tr>
+				</tbody>
+			</table>
+		</details>
 
 	</div>
 

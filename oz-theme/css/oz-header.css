@@ -1377,8 +1377,8 @@ body.oz-drawer-open {
 
 .oz-footer__inner {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1.1fr;
+  gap: 32px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 64px 24px 48px;
@@ -1460,6 +1460,93 @@ body.oz-drawer-open {
 
 .oz-footer__links a:hover {
   color: #FFF;
+}
+
+/* Opening hours table */
+.oz-footer__hours {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.oz-footer__hours th,
+.oz-footer__hours td {
+  padding: 4px 0;
+  text-align: left;
+  font-weight: 400;
+  color: rgba(255,255,255,.6);
+  vertical-align: top;
+}
+
+.oz-footer__hours th {
+  padding-right: 12px;
+  color: rgba(255,255,255,.45);
+}
+
+.oz-footer__closed {
+  color: rgba(255,255,255,.4);
+  font-style: italic;
+}
+
+/* Accordion — collapsible columns on mobile, static on desktop */
+.oz-footer__accordion {
+  /* reset native details display so grid item behaves normally */
+}
+
+.oz-footer__accordion > summary {
+  list-style: none;
+}
+
+.oz-footer__accordion > summary::-webkit-details-marker { display: none; }
+.oz-footer__accordion > summary::marker { content: ""; }
+
+.oz-footer__chevron {
+  display: none;
+  flex-shrink: 0;
+  transition: transform .2s ease;
+}
+
+/* Desktop: force content always visible, make summary non-interactive */
+@media (min-width: 801px) {
+  .oz-footer__accordion > summary {
+    cursor: default;
+    pointer-events: none;
+  }
+  .oz-footer__accordion > :not(summary) {
+    display: block !important;
+  }
+  .oz-footer__accordion > .oz-footer__hours {
+    display: table !important;
+  }
+}
+
+/* Mobile: native collapse, rotate chevron when open */
+@media (max-width: 800px) {
+  .oz-footer__accordion {
+    border-top: 1px solid rgba(255,255,255,.08);
+    padding: 14px 0;
+  }
+  .oz-footer__accordion:last-of-type {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .oz-footer__accordion > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    margin: 0;
+  }
+  .oz-footer__chevron {
+    display: inline-block;
+    color: rgba(255,255,255,.55);
+  }
+  .oz-footer__accordion[open] .oz-footer__chevron {
+    transform: rotate(180deg);
+  }
+  .oz-footer__accordion[open] .oz-footer__links,
+  .oz-footer__accordion[open] .oz-footer__hours {
+    margin-top: 14px;
+  }
 }
 
 .oz-footer__bottom {
@@ -1607,19 +1694,12 @@ body.oz-drawer-open {
   }
 
   .oz-footer__inner {
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-    padding: 48px 20px 32px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 32px 20px;
   }
 
   .oz-footer__brand {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 479px) {
-  .oz-footer__inner {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    margin-bottom: 16px;
   }
 }
