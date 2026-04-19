@@ -16,6 +16,7 @@ get_header(); ?>
 while ( have_posts() ) : the_post();
 	oz_render_block_sections( get_the_content() );
 endwhile;
+oz_render_reviews_section( 'ruimte' );
 ?>
 </div>
 

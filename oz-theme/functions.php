@@ -195,6 +195,7 @@ if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
  * (for stucsoorten category posts).
  */
 require_once get_stylesheet_directory() . '/inc/block-sections-renderer.php';
+require_once get_stylesheet_directory() . '/inc/reviews-section.php';
 
 /**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
@@ -457,9 +458,16 @@ function oz_homepage_v2_enqueue() {
     if (is_admin() || ! is_front_page()) return;
 
     wp_enqueue_style(
+        'oz-reviews',
+        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
+    );
+
+    wp_enqueue_style(
         'oz-homepage-v2',
         get_stylesheet_directory_uri() . '/css/homepage-v2.css',
-        [],
+        ['oz-reviews'],
         filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
     );
 
@@ -486,9 +494,16 @@ function oz_ruimte_enqueue() {
     if ( ! $needs_ruimte_css ) return;
 
     wp_enqueue_style(
+        'oz-reviews',
+        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
+    );
+
+    wp_enqueue_style(
         'oz-ruimte',
         get_stylesheet_directory_uri() . '/css/oz-ruimte.css',
-        ['oz-design-system', 'oz-animations'],
+        ['oz-design-system', 'oz-animations', 'oz-reviews'],
         filemtime(get_stylesheet_directory() . '/css/oz-ruimte.css')
     );
 }

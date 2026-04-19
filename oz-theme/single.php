@@ -19,7 +19,10 @@ while ( have_posts() ) : the_post();
 
 	if ( $is_stucsoorten ) : ?>
 		<div class="oz-ruimte">
-			<?php oz_render_block_sections( get_the_content() ); ?>
+			<?php
+			oz_render_block_sections( get_the_content() );
+			oz_render_reviews_section( 'ruimte' );
+			?>
 		</div>
 	<?php else : ?>
 		<article <?php post_class( 'oz-article' ); ?>>
