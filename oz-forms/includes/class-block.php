@@ -15,6 +15,22 @@ class Block {
 
 	public static function register() : void {
 		add_action( 'init', array( __CLASS__, 'register_block' ) );
+		add_action( 'init', array( __CLASS__, 'register_shortcode' ) );
+	}
+
+	/**
+	 * Shortcode fallback: [oz_form id="contact"]
+	 * Lets us drop the form into Flatsome/legacy templates without touching the page wrapper.
+	 */
+	public static function register_shortcode() : void {
+		add_shortcode( 'oz_form', function ( $atts ) {
+			$atts = shortcode_atts( array( 'id' => '' ), $atts, 'oz_form' );
+			$id   = sanitize_key( $atts['id'] );
+			if ( $id === '' ) {
+				return '';
+			}
+			return Form::render( $id );
+		} );
 	}
 
 	public static function register_block() : void {

@@ -26,13 +26,19 @@ class Form {
 	private static $rendered = false;
 
 	public static function page_has_form() : bool {
-		// Conservative: enqueue when the current main post contains an oz/form block.
+		// Conservative: enqueue when the current main post contains an oz/form block
+		// or the [oz_form] shortcode.
 		if ( self::$rendered ) {
 			return true;
 		}
 		global $post;
-		if ( $post instanceof \WP_Post && has_block( 'oz/form', $post ) ) {
-			return true;
+		if ( $post instanceof \WP_Post ) {
+			if ( has_block( 'oz/form', $post ) ) {
+				return true;
+			}
+			if ( has_shortcode( $post->post_content, 'oz_form' ) ) {
+				return true;
+			}
 		}
 		return false;
 	}
