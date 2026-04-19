@@ -829,24 +829,29 @@
   }
 }
 
-/* ── Meubels image inside closing text area ── */
-.oz-ruimte .oz-ruimte-meubels-image {
-  margin: 48px auto;
+/* ── Kleurstalen section: image left, text right ── */
+.oz-ruimte .oz-ruimte-kleurstalen .wp-block-columns {
+  gap: 48px;
+  align-items: center;
 }
 
-.oz-ruimte .oz-ruimte-meubels-image img {
-  width: 45%;
+.oz-ruimte .oz-ruimte-kleurstalen .oz-ruimte-meubels-image {
+  margin: 0;
+}
+
+.oz-ruimte .oz-ruimte-kleurstalen .oz-ruimte-meubels-image img {
+  width: 100%;
   height: auto;
   border-radius: var(--oz-radius-lg, 12px);
   display: block;
-  margin: 0 auto;
+}
+
+.oz-ruimte .oz-ruimte-kleurstalen h2 {
+  margin-top: 0;
 }
 
 @media (max-width: 767px) {
-  .oz-ruimte .oz-ruimte-meubels-image {
-    margin: 32px auto;
-  }
-  .oz-ruimte .oz-ruimte-meubels-image img {
-    width: 100%;
+  .oz-ruimte .oz-ruimte-kleurstalen .wp-block-columns {
+    gap: 24px;
   }
 }
