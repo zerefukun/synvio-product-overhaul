@@ -13,7 +13,7 @@ $site_name = get_bloginfo( 'name' );
 
 <footer class="oz-footer" id="oz-footer">
 
-	<!-- Trust bar — same USPs as old Flatsome footer -->
+	<!-- Trust bar -->
 	<div class="oz-footer__trust">
 		<div class="oz-footer__trust-inner">
 			<div class="oz-footer__trust-item">
@@ -35,6 +35,26 @@ $site_name = get_bloginfo( 'name' );
 		</div>
 	</div>
 
+	<!-- Badges row: Google reviews + Webshop keurmerk -->
+	<div class="oz-footer__badges">
+		<a class="oz-footer__badge oz-footer__badge--reviews" href="https://www.google.com/maps/place/Beton+cire+webshop/" target="_blank" rel="noopener" aria-label="4.8/5.0 Google reviews">
+			<span class="oz-footer__badge-stars" aria-hidden="true">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+			</span>
+			<span class="oz-footer__badge-text">
+				<strong>4.8/5.0</strong>
+				<em>Gebaseerd op 200+ Google reviews</em>
+			</span>
+		</a>
+		<a class="oz-footer__badge oz-footer__badge--keurmerk" href="https://www.keurmerk.info/" target="_blank" rel="noopener" aria-label="Webshop Keurmerk">
+			<img src="https://beton-cire-webshop.nl/wp-content/uploads/2024/01/webshop-keurmerk-jpg.webp" alt="Webshop Keurmerk" width="120" height="auto" loading="lazy">
+		</a>
+	</div>
+
 	<!-- Main footer columns -->
 	<div class="oz-footer__inner">
 
@@ -51,6 +71,13 @@ $site_name = get_bloginfo( 'name' );
 				<?php endif; ?>
 			</a>
 			<p class="oz-footer__tagline">Naadloze betonlook. Zelf aangebracht.</p>
+			<p class="oz-footer__trilogy">
+				<a href="/beton-cire-easyline-all-in-one/">Beton Ciré All-In-One</a>
+				<span class="oz-footer__trilogy-sep">&middot;</span>
+				<a href="/beton-cire-easyline-kant-en-klaar/">Easyline</a>
+				<span class="oz-footer__trilogy-sep">&middot;</span>
+				<a href="/beton-cire-original/">Beton Ciré Original</a>
+			</p>
 			<div class="oz-footer__contact">
 				<p><a href="https://www.google.com/maps/place/Beton+cire+webshop/" target="_blank" rel="noopener">Laan van 's-Gravenmade 42L</a><br>2495 AJ Den Haag, Nederland</p>
 				<p>Bezoek alleen op afspraak</p>
@@ -62,42 +89,47 @@ $site_name = get_bloginfo( 'name' );
 			</div>
 		</div>
 
-		<!-- Column 2: quick links -->
+		<!-- Column 2: Producten -->
 		<div class="oz-footer__col">
 			<h4 class="oz-footer__heading">Producten</h4>
 			<ul class="oz-footer__links">
-				<li><a href="/product-categorie/microcement/">Microcement</a></li>
-				<li><a href="/beton-cire-all-in-one-easyline-standaard-kleuren/">All-In-One</a></li>
-				<li><a href="/beton-cire-original-kleuren/">Original</a></li>
-				<li><a href="/product-categorie/lavasteen/">Lavasteen</a></li>
+				<li><a href="/beton-cire-easyline-all-in-one/">All-In-One</a></li>
+				<li><a href="/beton-cire-easyline-kant-en-klaar/">Easyline</a></li>
+				<li><a href="/beton-cire-original/">Beton Ciré Original</a></li>
+				<li><a href="/metallic-stuc/">Metallic Velvet</a></li>
+				<li><a href="/lavasteen-gietvloer/">Lavasteen</a></li>
 				<li><a href="/product-categorie/primer/">Primer</a></li>
 				<li><a href="/product-categorie/pu-coating/">PU Coating</a></li>
-				<li><a href="/kleurstalen/">Kleurstalen</a></li>
 			</ul>
 		</div>
 
-		<!-- Column 3: info links -->
+		<!-- Column 3: Navigatie -->
 		<div class="oz-footer__col">
-			<h4 class="oz-footer__heading">Informatie</h4>
+			<h4 class="oz-footer__heading">Navigatie</h4>
 			<ul class="oz-footer__links">
+				<li><a href="/">Home</a></li>
+				<li><a href="/winkel/">Producten</a></li>
 				<li><a href="/kennisbank/">Kennisbank</a></li>
-				<li><a href="/inspiratie/">Inspiratie</a></li>
-				<li><a href="/beton-cire-showroom/">Showroom</a></li>
-				<li><a href="/contact/">Contact</a></li>
-				<li><a href="/veelgestelde-vragen/">FAQ</a></li>
+				<li><a href="/kleuren/">Kleuren</a></li>
+				<li><a href="/kleurstalen-aanvragen/">Kleurstalen aanvragen</a></li>
+				<li><a href="/blog/">Blog / Nieuws</a></li>
+				<li><a href="/sitemap/">Sitemap</a></li>
+				<li><a href="/beton-cire-showroom/">Locatie</a></li>
 			</ul>
 		</div>
 
-		<!-- Column 4: klantenservice -->
+		<!-- Column 4: Klantenservice -->
 		<div class="oz-footer__col">
 			<h4 class="oz-footer__heading">Klantenservice</h4>
 			<ul class="oz-footer__links">
-				<li><a href="/mijn-account/">Mijn account</a></li>
-				<li><a href="/mijn-account/orders/">Bestellingen</a></li>
-				<li><a href="/retourneren/">Retourneren</a></li>
-				<li><a href="/verzending/">Verzending</a></li>
+				<li><a href="/offerte/">Offerte aanvragen</a></li>
+				<li><a href="/klantervaringen/">Klantervaringen</a></li>
+				<li><a href="/veelgestelde-vragen/">Veelgestelde vragen</a></li>
+				<li><a href="/contact/">Contact opnemen</a></li>
+				<li><a href="/verzending/">Verzending &amp; Retourneren</a></li>
 				<li><a href="/algemene-voorwaarden/">Algemene voorwaarden</a></li>
-				<li><a href="/privacybeleid/">Privacybeleid</a></li>
+				<li><a href="/privacybeleid/">Privacy beleid</a></li>
+				<li><a href="/nieuwsbrief/">Nieuwsbrief</a></li>
 			</ul>
 		</div>
 
@@ -105,6 +137,7 @@ $site_name = get_bloginfo( 'name' );
 
 	<!-- Bottom bar -->
 	<div class="oz-footer__bottom">
+		<p class="oz-footer__co2">Ons bedrijf is CO<sub>2</sub> neutraal en we recyclen zo veel mogelijk.</p>
 		<p>&copy; <?php echo date( 'Y' ); ?> <?php echo esc_html( $site_name ); ?>. Alle rechten voorbehouden.</p>
 	</div>
 </footer>

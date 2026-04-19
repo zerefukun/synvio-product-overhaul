@@ -1475,6 +1475,126 @@ body.oz-drawer-open {
   margin: 0;
 }
 
+.oz-footer__bottom .oz-footer__co2 {
+  margin: 0 0 6px;
+  color: rgba(255,255,255,.45);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+
+/* Badges row — Google reviews + webshop keurmerk */
+.oz-footer__badges {
+  background: var(--oz-hdr-charcoal);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  padding: 28px 24px;
+  flex-wrap: wrap;
+}
+
+.oz-footer__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 12px 18px;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.oz-footer__badge:hover {
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
+
+.oz-footer__badge-stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #f5b50a;
+}
+
+.oz-footer__badge-text {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.oz-footer__badge-text strong {
+  font-family: var(--oz-hdr-ff-heading);
+  font-size: 15px;
+  color: #FFF;
+  font-weight: 600;
+}
+
+.oz-footer__badge-text em {
+  font-style: normal;
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .3px;
+}
+
+.oz-footer__badge--keurmerk {
+  padding: 8px 14px;
+}
+
+.oz-footer__badge--keurmerk img {
+  display: block;
+  height: 40px;
+  width: auto;
+  border-radius: 4px;
+}
+
+/* Brand trilogy line — shows 3 flagship product lines under tagline */
+.oz-footer__trilogy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  font-size: 12px;
+  color: rgba(255,255,255,.4);
+}
+
+.oz-footer__trilogy a {
+  color: rgba(255,255,255,.7) !important;
+  font-family: var(--oz-hdr-ff-heading);
+  font-style: italic;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color .15s;
+}
+
+.oz-footer__trilogy a:hover {
+  color: #FFF !important;
+}
+
+.oz-footer__trilogy-sep {
+  color: rgba(255,255,255,.2);
+}
+
+@media (max-width: 600px) {
+  .oz-footer__badges {
+    gap: 24px;
+    padding: 20px 16px;
+  }
+  .oz-footer__badge {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .oz-footer__badge--keurmerk img {
+    height: 34px;
+  }
+  .oz-footer__trilogy {
+    font-size: 12px;
+  }
+}
+
 @media (max-width: 800px) {
   .oz-footer__trust-inner {
     flex-wrap: wrap;
