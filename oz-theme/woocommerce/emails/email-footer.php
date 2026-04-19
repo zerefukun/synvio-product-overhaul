@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit;
 				Laan van 's-Gravenmade 42L, 2495 AJ Den Haag<br>
 				<a href="mailto:info@beton-cire-webshop.nl" style="color:#135350;text-decoration:none;">info@beton-cire-webshop.nl</a>
 				&middot;
-				<a href="tel:0850270090" style="color:#135350;text-decoration:none;">085 - 027 00 90</a>
+				<a href="tel:+31850270090" style="color:#135350;text-decoration:none;">085 - 027 00 90</a>
 			</p>
 			<p style="margin:0;font-size:12px;">
 				KVK: 83646248 &middot; BTW: NL862945811 B01

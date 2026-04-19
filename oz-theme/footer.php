@@ -56,7 +56,7 @@ $site_name = get_bloginfo( 'name' );
 				<p>Bezoek alleen op afspraak</p>
 				<p>
 					<a href="mailto:info@beton-cire-webshop.nl">info@beton-cire-webshop.nl</a><br>
-					<a href="tel:0850270090">085 - 027 00 90</a>
+					<a href="tel:+31850270090">085 - 027 00 90</a>
 				</p>
 				<p class="oz-footer__legal">KVK: 83646248 &middot; BTW: NL862945811 B01</p>
 			</div>
