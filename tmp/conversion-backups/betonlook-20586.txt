@@ -1,0 +1,428 @@
+<!-- wp:flatsome/uxbuilder -->
+[row style="small"]
+
+[col span="4" span__sm="12" border="0px 2px 0px 2px" border_color="rgb(19, 83, 80)"]
+
+[ux_banner height="159px" bg="12563" hover="zoom" border="1px 1px 1px 1px" border_color="rgb(255, 255, 255)"]
+
+[ux_image id="12453" image_size="original" width="59" height="80%" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/" position_x="50" position_y="10"]
+
+
+[/ux_banner]
+[ux_banner height="680px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text font_size="0.75" line_height="1.5"]
+
+<h3 style="text-align: center;"><span style="color: #444444; font-size: 100%;">Beton Ciré All-In-One</span></h3>
+<h3 style="text-align: center;"><span style="color: #135350; font-size: 100%;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★☆ | Betaalbaarheid: ★★★★★</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="92" margin="0px 14px 0px 0px" position_x="50" position_x__sm="50" position_y="35" position_y__sm="35"]
+
+[ux_text font_size="0.75" font_size__sm="0.9" line_height="0.75" line_height__sm="1.1" line_height__md="1.3" text_align="left"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Badkamerwanden, natte cellen</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Huiskamervloeren en meubels</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Hard met een fijne structuur</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Slechts twee dagen werk</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>36 kleuren en RAL en NCS</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Voor binnen</strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span>&nbsp;</h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€28</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="70"]
+
+[button text="Beton Ciré All In One" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="4" span__sm="12" bg_radius="56"]
+
+[ux_banner height="158px" bg="12563" bg_color="#dcd6cf" bg_overlay="rgba(19, 83, 80, 0.436)" hover="zoom"]
+
+[ux_image id="28803" image_size="original" width="78" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-original/" position_x="50" position_y="0"]
+
+
+[/ux_banner]
+[ux_banner height="680px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -14px" position_x="5" position_x__sm="5" position_y="30" position_y__sm="25"]
+
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span>&nbsp;</h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€31</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="5" position_x__sm="95" position_y="35" position_y__sm="35"]
+
+[ux_text font_size="0.8" font_size__sm="0.75" line_height="2.2" line_height__md="1.35"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Badkamerwanden, natte cellen</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Huiskamervloeren en meubels</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Bijzonder hard, zeer fijne structuur</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Snelste klaar</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Keuze uit 90  kleuren + RAL en NCS</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Voor binnen en buiten</strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text line_height="1.5"]
+
+<h3 style="text-align: center;"><span style="font-size: 100%;">Beton Ciré Original</span></h3>
+<h3 style="text-align: center;"><span style="color: #135350; font-size: 100%;">Kant &amp; Klaar </span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★★</span></p>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="70"]
+
+[button text="Beton Ciré Original" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-original/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="4" span__sm="12"]
+
+[ux_banner height="159px" bg="12563" bg_pos="0" hover="zoom"]
+
+[ux_image id="28816" image_size="original" width="82" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/lavasteen-gietvloer/" position_x="50" position_y="50"]
+
+
+[/ux_banner]
+[ux_banner height="680px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" position_x="50" position_y="0"]
+
+[ux_text line_height="1.5"]
+
+<h3 style="text-align: center;"><span style="font-size: 95%;">Beton Ciré Lavasteen</span></h3>
+<h3 style="text-align: center;"><span style="color: #135350; font-size: 95%;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span>&nbsp;</h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€47 /1m2</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 5m²</span></h3>
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="100" position_x__sm="100" position_y="35" position_y__sm="35"]
+
+[ux_text font_size="0.85" font_size__sm="0.75" line_height="2.2" line_height__md="2.05"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Badkamer vloeren en wanden</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Voor horeca, huiskamer vloeren</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Extreem hard door epoxy </strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>2 tot 3 dagen werk</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Keuze uit 20 nieuwe kleuren</strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="color: #135350; font-size: 12px; line-height: 1; margin-right: 6px;">✓</span></strong><br /><strong>Voor binnen en buiten</strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box width="17" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -10px" position_x="0" position_x__sm="0" position_y="30" position_y__sm="35"]
+
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="70"]
+
+[button text="Beton Ciré Lavasteen" size="larger" link="https://staging.beton-cire-webshop.nl/lavasteen-gietvloer/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+
+[/row]
+
+<!-- /wp:flatsome/uxbuilder -->
+<!-- wp:paragraph -->
+<p>Met deze voordelen zijn onze vloeren een uitstekende keuze voor zowel esthetische als praktische doeleinden en bijzonder onderhoudsvriendelijk.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:flatsome/uxbuilder -->
+[row]
+
+[col span__sm="12"]
+
+[row_inner]
+
+[col_inner span="6" span__sm="12"]
+
+<h3>Waar kan je een betonlook vloer toepassen?</h3>
+<p>Een betonlook vloer is een populaire keuze voor diverse ruimtes in huis, dankzij de stoere, industriële uitstraling en het veelzijdige karakter. Of je nu een moderne woonkamer, een stijlvolle badkamer of een robuuste keuken wilt, een betonlook vloer kan vrijwel overal toegepast worden.</p>
+<p><b>Woonkamer</b>: In de woonkamer zorgt een betonlook vloer voor een strakke, minimalistische sfeer. Het geeft een ruimtelijk gevoel en past perfect in zowel moderne als industriële interieurs. Het is ook ideaal te combineren met vloerverwarming, wat extra comfort biedt.</p>
+<p><b>Keuken</b>: Een betonlook vloer in de keuken is een slimme keuze vanwege het onderhoudsgemak. Het oppervlak is eenvoudig schoon te maken en bestand tegen vuil en vocht. Bovendien creëert het een naadloze overgang met aangrenzende ruimtes, wat een gevoel van eenheid geeft.</p>
+<p><b>Badkamer</b>: Vanwege de waterbestendige afwerkingsmogelijkheden, zoals Beton Ciré, is een betonlook vloer ook zeer geschikt voor natte ruimtes. Het creëert een luxe uitstraling en biedt een moderne, spa-achtige sfeer in de badkamer. Zorg er voor dat er een membraam aangelegd wordt op de vloer in de badkamer. Een membraam zorgt voor een waterdichte waterkering op de vloer. Mocht er een vochtprobleem komen, dan stopt het vocht op het membraam. Een voorbeeld voor een membraam is kimband. Zorg ook voor voldoende afschot. Er mag nooit langdurig water blijven staan op een object. Een douchebak is de meest veilige manier, maar is niet altijd even mooi.</p>
+<p><b>Hal</b>: De hal is een veelgebruikte ruimte die een vloer vereist die tegen een stootje kan. Een betonlook vloer is hier uitermate geschikt, omdat het slijtvast is en bestand tegen vuil en vocht dat van buiten naar binnen komt.</p>
+<p><b>Commerciële ruimtes</b>: Betonlook vloeren worden steeds vaker toegepast in winkels, restaurants en kantoren. Ze geven een moderne, professionele uitstraling en zijn bovendien zeer onderhoudsvriendelijk, wat belangrijk is in drukbezochte ruimtes.</p>
+<p>Kortom, een betonlook vloer kan in vrijwel elke ruimte worden toegepast. Het is een ideale keuze voor wie op zoek is naar een stoere, onderhoudsvriendelijke en duurzame vloeroplossing.</p>
+
+[/col_inner]
+[col_inner span="6" span__sm="12"]
+
+<h3>Het verschil tussen Betonlook en Beton Ciré voor de vloer</h3>
+<p>Hoewel Betonlook en Beton Ciré vaak in één adem worden genoemd, zijn er belangrijke verschillen tussen beide materialen, vooral wanneer het gaat om vloeren.</p>
+<p><b>Betonlook</b> is meer een overkoepelende term die verwijst naar de uitstraling van beton, zonder dat het materiaal zelf per se beton bevat. Een betonlook vloer kan bijvoorbeeld worden gerealiseerd met speciale verf, stucwerk of tegels die de look van echt beton nabootsen. Het grote voordeel van betonlook vloeren is de esthetiek, waarbij je wel de industriële stijl hebt, maar niet de nadelen van echt beton, zoals het gewicht en de ingewikkelde installatie.</p>
+<p><b>Beton Ciré</b> daarentegen is een cementgebonden stuc dat in dunne lagen wordt aangebracht en uit zichzelf waterdicht is. Beton Ciré is bijzonder populair voor vloeren omdat het niet alleen de looks van echt beton heeft, maar ook robuuster is. Het is naadloos, slijtvast en gemakkelijk schoon te maken, wat het uitermate geschikt maakt voor ruimtes met veel verkeer of vocht, zoals badkamers of keukens.</p>
+<p>Samenvattend:</p>
+<ul>
+<li aria-level="1"><b>Betonlook</b>: Een visuele benadering van beton, vaak bereikt met verf of tegels. Het is vooral geschikt voor decoratieve toepassingen.</li>
+<li aria-level="1"><b>Beton Ciré</b>: Een cementgebonden product dat duurzaam, naadloos en waterdicht is. Ideaal voor vloeren in natte ruimtes of ruimtes met veel belasting.</li>
+</ul>
+
+[/col_inner]
+
+[/row_inner]
+<h3><b>Verschillende soorten betonlook voor vloeren</b></h3>
+<p>Er zijn verschillende soorten betonlook vloeren, elk met hun eigen unieke eigenschappen en voordelen. Hieronder vind je de meest voorkomende soorten betonlook vloeren:</p>
+<ul>
+<li aria-level="1"><b>Beton Ciré</b><br />Beton Ciré is een van de meest populaire betonlook oplossingen voor vloeren. Het wordt in dunne lagen aangebracht, is waterdicht en extreem duurzaam. Het grote voordeel van Beton Ciré is dat het een naadloze afwerking biedt, wat niet alleen esthetisch mooi is, maar ook praktisch in onderhoud. Omdat er geen voegen zijn, kan vuil zich niet ophopen, wat het een hygiënische keuze maakt.</li>
+<li aria-level="1"><b>Betonlook tegels</b><br />Betonlook tegels combineren de stoere uitstraling van beton met de praktische voordelen van keramiek. Ze zijn duurzaam, krasbestendig en waterafstotend, wat ze geschikt maakt voor zowel binnen als buiten. Een bijkomend voordeel is dat betonlook tegels vaak goedkoper zijn dan echt beton of Beton Ciré en eenvoudiger te installeren.</li>
+<li aria-level="1"><b>Microcement</b><br />Microcement is vergelijkbaar met Beton Ciré, maar heeft een iets fijnere structuur. Het wordt vaak gebruikt voor vloeren omdat het een moderne, minimalistische uitstraling geeft en bestand is tegen slijtage. Microcement is net als Beton Ciré naadloos en kan na voorbereiding op vrijwel elke ondergrond worden aangebracht zoals beton, tegels of hout. </li>
+<li aria-level="1"><b>Gepolierde betonvloer<br /></b>Een gepolierde betonvloer is de meest authentieke betonlook vloer, omdat deze uit echt beton bestaat dat gepolijst wordt voor een gladde, glanzende afwerking. Het is een duurzame en robuuste optie, vooral geschikt voor grote ruimtes zoals woonkamers of lofts. Deze vloer heeft echter meer voorbereiding nodig, zoals een stevige fundering, en is vaak duurder in installatie.</li>
+</ul>
+<p>Elke optie heeft zijn eigen kenmerken en voordelen, afhankelijk van jouw specifieke behoeften en voorkeuren. Of je nu kiest voor de flexibiliteit van beton ciré van Beton Ciré of de duurzaamheid van betonlook tegels, er is altijd een betonlook vloer die past bij jouw interieur en levensstijl.</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12" bg_color="#dcd6cf"]
+
+<h3 data-pm-slice="1 1 []">De samenstelling van onze betonlook vloeren</h3>
+<p>Onze <a href="https://staging.beton-cire-webshop.nl/stucsoorten/betonlook/"><strong>betonlook</strong></a> bestaat uit een combinatie van kunsthars, kleurpigmenten en andere materialen. Dit resulteert in een vloer die zowel esthetisch als functioneel is. Een betonlook vloer is een populaire keuze, zoals onderhoudsvriendelijke en aantrekkelijker dan een echte betonnen vloer, die niet waterdicht of vlekbestendig is te krijgen.</p>
+<p>Kunsthars speelt een belangrijke rol in de samenstelling, dat zorgt voor een goede hardheid en flexibiliteit. Daarnaast dragen de kleurpigmenten, zoals kwarts en minerale pigmenten, bij aan de esthetiek van de vloer door de gewenste kleur te creëren.</p>
+<h3>Voordelen&nbsp;</h3>
+<ul>
+<li>
+<p>Voelen warmer aan dankzij de gebruikte materialen, zoals polyurethaan, die warmte beter vasthouden.</p>
+</li>
+<li>
+<p>Zijn comfortabeler om op te lopen en zijn afgewerkt met een antislip door onze coating waardoor we ons onderscheiden met andere coatings.</p>
+</li>
+<li>
+<p>Zijn gemakkelijker te onderhouden en schoon te maken.</p>
+</li>
+<li>
+<p>Is verkrijgbaar in 5000 verschillende kleuren en patronen, waardoor je meer ontwerpmogelijkheden hebt.</p>
+</li>
+</ul>
+<p>Met deze voordelen zijn onze vloeren een uitstekende keuze voor zowel esthetische als praktische doeleinden en bijzonder onderhoudsvriendelijk.</p>
+<p>Bovendien zijn onze vloeren zeer onderhoudsvriendelijk. In tegenstelling tot ander cementgebonden vloeren dat regelmatig moet worden verzegeld en gewaxt, vereisen onze betonlook vloeren slechts minimale inspanningen om er op hun best uit te zien. Ze zijn bestand tegen vlekken, gemakkelijk schoon te maken en behouden hun esthetische uitstraling over een lange periode. Dit maakt ze tot een uitstekende keuze voor een nieuwe vloer.</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+<h2 data-pm-slice="1 1 []">Verwarming en betonlook</h2>
+<p>Een ander groot voordeel van betonlook vloeren is hun compatibiliteit met vloerverwarming. Koude voeten zijn verleden tijd. Vloerverwarming is een steeds populairdere keuze voor moderne huizen vanwege het comfort en de energie-efficiëntie die het biedt. Een minerale vloer is een uitstekend voorbeeld van een vloer die goed samengaat met vloerverwarming.</p>
+<p>Vloerverwarming onder een betonlook vloer kan ervoor zorgen dat de vloer aangenaam warm aanvoelt, zelfs tijdens de koudste wintermaanden. Het is echter belangrijk om te zorgen dat de betonnen vloer aan bepaalde voorwaarden voldoet om scheuren te voorkomen. Boven het beton wordt een cementdekvloer of anhydriet aangelegd. Deze vloeren moeten volledig droog zijn voordat er begonnen kan worden.</p>
+<h2>Het aanleggen van een nieuwe vloer</h2>
+<p>Het aanleggen van een nieuwe betonlook vloer is een proces dat zorgvuldig moet worden uitgevoerd om een duurzaam en aantrekkelijk resultaat te verzekeren. Bij het aanleggen omvat dit proces verschillende stappen, waaronder:</p>
+<ol>
+<li>
+<p>De voorbereiding van de ondergrond</p>
+</li>
+<li>
+<p>Het aanbrengen van de primer</p>
+</li>
+<li>
+<p>Het aanbrengen van de pasta</p>
+</li>
+<li>
+<p>Het afwerken met een pu topcoat</p>
+</li>
+</ol>
+<p>Door deze stappen te volgen, kun je een prachtige vloer creëren die lang meegaat en er geweldig uitziet.</p>
+<h3>Voorbereiding</h3>
+<p>Een goede <a href="https://staging.beton-cire-webshop.nl/kennisbank/welke-voorbereidingen-moeten-er-getroffen-worden/"><strong>voorbereiding</strong></a> essentieel voor een succesvolle betonlook vloer. De ondergrond moet egaal en vlak zijn zonder scheuren om een ideale basis te vormen voor de betonlook vloer. Dit draagt bij aan een duurzaam eindresultaat en voorkomt toekomstige problemen.</p>
+<p>Het voorbereiden kan enkele uitdagingen met zich meebrengen, zoals niveauverschillen en onregelmatige vlakheid van de dekvloer. Daarnaast is het van essentieel belang dat de ondergrond goed uitgehard is en volledig gedroogd is en vrij van vet, stof en eventuele lijmresten.</p>
+<p>Om vochtproblemen bij de ondergrond te voorkomen van een decoratieve vloer, kan er een vochtscherm ondervloer gebruikt worden. Hiermee wordt de vloer beschermd tegen vocht wat nog rest in de ondervloer. Dit is een 2 componenten epoxy die over je bestaande dekvloer kan worden aangebracht. Dit is een intensief en lastige klus.</p>
+<h3>Aanbrengen van de primer</h3>
+<p>Na de voorbereiding van de ondergrond is de volgende stap het aanbrengen van de primer. De primer is een cruciaal onderdeel van het proces, omdat het zorgt voor een optimale hechting aan de ondergrond. Het is daarom belangrijk om de juiste primer te kiezen. De EcoPrimer van ons wordt beschouwd als de meest geschikte primer voor een goede ondergrond. Het vermindert de zuiging van de ondergrond en is ideaal voor gips- of dekvloeren.</p>
+<h3>Afwerking met egaline</h3>
+<p>De egaline soort die het minst scheurgevoelig is, is op gips basis. Het aanlegproces van een nieuwe vloer, begint bij het inspecteren van de ondervloer. Is deze geschikt voor je nieuwe betonlook vloer? Is je ondervloer schoon zonder verfvlekken of lijmresten, is je vloer droog en scheurvrij? En bestaat je vloer uit 1 en hetzelfde materiaal? Primeren!!</p>
+<p>Bij het aanbrengen van een egaline vloer worden verschillende technieken gebruikt. Ik ga u de beste techniek vertellen.</p>
+<ul>
+<li>
+<p>Zorg voor een plek waar je stof kan maken en waar je kan mixen</p>
+</li>
+<li>
+<p>Zet alle zakken open en klaar</p>
+</li>
+<li>
+<p>Zet alle emmers gevuld met de juiste hoeveelheid water</p>
+</li>
+<li>
+<p>Zorg voor genoeg emmers en aanmaak kuipen</p>
+</li>
+<li>
+<p>Heb een mannetje extra klaarstaan die kan mengen en kan aangeven van de gemengde egaline.</p>
+</li>
+<li>
+<p>Giet nat in nat en laat uitgegoten egaline niet drogen voordat er een nieuwe lading komt. Dus dat betekend dat je waarschijnlijk niet in 1 x je hele emmer moet uitgieten voordat de volgende komt.</p>
+</li>
+<li>
+<p>Zorg voor prikschoenen om over je natte vloer te lopen om met je prikroller het lucht uit je egaline te halen.</p>
+</li>
+</ul>
+<p>Dus of je nou direct over je onder vloer gaat beginnen met het stappen plan van je betonlook vloer, of je gaat eerst egaline storten. Alles moet droog zijn en onderschat dat niet.</p>
+<h2>Personaliseer je vloer</h2>
+<p>Een van de grote voordelen van betonlook vloeren is enorme keuze in kleuren. Deze vloeren zijn verkrijgbaar in diverse kleuren, waaronder:</p>
+<ul>
+<li>
+<p>donkerblauw</p>
+</li>
+<li>
+<p>oranje</p>
+</li>
+<li>
+<p>groen</p>
+</li>
+<li>
+<p>bruin</p>
+</li>
+<li>
+<p>beige</p>
+</li>
+<li>
+<p>terracotta</p>
+</li>
+</ul>
+<p>Dit biedt je de mogelijkheid om de perfecte kleur te kiezen die bij je interieur past.</p>
+<p>Naast de veelzijdigheid in kleuren, bieden betonlook vloeren ook verschillende afwerkingsopties, zoals:</p>
+<ul>
+<li>
+<p>Speciale kleuren</p>
+</li>
+<li>
+<p>Patroonontwerpen</p>
+</li>
+<li>
+<p>Handafwerking</p>
+</li>
+</ul>
+<p>De juiste kleur en afwerking kunnen bijdragen aan de gewenste sfeer en stijl in uw interieur. De juiste keuze is afhankelijk van je persoonlijke smaak en de interieurstijl van je ruimte.</p>
+<h2>Duurzaamheid en levensduur</h2>
+<p>Een betonlook vloer is niet alleen een esthetische toevoeging aan uw interieur, maar ook een duurzame investering voor de toekomst. Betonlook vloeren staan bekend om hun duurzaamheid en lange levensduur. Een goed onderhouden betonlook vloer kan meer dan 20 jaar meegaan, waardoor het een solide investering is voor de lange termijn.</p>
+<p>Bovendien zijn betonlook vloeren een duurzame keuze vanuit milieu perspectief. Ze zijn vervaardigd met duurzame materialen die bestand zijn tegen dagelijks gebruik, inclusief natuurlijke componenten die zowel de duurzaamheid als de levensduur van de vloer bevorderen. Ze zijn vrij van schadelijke stoffen, wat gunstig is voor het binnenklimaat, en ze bezitten een alkalische eigenschap die de ontwikkeling van bacteriën en schimmels voorkomt.</p>
+<h2>De kosten </h2>
+<p>De kosten van een betonlook vloer kunnen variëren afhankelijk van verschillende factoren. Deze variëren van het type en de afwerking van de vloer tot het totale oppervlak. Over het algemeen liggen de prijzen voor betonlook  tussen € 35 en €44 per vierkante meter. Daarnaast kunnen er ook extra kosten zijn die niet altijd direct zichtbaar zijn, het laten aanbrengen en overige kosten zoals ondergrond opbouw.</p>
+<p>Het is belangrijk op te merken dat de prijs per vierkante meter kan afnemen naarmate het totale oppervlak groter wordt. Dit komt doordat er kortingen kunnen worden aangeboden bij grotere oppervlakken.</p>
+<p>Voor meer informatie over betonlook en het bestellen van materialen en benodigdheden, bezoek onze showroom of bel of mail ons. Bij ons op locatie vindt u een breed scala aan betonlook vloerproducten, waaronder:</p>
+<ul>
+<li>
+<p>Kant en klaar voorgemengde betonlook vloer</p>
+</li>
+<li>
+<p>Zelf mengen en mixen betonlook vloer</p>
+</li>
+</ul>
+<p>Naast een breed scala aan producten, vindt u op onze website ook handleidingen voor het gebruik van onze producten. Deze handleidingen zijn beschikbaar op de verpakkingen en op onze website, waaronder de handleidingen.</p>
+<h2>Veelgestelde vragen</h2>
+[accordion]
+
+[accordion-item title="Wat kost een betonlook vloer per m2?"]
+
+<p>Een betonlook vloer kost tussen €35 en €44 per vierkante meter, met een dalende prijs voor grotere oppervlakken en afhankelijk van de product keuze.</p>
+
+[/accordion-item]
+[accordion-item title="Wat kost een betonlook vloer laten aanbrengen?"]
+
+<p>Een betonlook vloer kost zonder aanpassingen van de ondergrond gemiddeld tussen de €80 en €160 per m², afhankelijk van de complexiteit van de toepassing.</p>
+
+[/accordion-item]
+[accordion-item title="Wat is het verschil tussen een gietvloer en betonvloer?"]
+
+<p>Een gietvloer toont vaak als een ziekenhuis of gymzaal, terwijl betonlook van cementgebonden materiaal is gemaakt. Dit verschil in materialen bepaalt de eigenschappen van de vloeren.</p>
+
+[/accordion-item]
+
+[/accordion]
+[row_inner]
+
+[col_inner span__sm="12"]
+
+<p>Voor verdere vragen of advies, aarzel dan niet om contact met ons op te nemen.</p>
+<h2>Onze showroom</h2>
+<p>Als je overweegt om een betonlook vloer in je huis te laten leggen, raden we je aan om onze<a href="https://staging.beton-cire-webshop.nl/beton-cire-showroom/"><u> showroom</u></a> te bezoeken. Hier kunt je:</p>
+<ul>
+<li>De betonlook vloeren zelf ervaren</li>
+<li>Persoonlijk advies krijgen van onze expert</li>
+<li>Alle soorten betonlook vloeren patronen bezichtigen.</li>
+</ul>
+<p>Heb je dringende vragen of behoefte aan directe informatie? Aarzel niet om ons te bellen op 085 - 027 00 90. Ons toegewijde team staat paraat om al je vragen te beantwoorden en je te voorzien van de informatie die je nodig hebt. Kies voor tijdloze elegantie en duurzaamheid met betonlook vloeren van Beton-Cire-Webshop.nl. Transformeer je leefruimte met de kracht van Beton ciré en geniet van een vloer die niet alleen mooi is, maar ook lang meegaat. Volg ons ook op <strong><a href="https://www.facebook.com/betoncirewebshop/">Facebook</a> </strong>en <strong><a href="https://www.instagram.com/betoncirewebshop/">Instagram</a>.</strong></p>
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+
+<!-- /wp:flatsome/uxbuilder -->

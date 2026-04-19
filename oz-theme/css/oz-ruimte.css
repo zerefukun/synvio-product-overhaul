@@ -268,6 +268,25 @@
   text-transform: uppercase;
   color: var(--oz-accent);
   margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.oz-ruimte .oz-ruimte-eyebrow::before,
+.oz-ruimte .oz-ruimte-eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40px;
+  height: 1px;
+  background: var(--oz-border, rgba(19, 83, 80, 0.2));
+}
+.oz-ruimte .oz-ruimte-eyebrow::before { right: calc(100% + 16px); }
+.oz-ruimte .oz-ruimte-eyebrow::after  { left:  calc(100% + 16px); }
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-ruimte-eyebrow::before,
+  .oz-ruimte .oz-ruimte-eyebrow::after { display: none; }
 }
 
 .oz-ruimte .oz-ruimte-title {

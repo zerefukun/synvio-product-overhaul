@@ -1,0 +1,957 @@
+<!-- wp:flatsome/uxbuilder -->
+[row label="Hero" style="collapse" width="full-width"]
+
+[col span__sm="12" bg_color="rgb(220, 214, 207)"]
+
+[row_inner style="collapse" width="full-width" v_align="middle"]
+
+[col_inner span="6" span__sm="12" span__md="7" padding="0px 10% 0px 10%" padding__sm="4% 4% 4% 4%" padding__md="0px 0px 0px 3%" margin__sm="0px 0px 0px 0px" color="light" animate="fadeInLeft" visibility="hide-for-medium"]
+
+[ux_text font_size="1" font_size__sm="0.75" text_color="rgb(68, 68, 68)"]
+
+<h2>Beton Ciré trap renovatie. Altijd al een trap willen hebben die op beton lijkt. Kom even hier verder kijken.</h2>
+[/ux_text]
+[ux_stack]
+
+[button text="Kleurstalen aanvragen" letter_case="lowercase" size="larger" expand="0" link="https://staging.beton-cire-webshop.nl/kleurstalen-aanvragen/"]
+
+[button text="Lees meer" letter_case="lowercase" style="underline" link="#weetjes"]
+
+
+[/ux_stack]
+[gap height="150px" visibility="hide-for-small"]
+
+
+[/col_inner]
+[col_inner span="6" span__sm="12" span__md="7" padding="0px 0px 0px 0px" padding__sm="4% 4% 4% 4%" padding__md="0px 0px 0px 3%" margin__sm="0px 0px 0px 0px" color="light" animate="fadeInLeft" visibility="hide-for-medium"]
+
+[ux_banner height="650px" height__sm="350px" height__md="650px" bg="11187" bg_color="rgba(255, 255, 255, 0)" bg_overlay="rgba(0, 0, 0, 0.38)" bg_pos="18% 86%"]
+
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="6" span__sm="12" span__md="12" animate="fadeInDown"]
+
+[ux_banner height="650px" height__sm="350px" height__md="650px" bg="11187" bg_color="rgba(255, 255, 255, 0)" bg_overlay="rgba(0, 0, 0, 0.38)" bg_pos="11% 77%" video_visibility="show-for-medium" visibility="show-for-medium"]
+
+[text_box width__sm="100" padding__sm="10px 10px 10px 10px" position_x="50" position_y="50" text_align="left"]
+
+[ux_text font_size="1" text_color="rgb(255, 255, 255)"]
+
+<h5 style="color: white!important;"><span style="color: #fcfcfc; font-size: 130%;"><strong>Beton Ciré trap renovatie.</strong></span></h5>
+<p><span style="color: #efefef;">Altijd al een trap willen hebben die op beton lijkt. Kom even hier verder kijken.</span></p>
+[/ux_text]
+[ux_stack distribute__sm="start" align__sm="stretch"]
+
+[button text="Kleurstalen aanvragen" letter_case="lowercase" size="larger" expand="0" link="https://staging.beton-cire-webshop.nl/kleurstalen-aanvragen/"]
+
+[button text="Lees meer" letter_case="lowercase" style="underline" link="#weetjes"]
+
+
+[/ux_stack]
+[gap height="150px" visibility="hide-for-small"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+[col span__sm="12" padding="4% 0px 0px 0px" padding__sm="10px 0px 10px 0px" margin="-220px 0px 0px 0px" margin__sm="0px 0px 0px 0px" bg_color="rgba(255, 255, 255, 0.75)" animate="fadeInRight" depth_hover="4"]
+
+[row_inner width="full-width" v_align="middle" h_align="center"]
+
+[col_inner span__sm="12" divider="0" padding="10px 0px 10px 0px" padding__sm="0px 0px 0px 0px" margin__sm="0px 0px 0px 0px" align="center" bg_radius="4"]
+
+[ux_text font_size="1.75" font_size__sm="0.75" line_height="0.75"]
+
+
+[/ux_text]
+[divider width="66%" margin="0px" color="rgb(19, 83, 80)"]
+
+
+[/col_inner]
+
+[/row_inner]
+[section divider_top="waves-opacity-3" divider_top_height__sm="150px" divider_top_width="130" divider_top_width__sm="100" divider_top_fill="#dcd6cf" visibility="hide-for-medium"]
+
+[row_inner style="small"]
+
+[col_inner span="4" span__sm="12" border="0px 2px 0px 2px" border_color="rgb(19, 83, 80)"]
+
+[ux_banner height="213px" bg="12563" hover="zoom" border="1px 1px 1px 1px" border_color="rgb(255, 255, 255)"]
+
+[ux_image id="12451" image_size="original" width="68" height="80%" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/" position_x="50" position_y="50"]
+
+
+[/ux_banner]
+[ux_banner height="582px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;"><span style="color: #444444;">Beton Ciré Easyline</span></h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★☆ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="100" position_x__sm="100" position_y="35" position_y__sm="35"]
+
+[ux_text line_height="2.2" line_height__sm="1.2" line_height__md="1.3"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Badkamerwanden, natte cellen</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Huiskamervloeren en meubels</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Grove en Fijne laag</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Slechts twee dagen werk</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">36 kleuren en RAL en NCS</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Voor binnen</span></strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -14px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="50"]
+
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€28/1m2</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 5m²</span></h3>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré Easyline" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-kant-en-klaar/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12" bg_radius="56"]
+
+[ux_banner height="212px" bg="12563" bg_color="#dcd6cf" bg_overlay="rgba(19, 83, 80, 0.436)" hover="zoom"]
+
+[ux_image id="12453" image_size="original" width="78" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-original/" position_x="10" position_y="50"]
+
+
+[/ux_banner]
+[ux_banner height="581px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -14px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="25"]
+
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€28</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="100" position_x__sm="95" position_y="35" position_y__sm="35"]
+
+[ux_text line_height="2.2" line_height__sm="1.45" line_height__md="1.35"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Badkamerwanden, natte cellen</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Huiskamervloeren en meubels</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Hard met een fijne structuur</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Slechts twee dagen werk</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">36 kleuren en RAL en NCS</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Voor binnen</span></strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;">Beton Ciré All-In-One</h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar </span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</span></p>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré All-In-One" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12"]
+
+[ux_banner height="213px" bg="12563" bg_pos="0" hover="zoom"]
+
+[ux_image id="28803" image_size="original" width="82" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/lavasteen-gietvloer/" position_x="50" position_y="50"]
+
+[text_box style="circle" width="24" scale="75" margin="0px -5px 0px 0px" rotate="20" position_x="90" position_y="15" text_depth="4" bg="rgb(54, 90, 87)"]
+
+[ux_text font_size="0.9" text_color="rgb(255,255,255)"]
+
+<p><strong>Aanbevolen!</strong></p>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+[ux_banner height="578px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" position_x="50" position_y="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;">Beton Ciré Original</h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€31</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★★</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="95" position_x__sm="100" position_y="50" position_y__sm="50"]
+
+[ux_text line_height="2.2" line_height__sm="1.95" line_height__md="2.05"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Badkamerwanden, natte cellen</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Huiskamervloeren en meubels</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Zeer hard, fijne structuur</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Snelste klaar</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>90&nbsp; kleuren + RAL en NCS</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Voor binnen en buiten</strong></span></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -10px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="30"]
+
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré Original" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-original/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[gap]
+
+[row]
+
+[col span="8" span__sm="12" animate="fadeInLeft"]
+
+[section label="Simple Center" bg_color="rgb(220, 214, 207)" padding="60px" height="400px"]
+
+[row_inner h_align="center"]
+
+[col_inner span="10" span__sm="12" align="center"]
+
+[ux_text text_align="left"]
+
+<h2 class="wp-block-heading">Gereedschap en benodigdheden</h2>
+<ul>
+<li>
+<p><span style="font-size: 90%;">Hoewel het aanbrengen misschien een uitdaging lijkt, kan dit met succes worden gedaan met de juiste gereedschappen, materialen en begeleiding. Hier vertellen we je er meer over.</span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Gereedschap set voor <strong><a href="https://staging.beton-cire-webshop.nl/gereedschapsset-beton-cire-kant-en-klaar-all-in-one-easyline/">Beton ciré kant en klaar</a> </strong></span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Gereedschap set voor <strong><a href="https://staging.beton-cire-webshop.nl/gereedschapsset-original/">lavasteen</a></strong></span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Laten we kijken naar enkele fouten die we kunnen vermijden. Voor het aanbrengen van Beton ciré op de trap heb je een aantal gereedschappen nodig die erg belangrijk zijn die vaak niet gebruikt worden.</span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">De flex spaan kan buigen op je oppervlak waardoor je de rand van je spaan gebruikt om de cire pasta strak te verdelen. Dit trucje gaat veel minder goed met een niet flex spaan. Bovendien krijg je ook heel snel die lelijke grijze sluier op je  trap met een normale spaan. Onze deco stuc heeft dit grijs wordende lelijke trekje veel minder. Je wilt tenslotte je witte Beton ciré trap ook echt wit houden en niet grijs. Tenzij je grijs mooi vind uiteraard. </span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Tip! Blijf niet eindeloos door strijken met de spaan over je traptreden. Klaar is klaar</span></p>
+</li>
+<li>Gebruik een kwast voor de rondingen!</li>
+</ul>
+<p> </p>
+[/ux_text]
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[row visibility="show-for-medium"]
+
+[col span__sm="12"]
+
+[section label="Media Right" bg_overlay="rgba(255, 255, 255, 0.85)" padding__sm="65px" divider_top="waves-opacity-3" divider_top_fill="#dcd6cf" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInLeft" depth="1" border="3px 3px 3px 3px" border_style="dashed" border_color="#181b1f"]
+
+<h2>Flexibele spaan</h2>
+<p><span style="font-size: 90%;">Met de flexibel spaan kun je een strak en mooi eindresultaat krijgen van je object. Maar technisch gezien is het belangrijk om de structuur dicht te krijgen om waterdichtheid te garanderen</span></p>
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-60px 0px 0px 0px" align="left" animate="fadeInRight"]
+
+[ux_image id="21105" width="75" width__sm="100" margin="20px 0px 0px 0px" depth="1" link="https://staging.beton-cire-webshop.nl/flexibele-spaan/" target="_blank"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+[section label="Media Left" padding="0px" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" divider="0" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInRight" depth="1" border="3px 3px 3px 3px" border_style="dotted" border_color="#181b1f"]
+
+[ux_text font_size="1" text_align="right"]
+
+<h2 style="text-align: left;">Inwendige hoektroffel</h2>
+<p style="text-align: left;"><span style="font-size: 80%;">Deze is ideaal en onmisbaar om de ronding volledig dicht te zetten tussen 2 wanden in, of tussen wand en vloer in. Die naden wil je echt volledig strak en rond hebben zodat deze netjes voorzien kan worden met de waterdichte pu top coat. Relief en gaatjes kunnen lucht bevatten die je niet gesealed krijgt met de pu. Bovendien ziet een strakke binnen hoek er erg mooi uit.</span></p>
+[/ux_text]
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-50px 0px 0px 0px" animate="fadeInRight"]
+
+[ux_image id="21107" width="75" width__sm="100" depth="1" link="https://staging.beton-cire-webshop.nl/inwendige-hoektroffel/"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+[section label="Media Right" divider="waves-opacity-3" divider_fill="#dcd6cf" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInLeft" depth="1" border="3px 3px 3px 3px" border_style="dotted" border_color="#181b1f"]
+
+<h2>Uitwendige hoektroffel</h2>
+<p><span style="font-size: 90%;">Een echte pro gebruikt dit gereedschap om de buitenhoeken van je rvs hoeknaald of de rand van je toilet ombouw te voor zien van een strakke en egale beton cire laag. Dit krijg je gewoon niet voor elkaar zonder.</span></p>
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-50px 0px 0px 0px" animate="fadeInRight"]
+
+[ux_image id="21106" width="75" width__sm="100" depth="1" link="https://staging.beton-cire-webshop.nl/uitwendige-hoektroffel/" target="_blank"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[scroll_to title="Weetjes" bullet="false"]
+
+[row v_align="middle" h_align="center" padding__sm="0px 0px 0px 0px"]
+
+[col span__sm="12" padding__sm="0px 0px 0px 0px" margin__sm="0px 0px 0px 0px"]
+
+[row_inner]
+
+[col_inner span="4" span__sm="12" animate="fadeInUp"]
+
+[ux_banner height="305px" bg_color="rgb(220, 214, 207)"]
+
+[ux_image id="11210" height="75%" image_overlay="rgba(0, 0, 0, 0.38)" position_x="50" position_y="50"]
+
+[text_box width="37" padding="35px 60px 35px 60px" position_x="95" position_y="5" bg="rgb(19, 83, 80)"]
+
+
+[/text_box]
+[text_box width="37" margin="5px 0px 0px 0px" position_x="100" position_y="20"]
+
+
+[/text_box]
+[text_box width="37" margin="5px 0px 0px 0px" position_x="95" position_y="10"]
+
+<h2 class="uppercase"><strong>€ 119,99</strong></h2>
+
+[/text_box]
+[text_box width="29" position_x="85" position_y="5"]
+
+<h4 class="uppercase"><strong>VANAF</strong></h4>
+
+[/text_box]
+[text_box width="100" scale="134" padding="10px 5px 10px 5px" position_x="50" position_y="100" bg="rgb(255, 255, 255)"]
+
+[ux_text text_align="center"]
+
+<h2 class="product-title product_title entry-title" style="text-align: center;"><span style="color: #555555; font-size: 110%;">Gereedschapsset lavasteen</span></h2>
+<h5 style="text-align: right;"><span style="font-size: 110%; color: #555555;"><span style="color: #03bfac;"><a style="color: #03bfac;" href="https://staging.beton-cire-webshop.nl/gereedschapsset-original/"><span style="text-decoration: underline;">meer informatie</span></a></span>       </span></h5>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12" animate="fadeInDown"]
+
+[ux_banner height="305px" bg_color="rgb(220, 214, 207)"]
+
+[ux_image id="11210" height="75%" image_overlay="rgba(0, 0, 0, 0.38)" position_x="50" position_y="0"]
+
+[text_box width="37" padding="35px 60px 35px 60px" position_x="95" position_y="5" bg="rgb(19, 83, 80)"]
+
+
+[/text_box]
+[text_box width="38" margin="5px 0px 0px 0px" position_x="95" position_y="10"]
+
+<h2 class="uppercase"><strong>€ 89,99</strong></h2>
+
+[/text_box]
+[text_box width="29" position_x="85" position_y="5"]
+
+<h4 class="uppercase"><strong>VANAF</strong></h4>
+
+[/text_box]
+[text_box width="100" margin="10px 0px 0px 0px" padding="0px 0px 10px 0px" position_x="50" position_y="100" bg="rgb(255, 255, 255)"]
+
+[ux_text text_align="center"]
+
+<h2 style="text-align: center;"><span style="color: #555555;"><br>Gereedschapsset Beton-Cire-kant &amp; klaar <br><br></span></h2>
+<h5 style="text-align: right;"><span style="font-size: 120%; color: #555555;"><span style="color: #03bfac;"><a style="color: #03bfac;" href="https://staging.beton-cire-webshop.nl/gereedschapsset-beton-cire-kant-en-klaar-all-in-one-easyline/"><span style="text-decoration: underline;">meer informatie</span></a></span>&nbsp; &nbsp; &nbsp; &nbsp;</span></h5>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+
+[/row_inner]
+[section bg="14583" bg_overlay="rgba(0, 0, 0, 0.38)" bg_pos="41% 53%" padding__sm="10px" margin="0px"]
+
+[row_inner style="collapse" v_align="middle" h_align="center" padding="30px 30px 30px 30px" padding__sm="10px 0px 10px 0px"]
+
+[col_inner span="6" span__sm="12" span__md="12" padding__sm="0px 0px 0px 0px" margin__sm="0px 0px 0px 0px" color="light" animate="bounceIn"]
+
+[ux_text font_size__sm="0.75" line_height="0.75"]
+
+<h1 style="font-size: 300%;">Alles over <span style="color: #135350; background-color: rgba(255, 255, 255, 0.7);">Beton Ciré trappen</span></h1>
+<p class="lead">Hoe breng je Beton Ciré op de trap aan?</p>
+[/ux_text]
+[button text="Lees onze stappenplan" letter_case="lowercase" color="secondary" style="underline" padding="0px 0px 0px 0px" radius="5" link="#stappen-plan"]
+
+
+[/col_inner]
+[col_inner span="1" span__sm="12" visibility="hide-for-medium"]
+
+[gap]
+
+
+[/col_inner]
+[col_inner span="5" span__sm="12" span__md="12" bg_color="rgba(255, 255, 255, 0.85)" animate="fadeInRight" class="padding"]
+
+[ux_text font_size__sm="0.75" line_height="1.5" line_height__sm="0.75" class="padding"]
+
+<h2><span style="font-size: 85%;"><a href="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/"><strong>Beton Ciré kant &amp; klaar</strong></a> pakket bevat:</span></h2>
+<p><i class="icon-checkmark" style="color: #135350;"></i> Primer<br /><i class="icon-checkmark" style="color: #135350;"></i> Beton Ciré voor 2 lagen<br /><i class="icon-checkmark" style="color: #135350;"></i> Presealer <br /><i class="icon-checkmark" style="color: #135350;"></i> Pu topcoat naar keuze</p>
+<style>
+.padding{<br />
+padding: 10px!important;<br />
+}<br />
+</style>
+[/ux_text]
+[divider align="center" width="100%" color="rgb(19, 83, 80)"]
+
+[ux_text font_size__sm="0.75" line_height="1.5" class="padding"]
+
+<h2><span style="font-size: 85%;"><strong><a href="https://staging.beton-cire-webshop.nl/beton-cire-original/">Beton Ciré Original</a></strong> en microcement bevat:</span></h2>
+<p><i class="icon-checkmark" style="color: #135350;"></i> Primer<br /><i class="icon-checkmark" style="color: #135350;"></i> Beton Ciré voor 2 lagen<br /><i class="icon-checkmark" style="color: #135350;"></i> Pu topcoat naar keuze</p>
+[/ux_text]
+[ux_html]
+
+<style>
+.padding {
+padding: 0px 20px!important
+}
+</style>
+[/ux_html]
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[row style="small" col_style="solid"]
+
+[col span__sm="12"]
+
+<h2 class="wp-block-heading">Pu topcoat voor meerdere lagen</h2>
+<p><span style="font-size: 90%;">Meng nooit alle pu die je hebt gekregen in één keer. Je zult namelijk de aangebrachte pu binnen 1 uur moeten aanbrengen. Dus dan zou je niet genoeg hebben voor laag 2 en laag 3. De pu voor de kant en klare ciré is binnen 1,5 tot 2 uur droog. De tweede laag en/of de derde laag moet binnen 48 uur worden aangebracht na de opvolgende laag. Dek de aangebrachte pu 7 dagen niet af. Na 2 dagen mag je voorzichtig je trap betreden. Pas op met schoenstrepen. Per laag pu heb je een nieuwe roller nodig.</span></p>
+<p>&nbsp;</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+[row_inner style="collapse" col_style="divided"]
+
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px" margin__sm="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21179" bg_color="rgba(255, 255, 255, 0)" bg_pos="47% 49%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -550px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 1: Primer</strong></h2>
+<p><span style="font-size: 90%;">Een <strong><a href="https://staging.beton-cire-webshop.nl/vachtroller-25cm-met-kunststof-handvat/">vachtroller</a></strong>. is het meest geschikt om de primer netjes aan te brengen. De droog tijd van de primer is ongeveer 2 uur.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12604" bg_color="rgba(255, 255, 255, 0)" bg_pos="66% 0%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 2: Bepaal welke tekening je wilt</strong></h2>
+<p><span style="font-size: 90%;">Stel, je wilt een drukke tekening. Kies dan voor onze Beton ciré Easyline. Zet laag 1 op met het gewenste patroon. Je kunt doormiddel van je spaan over je opgezette pasta heen te glijden, patronen maken, de tekening zoals dat heet. Laag 2 is fijn van structuur en schraap je over de eerste laag heen waardoor de tekening van laag 1 zichtbaar wordt. Wil je een rustige tekening kies dan voor Onze Beton Ciré All in one. Deze geweldige decoratieve stuc kun je rustig maar ook druk krijgen. Door langer te schuren kan deze toch drukker worden. </span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px" margin__sm="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12606" bg_color="rgba(255, 255, 255, 0)" bg_pos="67% 25%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="1% 7% 1% 7%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -540px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 3: Veel of weinig tekening</strong></h2>
+<p><span style="font-size: 12.96px;">Je wilt veel tekening, Easyline geeft dat. Zet laag 1 op en laag 2 zal direct zichtbaar worden door de eerste laag heen. De eerste laag Raw is grof waardoor de tweede laag Fine de eerste laag toont. Bij All in one kun je twee kanten op, rustig of druk. Schuur met korrel 80 met je stofzuiger -schuurmachine combi. Zo heb je weinig stof in de ruimte.. Lang schuren geeft veel tekening. Kort schuren geeft bij Onze All in one weinig tekening.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="287px" height__sm="300px" height__md="400px" bg="13580" bg_size="woocommerce_single" bg_color="rgba(255, 255, 255, 0)" bg_pos="53% 53%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 4: Presealer</strong></h2>
+<p><span style="font-size: 12.96px;">Gebruik een doek en vachtroller om de vloeistof te verdelen. Begin met de vachtroller en wrijf het uit met een doek. Laat het wel minimaal 4 uur drogen.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px" margin__sm="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21181" bg_color="rgba(255, 255, 255, 0)" bg_pos="50% 44%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -550px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 5: Pu topcoat</strong></h2>
+<p>De pu topcoat aanbrengen is niet moeilijk. Is de de ondergrond stof- en vetvrij? Zet de pu gelijkmatig op de trap tred op. Werk nat in nat en zorg ervoor dat je niet te lang over een stuk heen blijft gaan. De droogtijd is 1-2 uur.&nbsp; Er is een nieuwe roller nodig voor elke laag pu.</p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+[row_inner]
+
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21109" bg_color="rgba(255, 255, 255, 0)" bg_pos="59% 51%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Advies</strong></h2>
+<p>&nbsp;A en B component wegen met een geschikte weegschaal. Voeg A bij B en mix elektrisch op lage snelheid. Gebruik een <a href="https://staging.beton-cire-webshop.nl/pu-garde/"><strong>pu garde</strong></a>&nbsp;</p>
+<p>&nbsp;</p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[divider width="100%" color="rgb(19, 83, 80)"]
+
+</p>
+[row style="collapse" width="full-width"]
+
+[col]
+
+[row_inner]
+
+[col_inner span="11" span__sm="12"]
+
+<h2 class="wp-block-heading"><strong>Beton Ciré Trappen </strong></h2>
+<p>Hoe kun je een <strong>betonlook trap</strong> kan maken? Leer hier over de toepassing, Bewegen je traptreden en zitten er lijmresten op? Voordelen en onderhoud van een Beton ciré trap.</p>
+<h2 class="wp-block-heading">Beton ciré keuze:</h2>
+<h3 class="wp-block-heading"><strong>Beton-cire-All in one kant en klaar.</strong></h3>
+<ul>
+<li>Kant en klaar voorgemengd op kleur in alle Ral en 4000 NCS kleuren beschikbaar. 40 standaard kleuren.</li>
+<li>Kan klaar zijn in 2 dagen.</li>
+<li>Kan druk en rustig worden aangebracht. Laag 1 structuur aanbrengen, laag 2 wordt erover heen geschraapt. Dit geeft een rustige tekening en kan later nog door langer te schuren drukker worden gemaakt qua tekening.</li>
+<li>Minder ruimte voor foutjes. Omdat laag 1 en laag 2 in 1 emmer zitten.</li>
+<li>Beoordeling: 5/5 voor makkelijkheidsgraad,5/5 voor duurzaamheid, 4/5 voor betaalbaarheid.</li>
+</ul>
+<p>Alternatieven zijn de Easyline kant en klaar variant en Beton cire óriginal waarbij je zelf alle componenten moet mixen.</p>
+<h3 class="wp-block-heading"><strong>Beton-cire-Easyline kant en klaar</strong></h3>
+<ul>
+<li>Kant en klaar voorgemengd op kleur in alle Ral en NCS kleuren beschikbaar. Standaard 40 kleuren.</li>
+<li>Kan klaar zijn in 2 dagen.</li>
+<li>De eerste grove laag Raw geeft de tekening, de tweede laag Fine is erg fijn van structuur waardoor je direct de eerste laag zal zien. Je vult slechts de open structuur van de eerste laag.</li>
+<li>Minder ruimte voor foutjes.</li>
+<li>Beoordeling: 4/5 voor makkelijkheidsgraad,5/5 voor duurzaamheid, 4/5 voor betaalbaarheid.</li>
+</ul>
+<h3 class="wp-block-heading"><strong>Beton-cire-Original zelf mengen en mixen</strong></h3>
+<ul>
+<li>Zelf mengen en mixen van alle componenten beschikbaar in 50 standaard kleuren.</li>
+<li>Klaar in 5-6 dagen.</li>
+<li>De mortel kun je met water beïnvloeden om een leuke tekening te krijgen.</li>
+<li>Kan lastiger zijn om aan te brengen. Je zal een beetje stukadoor gevoel moeten hebben.</li>
+<li>Beoordeling: 3/5 voor makkelijkheidsgraad, 5/5 voor duurzaamheid, 5/5 voor betaalbaarheid.</li>
+</ul>
+<h2 class="wp-block-heading">Belangrijkste punten</h2>
+<ul>
+<li>Beton ciré is een duurzame, veelzijdige en onderhoudsvriendelijke optie, geschikt voor zowel moderne als klassieke interieurs en op diverse ondergronden toepasbaar.</li>
+<li>Het aanbrengen op de trap, kan door doe-het-zelvers uitgevoerd worden en omvat het schuren, stofvrij maken, aanbrengen van primer en twee laags aanbrengen van Beton ciré en beschermende laklagen.</li>
+<li>Het biedt mogelijkheden voor personalisatie met een breed scala aan kleuren en texturen, en vereisen speciale aandacht voor antislip en regelmatig onderhoud om slijtvastheid en duurzaamheid te waarborgen.</li>
+</ul>
+<h2 class="wp-block-heading">De essentie van een Beton ciré trap</h2>
+<p>Beton ciré trap, is een decoratieve bekleding met een stoere en ambachtelijke uitstraling. Het is een fantastische keuze voor de renovatie van trappen, dankzij zijn moderne beton look en duurzaamheid. Wat een bFeton cire trap zo aantrekkelijk maakt, is de veelzijdigheid van het materiaal. Het kan in veel kleuren worden geleverd en op diverse ondergronden worden aangebracht, wat het een veelzijdige keuze maakt die past bij zowel moderne als klassieke interieurs.</p>
+<p>Een trap afgewerkt heeft niet alleen een esthetische aantrekkingskracht, maar draagt ook bij aan de functionaliteit van uw huis. Of uw houten trap nu van hout, beton of een ander materiaal is gemaakt, het kan worden toegepast om een unieke en onderscheidende look te creëren. Doordat onze deco stuc erg flexibel is, kan het ook op een houten trap worden aangebracht.</p>
+<h2 class="wp-block-heading">Het aanbrengen in een trappengat.</h2>
+[row_inner_1]
+
+[col_inner_1 span="6" span__sm="12"]
+
+<p>Het aanbreng proces van Beton ciré is eenvoudig en kan zelfs door doe-het-zelvers worden uitgevoerd. Het begint met de voorbereiding van de ondergrond, waarbij de trap wordt geschuurd en stofvrij gemaakt. Maar pas op, lijmresten kunnen het eindresultaat van de traptreden beïnvloeden, dan kan er kleurverschil optreden. Zorg er dus voor dat de trap vooraf helemaal glad wordt geschuurd. Vervolgens wordt de primer gelijkmatig op de trap aangebracht met een roller om een goede hechting te verzekeren. Wellicht zal er eerst een goede dekkende egaliseer laag moeten worden aangebracht om overgebleven lijmresten op te vullen voordat er begonnen kan worden. Een primer alleen gaat dat niet lukken,</p>
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="12"]
+
+[ux_image_box img="2533"]
+
+<p>Trappen gat</p>
+
+[/ux_image_box]
+
+[/col_inner_1]
+
+[/row_inner_1]
+[row_inner_1]
+
+[col_inner_1 span="6" span__sm="12"]
+
+[ux_image_box img="12921"]
+
+<p>Open trap</p>
+
+[/ux_image_box]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="12"]
+
+<p><a href="https://staging.beton-cire-webshop.nl/"><strong>Beton ciré</strong></a> is een veelzijdige look die geschikt is voor zowel open als gesloten trappen. Bij het aanbrengen, op open trappen moet zorgvuldig aandacht besteed worden aan de onderzijde van de traptreden, omdat deze zichtbaar zijn. Alle kanten van de traptreden moeten nauwkeurig worden afgewerkt omdat ze vanuit verschillende hoeken zichtbaar zijn, wat meer complexiteit met zich meebrengt.</p>
+<p>Bij gesloten trappen, zoals bij veel houten trappen, is het vooral belangrijk dat de bovenkant en de voorkant van de traptreden zorgvuldig worden afgewerkt; Ongeacht of het open of gesloten trappen betreft, is het cruciaal om de randen van traptreden minimaal afgerond te hebben om schilfering of beschadigingen door stoten tegen te gaan. Een onderscheidend element bij houten trappen is de aandacht voor detail.</p>
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/col_inner]
+[col_inner span="1" span__sm="12"]
+
+
+[/col_inner]
+
+[/row_inner]
+[row_inner]
+
+[col_inner span="6" span__sm="12"]
+
+<h2 class="wp-block-heading">Antislip voor veiligheid</h2>
+<p>Veiligheid is behalve natuurlijke uitstraling een belangrijk aandachtspunt bij elke trap. Gelukkig is de antislip cruciaal om uitglijden en vallen te voorkomen en draagt bij aan een veilige omgeving. Onze laklaag bevat standaard een antislip.</p>
+<h2 class="wp-block-heading">Onderhoudsgemak: Een langdurig mooie Beton ciré trap</h2>
+<p>Een van de grote voordelen is het gemak van onderhoud. Het is waterdicht en wordt vaak afgewerkt met twee laklagen om bescherming te bieden tegen vlekken en het eenvoudig schoon te houden.</p>
+<p>Voor het onderhoud is het aan te raden om minstens één keer per week te dweilen met een microvezel dweil en het gebruik van agressieve schoonmaakmiddelen te vermijden. Dagelijkse onderhoudsactiviteiten zoals:</p>
+<ul>
+<li>regelmatig stofzuigen met een parketstofzuigermond</li>
+<li>het gebruik van goede schoon- en droogloopmatten bij de voordeur</li>
+</ul>
+<p> </p>
+
+[/col_inner]
+[col_inner span="6" span__sm="12"]
+
+[ux_image_box img="12236"]
+
+<h4>Gesloten trap</h4>
+
+[/ux_image_box]
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+<h2 class="wp-block-heading">Duurzaamheid en slijtvastheid van een Beton ciré trap</h2>
+<p>Beton ciré staat bekend om zijn duurzaamheid en uitstekende weerstand tegen schoenen, impact en slijtage. Dankzij de slijtvaste eigenschappen van onze pasta draagt het bij aan een langere levensduur van de trapafwerking.</p>
+<p>Na de verschillende lagen wordt het oppervlak verzegeld en beschermd met lagen polyurethane topcoat, waardoor het waterdicht en duurzaam is.</p>
+<h2 class="wp-block-heading">Combineren met andere materialen: De veelzijdigheid van Beton Ciré</h2>
+<p>Een van de aantrekkelijke aspecten  is de mogelijkheid om het te combineren met andere materialen. Het kan uitstekend gecombineerd worden met materialen zoals hout en metaal om een unieke uitstraling te geven aan interieurs. het sluit goed aan bij andere elementen zoals houten zijkanten van de trap. Of het stootboord van hout. je hoeft niet de gehele trap te behandelen. Het kan best leuk zijn om delen te doen en sommige niet. Dat breekt het een beetje.</p>
+<h2 class="wp-block-heading">Kostenoverzicht </h2>
+<p>Het is natuurlijk belangrijk om ook rekening te houden met de kosten van een Beton ciré trap renovatie als je het laat doen. De kosten voor het renoveren, liggen gemiddeld rond de €1500 voor de gehele trap, inclusief materiaal- en arbeidskosten, en eventuele extra opties zoals het verwijderen van lijmresten en eventueel egaliseren van de trap, om de lijmresten weg te krijgen. De prijs per enkele vierkante meters van een  trap kan variëren afhankelijk van een open of dichte trap. En eventueel het aanbrengen van de zijkant van de trap.</p>
+<p>Klanten kunnen besparen op de kosten door het zelf aanbrengen ervan, wat tot 60% besparing kan opleveren.</p>
+<p>Een gemiddelde trap heeft ongeveer 6 m2 aan treden. 6 x 44 Euro zijn de kosten als je het zelf kan aanbrengen.</p>
+<h3 class="p3">De uitstraling van een Beton Ciré trap.</h3>
+<p class="p4">Van een trap wordt veel gebruik gemaakt binnen een huis, al lijkt hij soms ondergewaardeerd. Hij moet tegen een stootje kunnen en legt ook de verbinding tussen verschillende verdiepingen in uw huis. Veelal verschillen die verdiepingen qua stijl ook enorm van elkaar. Hierdoor kan een traprenovatie of het bouwen van een volledig nieuwe trap aanvoelen als een enorme kluif. Want waar moet je beginnen en hoe pakt u dit aan? Het antwoord is eigenlijk eenvoudig: <b>kies voor een Beton Ciré trap!</b></p>
+<p class="p4">Dit geeft uw trap een stoere, robuuste uitstraling die helemaal binnen de nieuwste woontrends valt. Beton Ciré is verkrijgbaar in duizenden verschillende kleuren en zal dus altijd de juiste uitstraling vinden binnen uw interieur. Daarnaast kunt u met Beton Ciré verschillende patronen aanbrengen, waardoor u uw trap helemaal naar eigen smaak in kunt richten! <b>Zo geeft u uw trap een nieuw leven met de uitstraling die hij verdient.</b></p>
+<h3 class="p3">Wat zijn de voordelen van een betonstuc trap?</h3>
+<p class="p4">Beton Ciré is een sterk product. Door de stevigheid en de flexibiliteit van de betonstuc, maak je de trap slijtvast. Je zult dus jarenlang plezier hebben van je trap!</p>
+<p class="p4">Door de toplaag, is de trap kras bestendig en kan hij tegen een stootje. Intensief gebruik van je trap is dus geen probleem.<br />Doordat Beton Ciré een naadloze oppervlakte heeft, komt er komt geen vuil vast te zitten in naadjes of kiertjes. Hierdoor is de gloednieuwe trap met een stofzuiger, Swiffer of natte doek gemakkelijk schoon te houden en heeft hij weinig verzorging nodig.</p>
+<h2 class="wp-block-heading">Samenvatting</h2>
+<p>Samenvattend, een Beton ciré trap is een veelzijdige, duurzame en onderhoudsvriendelijke optie voor traprenovaties. Het kan worden aangepast aan je persoonlijke smaak en interieur, is geschikt voor zowel open als gesloten trappen en biedt een antislip-afwerking voor veiligheid. De duurzaamheid van  Beton ciré  en slijtvastheid garanderen een lange levensduur en het is gemakkelijk te onderhouden. Met de mogelijkheid om te combineren met andere materialen zoals hout, kun je een unieke en stijlvolle trap creëren die perfect past bij je interieurstijl.</p>
+<h2 class="wp-block-heading">Veelgestelde vragen</h2>
+<h3 class="wp-block-heading">Kan het op de trap?</h3>
+<p>Ja, Beton ciré kan zonder problemen op de trap worden aangebracht, mits u de meegeleverde primer gebruikt voor een goede hechting.</p>
+<h3 class="wp-block-heading">Hoe lang blijft een Beton ciré trap mooi?</h3>
+<p>Een Beton ciré trap blijft jarenlang mooi dankzij zijn waterdichte eigenschappen. Je zult jarenlang kunnen genieten van de duurzame en fraaie afwerking van je trap. Een stofloop maat aan de onderkant van de trap zorgt voor minder slijtage van de treden.</p>
+<h3 class="wp-block-heading">Waarom is Beton ciré zo duur?</h3>
+<p>Het is inderdaad veel geld maar zeker niet duur. Het laten aanbrengen is duur  vanwege de tijd die vakmensen nodig hebben om het materiaal netjes aan te brengen. Daarnaast is het per vierkante meter minder aantrekkelijk op een trap van wegen de vele randen en hoeken. Laten we eerlijk zijn een huiskamer vloer is makkelijker.</p>
+<h3 class="wp-block-heading">Wat is goedkoper vloerbedekking of een trap bedekt met Beton ciré?</h3>
+<p>Vloerbedekking is meestal duurder dan Onze Betonstuc producten, omdat vloerbedekking door vakmensen wordt aangebracht, wat extra kosten met zich meebrengt. Dus zelf aanbrengen van onze decoratieve stuc is veel goedkoper.</p>
+<p>Bezoek onze<strong> <a href="https://staging.beton-cire-webshop.nl/beton-cire-showroom/">showroom</a></strong> in Den Haag voor advies, inspiratie en een eventuele workshop bij je bestelling!</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+[ux_html]
+
+<div id="trustindex-script-container"></div>
+[/ux_html]
+
+[/col]
+
+[/row]
+
+<!-- /wp:flatsome/uxbuilder -->

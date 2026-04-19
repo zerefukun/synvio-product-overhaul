@@ -1,0 +1,1445 @@
+<!-- wp:flatsome/uxbuilder -->
+[row label="Hero" style="collapse" width="full-width"]
+
+[col span__sm="12" bg_color="rgb(220, 214, 207)"]
+
+[row_inner style="small"]
+
+[col_inner span="4" span__sm="12" border="0px 2px 0px 2px" border_color="rgb(19, 83, 80)"]
+
+[ux_banner height="213px" bg="12563" hover="zoom" border="1px 1px 1px 1px" border_color="rgb(255, 255, 255)"]
+
+[ux_image id="12451" image_size="original" width="68" height="80%" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/" position_x="50" position_y="50"]
+
+
+[/ux_banner]
+[ux_banner height="582px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;"><span style="color: #444444;">Beton Ciré Easyline</span></h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★☆ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="100" position_x__sm="100" position_y="35" position_y__sm="35"]
+
+[ux_text line_height="2.2" line_height__sm="1.2" line_height__md="1.3"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Badkamerwanden, natte cellen</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Huiskamervloeren en meubels</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Grove en Fijne laag</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Slechts twee dagen werk</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">36 kleuren en RAL en NCS</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Voor binnen</span></strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -14px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="50"]
+
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€28/1m2</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 5m²</span></h3>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré Easyline" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-kant-en-klaar/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12" bg_radius="56"]
+
+[ux_banner height="212px" bg="12563" bg_color="#dcd6cf" bg_overlay="rgba(19, 83, 80, 0.436)" hover="zoom"]
+
+[ux_image id="12453" image_size="original" width="78" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/beton-cire-original/" position_x="10" position_y="50"]
+
+
+[/ux_banner]
+[ux_banner height="581px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -14px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="25"]
+
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€28</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="100" position_x__sm="95" position_y="35" position_y__sm="35"]
+
+[ux_text line_height="2.2" line_height__sm="1.45" line_height__md="1.35"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Badkamerwanden, natte cellen</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Huiskamervloeren en meubels</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Hard met een fijne structuur</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Slechts twee dagen werk</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">36 kleuren en RAL en NCS</span></strong></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><strong><span style="font-size: 130%;"><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></span></strong><br /><strong><span style="font-size: 130%;">Voor binnen</span></strong></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="73" margin__sm="10px 0px 0px 0px" position_x="50" position_y="0" position_y__sm="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;">Beton Ciré All-In-One</h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar </span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★☆</span></p>
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré All-In-One" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+[col_inner span="4" span__sm="12"]
+
+[ux_banner height="213px" bg="12563" bg_pos="0" hover="zoom"]
+
+[ux_image id="28803" image_size="original" width="82" image_hover="zoom" link="https://staging.beton-cire-webshop.nl/lavasteen-gietvloer/" position_x="50" position_y="50"]
+
+[text_box style="circle" width="24" scale="75" margin="0px -5px 0px 0px" rotate="20" position_x="90" position_y="15" text_depth="4" bg="rgb(54, 90, 87)"]
+
+[ux_text font_size="0.9" text_color="rgb(255,255,255)"]
+
+<p><strong>Aanbevolen!</strong></p>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+[ux_banner height="578px" height__sm="800px" bg_color="#dcd6cf" divider="curve-opacity" divider_flip="0" divider_to_front="0"]
+
+[text_box text_color="dark" width="73" position_x="50" position_y="0"]
+
+[ux_text line_height="1.5"]
+
+<h2 style="text-align: center;">Beton Ciré Original</h2>
+<h3 style="text-align: center;"><span style="color: #135350;">Kant &amp; Klaar</span></h3>
+[/ux_text]
+
+[/text_box]
+[text_box text_color="dark" width="100" padding="10px 10px 10px 10px" position_x="50" position_y="15" bg="rgba(255, 255, 255, 0.413)" depth="1"]
+
+<h3><span style="font-size: 80%;">Vanaf</span> </h3>
+<h3><strong><span style="font-size: 110%;"><span style="color: #135350;">€31</span></span></strong></h3>
+<h3><span style="font-size: 80%;">per 1m²</span></h3>
+
+[/text_box]
+[text_box width="100" position_x="50" position_y="90"]
+
+[divider width="80%" height="2px" margin="1px" color="rgba(85, 85, 85, 0.8)"]
+
+<p style="text-align: center;"><span style="color: #135350; font-size: 120%;">Makkelijkheid: ★★★★★ | Duurzaamheid: ★★★★★ | Betaalbaarheid: ★★★★★</span></p>
+
+[/text_box]
+[text_box text_color="dark" width="84" margin="0px 14px 0px 0px" position_x="95" position_x__sm="100" position_y="50" position_y__sm="50"]
+
+[ux_text line_height="2.2" line_height__sm="1.95" line_height__md="2.05"]
+
+<div style="font-size: 13px; line-height: 1.4; color: #6b6b6b; font-weight: 500;">
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Badkamerwanden, natte cellen</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Huiskamervloeren en meubels</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Zeer hard, fijne structuur</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Snelste klaar</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>90&nbsp; kleuren + RAL en NCS</strong></span></div>
+<div style="display: flex; align-items: flex-start; margin-bottom: 6px;"><span style="font-size: 130%;"><strong><span style="color: #135350; line-height: 1; margin-right: 6px;">✓</span></strong></span><br /><span style="font-size: 130%;"><strong>Voor binnen en buiten</strong></span></div>
+</div>
+[/ux_text]
+
+[/text_box]
+[text_box width="11" margin="20px 0px 0px -14px" margin__sm="16px 0px 0px -10px" position_x="5" position_x__sm="5" position_y="25" position_y__sm="30"]
+
+
+[/text_box]
+[text_box margin="0px 0px -10px 0px" position_x="50" position_y="80"]
+
+[button text="Beton Ciré Original" size="larger" link="https://staging.beton-cire-webshop.nl/beton-cire-original/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[row label="Numbers"]
+
+[col span__sm="12" padding="4% 0px 0px 0px" padding__sm="10px 0px 10px 0px" margin="-220px 0px 0px 0px" margin__sm="0px 0px 0px 0px" bg_color="rgba(255, 255, 255, 0.75)" animate="fadeInRight" depth_hover="4"]
+
+[row_inner width="full-width" v_align="middle" h_align="center"]
+
+[col_inner span__sm="12" divider="0" padding="10px 0px 10px 0px" padding__sm="0px 0px 0px 0px" margin__sm="0px 0px 0px 0px" align="center" bg_radius="4"]
+
+[ux_text font_size="1.75" font_size__sm="0.75" line_height="0.75"]
+
+
+[/ux_text]
+[divider width="66%" margin="0px" color="rgb(19, 83, 80)"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[gap]
+
+[row]
+
+[col span="1" span__sm="12"]
+
+[gap]
+
+
+[/col]
+[col span="3" span__sm="12" divider="0" padding="10px 0px 0px 10px" align="left" border="5px 5px 5px 5px" border_margin="0px -15px -10px 0px" border_color="#ffffff"]
+
+<h2>Navigatie:</h2>
+<ol>
+<li><strong><a href="#producten">Producten</a></strong></li>
+<li><strong><a href="#gereedschap">Gereedschap</a></strong></li>
+<li><strong><a href="#weetjes">Weetjes</a></strong></li>
+<li><strong><a href="#voordelen">Voordelen Beton ciré vloer</a></strong></li>
+</ol>
+
+[/col]
+[col span="7" span__sm="12"]
+
+[ux_banner height="276px" bg="12640" bg_color="#ffffff"]
+
+[text_box text_color="dark" width="51" width__sm="81" scale="150" position_x="50" position_y="50" text_depth="1" bg="rgba(255, 255, 255, 0.901)" depth="1"]
+
+[ux_text font_size="1.1" font_size__sm="0.75" text_align="center"]
+
+<h3 class="uppercase"><strong>Gratis Kleurstalen</strong></h3>
+<p>Vraag 4 Gratis Kleurstalen aan en beleef Beton ciré in het echt!</p>
+[/ux_text]
+[button text="Vraag Aan!" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/kleurstalen-aanvragen/"]
+
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+
+[/row]
+[scroll_to title="gereedschap" link="#gereedschap" bullet="false"]
+
+[row]
+
+[col span="8" span__sm="12" animate="fadeInLeft"]
+
+[section label="Simple Center" bg_color="rgb(220, 214, 207)" padding="60px" height="400px"]
+
+[row_inner h_align="center"]
+
+[col_inner span="10" span__sm="12" align="center"]
+
+[ux_text text_align="left"]
+
+<h2 class="wp-block-heading">Tools en benodigdheden</h2>
+<ul>
+<li>
+<p><span style="font-size: 90%;">Het aanbrengen van een Beton Ciré vloer lijkt een uitdaging, maar dit kan toch met succes worden gedaan als je maar juiste gereedschappen, materialen en begeleiding hebt.</span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;"> <strong><a href="https://staging.beton-cire-webshop.nl/gereedschapsset-beton-cire-kant-en-klaar-all-in-one-easyline/">Beton ciré kant en klaar</a></strong> Gereedschap set. </span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;"> <strong><a href="https://staging.beton-cire-webshop.nl/gereedschapsset-original/">Beton ciré zelf mixen en mengen</a> </strong>Gereedschap set en voor lavasteen</span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;"> Voor het aanbrengen van een Beton ciré vloer of lavasteen en Microcement hebben we een aantal tips zoals de gereedschappen die nodig zijn. Deze worden vaak niet gebruikt maar zijn wel echt noodzakelijk. Het enige verschil in gereedschap is dat er bij de lavasteen de A en de B componenten met elkaar gemixed moeten worden. Dit doe je met een grote garde.</span></p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Met een spackmes kun je snel de vloer vol zetten en met een flexibel spaan kun je de structuur dicht zetten zonder inox sluier. Je weet wel die vervelende grijze gloed over je cire heen. Ons product heeft dit lelijke trekje al veel minder dan andere merken.</span><span style="font-size: 90%;"><strong> </strong></span>Het mooiste resultaat verkrijg je door een paar minuten te laten indrogen en daarna met een planten spuit te benevelen met water. Zo krijg je een menging van de kleur met water. Het zogenaamde wolken patroon. Blijf niet keer op keer met je spaan over je vloer gaan Het patroon zal daardoor weer weg gaan. Met water benevelen geeft een hele mooie dichte structuur zonder gaatjes.</p>
+</li>
+<li>
+<p><span style="font-size: 90%;">Tip! Blijf nooit te lang over 1 plek gaan. Het eindeloos over 1 en dezelfde plek strijken geeft nare plekken.. Klaar is klaar. Er wordt nog geschuurd en afgelakt.</span></p>
+</li>
+</ul>
+<p> </p>
+
+[/ux_text]
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+[col span="4" span__sm="12"]
+
+[ux_stack direction="col"]
+
+[ux_banner height="305px" bg_color="rgb(220, 214, 207)"]
+
+[ux_image id="11210" height="75%" image_overlay="rgba(0, 0, 0, 0.38)" position_x="50" position_y="0"]
+
+[text_box width="37" padding="35px 60px 35px 60px" position_x="95" position_y="5" bg="rgb(19, 83, 80)"]
+
+
+[/text_box]
+[text_box width="38" margin="5px 0px 0px 0px" position_x="95" position_y="10"]
+
+<h2 class="uppercase"><strong>€ 89,99</strong></h2>
+
+[/text_box]
+[text_box width="29" position_x="85" position_y="5"]
+
+<h4 class="uppercase"><strong>VANAF</strong></h4>
+
+[/text_box]
+[text_box width="100" margin="10px 0px 0px 0px" padding="0px 0px 10px 0px" position_x="50" position_y="100" bg="rgb(255, 255, 255)"]
+
+[ux_text text_align="center"]
+
+<h2 style="text-align: center;"><span style="color: #555555;"><br>Gereedschapsset Beton-Cire-kant &amp; klaar <br><br></span></h2>
+<h5 style="text-align: right;"><span style="font-size: 120%; color: #555555;"><span style="color: #03bfac;"><a style="color: #03bfac;" href="https://staging.beton-cire-webshop.nl/gereedschapsset-beton-cire-kant-en-klaar-all-in-one-easyline/"><span style="text-decoration: underline;">meer informatie</span></a></span>&nbsp; &nbsp; &nbsp; &nbsp;</span></h5>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+
+[/ux_stack]
+[ux_stack direction="col"]
+
+[ux_banner height="305px" bg_color="rgb(220, 214, 207)"]
+
+[ux_image id="11210" height="75%" image_overlay="rgba(0, 0, 0, 0.38)" position_x="50" position_y="50"]
+
+[text_box width="37" padding="35px 60px 35px 60px" position_x="95" position_y="5" bg="rgb(19, 83, 80)"]
+
+
+[/text_box]
+[text_box width="37" margin="5px 0px 0px 0px" position_x="100" position_y="20"]
+
+
+[/text_box]
+[text_box width="37" margin="5px 0px 0px 0px" position_x="95" position_y="10"]
+
+<h2 class="uppercase"><strong>€ 119,99</strong></h2>
+
+[/text_box]
+[text_box width="29" position_x="85" position_y="5"]
+
+<h4 class="uppercase"><strong>VANAF</strong></h4>
+
+[/text_box]
+[text_box width="100" scale="134" padding="10px 5px 10px 5px" position_x="50" position_y="100" bg="rgb(255, 255, 255)"]
+
+[ux_text text_align="center"]
+
+<h2 class="product-title product_title entry-title" style="text-align: center;"><span style="color: #555555; font-size: 110%;">Gereedschapsset lavasteen en Original</span></h2>
+<h5 style="text-align: right;"><span style="font-size: 110%; color: #555555;"><span style="color: #03bfac;"><a style="color: #03bfac;" href="https://staging.beton-cire-webshop.nl/gereedschapsset-original/"><span style="text-decoration: underline;">meer informatie</span></a></span>       </span></h5>
+[/ux_text]
+
+[/text_box]
+
+[/ux_banner]
+
+[/ux_stack]
+
+[/col]
+
+[/row]
+[row]
+
+
+[/row]
+[row visibility="show-for-medium"]
+
+[col span__sm="12"]
+
+[section label="Media Right" bg_overlay="rgba(255, 255, 255, 0.85)" padding__sm="65px" divider_top="waves-opacity-3" divider_top_fill="#dcd6cf" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInLeft" depth="1" border="3px 3px 3px 3px" border_style="dashed" border_color="#181b1f"]
+
+<h2>Flexibele spaan</h2>
+<p><span style="font-size: 90%;">Met de flexibel spaan kun je een strak en mooi eindresultaat krijgen van je object. Maar technisch gezien is het belangrijk om de structuur dicht te krijgen om waterdichtheid te garanderen</span></p>
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-60px 0px 0px 0px" align="left" animate="fadeInRight"]
+
+[ux_image id="21105" width="75" width__sm="100" margin="20px 0px 0px 0px" depth="1" link="https://staging.beton-cire-webshop.nl/flexibele-spaan/" target="_blank"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+[section label="Media Left" padding="0px" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" divider="0" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInRight" depth="1" border="3px 3px 3px 3px" border_style="dotted" border_color="#181b1f"]
+
+[ux_text font_size="1" text_align="right"]
+
+<h2 style="text-align: left;">Inwendige hoektroffel</h2>
+<p style="text-align: left;"><span style="font-size: 80%;">Deze is ideaal en onmisbaar om de ronding volledig dicht te zetten tussen 2 wanden in, of tussen wand en vloer in. Die naden wil je echt volledig strak en rond hebben zodat deze netjes voorzien kan worden met de waterdichte pu top coat. Relief en gaatjes kunnen lucht bevatten die je niet gesealed krijgt met de pu. Bovendien ziet een strakke binnen hoek er erg mooi uit.</span></p>
+[/ux_text]
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-50px 0px 0px 0px" animate="fadeInRight"]
+
+[ux_image id="21107" width="75" width__sm="100" depth="1" link="https://staging.beton-cire-webshop.nl/inwendige-hoektroffel/"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+[section label="Media Right" divider="waves-opacity-3" divider_fill="#dcd6cf" visibility="show-for-small"]
+
+[row_inner style="large" v_align="middle"]
+
+[col_inner span="7" span__sm="12" padding="10px 10px 10px 10px" align="left" bg_color="#dcd6cf" animate="fadeInLeft" depth="1" border="3px 3px 3px 3px" border_style="dotted" border_color="#181b1f"]
+
+<h2>Uitwendige hoektroffel</h2>
+<p><span style="font-size: 90%;">Een echte pro gebruikt dit gereedschap om de buitenhoeken van je rvs hoeknaald of de rand van je toilet ombouw te voor zien van een strakke en egale beton cire laag. Dit krijg je gewoon niet voor elkaar zonder.</span></p>
+
+[/col_inner]
+[col_inner span="4" span__sm="12" margin__sm="-50px 0px 0px 0px" animate="fadeInRight"]
+
+[ux_image id="21106" width="75" width__sm="100" depth="1" link="https://staging.beton-cire-webshop.nl/uitwendige-hoektroffel/" target="_blank"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[scroll_to title="Weetjes" bullet="false"]
+
+[row]
+
+[col span__sm="12"]
+
+[section bg="11180" bg_overlay="rgba(0, 0, 0, 0.38)" bg_pos="41% 53%" padding__sm="10px" margin="0px"]
+
+[row_inner style="collapse" v_align="middle" h_align="center" padding="30px 30px 30px 30px" padding__sm="10px 0px 10px 0px"]
+
+[col_inner span="6" span__sm="12" span__md="12" padding__sm="0px 0px 0px 0px" margin__sm="0px 0px 0px 0px" color="light" animate="bounceIn"]
+
+[ux_text font_size__sm="0.75" line_height="0.75"]
+
+<h2 style="font-size: 300%;"><span style="font-size: 90%;">Alle weetjes over</span></h2>
+<h2 style="font-size: 300%;"><span style="color: #135350; background-color: rgba(255, 255, 255, 0.7);">Beton Cire vloer</span></h2>
+<p class="lead">Hoe breng je een Beton Cire vloer aan?</p>
+[/ux_text]
+[button text="Lees onze stappenplan" letter_case="lowercase" color="secondary" style="underline" padding="0px 0px 0px 0px" radius="5" link="#stappen-plan"]
+
+
+[/col_inner]
+[col_inner span="1" span__sm="12" visibility="hide-for-medium"]
+
+[gap]
+
+
+[/col_inner]
+[col_inner span="5" span__sm="12" span__md="12" bg_color="rgba(255, 255, 255, 0.85)" animate="fadeInRight" class="padding"]
+
+[ux_text font_size__sm="0.75" line_height="1.5" line_height__sm="0.75" class="padding"]
+
+<h2><span style="font-size: 85%;"><a href="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/"><strong>Beton Ciré kant &amp; klaar</strong></a> pakket bevat:</span></h2>
+<p><i class="icon-checkmark" style="color: #135350;"></i> Primer<br /><i class="icon-checkmark" style="color: #135350;"></i> Beton Ciré voor 2 lagen<br /><i class="icon-checkmark" style="color: #135350;"></i> Presealer. Deze heb je bij Microcement niet nodig.<br /><i class="icon-checkmark" style="color: #135350;"></i> Pu topcoat naar keuze</p>
+<p><style>
+.padding{<br />
+padding: 10px!important;<br />
+}<br />
+</style></p>
+[/ux_text]
+[divider align="center" width="100%" color="rgb(19, 83, 80)"]
+
+[ux_text font_size__sm="0.75" line_height="1.5" class="padding"]
+
+<h2><span style="font-size: 85%;"><b>Lavasteen</b>  bevat:</span></h2>
+<p><i class="icon-checkmark" style="color: #135350;"></i> Primer<br /><i class="icon-checkmark" style="color: #135350;"></i> Lavasteen voor 2 lagen<br /><i class="icon-checkmark" style="color: #135350;"></i> Pu topcoat naar keuze</p>
+[/ux_text]
+[ux_html]
+
+<style>
+.padding {
+padding: 20px!important
+}
+</style>
+[/ux_html]
+
+[/col_inner]
+
+[/row_inner]
+
+[/section]
+
+[/col]
+
+[/row]
+[row visibility="show-for-medium"]
+
+[col span__sm="12"]
+
+[row_inner style="collapse" col_style="divided"]
+
+[col_inner span__sm="12"]
+
+[scroll_to title="stappen plan" link="#stappen-plan"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" padding__sm="0px 0px 0px 0px" margin="0px 0px 0px 98%" margin__sm="0px 0px 0px 0px" margin__md="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="13580" bg_color="rgba(255, 255, 255, 0)" bg_pos="57% 52%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -95%" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 1: Primer</strong></h2>
+<p style="text-align: center;"><span style="font-size: 90%;">Met een <strong><a href="https://staging.beton-cire-webshop.nl/vachtroller-25cm-met-kunststof-handvat/">vachtroller</a> </strong>aanbrengen. Rol de vloeistof netjes in banen aan en rol deze iets uit. Op deze manier verdeel je de primer op een zorgvuldige manier. De primer is een vloeistof die makkelijk onder afplak tape kan kruipen. Pas daar voor op. Laat de primer tenminste 2 uur drogen</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12604" bg_color="rgba(255, 255, 255, 0)" bg_pos="66% 0%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 2: Eerste laag aanbrengen</strong></h2>
+<p><span style="font-size: 90%;">In deze laag kun je je eigen handtekening zetten. De één laat veel structuur achter met de spaan of kwast en de ander heel weinig. De structuur van de eerste laag kun je weer zien in de tweede laag. Bij Beton cire Easyline heb je dat&nbsp; snel omdat de tweede laag een fijne structuur heeft en daardoor de eerste laag direct zichtbaar is. Dit geeft een drukke tekening. Bij onze Beton-cire-All-in-one kun je een rustige of een drukke tekening krijgen.&nbsp;</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 98%" margin__sm="0px 0px 0px 0px" margin__md="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12606" bg_color="rgba(255, 255, 255, 0)" bg_pos="67% 25%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="1% 7% 1% 7%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -95%" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 3: Tweede laag aanbrengen</strong>.</h2>
+<p style="text-align: center;"><span style="font-size: 90%;">Bij Beton cire All-in-one is de tweede laag pasta van de zelfde structuur als de eerste laag waardoor je de eerste laag niet direct zult zien. Je zet dus een volledige laag op die je zo kan laten. Deze geeft de minste tekening. Je kan de tweede laag ook over je eerste laag schrapen. Dit geeft een drukke tekening. Lang schuren geeft meer tekening. Gebruik korrel 80. Oud schuurpapier geeft veel tekening. Nieuw schuurpapier minder. Tip!! Mocht je teveel tekening ervaren dan is er een reset mogelijk. Gebruik nieuw schuur papier. korrel 80. Hierdoor schuur je de tekening weg. Maar nieuw papier is snel ouder geworden en ga je weer tekening krijgen. Je polijst als het ware de structuur op. Gebruik altijd een elektrische schuurmachine met een stofzuiger combinatie. De fijnstof is niet goed voor de inademing en dus slecht voor je gezondheid.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="332px" height__sm="300px" height__md="400px" bg="13580" bg_size="woocommerce_single" bg_color="rgba(255, 255, 255, 0)" bg_pos="53% 53%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 4: Presealer</strong></h2>
+<p><span style="font-size: 90%;">Dat kan het beste worden aangebracht met een vachtroller en met een pluisvrije doek worden uitgewreven. Zou je geen doek gebruiken dan zou je de rolbanen en druipers kunnen zien die de vachtroller achter laat.&nbsp;</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 98%" margin__sm="0px 0px 0px 0px" margin__md="0px 0px 0px 0px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21113" bg_color="rgba(255, 255, 255, 0)" bg_pos="52% 51%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -95%" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 5: Pu topcoat</strong></h2>
+<p style="text-align: center;"><span style="font-size: 90%;">Het aanbrengen van de pu topcoat is niet moeilijk maar het kan ook mis gaan. Zorg dat de ondergrond droog en stofvrij is. Zet de pu niet te dik op en op het moment dat je merkt dat je roller droger wordt, dan rol netjes in 1 richting je sporen na. Daarna kun je de roller opnieuw nat maken en een nieuw stuk aanpakken. Blijf niet eindeloos over een stuk heen gaan en werk altijd nat in nat. Als je merkt dat een opgezet stuk droger wordt, raden we aan om er niet meer over heen te gaan. Bij een tweede laag pu zul je minder nodig hebben. Droogtijd 1-2 uur. Zet na het aanbrengen pas een ventilator aan. Per laag pu heb je een nieuwe roller nodig.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+[row_inner]
+
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="369px" height__sm="300px" height__md="400px" bg="21109" bg_color="rgba(255, 255, 255, 0)" bg_pos="67% 25%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Belangrijk</strong></h2>
+<p style="text-align: center;"><span style="font-size: 90%;">Bij de kant en klare cire soorten is de pu topcoat voor alle objecten het zelfde en zit voor alle lagen in 1 set. Voeg de pu A component afgewogen in een meng beker, voeg daarna de pu B component bij de A en meng deze met een <a href="https://staging.beton-cire-webshop.nl/pu-garde/">pu garde.</a>&nbsp;Doe dit op een lage snelheid en minimaal 2 minuten lang. Na het mengen giet je het mengsel in een&nbsp;<a href="https://staging.beton-cire-webshop.nl/verfbak/">verfbakje</a>&nbsp;waaruit je kan rollen en kan aanbrengen op je oppervlak. Met een&nbsp;<a href="https://staging.beton-cire-webshop.nl/kwast/">kwastje met lichte haren</a> en niet een kwast met donkere haren kun je de pu in de hoeken verdelen. De kwasten met donkere haren verliezen de kleurstof in de haren en geven hele nare donkere strepen&nbsp;</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[row visibility="hide-for-medium"]
+
+[col span__sm="12"]
+
+<h2><strong><b>De vloer voorbereiden</b></strong></h2>
+<p>Voordat je begint met het aanbrengen is het belangrijk dat de ondergrond scheurvrij, egaal en droog is. <a href="https://staging.beton-cire-webshop.nl/kennisbank/welke-voorbereidingen-moeten-er-getroffen-worden/"><strong><b>Voorbereiding</b></strong></a> is alles. De ondergrond moet ook van één en het zelfde materiaal zijn. Een betegelde ondergrond dien je eerst te behandelen met een egaline, of een cementgebonden <strong><b>egalisatie stuc.</b></strong> Plak alles af wat niet vies mag worden. Trek werk kleding aan en draag handschoen en een veiligheidsbril. Wil je tips en trucs met betrekking tot het voorbereiden van de ondergrond voor je vloer? Lees dan onze <a href="https://staging.beton-cire-webshop.nl/technische-pagina/"><strong><b>technische pagina.</b></strong></a></p>
+[row_inner style="collapse" col_style="divided"]
+
+[col_inner span__sm="12"]
+
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21179" bg_color="rgba(255, 255, 255, 0)" bg_pos="57% 52%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -550px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 1: Primer</strong></h2>
+<p><span style="font-size: 90%;">Aan brengen met een&nbsp;<strong><a href="https://staging.beton-cire-webshop.nl/vachtroller-25cm-met-kunststof-handvat/">vachtroller</a></strong>. Laat de primer tenminste 2 uur drogen. Pas op voor primer vloeistof onder je afgeplakte ondergronden. Rol netjes en verdeel de primer gelijkmatig.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12719" bg_color="rgba(255, 255, 255, 0)" bg_pos="66% 0%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2>Stap 2: De eerste laag aanbrengen.</h2>
+<p>Met deze laag kun je de tekening maken. Sommige laten veel structuur achter met de spaan of kwast en de ander heel weinig. De structuur van de eerste laag kun je weer zien in de tweede laag. Dit geeft een drukke tekening. Bij al onze Beton Ciré soorten kun je een rustige of een drukke tekening krijgen. Bij Microcement en lavasteen heb je vaak al een rustiger patroon. Door nat-in-nat te werken kun je met de tweede laag over de eerste nog enigszins natte laag heen schrapen. Je verbrand op deze manier de eerste laag waardoor je meer tekening krijgt. Maar over een nog natte vloer lopen is niet handig. Je kunt wel met piepschuim platen een pad maken waar je over heen loopt als het ware. Pas wel op voor die los zittende witte piepschuim bolletjes. Deze wil je niet tegen komen in je werk. Je kunt ook gewoon je vloer goed hard laten worden en dan de tweede laag met water benevelen. Dit geeft wat mij betreft de mooiste tekening.</p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="12719" bg_color="rgba(255, 255, 255, 0)" bg_pos="67% 25%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="1% 7% 1% 7%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -540px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2>Stap 3: Tweede laag aanbrengen.</h2>
+<p>De tweede laag pasta is van dezelfde structuur als de eerste laag, waardoor je de eerste laag niet direct zult zien. Je hebt dus een volledige nieuwe laag gemaakt die je kan laten voor wat ie is.. Deze tekening is het minst opvallend. Je kan ook de tweede laag over de eerste laag schrapen. Dit maakt de tekening druk. Het schuren geeft tekening. Korrel 80 is de beste optie. Een goede tip! Als je te veel tekeningen hebt ervaren, kun je een reset krijgen. Het gebruik van nieuw schuurpapier is aan te raden. Dit zorgt ervoor dat de tekening niet meer zichtbaar is. Maar nieuw papier is snel oud en je krijgt weer een tekening. Zorg ervoor dat je een elektrische schuurmachine met een stofzuigercombinatie gebruikt. De fijnstof is niet goed voor je gezondheid.</p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="334px" height__sm="300px" height__md="400px" bg="12610" bg_size="woocommerce_single" bg_color="rgba(255, 255, 255, 0)" bg_pos="53% 53%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 4: Presealer. </strong></h2>
+<p>Deze presealer heb je niet nodig bij Microcement en lavasteen.</p>
+<p><span style="font-size: 12.96px;">Een vloertje leggen van een paar vierkante meter is niet zo lastig. Dat gaat prima met een vachtroller en dan daarna met een doek de rolbanen uit vegen. De presealer aanbrengen bij hele grote vloeren is een ander verhaal. Het kan heel eenvoudig worden gedaan met een dweildoek zoals op de afbeelding hiernaast. Je kent ze wel. Ze liggen in de <strong>Action</strong> winkels voor weinig. Drenk de doek in een bak waar alle presealer vloeistof zit en dweilen maar. Pas op met druppels.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium" margin="0px 0px 0px 590px"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21181" bg_color="rgba(255, 255, 255, 0)" bg_pos="48% 44%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -550px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="left" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Stap 5: 2 componenten Pu topcoat</strong></h2>
+<p><span style="font-size: 90%;">De 2 componenten top coat wil nat in nat worden aangebracht. Dat wil zeggen dat je zo veel mogelijk strijkranden wil voor komen. werk stuk voor stuk af. Bij grote oppervlakken kun je dit het beste met meerdere mensen aanpakken. Zet een baan lengte op van de links naar rechts en verdeel die netjes door even je rolbanen na te lopen. Dit kun je het beste doen met een droge roller. Daarna kun je de roller opnieuw nat maken en een nieuw stuk aanpakken. Blijf niet eindeloos over een stuk heen gaan en werk altijd nat in nat. Als je merkt dat een opgezet stuk droger wordt, raden we aan om er niet meer over heen te gaan. Bij een tweede laag pu zul je minder materiaal nodig hebben. Droogtijd 3-4 uur. Zet na het aanbrengen pas een ventilator aan. Per laag pu heb je een nieuwe roller nodig.</span></p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+[row_inner]
+
+[col_inner span__sm="12"]
+
+[section label="About" bg_color="#dcd6cf" padding="0px" padding__sm="0px" margin="0px"]
+
+[row_inner_1 label="Information" style="collapse" width="full-width" v_align="middle" h_align="center"]
+
+[col_inner_1 span="6" span__sm="12" span__md="12" force_first="medium"]
+
+[ux_banner height="400px" height__sm="300px" height__md="400px" bg="21109" bg_color="rgba(255, 255, 255, 0)" bg_pos="48% 49%" video_visibility="visible"]
+
+
+[/ux_banner]
+
+[/col_inner_1]
+[col_inner_1 span="6" span__sm="11" span__md="12" padding="0 0px 0px 0px" padding__sm="10px 0px 20px 0px" padding__md="35px 0px 30px 0px" class="index-up"]
+
+[gap]
+
+[row_inner_2 h_align="center"]
+
+[col_inner_2 span__sm="12" span__md="11" padding="7% 10% 7% 10%" padding__sm="15% 10% 15% 10%" padding__md="6% 6% 6% 6%" margin="0px 0px 0px -100px" margin__sm="-100px 0px 0px 0px" margin__md="-150px 0px 0px 0px" align="center" bg_color="rgb(255, 255, 255)" bg_radius="5" class="index-up"]
+
+<h2><strong>Belangrijk</strong></h2>
+<p><span style="font-size: 90%;">&nbsp;Weeg de componenten goed af. Voeg pu A component in een meng beker, voeg pu B component bij A en meng deze met een <strong><a href="https://staging.beton-cire-webshop.nl/pu-garde/">pu garde.</a></strong> Meng 2 minuten op laag snelheid. Giet het mengsel in een <strong><a href="https://staging.beton-cire-webshop.nl/verfbak/">verfbakje.</a></strong></span></p>
+<p>&nbsp;</p>
+
+[/col_inner_2]
+
+[/row_inner_2]
+
+[/col_inner_1]
+
+[/row_inner_1]
+
+[/section]
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[row style="small" col_style="solid"]
+
+[col span__sm="12"]
+
+<h2 class="wp-block-heading">Pu voor meerdere lagen</h2>
+<p>Zorg ervoor dat je alle pu die je hebt gekregen niet in één keer mengt. Je moet de aangebrachte pu binnen een uur aanbrengen. Zou je dat niet doen, dan heb je niet genoeg voor laag 2 en laag 3. In ander half uur tijd is de pu voor de kant-en-klaar ciré droog. De tweede en/of derde laag moet binnen 48 uur worden aangebracht na de opvolgende laag. Zorg ervoor dat je de aangebrachte pu 7 dagen niet afdekt. Pas op voor schoen streep sporen.</p>
+
+[/col]
+
+[/row]
+[row style="collapse"]
+
+[col span="7" span__sm="12" padding="10px 10px 10px 10px" bg_color="rgb(220, 214, 207)"]
+
+<h2>Bestaande tegels&nbsp;</h2>
+<p>Een opvallend kenmerk is dat het mogelijk is om Beton ciré aan te brengen<strong><a href="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-over-tegels/"> over tegels</a></strong></p>
+<p>De tegels moeten wel geëgaliseerd worden met een stuc. Het is interessant dat het kan worden aangebracht, mits de tegels stabiel zijn en niet afbrokkelen. Dit kan handig zijn als je het overweegt, maar bang bent dat je oude tegels moet verwijderen. Het kost tegenwoordig heel veel geld om dit naar de milieu straat te brengen en op het werk ervan zit je ook niet te wachten.</p>
+<p>&nbsp;</p>
+
+[/col]
+[col span="5" span__sm="12" divider="0" padding="20px 20px 20px 20px" bg_color="rgba(238, 238, 238, 0.285)"]
+
+[ux_image id="12438" height="75%" image_overlay="rgba(0, 0, 0, 0.38)"]
+
+
+[/col]
+
+[/row]
+[divider width="100%" color="rgb(19, 83, 80)"]
+
+[row style="small" col_style="solid"]
+
+[col span="6" span__sm="12"]
+
+[ux_image id="12269" width="98" height="50%"]
+
+
+[/col]
+[col span="6" span__sm="12"]
+
+<h2 class="wp-block-heading">Wat is het product van Beton ciré ?</h2>
+<p>Het is een veelzijdig en duurzaam materiaal dat uw ruimte met stijl en functionaliteit kan transformeren. Naast het brede kleurenpalet biedt een Beton ciré vloer ook tal van textuuropties die kunnen worden aangepast aan je ontwerpvoorkeuren. Of je nu de voorkeur geeft aan een gladde, fijne afwerking of een meer gestructureerde, rustieke afwerking, het kan worden aangepast om je droomvloer te creëren. Dit is de veelzijdigheid die het tot een populaire keuze maakt onder huiseigenaren. Verschillende kleuren kunnen verschillende sferen oproepen; de kleur van de ruimte speelt daarbij een cruciale rol. Lichtere kleuren creëren een gevoel van ruimte en luchtigheid, terwijl donkere tinten een meer dramatische en intieme sfeer kunnen oproepen.</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span="6" span__sm="12"]
+
+<h3 class="wp-block-heading">Duizenden kleuren </h3>
+<p>Er zijn duizenden verschillende kleuren beschikbaar. Een doorsnee steriel witte, betegelde vloer of vloerbedekking is dus verleden tijd. Kies bijvoorbeeld voor één van de prachtige aardetinten voor een chic, mysterieus effect. Aardetinten als bruin, groen en oker combineren perfect met gouden en koperen accenten.</p>
+<p>Ook kunt je kiezen voor een rustige sfeer van je vloer in kleuren als beige, crème of grijs. Voeg hier wat houten of rieten accessoires aan toe en je vloer heeft een eenvoudig en rustieke, natuurlijke uitstraling. Met de verschillende kleuren kun je iedere vloer volledig naar je eigen smaak aanpassen.</p>
+
+[/col]
+[col span="6" span__sm="12"]
+
+[ux_image id="2501" height="75%"]
+
+
+[/col]
+
+[/row]
+[row style="small"]
+
+[col span="8" span__sm="12"]
+
+
+[/col]
+[col span="6" span__sm="12"]
+
+[ux_image id="14121"]
+
+
+[/col]
+[col span="6" span__sm="12"]
+
+[scroll_to title="voordelen" link="#voordelen" bullet="false"]
+
+<h2>Voordelen van een Beton ciré vloer</h2>
+<p>Beton Ciré is een uitstekende keuze voor vloeren vanwege de combinatie van esthetiek, duurzaamheid en veelzijdigheid. Onze Microcement heeft meer technische eigenschappen en is ook harder dan de reguliere beton cire. Onze lavasteen is verreweg de hardste en de meest waterdichte van alle soorten op de markt. Ideaal voor badkamer vloeren, maar ook voor huiskamers. Of je nu een moderne, industriële look wilt creëren of een naadloze, onderhoudsvriendelijke vloer zoekt, Beton Ciré biedt een perfecte oplossing voor diverse woonruimtes.</p>
+<ul>
+<li aria-level="1"><b>Naadloze afwerking:</b> Een van de belangrijkste voordelen van Beton Ciré is de naadloze afwerking. Dit geeft een strak en uniform uiterlijk, zonder naden of voegen waar vuil en stof zich kunnen ophopen. Dit maakt de vloer niet alleen visueel aantrekkelijk, maar ook eenvoudig te onderhouden.</li>
+<li aria-level="1"><b>Waterdicht en slijtvast: </b>Beton Ciré is waterdicht en slijtvast, waardoor het uitermate geschikt is voor intensief gebruikte ruimtes zoals de keuken  of woonkamer. Het materiaal is bestand tegen vocht en dagelijkse slijtage, wat zorgt voor een lange levensduur. Dit maakt Beton Ciré ook perfect voor vloeren in woonkamers, kantoorruimtes en keukens.</li>
+<li aria-level="1"><b>Geschikt voor vloerverwarming: </b>Een bijkomend voordeel van Beton Ciré is dat het uitstekend samenwerkt met vloerverwarming. Omdat het materiaal in dunne lagen wordt aangebracht, geleidt het de warmte goed en zorgt het voor een gelijkmatige verdeling van de warmte door de ruimte. Dit verhoogt niet alleen het comfort, maar draagt ook bij aan energiebesparing. 
+<p>Wil je precies weten hoe je beton ciré veilig combineert met vloerverwarming? Lees ons blog over <a href="https://staging.beton-cire-webshop.nl/kennisbank/beton-cire-en-vloerverwarming/"><strong>Beton Ciré en vloerverwarming</strong></a></p>
+</li>
+<li aria-level="1"><b>Veelzijdig qua stijl en kleur:</b> Beton Ciré is verkrijgbaar in verschillende kleuren en afwerkingen, wat betekent dat het kan worden aangepast aan jouw persoonlijke smaak en interieur. Of je nu kiest voor een ruwe, industriële betonlook of een zachtere, warme tint, Beton Ciré geeft je vloer een unieke en luxe uitstraling.</li>
+</ul>
+<p>Kortom, Beton Ciré biedt een combinatie van duurzaamheid, stijl en praktisch gebruiksgemak, wat het een uitstekende keuze maakt voor vloeren in vrijwel elke ruimte van het huis.</p>
+<p>Kom zeker eens bij ons langs in onze <a href="https://staging.beton-cire-webshop.nl/beton-cire-showroom/"><u>showroom </u></a>om het zelf te bekijken.</p>
+
+[/col]
+
+[/row]
+[row]
+
+[col span="6" span__sm="12"]
+
+<h2>Veel voorkomende fouten en nadelen.</h2>
+<h3>Het niet goed vorbereiden van de ondergrond.</h3>
+<p>Een goede ondergrond is vlak, schoon en vetvrij. Op vet en zeepresten hecht geen enkel product. Ook kitnaden moeten worden verwijdert. Eventuele onvolkomenheden zoals oneffenheden, scheuren of losse onderdelen moeten vooraf worden gerepareerd en worden geprimerd. Het dicht zetten van grote gaten kan worden gedaan met Ardex A 950. Deze is snel droog. Daarna moet er echt een hele nieuwe <a href="https://staging.beton-cire-webshop.nl/stuco-paste/"><u>egalisatie laag</u></a><strong><b> </b></strong>op, om alle dicht gezette gaten en scheuren te voorzien van 1 en dezelfde laag. Zou je dit niet doen, dan ga je die gaten en scheuren zien door de cire heen. Egaline op gips basis geeft de minste problemen. Deze egaline soort scheurt het minst snel.</p>
+<p>Een andere veelgemaakte fout is het gebruik op vochtige oppervlakken, cement dekvloeren of net geëgaliseerde lagen zoals egaline. Het kost tijd om het te laten drogen. De vuistregel is 1 mm dikte materiaal heeft 1 dag nodig om te laten drogen. Dit kan een nadeel zijn. </p>
+<p>Het aanbrengen kan binnen 2 dagen klaar zijn, maar is na het aanbrengen na 7 dagen op topsterkte en mag binnen die 7 dagen niet worden afgedekt. Dat kan een nadeel zijn.</p>
+<p>Ondanks het nadeel wegen de voordelen vaak zwaarder dan de nadelen. Hun unieke esthetiek, functionaliteit en veelzijdigheid maken ze tot een waardevolle investering voor elk modern huis.</p>
+
+[/col]
+[col span="6" span__sm="12"]
+
+[ux_image id="12573"]
+
+
+[/col]
+
+[/row]
+[row h_align="right"]
+
+[col span="5" span__sm="12"]
+
+<h2>Verschillende soorten Beton Ciré voor vloeren</h2>
+<p>Beton Ciré is een veelzijdig materiaal dat in verschillende afwerkingen beschikbaar is, elk met unieke eigenschappen die bijdragen aan de uitstraling en functionaliteit van de vloer. Hieronder bespreken we de meest populaire soorten Beton Ciré voor vloeren:</p>
+<p><b>Gepolijste Beton Ciré vloer</b></p>
+<p>Deze afwerking geeft de vloer een gladde, glanzende look die perfect past bij moderne en minimalistische interieurs. Een gepolijste Beton Ciré vloer reflecteert licht, wat de ruimte een ruimtelijker en luxueuzer gevoel geeft. Deze afwerking is ideaal voor ruimtes zoals de woonkamer of hal, waar een elegante uitstraling gewenst is. Hierbij wordt er een glanzende pu topcoat afwerklaag toegepast.</p>
+<p><b>Matte Beton Ciré vloer</b></p>
+<p>Voor een meer ingetogen en natuurlijke uitstraling kun je kiezen voor een matte Beton Ciré afwerking. Deze pu wordt ook standaard meegeleverd. Deze variant geeft de vloer een zachte, rustgevende uitstraling en past goed bij een industriële of Scandinavische woonstijl. Een matte Beton Ciré vloer is bovendien zeer onderhoudsvriendelijk en geschikt voor druk belopen ruimtes zoals keukens en gangen. Hierbij wordt er een matte pu topcoat afwerklaag toegepast.</p>
+<p><b>Grove Beton Ciré afwerking</b></p>
+<p>Als je op zoek bent naar een meer ruwe, textuurrijke uitstraling, is een grove Beton Ciré afwerking een goede optie. Deze afwerking geeft de vloer meer diepte en karakter en is perfect voor een robuuste, industriële stijl. Het kan ook helpen om een meer tactiele ervaring te creëren, wat vooral interessant kan zijn in ruimtes zoals werkplaatsen of lofts.</p>
+<p><b>Kleurrijke Beton Ciré vloer</b></p>
+<p>Hoewel Beton Ciré vaak wordt geassocieerd met grijstinten, is het verkrijgbaar in een breed scala aan kleuren. Dit geeft je de mogelijkheid om je vloer volledig aan te passen aan je interieur. Van warme aardetinten tot diepe, donkere kleuren, Beton Ciré kan worden gepigmenteerd om de perfecte sfeer te creëren in elke kamer.</p>
+<p><b>Beton Ciré met patroon of motief</b></p>
+<p>Voor wie iets extra's wil, kan Beton Ciré worden aangebracht in patronen of motieven. Dit geeft de vloer een unieke, op maat gemaakte uitstraling en kan een interessant visueel element toevoegen aan de ruimte. Denk hierbij aan geometrische patronen of een subtiele marmerlook die de ruimte een verfijnde uitstraling geeft.</p>
+<p>De hand van de meester bepaalt de uitstraling, druk of rustig, grof of fijn en met een matte of glanzende look!</p>
+
+[/col]
+[col span="7" span__sm="12" padding="0px 0px 0px 10px" bg_color="#dcd6cf"]
+
+<table>
+<tbody>
+<tr>
+<td>
+<p>Product</p>
+</td>
+<td>
+<p>Beton ciré m² prijs</p>
+</td>
+<td>
+<p>Eigenschappen</p>
+</td>
+<td>
+<p>Makkelijkheid</p>
+</td>
+<td>
+<p>Duurzaamheid</p>
+</td>
+<td>
+<p>Betaalbaarheid</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="https://staging.beton-cire-webshop.nl/lavasteen-gietvloer/"><strong>lavasteen</strong></a></p>
+</td>
+<td>
+<p>€55 per m² incl. 1 laag PU. Per 5m2</p>
+</td>
+<td>
+<p>Tweecomponenten epoxysysteem van absolute topkwaliteit.<br />Extreem waterdicht en extreem hard.<br />Slechts één PU-beschermlaag nodig.<br />Perfect voor douchevloeren, douchewanden en andere natte ruimtes.<br />Beste en meest duurzame keuze in dit overzicht.</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★☆☆</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="https://staging.beton-cire-webshop.nl/microcement/">Microcement</a></p>
+</td>
+<td>
+<p>€39 per m² incl. 1 laag PU</p>
+</td>
+<td>
+<p>Fijnere structuur dan standaard beton ciré.<br />Sterker, slijtvaster en minder gevoelig voor aanzetten.<br />Betere waterbestendigheid dan de onderstaande producten.<br />Geschikt voor intensief gebruikte vloeren en wanden.</p>
+</td>
+<td>
+<p>★★★★☆</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★☆</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="https://staging.beton-cire-webshop.nl/beton-cire-easyline-kant-en-klaar/">Beton Ciré Easyline</a></p>
+</td>
+<td>
+<p>€36 incl. 1 PU beschermlaag per 5 m²</p>
+</td>
+<td>
+<p>Kant-en-klaar en eenvoudig zelf aan te brengen.<br />Tweelaagse structuur (1 grove en 1 fijne laag).<br />Verkrijgbaar in alle RAL/N.C.S. kleuren.<br />Ideaal voor muren en vloeren.</p>
+</td>
+<td>
+<p>★★★★☆</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★☆</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="https://staging.beton-cire-webshop.nl/beton-cire-easyline-all-in-one/">Beton Ciré All-In-One</a></p>
+</td>
+<td>
+<p>€36 incl. 1 PU beschermlaag per m²</p>
+</td>
+<td>
+<p>Compleet pakket, alles uit één emmer.<br />Ideaal voor doe-het-zelvers die snel resultaat willen.<br />Beschikbaar in alle RAL/N.C.S. kleuren.</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★☆</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="https://staging.beton-cire-webshop.nl/beton-cire-original/">Beton Ciré Original</a></p>
+</td>
+<td>
+<p>€36 incl. 1 PU beschermlaag per m²</p>
+</td>
+<td>
+<p>Kant en klaar. Bijzonder hard en zeer fijne structuur.<br />Verkrijgbaar in 50 kleuren.</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+<td>
+<p>★★★★★</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+[/col]
+
+[/row]
+<h2><strong>Het begint altijd naar de vraag is mijn vloer geschikt?</strong></h2>
+[row]
+
+[col span="6" span__sm="12"]
+
+<h2>Cementdekvloeren, egaline, anhydriet. Chape.</h2>
+<p>Deze ondergrond is prima voor de opbouw van jouw vloer. Zorg er voor dat de ondergrond volledig is gedroogd en is uitgekristalliseerd. Dat betekend dat de vloer volledig is uitgewerkt. Het materiaal krimpt in en zet uit in deze periode. Dit proces is bij cement gebonden vloeren minimaal 28 dagen. Hoe dik de vloer ook is. Maar heb je een laagdikte van 3cm of meer, zal de vloer nog langer moeten drogen dan 28 dagen. Bij 4 cm dikte is de droogtijd 4 weken en bij 5 cm dikte 5 weken droog tijd. Deze droogtijden zijn een indicatie. Waar het omgaat is dat de vloer echt droog moet zijn.</p>
+
+[/col]
+[col span="6" span__sm="12"]
+
+<h2>Houten vloeren.</h2>
+<p>Op bestaande houten vloeren kan prima onze Beton ciré worden aangebracht. Zelfs op vloeren die erg bewegen. Er zijn wel een aantal punten waar men aan moet denken. Beton ciré kan daar niet rechtstreeks op worden aangebracht. Er zal eerst een ondervloer moeten worden gerealiseerd. Het beste is om houten vloer platen te kiezen met zogenaamde messengroef verbinding. Bij Fermacel heet dit liplas verbinding. Bij <strong><b>Unifloor&nbsp;</b></strong>noemen ze dit veer en groef.</p>
+<h2 class="wp-block-heading">Voor houten vloeren: Aandachtspunten en oplossingen</h2>
+<p>Als je van plan bent houten onderlagen te egaliseren voordat Beton ciré aangebracht kan worden, zijn er een paar specifieke punten waar je rekening mee moet houden. Allereerst zijn vezelversterkte, flexibele egalisaties zoals UZIN NC115 noodzakelijk voor het egaliseren van houten vloeren vanwege hun sterkte en veerkracht. Of onze Egalisatie stuc. Deze hecht perfect op hout en is extreem buigzaam.</p>
+<p>Zorg dat de randen tegen de wanden aan geen gaten bevatten. Zet dit dicht met peurschuim,&nbsp; Dit voorkomt dat het in de gaten trekt. Of uiteindelijk naar de beneden buren. Foutje!</p>
+
+[/col]
+
+[/row]
+<h2><strong><b>Waarom deze veer en groef verbinding belangrijk is.</b></strong></h2>
+<p>Doordat de vloer platen onderling in elkaar verlijmt worden, kan er geen scheur ontstaan tussen de verschillende platen in. </p>
+<p>Mocht er gekozen worden voor een soort ondervloer met een messengroef verbinding ( Fermacel noemt dit Liplas ) dan zal deze wel moeten worden voorzien van een flexibele laag. Onze producten zijn daar ideaal voor geschikt. Onze cement gebonden egalisatie stuc is bijzonder flexibel en hecht op de houten ondervloer. Deze onderlaag wordt met een stukadoors spaan aangebracht en zorgt voor een stabiele en gelijk zuigende onderlaag  als eindproduct. Gebruik altijd tussen alle lagen een primer als hechtbrug.</p>
+[row]
+
+[col span__sm="12"]
+
+[row_inner]
+
+[col_inner span="4" span__sm="12" bg_color="rgb(220, 214, 207)"]
+
+<h2>Tips</h2>
+<ol>
+<li>Werk het oppervlak af met minimaal twee lagen coating voor extra bescherming. Een derde laag pu is is aangeraden, zeker op plekken waar veel water komt.
+</li>
+<li>Wees de eerste maand na het aanbrengen extra voorzichtig en ruim vloeistoffen direct op. Kijk uit met kruiden zoals kerrie, kurkuma en dat soort kruiden in de keuken. Na het aanbrengen van de laatste pu topcoat laag, mag deze 7 dagen niet worden afgedekt. De pu heeft tijd nodig om zijn vocht kwijt te raken.
+</li>
+</ol>
+<p>Zorg voor viltjes onder je stoelen. Hiermee verleng je de levensduur van je mooie vloer.</p>
+
+[/col_inner]
+[col_inner span="8" span__sm="12"]
+
+[ux_image id="22491"]
+
+
+[/col_inner]
+
+[/row_inner]
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+<h2>De kosten van een Beton Ciré vloer</h2>
+<p>Belangrijke factoren die de kosten van een Beton ciré vloer laten aanbrengen bepalen, zijn onder meer oppervlakte, voorbereiding en arbeidsuren. Hoe groter de oppervlakte, hoe lager de prijs per vierkante meter. Zo ligt de prijsklasse voor een vloer van 30m2 tot 150m2 tussen de €85 en €130 per m2.</p>
+<p>De materialen van een vloer pakket per vierkante meter bedragen ongeveer 44 euro. Dit is inclusief 2 lagen pu voor waterdichtheid.</p>
+<p>De voorbereiding speelt ook een belangrijke rol vanwege factoren zoals het type onder vloer, de staat van de ondervloer en het aantal vierkante meters, die allemaal van invloed kunnen zijn op de totale kosten.</p>
+<p>Is een primer genoeg of moet er een epoxy schaplaag over heen. Vaak bij slechte ondervloeren wordt een epoxy onderlaag aangebracht voordat er begonnen kan worden met het aanbrengen. Een gips gebonden egaline is de beste keuze onder egalines.</p>
+<p>Wilt je meer informatie over <strong><a href="https://staging.beton-cire-webshop.nl/kennisbank/wat-kost-beton-cire/">wat kost Beton Ciré</a></strong>, kom dan gerust bij ons langs in onze showroom of neem contact met ons op.</p>
+<h2>DIY</h2>
+<p>Hoewel sommigen het aanbrengen van misschien een uitdaging vinden, vereenvoudigt Beton ciré webshop het DIY proces. Lees de gedetailleerde instructies voor de voorbereiding van het oppervlak, het aanbrengen van het product en de vloerafwerking, waardoor het installatieproces aanzienlijk wordt vereenvoudigd. Voor de installatie moet je de instructies van ons volgen, zodat je zelf aan de slag kunt.</p>
+<p><strong data-start="145" data-end="179">Praktisch advies<br /></strong><br data-start="179" data-end="182" />Wil je zeker weten dat jouw vloer perfect vlak en duurzaam is voordat je Beton Ciré aanbrengt? Lees meer over <a href="https://staging.beton-cire-webshop.nl/kennisbank/werken-met-egaline/"><strong data-start="296" data-end="318">werken met egaline</strong></a> en ontdek handige tips, gereedschap en veelvoorkomende fouten die je kunt voorkomen.</p>
+[row_inner]
+
+[col_inner span__sm="12" bg_color="rgb(220, 214, 207)"]
+
+<h2><strong><b>Voorbereiding Tips en tricks</b></strong></h2>
+<h3><strong><b>Tien tips door onze expert Patrick</b></strong></h3>
+<p>Wij hebben onze expert Patrick gevraagd om tien handige tips die je kunt gebruiken bij het leggen van een Beton ciré vloer. Zo leer je direct van een ervaren professional!</p>
+<ol>
+<li>Meten is weten! Zorg ervoor dat je goed meet zodat je precies weet hoeveel m² vloer je wilt gaan bedekken.</li>
+<li>Bestel altijd iets meer dan je denkt nodig te hebben om eventuele oneffenheden te kunnen verhelpen.</li>
+<li>Zorg voor voldoende ruimte en ventilatie (geen tocht!) in de ruimte waar je de vloer aanbrengt.</li>
+<li>Tocht kan ervoor zorgen dat de vloer te snel droogt en hierdoor minder tijd hebt om af te werken. Zorg wel voor ventilatie nadat je klaar bent met afwerken.</li>
+<li>Plaats je geleverde pakket niet op de vloer die je gaat voorzien van een decoratieve stuc, dan moet je het pakket 2x sjouwen. En de vloer kan vies worden.</li>
+<li>Zorg dat je thuis bent voor het aannemen van je levering! Door dat de producten gevoelig zijn voor water is het handig om dit binnen te zetten.</li>
+<li>Beton Ciré is een natuurproduct. Hierdoor kan de kleur nét iets anders uitvallen dan wij kunnen tonen op een website. Vraag een kleurstaal aan zodat je een goede indruk krijgt van de kleur.</li>
+<li>Werk met hoge kwaliteit gereedschap! Een kwastje van de Gamma laat waarschijnlijk haren achter in je vloer en die gaan er nooit meer uit. Bovendien laten de goedkopere kwastjes een gekleurde sluier achter.</li>
+<li>Besteed veel aandacht aan het mengen en samenstellen van de ingrediënten en kleurpigment. Hierdoor wordt het geheel mooi, egaal en glad. Tenzij je de kant en klare varianten kiest. Dan is het al voor je gedaan.</li>
+<li>Beton Ciré is eenvoudig aan te stippen of te voorzien van een nieuwe laag zolang het geheel nog niet droog is en nog niet is voorzien van de toplaag.&nbsp;</li>
+</ol>
+<p>Een goede voorbereiding van de onderlaag is essentieel voor een succesvolle toepassing. Een van de belangrijkste stappen is het aanbrengen van een geschikte primer als voorstrijkmiddel. Dit is cruciaal om de optimale hechting van te garanderen.&nbsp;</p>
+<p>De onderlaag moet aan de volgende eisen voldoen</p>
+<ul>
+<li>Stabiel, droog en stofvrij zijn</li>
+<li>Gerepareerde beschadigingen hebben en geen losse verf- of lijmresten bevatten</li>
+<li>Gaten waar egalisaties door kan weglopen, dienen afgedicht te worden voordat het wordt aangebracht.&nbsp;</li>
+<li>Geen ongelijke ondervloer hebben, maar een strakke onderlaag is gewenst voor een optimale ondergrond</li>
+</ul>
+<p>Tot slot is het essentieel om de juiste omstandigheden te creëren voor het aanbrengen van egalisaties. De ideale omstandigheden zijn een kamertemperatuur tussen 15 en 23 graden Celsius en een luchtvochtigheid tussen 40% en 70%. En vergeet niet, egalisaties vereist een schone ondergrond zonder vet en vuil voor de beste doorvloei en hechting.</p>
+<p>&nbsp;</p>
+
+[/col_inner]
+
+[/row_inner]
+[row_inner]
+
+[col_inner span__sm="12"]
+
+<h2><strong><b>Onderhoudstips </b></strong></h2>
+<p>Goed onderhoud van je Beton Ciré vloer is essentieel om de frisse uitstraling te behouden en de levensduur ervan te verlengen. Eén van de belangrijkste aspecten van onderhoud is het dweilen van de vloer. Dweilen met ons onderhoud middel geeft bescherming aan de vloer, waardoor deze langer in topconditie blijft.</p>
+<p>Je kunt ons bellen of mailen voor meer advies. Neem contact met ons op. info@staging.beton-cire-webshop.nl.</p>
+
+[/col_inner]
+
+[/row_inner]
+<h2>Veelgestelde vragen</h2>
+[accordion]
+
+[accordion-item title="Hoe lang blijft Beton Ciré voor een vloer mooi?"]
+
+<p>Beton ciré blijft jarenlang mooi en duurzaam, vooral als het goed wordt aangebracht met de producten van Beton-cire-webshop. Zeker als je beschermviltjes onder je stoelen plaatst. Lavasteen gietvloer heeft verreweg de beste eigenschappen. Door de epoxy bestandsdelen is deze extreem hard en krasvast.</p>
+<p>Mocht er toch krasjes ontstaan dan kun je die eenvoudig weg krijgen door met ons <a href="https://staging.beton-cire-webshop.nl/floor-clean/"><u>onderhoudsmiddel </u></a>te dweilen. Je vloer is weer als nieuw</p>
+
+[/accordion-item]
+[accordion-item title="Op welke soort vloeren kan Beton ciré gebruikt worden?"]
+
+<p><strong>Beton Ciré Original</strong> is geschikt voor toepassing op vloeren met een egale en gelijk zuigende ondergrond, zoals een cementdekvloer, of anhydriet. Ook tegels kunnen na behandeling worden voorzien.&nbsp;</p>
+<p><strong>All in one en EasyLine Beton Ciré Pasta</strong> is vooral geschikt voor toepassing op een gladde, egale en gelijkzuigende ondergrond. Denk hierbij aan bestaand beton, cementdekvloeren, maar ook egaal hout is geschikt als ondergrond. Zolang het maar droog en scheurvrij is.</p>
+
+[/accordion-item]
+[accordion-item title="Kan Beton ciré op een houten vloer worden aangebracht?"]
+
+<p>Ja, Beton ciré kan op een houten vloer worden gebruikt. Het is een geschikte optie vanwege de flexibiliteit van onze producten.</p>
+
+[/accordion-item]
+[accordion-item title="Kan ik Beton Ciré op een grindvloer aanbrengen?"]
+
+<p>Ja, het is mogelijk om Beton Ciré over een bestaande grindvloer/ cementdekvloer aan te brengen, maar er zijn wel enkele stappen die moeten worden gevolgd om te zorgen voor een duurzame en kwalitatieve afwerking. Bekijk onze technische pagina voor tips en trucs</p>
+
+[/accordion-item]
+[accordion-item title="Hoeveel m2 doe je met 25 kg egaline?"]
+
+<p>De rekensom verschilt per merk. Maar ongeveer: 1,5 kg, per 1mm dikte per 1m2. Veel succes met je project! Dus moet je 10 m2 uitrekenen bij een laagdikte van 4mm, Dan is de rekensom: 1,5 x 10 x 4 = 60 kg.</p>
+
+[/accordion-item]
+[accordion-item title="Waar kun je egaline voor gebruiken?"]
+
+<p>Het is uitermate geschikt voor gebruik als ondervloer, maar ook als afwerkvloer, bijvoorbeeld voor Beton Cire vloeren, tegels, laminaat, pvc of parket.</p>
+
+[/accordion-item]
+[accordion-item title="Hoe dik kun je egaline aanbrengen?"]
+
+<p>Het kan worden aangebracht in een laag van slechts 1 millimeter dik, maar de meest gangbare diktes liggen tussen de 2 en 30 millimeter, afhankelijk van de soort ondergrond en de vlakheid ervan. Per merk wordt er aan gegeven hoe dik je kunt gieten.</p>
+
+[/accordion-item]
+[accordion-item title="Hoe lang moet egaline drogen?"]
+
+<p>Je moet het laten drogen volgens de stelregel van 12 uur droogtijd per millimeter dikte. Dus bijvoorbeeld 3 millimeter heeft een droogtijd van ongeveer 36 uur. Dit is een indicatie. Wellicht zijn er gaten in de onderlaag die dus meer materiaal op nemen en dus langer moeten drogen. Een ventilator heeft een gunstig effect op de droging. Mocht er per ongeluk een emmer water vallen, dan zul je dit dagen langer moeten drogen.</p>
+<p>Grote gaten kunnen het beste worden dichtgezet met Ardex a 950. Deze is binnen 24 uur kurk droog. Vergeet niet te primeren en stofvrij te maken.</p>
+
+[/accordion-item]
+[accordion-item title="Waarom is beton ciré zo duur?"]
+
+<p>Het kost veel geld maar het is zeker bij ons, niet duur. Mocht je het aanbrengen zelf gaan doen dan scheelt dat enorm in de prijs.</p>
+<p>Bezoek onze&nbsp;<a href="https://staging.beton-cire-webshop.nl/beton-cire-showroom/"><u>showroom</u></a><strong><b>&nbsp;</b></strong>in Den Haag voor advies, <a href="https://staging.beton-cire-webshop.nl/inspiratie/"><u>inspiratie</u></a>&nbsp;en een eventuele workshop bij je bestelling!</p>
+
+[/accordion-item]
+
+[/accordion]
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+[ux_html]
+
+<div id="trustindex-script-container"></div>
+[/ux_html]
+
+[/col]
+
+[/row]
+
+<!-- /wp:flatsome/uxbuilder -->
