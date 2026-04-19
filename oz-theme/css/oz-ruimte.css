@@ -664,6 +664,29 @@
   margin: 0;
 }
 
+/* Per-video caption sits under the iframe to tell users what they're
+   about to watch — 8 anonymous black boxes don't communicate. */
+.oz-ruimte .oz-video-col .oz-video-caption {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-muted, #5a5a5a);
+  letter-spacing: 0.2px;
+}
+
+/* Klantverhaal: single centered video via empty outer columns. Hide the
+   spacer columns on mobile so the video uses full width. */
+@media (max-width: 781px) {
+  .oz-ruimte .oz-video-solo > .wp-block-column:first-child,
+  .oz-ruimte .oz-video-solo > .wp-block-column:last-child {
+    display: none;
+  }
+  .oz-ruimte .oz-video-solo > .wp-block-column[style*="68%"] {
+    flex-basis: 100% !important;
+  }
+}
+
 .oz-ruimte .wp-block-embed.wp-has-aspect-ratio .wp-block-embed__wrapper {
   position: relative;
   width: 100%;
