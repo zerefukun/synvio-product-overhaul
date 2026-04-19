@@ -534,6 +534,129 @@
   .oz-banner-text { padding: 36px 24px; }
 }
 
+/* ── Inspiratie slideshow (Swiper) ──
+   Each .oz-inspiratie-section .wp-block-gallery gets rewritten to a
+   Swiper carousel by oz-inspiratie.js. Style the container and its
+   controls for a cinematic, editorial feel — no auto-play, no loops
+   of chrome, just image + arrows + dots + counter. */
+.oz-ruimte .oz-slideshow.swiper {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: var(--oz-radius-lg, 12px);
+  overflow: hidden;
+  background: #0a0a0a;
+  aspect-ratio: 3 / 2;
+}
+
+.oz-ruimte .oz-slideshow .swiper-wrapper {
+  height: 100%;
+}
+
+.oz-ruimte .oz-slideshow__slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.oz-ruimte .oz-slideshow__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+/* Swiper's default arrow chevrons (::after) — restyle to fit. */
+.oz-ruimte .oz-slideshow__arrow.swiper-button-prev,
+.oz-ruimte .oz-slideshow__arrow.swiper-button-next {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(15, 15, 15, 0.55);
+  color: #fff;
+  border: 0;
+  margin-top: 0;
+  transform: translateY(-50%);
+  top: 50%;
+  transition: background 160ms ease, transform 160ms ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.oz-ruimte .oz-slideshow__arrow.swiper-button-prev { left: 16px; }
+.oz-ruimte .oz-slideshow__arrow.swiper-button-next { right: 16px; }
+
+.oz-ruimte .oz-slideshow__arrow.swiper-button-prev:hover,
+.oz-ruimte .oz-slideshow__arrow.swiper-button-next:hover {
+  background: rgba(15, 15, 15, 0.85);
+}
+
+.oz-ruimte .oz-slideshow__arrow.swiper-button-prev::after,
+.oz-ruimte .oz-slideshow__arrow.swiper-button-next::after {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.oz-ruimte .oz-slideshow__dots.swiper-pagination {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+
+.oz-ruimte .oz-slideshow__dots .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 1;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.oz-ruimte .oz-slideshow__dots .swiper-pagination-bullet-active {
+  background: #fff;
+  transform: scale(1.35);
+}
+
+.oz-ruimte .oz-slideshow__counter {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  background: rgba(15, 15, 15, 0.55);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .oz-ruimte .oz-slideshow.swiper {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--oz-radius, 8px);
+  }
+  .oz-ruimte .oz-slideshow__arrow.swiper-button-prev,
+  .oz-ruimte .oz-slideshow__arrow.swiper-button-next {
+    width: 40px;
+    height: 40px;
+  }
+  .oz-ruimte .oz-slideshow__arrow.swiper-button-prev { left: 10px; }
+  .oz-ruimte .oz-slideshow__arrow.swiper-button-next { right: 10px; }
+}
+
 /* ── Video embeds (YouTube etc.) ──
    We emit iframes directly via wp:html, so we provide the aspect-ratio
    wrapper styling that WP normally generates per-embed. */

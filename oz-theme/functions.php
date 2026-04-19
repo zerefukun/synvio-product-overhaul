@@ -528,6 +528,24 @@ function oz_ruimte_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
 
 /**
+ * Enqueue the inspiratie slideshow script on /inspiratie/ only.
+ * Depends on swiper-loader for the shared Swiper v11 CDN bundle.
+ */
+function oz_inspiratie_enqueue() {
+    if (is_admin()) return;
+    if (! is_page('inspiratie')) return;
+
+    wp_enqueue_script(
+        'oz-inspiratie',
+        get_stylesheet_directory_uri() . '/js/oz-inspiratie.js',
+        ['oz-swiper-loader'],
+        filemtime(get_stylesheet_directory() . '/js/oz-inspiratie.js'),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_inspiratie_enqueue');
+
+/**
  * Enqueue custom header CSS + JS on all frontend pages.
  * Replaces Flatsome's header entirely — our header.php provides the markup.
  */
