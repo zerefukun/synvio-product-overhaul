@@ -47,15 +47,16 @@
 }
 
 /* ── Section spacing tuning for ruimte pages ──
-   Consistent 88px top/bottom on desktop so every section shares the same
-   vertical rhythm. Full-bleed banner rows opt out via their own override. */
+   Half-values so the combined gap between adjacent sections equals the target
+   rhythm (44+44=88px desktop, 28+28=56px mobile). Full-bleed banner rows opt
+   out via their own override. */
 .oz-ruimte .oz-section {
-  padding: 56px 0;
+  padding: 28px 0;
 }
 
 @media (min-width: 768px) {
   .oz-ruimte .oz-section {
-    padding: 88px 0;
+    padding: 44px 0;
   }
 }
 
