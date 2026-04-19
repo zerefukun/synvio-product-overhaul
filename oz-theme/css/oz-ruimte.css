@@ -1529,15 +1529,17 @@
     justify-content: center;
   }
 
-  /* Make outline buttons readable on the dark overlay */
+  /* Outline buttons on the dark overlay — the base rule uses !important so we must too. */
   .oz-ruimte .oz-kleurstalen-hub .oz-ks-card:has(.oz-ks-card__img) .oz-ks-card__body .wp-block-button.is-style-outline .wp-block-button__link {
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.6);
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.7) !important;
+    background: transparent !important;
   }
 
   .oz-ruimte .oz-kleurstalen-hub .oz-ks-card:has(.oz-ks-card__img) .oz-ks-card__body .wp-block-button.is-style-outline .wp-block-button__link:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: #fff;
+    background: rgba(255, 255, 255, 0.14) !important;
+    border-color: #fff !important;
+    color: #fff !important;
   }
 }
 
