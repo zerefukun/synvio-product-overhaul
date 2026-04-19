@@ -1877,6 +1877,386 @@
 }
 
 /* ================================================================
+   WORKSHOPS PAGE — intro split + WPForms card + image feature + products
+   ================================================================ */
+
+/* Form split section: soft background */
+.oz-ruimte .oz-section.oz-workshop-form {
+  background: var(--oz-surface-soft, #f7f5f2);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-split {
+  gap: 56px;
+  align-items: flex-start;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-intro__col h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-intro__col .oz-eyebrow {
+  margin-bottom: 10px;
+}
+
+/* Checklist group under intro copy */
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist {
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #e5e0d9);
+  border-radius: 12px;
+  padding: 24px 26px 20px;
+  margin: 24px 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist ul li {
+  position: relative;
+  padding: 8px 0 8px 28px;
+  line-height: 1.5;
+  border-bottom: 1px solid var(--oz-border-light, #e5e0d9);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist ul li:last-child {
+  border-bottom: 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-checklist ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  width: 16px;
+  height: 16px;
+  background: var(--oz-accent);
+  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M13.5 4.5L6 12l-3.5-3.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
+  -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M13.5 4.5L6 12l-3.5-3.5' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat center / contain;
+}
+
+/* Form card */
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-form__col {
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #e5e0d9);
+  border-radius: 12px;
+  padding: 36px 36px 28px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .oz-workshop-form__col h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+/* WPForms styling for workshops (multi-step form, pagebreak-aware) */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-container {
+  margin: 20px 0 0;
+  max-width: 100%;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field {
+  padding: 10px 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--oz-text-muted, #6b6560);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-sublabel {
+  font-size: 11px;
+  color: var(--oz-text-muted, #6b6560);
+  margin-top: 4px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field input[type="text"],
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field input[type="email"],
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field input[type="tel"],
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field input[type="date"],
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field textarea,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 15px;
+  font-family: var(--oz-ff-body);
+  color: var(--oz-text-primary);
+  line-height: 1.4;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field input:focus,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field textarea:focus,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field select:focus {
+  outline: none;
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Name field: flex split across first/last */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-name .wpforms-field-row {
+  display: flex;
+  gap: 12px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-name .wpforms-field-row-block {
+  flex: 1;
+  padding: 0;
+  min-width: 0;
+}
+
+/* File upload */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-file input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--oz-border, #d9d4cd);
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Checkbox lists */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-checkbox ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-checkbox ul li {
+  margin: 0;
+  padding: 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-checkbox ul li label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--oz-border, #d9d4cd);
+  border-radius: 999px;
+  background: #fafafa;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  margin: 0;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-checkbox ul li label:hover {
+  background: #fff;
+  border-color: var(--oz-accent);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-checkbox input[type="checkbox"] {
+  accent-color: var(--oz-accent);
+}
+
+/* Multi-step page progress indicator */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-indicator {
+  margin: 0 0 20px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-indicator-step {
+  background: var(--oz-border-light, #e5e0d9);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-indicator-step-active,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-indicator-step-complete {
+  background: var(--oz-accent);
+}
+
+/* Submit + page-nav buttons */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-submit,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-button {
+  display: inline-block;
+  padding: 12px 28px;
+  background: var(--oz-accent);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font-family: var(--oz-ff-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background .15s ease, transform .1s ease;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-submit:hover,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-button:hover {
+  background: var(--oz-accent-hover, #2a2a2a);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-prev {
+  background: transparent;
+  color: var(--oz-text-primary);
+  border: 1px solid var(--oz-border, #d9d4cd);
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-page-prev:hover {
+  background: var(--oz-surface-alt, #f7f5f2);
+  color: var(--oz-text-primary);
+}
+
+/* Error states */
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-error,
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-field-error {
+  border-color: #c14141 !important;
+}
+
+.oz-ruimte .oz-section.oz-workshop-form .wpforms-error-message,
+.oz-ruimte .oz-section.oz-workshop-form label.wpforms-error {
+  color: #c14141;
+  font-size: 12px;
+  margin-top: 4px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+/* About section — text + image */
+.oz-ruimte .oz-section.oz-workshop-about .wp-block-columns {
+  gap: 56px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-about h2 {
+  margin-top: 0;
+}
+
+.oz-ruimte .oz-section.oz-workshop-about .oz-workshop-about__img img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+}
+
+.oz-ruimte .oz-section.oz-workshop-about .oz-workshop-disclaimer {
+  font-size: 13px;
+  color: var(--oz-text-muted, #6b6560);
+  font-style: italic;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--oz-border-light, #e5e0d9);
+}
+
+/* Products section: reuse WC defaults with our container */
+.oz-ruimte .oz-section.oz-workshop-products {
+  background: var(--oz-surface-soft, #f7f5f2);
+}
+
+.oz-ruimte .oz-section.oz-workshop-products h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce {
+  margin-top: 24px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products li.product {
+  width: auto;
+  margin: 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #e5e0d9);
+  border-radius: 10px;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products li.product:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products li.product img {
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products li.product .woocommerce-loop-product__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--oz-text-primary);
+  padding: 0;
+  line-height: 1.3;
+}
+
+.oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products li.product .price {
+  color: var(--oz-text-primary);
+  font-weight: 600;
+  font-size: 15px;
+}
+
+@media (max-width: 900px) {
+  .oz-ruimte .oz-section.oz-workshop-form .oz-workshop-split {
+    gap: 28px;
+  }
+  .oz-ruimte .oz-section.oz-workshop-form .oz-workshop-form__col {
+    padding: 28px 22px 24px;
+  }
+  .oz-ruimte .oz-section.oz-workshop-about .wp-block-columns {
+    gap: 32px;
+  }
+  .oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .oz-ruimte .oz-section.oz-workshop-products .woocommerce ul.products {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 560px) {
+  .oz-ruimte .oz-section.oz-workshop-form .oz-workshop-form__col {
+    padding: 22px 18px 20px;
+  }
+  .oz-ruimte .oz-section.oz-workshop-form .wpforms-field-name .wpforms-field-row {
+    flex-direction: column;
+  }
+}
+
+/* ================================================================
    MOBILE READABILITY — left-align body text on small screens
    Centered text at narrow widths breaks reading rhythm.
    Hero stays as-authored (display text is fine centered).
