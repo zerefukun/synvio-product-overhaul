@@ -243,53 +243,50 @@
   display: contents;
 }
 
-/* Center heading overlay — sits on top of both banner cards, absolutely
-   centered. Uses a light card background so the text stays legible against
-   both the dark-left and teal-right panels. */
-.oz-banner-center-heading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  width: min(90%, 560px);
-  padding: 28px 40px;
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: var(--oz-radius-lg, 12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  text-align: center;
-  pointer-events: none;
+/* Toepassingen section — group that wraps the section header + both card
+   rows so the eyebrow+title semantically belong to the ruimtes card grid.
+   The inner-container uses display:contents so the alignfull columns inside
+   still break out to full width and inherit the section's 88px padding. */
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen > .wp-block-group__inner-container {
+  max-width: none;
+  padding: 0;
+  display: contents;
 }
 
-.oz-banner-center-eyebrow {
+.oz-ruimte .oz-ruimte-section-header {
+  text-align: center;
+  max-width: var(--oz-max-w, 1100px);
+  margin: 0 auto 40px;
+  padding: 0 var(--oz-gap);
+}
+
+.oz-ruimte .oz-ruimte-eyebrow {
   font-family: var(--oz-ff-body);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 4px;
   text-transform: uppercase;
   color: var(--oz-accent);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.oz-banner-center-title {
+.oz-ruimte .oz-ruimte-title {
   font-family: var(--oz-ff-heading);
-  font-size: clamp(22px, 2.6vw, 34px);
+  font-size: clamp(26px, 4vw, 40px);
   font-weight: 400;
   line-height: 1.2;
   color: var(--oz-text-primary);
   margin: 0;
 }
 
-.oz-banner-center-title em {
+.oz-ruimte .oz-ruimte-title em {
   font-style: italic;
   color: var(--oz-accent);
 }
 
-@media (max-width: 767px) {
-  .oz-banner-center-heading {
-    padding: 20px 24px;
-    width: min(92%, 420px);
-  }
+/* Space between the two stacked 3-col rows inside the toepassingen group */
+.oz-ruimte .oz-ruimte-toepassingen .wp-block-columns.alignfull + .wp-block-columns.alignfull {
+  margin-top: 20px;
 }
 
 .oz-banner-card {
