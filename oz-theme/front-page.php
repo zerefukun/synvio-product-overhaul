@@ -255,12 +255,21 @@ $up = home_url( '/wp-content/uploads' );
        ================================================================ */ ?>
 <section class="oz-hp-section" style="padding:0" data-reveal>
 	<div class="oz-hp-split">
+		<?php /* Microcement panel temporarily disabled — content hidden from Google
+		          until the new URL structure is finalized. To re-enable, replace the
+		          <div> below with the commented block.
+
 		<div class="oz-hp-split-micro">
 			<div class="oz-hp-eyebrow">Cementbasis</div>
 			<h3>Microcement</h3>
 			<p>Echt cement, ultradun, uit 1 emmer. De populairste keuze voor een strakke, moderne betonlook. Geschikt voor vloeren, wanden en badkamers.</p>
 			<div class="oz-hp-meta">Harder / 4 stappen / 36 kleuren / Vanaf &euro;31/m&sup2;</div>
 			<a href="/product-categorie/microcement/" class="oz-hp-btn oz-hp-btn--teal">Bekijk Microcement</a>
+		</div>
+
+		*/ ?>
+		<div class="oz-hp-split-micro" style="padding:0;position:relative;overflow:hidden;">
+			<img src="<?php echo esc_url( "$up/2024/03/Beton-cire-wand-jpg-e1711016471264.webp" ); ?>" alt="" aria-hidden="true" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
 		</div>
 		<div class="oz-hp-split-stalen">
 			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
