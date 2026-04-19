@@ -60,6 +60,19 @@
   }
 }
 
+/* Neutralize first/last child vertical margins inside sections so the section
+   padding is the sole authority for inter-section spacing. WP core sets
+   margin-bottom: 28px on .wp-block-columns and similar blocks, which would
+   otherwise add an uncontrolled extra gap to the 44+44=88 math. */
+.oz-ruimte .oz-section > :first-child,
+.oz-ruimte .oz-section > .oz-container > :first-child {
+  margin-top: 0;
+}
+.oz-ruimte .oz-section > :last-child,
+.oz-ruimte .oz-section > .oz-container > :last-child {
+  margin-bottom: 0;
+}
+
 /* ── Typography in ruimte context ── */
 .oz-ruimte h2 {
   margin-bottom: 16px;
