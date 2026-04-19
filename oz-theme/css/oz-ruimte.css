@@ -306,6 +306,14 @@
   color: var(--oz-accent);
 }
 
+.oz-ruimte .oz-ruimte-intro {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--oz-text-muted, rgba(19, 83, 80, 0.7));
+  max-width: 640px;
+  margin: 14px auto 0;
+}
+
 /* Space between the two stacked 3-col rows inside the toepassingen group */
 .oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-columns.alignfull + .wp-block-columns.alignfull {
   margin-top: 20px;
