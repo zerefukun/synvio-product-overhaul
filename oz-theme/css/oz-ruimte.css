@@ -1544,6 +1544,58 @@
 }
 
 /* ================================================================
+   KENNISBANK INDEX — grouped link lists per category
+   ================================================================ */
+.oz-ruimte .oz-kb-list {
+  list-style: none;
+  padding: 0;
+  margin: 32px 0 28px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+  border-top: 1px solid var(--oz-border-light, #e5e0d9);
+  border-left: 1px solid var(--oz-border-light, #e5e0d9);
+}
+
+.oz-ruimte .oz-kb-list li {
+  border-right: 1px solid var(--oz-border-light, #e5e0d9);
+  border-bottom: 1px solid var(--oz-border-light, #e5e0d9);
+  margin: 0;
+  padding: 0;
+}
+
+.oz-ruimte .oz-kb-list li a {
+  display: block;
+  padding: 18px 22px;
+  color: var(--oz-text-primary);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.4;
+  transition: background .2s ease, color .2s ease;
+}
+
+.oz-ruimte .oz-kb-list li a:hover {
+  background: var(--oz-accent);
+  color: #fff;
+}
+
+.oz-ruimte .oz-kb-list li a strong {
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-kb-list {
+    grid-template-columns: 1fr;
+  }
+  .oz-ruimte .oz-kb-list li a {
+    padding: 16px 18px;
+  }
+}
+
+/* ================================================================
    MOBILE READABILITY — left-align body text on small screens
    Centered text at narrow widths breaks reading rhythm.
    Hero stays as-authored (display text is fine centered).
