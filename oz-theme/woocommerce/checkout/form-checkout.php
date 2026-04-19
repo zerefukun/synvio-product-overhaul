@@ -17,6 +17,12 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 }
 ?>
 
+<div class="oz-checkout-page">
+
+	<div class="oz-checkout-page__header">
+		<h1 class="oz-checkout-page__title"><?php esc_html_e( 'Afrekenen', 'oz-theme' ); ?></h1>
+	</div>
+
 <form name="checkout" method="post" class="checkout woocommerce-checkout oz-checkout" action="<?php echo esc_url( wc_get_checkout_url() ); ?>" enctype="multipart/form-data">
 
 	<div class="oz-checkout__columns">
@@ -58,5 +64,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 	</div>
 
 </form>
+
+</div>
 
 <?php do_action( 'woocommerce_after_checkout_form', $checkout ); ?>

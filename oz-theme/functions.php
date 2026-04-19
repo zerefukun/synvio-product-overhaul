@@ -451,6 +451,24 @@ function oz_cart_drawer_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
 
 /**
+ * Enqueue cart + checkout page styles on /winkelwagen/ and /afrekenen/.
+ * Styles live in oz-cart-checkout.css and reuse design system tokens.
+ */
+function oz_cart_checkout_enqueue() {
+    if (is_admin()) return;
+    if (!function_exists('is_cart')) return;
+    if (!is_cart() && !is_checkout()) return;
+
+    wp_enqueue_style(
+        'oz-cart-checkout',
+        get_stylesheet_directory_uri() . '/css/oz-cart-checkout.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-cart-checkout.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_cart_checkout_enqueue');
+
+/**
  * Enqueue homepage v2 CSS only on the front page.
  * Styles are namespaced with .oz-hp- prefix so they can't bleed into other pages.
  */
