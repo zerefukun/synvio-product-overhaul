@@ -208,6 +208,12 @@
   box-sizing: border-box;
 }
 
+/* Card-row sections need less vertical breathing room — the full-bleed
+   imagery already gives the page visual rhythm. */
+.oz-ruimte .oz-section:has(> .wp-block-columns.alignfull) {
+  padding: 40px 0;
+}
+
 /* Ruimte banner row — full-bleed 2-card split.
    Each card = image half + text half (black or teal), edge-to-edge. */
 .oz-ruimte .oz-section:has(> .oz-ruimte-banner-row) {
