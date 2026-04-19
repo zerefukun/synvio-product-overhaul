@@ -218,7 +218,7 @@
    as direct children of the section and as children of the toepassingen group
    wrapper (which uses display:contents). */
 .oz-ruimte .oz-section > .wp-block-columns.alignfull,
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-columns.alignfull {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-columns.alignfull {
   max-width: 1600px;
   margin-left: auto;
   margin-right: auto;
@@ -307,14 +307,14 @@
 }
 
 /* Space between the two stacked 3-col rows inside the toepassingen group */
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-columns.alignfull + .wp-block-columns.alignfull {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-columns.alignfull + .wp-block-columns.alignfull {
   margin-top: 20px;
 }
 
 /* ── Ruimte cards (inside toepassingen group) ──
    Each column becomes an image card with title + description overlaid on the
    bottom using a dark gradient. Left-aligned consistently. */
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column {
   position: relative;
   overflow: hidden;
   border-radius: var(--oz-radius-lg, 12px);
@@ -322,12 +322,12 @@
   margin: 0;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column > * {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column > * {
   margin: 0;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column .wp-block-image,
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column figure {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column .wp-block-image,
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column figure {
   position: absolute;
   inset: 0;
   margin: 0;
@@ -335,13 +335,13 @@
   width: 100%;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column figure a {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column figure a {
   display: block;
   height: 100%;
   width: 100%;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column img {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -350,12 +350,12 @@
   transition: transform .6s ease;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column:hover img {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column:hover img {
   transform: scale(1.04);
 }
 
 /* Dark gradient at bottom for text legibility */
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column::after {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column::after {
   content: '';
   position: absolute;
   left: 0;
@@ -367,8 +367,8 @@
   z-index: 1;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column h3,
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column p {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column h3,
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column p {
   position: absolute;
   left: 28px;
   right: 28px;
@@ -379,7 +379,7 @@
   max-width: none;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column h3 {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column h3 {
   bottom: 52px;
   font-family: var(--oz-ff-heading);
   font-size: clamp(20px, 1.6vw, 24px);
@@ -387,12 +387,12 @@
   line-height: 1.2;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column h3 a {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column h3 a {
   color: #fff;
   text-decoration: none;
 }
 
-.oz-ruimte .oz-ruimte-toepassingen .wp-block-column p {
+.oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column p {
   bottom: 22px;
   font-size: 14px;
   line-height: 1.5;
@@ -400,14 +400,14 @@
 }
 
 @media (max-width: 767px) {
-  .oz-ruimte .oz-ruimte-toepassingen .wp-block-column {
+  .oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column {
     aspect-ratio: 16 / 10;
   }
-  .oz-ruimte .oz-ruimte-toepassingen .wp-block-column h3 {
+  .oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column h3 {
     bottom: 46px;
     font-size: 20px;
   }
-  .oz-ruimte .oz-ruimte-toepassingen .wp-block-column p {
+  .oz-ruimte .wp-block-group.oz-ruimte-toepassingen .wp-block-column p {
     bottom: 18px;
     font-size: 13px;
   }
