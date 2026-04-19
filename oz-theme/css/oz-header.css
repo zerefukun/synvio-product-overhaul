@@ -440,7 +440,7 @@ body.oz-header-overlay-page {
 }
 
 .oz-menu-drawer__logo img {
-  height: 55px;
+  height: 40px;
   width: auto;
 }
 
@@ -1267,7 +1267,8 @@ body.oz-drawer-open {
     padding: 0 24px;
   }
 
-  .oz-header__logo img {
+  .oz-header__logo img,
+  .oz-menu-drawer__logo img {
     height: 52px;
   }
 
