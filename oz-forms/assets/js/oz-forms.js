@@ -205,6 +205,95 @@
 			} );
 	}
 
+	/* Wire any .oz-kleur-grid on the page to the kleurstalen form's
+	   kleur1..kleur4 selects. Click a swatch → fills the next empty slot
+	   (and badges the swatch with the slot number). Click an already
+	   selected swatch → clears that slot. Manual select changes sync back. */
+	function setupKleurPicker( form ) {
+		var grids   = document.querySelectorAll( '.oz-kleur-grid' );
+		if ( ! grids.length ) { return; }
+		var selects = [
+			form.querySelector( '[name="kleur1"]' ),
+			form.querySelector( '[name="kleur2"]' ),
+			form.querySelector( '[name="kleur3"]' ),
+			form.querySelector( '[name="kleur4"]' )
+		];
+		if ( selects.some( function ( s ) { return ! s; } ) ) { return; }
+
+		var swatches = [];
+		grids.forEach( function ( grid ) {
+			grid.classList.add( 'oz-kleur-grid--pickable' );
+			grid.querySelectorAll( '.oz-kleur-swatch' ).forEach( function ( fig ) {
+				var strong = fig.querySelector( 'strong' );
+				if ( ! strong ) { return; }
+				var code = strong.textContent.trim();
+				if ( ! code ) { return; }
+				fig.dataset.kleurCode = code;
+				fig.setAttribute( 'role', 'button' );
+				fig.setAttribute( 'tabindex', '0' );
+				fig.setAttribute( 'aria-pressed', 'false' );
+				var badge = document.createElement( 'span' );
+				badge.className = 'oz-kleur-swatch__badge';
+				badge.setAttribute( 'aria-hidden', 'true' );
+				fig.appendChild( badge );
+				swatches.push( fig );
+			} );
+		} );
+
+		function refresh() {
+			var values = selects.map( function ( s ) { return s.value || ''; } );
+			swatches.forEach( function ( fig ) {
+				var code = fig.dataset.kleurCode;
+				var slot = values.indexOf( code );
+				var badge = fig.querySelector( '.oz-kleur-swatch__badge' );
+				if ( slot >= 0 ) {
+					fig.classList.add( 'is-selected' );
+					fig.setAttribute( 'aria-pressed', 'true' );
+					if ( badge ) { badge.textContent = String( slot + 1 ); }
+				} else {
+					fig.classList.remove( 'is-selected' );
+					fig.setAttribute( 'aria-pressed', 'false' );
+					if ( badge ) { badge.textContent = ''; }
+				}
+			} );
+		}
+
+		function pick( code ) {
+			var values = selects.map( function ( s ) { return s.value || ''; } );
+			var existing = values.indexOf( code );
+			if ( existing >= 0 ) {
+				selects[ existing ].value = '';
+				selects[ existing ].dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				refresh();
+				return;
+			}
+			var empty = values.indexOf( '' );
+			if ( empty < 0 ) { return; } // all 4 filled
+			var sel = selects[ empty ];
+			var hasOption = !! sel.querySelector( 'option[value="' + code + '"]' );
+			if ( ! hasOption ) { return; }
+			sel.value = code;
+			sel.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+			refresh();
+		}
+
+		swatches.forEach( function ( fig ) {
+			fig.addEventListener( 'click', function () { pick( fig.dataset.kleurCode ); } );
+			fig.addEventListener( 'keydown', function ( e ) {
+				if ( e.key === 'Enter' || e.key === ' ' ) {
+					e.preventDefault();
+					pick( fig.dataset.kleurCode );
+				}
+			} );
+		} );
+
+		selects.forEach( function ( s ) {
+			s.addEventListener( 'change', refresh );
+		} );
+
+		refresh();
+	}
+
 	ready( function () {
 		var forms = document.querySelectorAll( 'form.oz-form' );
 		if ( ! forms.length ) { return; }
@@ -215,6 +304,7 @@
 			} else {
 				whenTurnstileReady( function () { renderTurnstile( form ); } );
 			}
+			setupKleurPicker( form );
 			form.addEventListener( 'submit', function ( ev ) {
 				ev.preventDefault();
 				submit( form );

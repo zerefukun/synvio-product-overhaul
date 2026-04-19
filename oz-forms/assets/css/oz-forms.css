@@ -1,6 +1,7 @@
 /* OZ Forms — frontend styles. Uses design tokens from oz-theme. */
 
 .oz-form {
+	position: relative;
 	display: grid;
 	gap: 18px;
 	max-width: 640px;
@@ -98,7 +99,6 @@
 }
 
 .oz-form__submit {
-	justify-self: start;
 	min-width: 200px;
 }
 
@@ -254,14 +254,16 @@
 .oz-form__nav {
 	display: flex;
 	gap: 12px;
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-items: center;
+	margin-top: 8px;
 }
 
 .oz-form__prev {
 	background: transparent;
 	color: var(--oz-color-teal, #135350);
 	border: 1px solid #d6d3ce;
+	margin-right: auto;
 }
 
 .oz-form__prev:hover {
@@ -296,4 +298,46 @@
 	.oz-form__progress-step {
 		justify-content: flex-start;
 	}
+}
+
+/* ───────── Kleur swatch picker (links .oz-kleur-grid → form) ───────── */
+
+.oz-kleur-grid--pickable .oz-kleur-swatch {
+	position: relative;
+	cursor: pointer;
+	transition: transform 120ms ease, box-shadow 120ms ease, outline-color 120ms ease;
+	outline: 2px solid transparent;
+	outline-offset: -2px;
+}
+
+.oz-kleur-grid--pickable .oz-kleur-swatch:focus-visible {
+	outline-color: var(--oz-color-teal, #135350);
+}
+
+.oz-kleur-grid--pickable .oz-kleur-swatch.is-selected {
+	outline-color: var(--oz-color-teal, #135350);
+	box-shadow: 0 4px 14px rgba(19, 83, 80, 0.18);
+}
+
+.oz-kleur-swatch__badge {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--oz-color-teal, #135350);
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+	pointer-events: none;
+	z-index: 2;
+}
+
+.oz-kleur-swatch.is-selected .oz-kleur-swatch__badge {
+	display: flex;
 }
