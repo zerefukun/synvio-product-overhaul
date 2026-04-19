@@ -94,7 +94,7 @@ $site_name = get_bloginfo( 'name' );
 		?>
 
 		<!-- Column 2: Producten -->
-		<details class="oz-footer__col oz-footer__accordion">
+		<details class="oz-footer__col oz-footer__accordion" open>
 			<summary class="oz-footer__heading">Producten<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/beton-cire-easyline-all-in-one/">All-In-One</a></li>
@@ -108,7 +108,7 @@ $site_name = get_bloginfo( 'name' );
 		</details>
 
 		<!-- Column 3: Navigatie -->
-		<details class="oz-footer__col oz-footer__accordion">
+		<details class="oz-footer__col oz-footer__accordion" open>
 			<summary class="oz-footer__heading">Navigatie<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/">Home</a></li>
@@ -123,7 +123,7 @@ $site_name = get_bloginfo( 'name' );
 		</details>
 
 		<!-- Column 4: Klantenservice -->
-		<details class="oz-footer__col oz-footer__accordion">
+		<details class="oz-footer__col oz-footer__accordion" open>
 			<summary class="oz-footer__heading">Klantenservice<?php echo $oz_chevron; ?></summary>
 			<ul class="oz-footer__links">
 				<li><a href="/offerte/">Offerte aanvragen</a></li>
@@ -137,7 +137,7 @@ $site_name = get_bloginfo( 'name' );
 		</details>
 
 		<!-- Column 5: Openingstijden -->
-		<details class="oz-footer__col oz-footer__accordion">
+		<details class="oz-footer__col oz-footer__accordion" open>
 			<summary class="oz-footer__heading">Openingstijden<?php echo $oz_chevron; ?></summary>
 			<table class="oz-footer__hours">
 				<tbody>
@@ -153,6 +153,12 @@ $site_name = get_bloginfo( 'name' );
 		</details>
 
 	</div>
+
+	<script>
+	if (window.matchMedia('(max-width: 800px)').matches) {
+		document.querySelectorAll('.oz-footer__accordion[open]').forEach(function(d){ d.removeAttribute('open'); });
+	}
+	</script>
 
 	<!-- Bottom bar -->
 	<div class="oz-footer__bottom">
