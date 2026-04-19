@@ -768,54 +768,93 @@
 
 /* ── Product comparison cards ──
    Opt-in via className "oz-product-cards" on the columns block.
-   Each column becomes a card with centered content. */
+   Mirrors homepage .oz-hp-pcard styling so ruimte/stuc pages and the
+   homepage use one visual language. */
 .oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column {
-  background: var(--oz-bg-page);
-  border: 1px solid var(--oz-border-light);
-  border-radius: var(--oz-radius-lg);
-  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  transition: box-shadow var(--oz-transition);
+  background: #FFF;
+  border: 1px solid #E5E5E3;
+  border-radius: 6px;
+  padding: 28px 24px;
+  transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s;
 }
 
 .oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column:hover {
-  box-shadow: var(--oz-shadow-md);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.08);
 }
 
 .oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-image {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 200px;
+  margin: 0 0 20px;
+}
+
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-image a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-image img {
-  aspect-ratio: 1;
-  object-fit: contain;
-  border-radius: var(--oz-radius);
-  max-height: 200px;
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
-  margin: 0 auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,.1));
 }
 
 .oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column h3 {
-  font-size: var(--oz-text-lg);
-  margin-bottom: 4px;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #1A1A1A;
+  margin: 0 0 10px;
 }
 
-.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-list {
-  text-align: left;
-  padding-left: 1.2em;
-  margin: 16px 0;
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column > p {
   font-size: 14px;
-  line-height: 1.8;
+  line-height: 1.7;
+  color: #555;
+  margin: 0 0 20px;
 }
 
-.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column > p:last-of-type {
-  font-size: var(--oz-text-base);
-  color: var(--oz-text-primary);
-  margin-top: 16px;
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-buttons {
+  margin-top: auto;
+  justify-content: center;
 }
 
-.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column > p:last-of-type strong {
-  font-size: var(--oz-text-lg);
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-button__link {
+  display: inline-block;
+  width: fit-content;
+  padding: 12px 28px;
+  font-family: var(--oz-ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  background: #135350;
+  color: #FFF;
+  transition: background .2s, transform .15s;
+}
+
+.oz-ruimte .oz-section .wp-block-columns.oz-product-cards .wp-block-column .wp-block-button__link:hover {
+  background: #1A6B67;
+  color: #FFF;
+  transform: translateY(-1px);
 }
 
 /* ── Buttons in ruimte context ──
