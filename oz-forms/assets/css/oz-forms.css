@@ -8,16 +8,18 @@
 }
 
 .oz-form {
+	container-type: inline-size;
+	container-name: ozform;
 	position: relative;
 	display: grid;
-	gap: 18px;
+	gap: 12px;
 	max-width: 640px;
-	margin: 32px auto;
-	padding: 28px 28px 24px;
+	margin: 24px auto;
+	padding: 22px 24px 20px;
 	background: #fff;
 	border: 1px solid #ece9e3;
-	border-radius: 12px;
-	box-shadow: 0 4px 24px rgba(20, 30, 40, 0.05);
+	border-radius: 10px;
+	box-shadow: 0 2px 16px rgba(20, 30, 40, 0.04);
 	font-family: var(--oz-font-body, Arial, sans-serif);
 	color: var(--oz-color-text, #333);
 }
@@ -28,19 +30,18 @@
 
 @media (max-width: 600px) {
 	.oz-form {
-		margin: 20px auto;
-		padding: 20px 18px 18px;
-		border-radius: 10px;
+		margin: 16px auto;
+		padding: 18px 16px 16px;
 	}
 }
 
 .oz-form__field {
 	display: grid;
-	gap: 6px;
+	gap: 4px;
 }
 
 .oz-form__label {
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 600;
 	color: var(--oz-color-teal, #135350);
 	letter-spacing: 0.01em;
@@ -61,11 +62,12 @@
 .oz-form__field textarea {
 	width: 100%;
 	box-sizing: border-box;
-	padding: 12px 14px;
+	padding: 9px 12px;
 	border: 1px solid #d6d3ce;
 	border-radius: 6px;
 	background: #fff;
 	font: inherit;
+	font-size: 14px;
 	color: inherit;
 	transition: border-color 120ms ease, box-shadow 120ms ease;
 }
@@ -80,7 +82,7 @@
 
 .oz-form__field textarea {
 	resize: vertical;
-	min-height: 120px;
+	min-height: 92px;
 }
 
 .oz-form__field--checkbox .oz-form__check {
@@ -128,18 +130,19 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
-	min-height: 48px;
-	padding: 12px 24px;
+	gap: 6px;
+	min-height: 42px;
+	padding: 10px 18px;
 	border: 1px solid transparent;
-	border-radius: 8px;
+	border-radius: 7px;
 	background: #f0ede8;
 	color: var(--oz-color-teal, #135350);
 	font-family: inherit;
-	font-size: 15px;
+	font-size: 14px;
 	font-weight: 600;
 	letter-spacing: 0.01em;
 	line-height: 1.2;
+	white-space: nowrap;
 	cursor: pointer;
 	text-decoration: none;
 	transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 100ms ease, box-shadow 150ms ease;
@@ -183,7 +186,7 @@
 }
 
 .oz-form__submit {
-	min-width: 200px;
+	min-width: 0;
 }
 
 .oz-form__btn[disabled] {
@@ -235,7 +238,7 @@
 
 .oz-form__step {
 	display: grid;
-	gap: 18px;
+	gap: 12px;
 	border: none;
 	margin: 0;
 	padding: 0;
@@ -247,25 +250,25 @@
 
 .oz-form__step-title {
 	font-family: var(--oz-font-heading, Georgia, serif);
-	font-size: 22px;
+	font-size: 18px;
 	font-weight: 600;
 	color: var(--oz-color-teal, #135350);
-	padding: 0 0 4px;
+	padding: 0;
 	margin: 0;
 }
 
 .oz-form__step-intro {
-	margin: -10px 0 0;
+	margin: -6px 0 0;
 	color: #555;
-	font-size: 14px;
+	font-size: 13px;
 }
 
 .oz-form__progress {
 	list-style: none;
-	margin: 0 0 24px;
+	margin: 0 0 14px;
 	padding: 0;
 	display: flex;
-	gap: 8px;
+	gap: 6px;
 	counter-reset: step;
 }
 
@@ -273,12 +276,12 @@
 	flex: 1;
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 10px 12px;
+	gap: 8px;
+	padding: 7px 10px;
 	background: #f7f5f2;
 	border: 1px solid #e5e5e3;
 	border-radius: 6px;
-	font-size: 13px;
+	font-size: 12px;
 	color: #888;
 	cursor: default;
 	transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
@@ -288,13 +291,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 26px;
-	height: 26px;
+	width: 22px;
+	height: 22px;
 	border-radius: 50%;
 	background: #e5e5e3;
 	color: #888;
 	font-weight: 600;
-	font-size: 13px;
+	font-size: 12px;
 	flex-shrink: 0;
 }
 
@@ -338,16 +341,32 @@
 .oz-form__nav {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 12px;
+	gap: 8px;
 	justify-content: flex-end;
 	align-items: center;
-	margin-top: 8px;
-	padding-top: 18px;
+	margin-top: 4px;
+	padding-top: 14px;
 	border-top: 1px solid #ece9e3;
 }
 
 .oz-form__nav .oz-form__prev {
 	margin-right: auto;
+}
+
+/* Container query: when the form itself is narrow (e.g. inside a column on
+   /workshops/), buttons can't sit side-by-side without wrapping ugly. Stack
+   them in priority order: primary on top, prev underneath, full width. */
+@container ozform (max-width: 460px) {
+	.oz-form__nav {
+		flex-direction: column-reverse;
+		align-items: stretch;
+	}
+	.oz-form__btn {
+		width: 100%;
+	}
+	.oz-form__nav .oz-form__prev {
+		margin-right: 0;
+	}
 }
 
 .oz-form__radios {
