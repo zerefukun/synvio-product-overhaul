@@ -198,6 +198,16 @@
   padding: 0 var(--oz-gap);
 }
 
+/* Alignfull columns (card grids) — break out of container but still center
+   with sane max-width and side gutter on wide viewports */
+.oz-ruimte .oz-section > .wp-block-columns.alignfull {
+  max-width: 1600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--oz-gap);
+  box-sizing: border-box;
+}
+
 /* ── Gallery block ── */
 .oz-ruimte .wp-block-gallery {
   gap: 12px;
