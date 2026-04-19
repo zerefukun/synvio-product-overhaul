@@ -59,9 +59,12 @@
   }
 }
 
-/* When a ruimte .oz-section wraps an embedded home-style product-cards section
-   (oz-hp-section), the inner section already supplies its own padding and
-   background. Zero the outer so we don't double up. */
+/* When a ruimte .oz-section wraps a self-contained section block (either a
+   Gutenberg group that already carries .oz-section, or an embedded home-style
+   .oz-hp-section), the inner already supplies its own padding and background.
+   Zero the outer wrapper so the inner drives spacing and we don't get bands
+   of empty coloured padding between sections. */
+.oz-ruimte .oz-section:has(> .wp-block-group.oz-section),
 .oz-ruimte .oz-section:has(> .wp-block-group.oz-hp-section) {
   padding: 0;
   background: transparent;
