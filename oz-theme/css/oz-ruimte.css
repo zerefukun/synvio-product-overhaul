@@ -1064,6 +1064,15 @@
   margin: 24px auto 0;
 }
 
+/* Larger swatches for All-In-One / Easyline grid (photographic swatches, not flat colors) */
+.oz-ruimte .oz-kleur-grid--lg {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.oz-ruimte .oz-kleur-grid--lg .oz-kleur-swatch img {
+  aspect-ratio: 5 / 4;
+}
+
 /* ================================================================
    CONTACT page — form + showroom columns + map embed
    ================================================================ */
