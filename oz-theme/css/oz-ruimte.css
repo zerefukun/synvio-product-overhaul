@@ -828,3 +828,25 @@
     max-height: 180px;
   }
 }
+
+/* ── Meubels image inside closing text area ── */
+.oz-ruimte .oz-ruimte-meubels-image {
+  margin: 48px auto;
+}
+
+.oz-ruimte .oz-ruimte-meubels-image img {
+  width: 45%;
+  height: auto;
+  border-radius: var(--oz-radius-lg, 12px);
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-ruimte-meubels-image {
+    margin: 32px auto;
+  }
+  .oz-ruimte .oz-ruimte-meubels-image img {
+    width: 100%;
+  }
+}
