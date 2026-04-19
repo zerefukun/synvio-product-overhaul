@@ -13,12 +13,18 @@ get_header(); ?>
 <div class="oz-ruimte oz-sitemap">
 
 	<!-- Hero -->
-	<section class="wp-block-cover alignfull oz-sitemap__hero" style="min-height:42vh">
-		<span aria-hidden="true" class="wp-block-cover__background has-background-dim-60 has-background-dim"></span>
-		<div class="wp-block-cover__inner-container">
-			<p class="has-text-align-center oz-eyebrow has-white-color has-text-color">Overzicht</p>
-			<h1 class="wp-block-heading has-text-align-center has-white-color has-text-color">Sitemap</h1>
-			<p class="has-text-align-center has-white-color has-text-color">Alle pagina's, artikelen en categorieën op één plek. Snel navigeren naar het onderwerp dat je zoekt.</p>
+	<section class="oz-ruimte__hero oz-sitemap__hero" data-reveal>
+		<div class="wp-block-cover alignfull">
+			<span aria-hidden="true" class="wp-block-cover__background has-background-dim-60 has-background-dim"></span>
+			<div class="wp-block-cover__inner-container is-layout-flow wp-block-cover-is-layout-flow">
+				<h1 class="wp-block-heading has-white-color has-text-color">Sitemap</h1>
+				<p class="has-white-color has-text-color">Alle pagina's, artikelen en categorieën op één plek. Snel navigeren naar het onderwerp dat je zoekt.</p>
+				<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex">
+					<div class="wp-block-button is-style-outline">
+						<a class="wp-block-button__link" href="/sitemap_index.xml">XML sitemap</a>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
 
