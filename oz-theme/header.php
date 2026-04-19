@@ -5,12 +5,15 @@
  * Desktop (1024px+): logo (left) | centered nav with mega menus | search + account + cart (right)
  * Mobile  (<1024px): hamburger + search | centered logo | cart  (drawer nav)
  *
- * Overlay mode (transparent header over hero): homepage + ruimte template pages.
+ * Overlay mode (transparent header over hero): homepage + ruimte template pages
+ * + stucsoorten posts (which render in the oz-ruimte wrapper via single.php).
  *
  * @package OzTheme
  */
 
-$has_hero   = is_front_page() || is_page_template( 'page-ruimte.php' );
+$has_hero = is_front_page()
+	|| is_page_template( 'page-ruimte.php' )
+	|| ( is_single() && has_category( 'stucsoorten' ) );
 $logo_id    = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 $logo_url   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 $site_name  = get_bloginfo( 'name' );
