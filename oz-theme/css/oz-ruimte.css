@@ -208,73 +208,117 @@
   box-sizing: border-box;
 }
 
-/* Ruimte banner row — full-bleed 2-col, images touch viewport edges */
+/* Ruimte banner row — full-bleed 2-card split.
+   Each card = image half + text half (black or teal), edge-to-edge. */
 .oz-ruimte .oz-section:has(> .oz-ruimte-banner-row) {
   padding: 0;
 }
 
-.oz-ruimte .oz-section > .wp-block-columns.oz-ruimte-banner-row {
+.oz-ruimte .wp-block-group.oz-ruimte-banner-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+/* Override the alignfull group inner-container constraint for this row */
+.oz-ruimte .wp-block-group.oz-ruimte-banner-row > .wp-block-group__inner-container {
   max-width: none;
   padding: 0;
-  gap: 0;
-  margin-left: 0;
-  margin-right: 0;
+  display: contents;
 }
 
-.oz-ruimte-banner-row .wp-block-column {
-  padding: 0;
-  margin: 0;
-}
-
-.oz-ruimte .wp-block-cover.oz-ruimte-banner {
-  border-radius: 0;
-  overflow: hidden;
-  min-height: 320px;
-  padding: 32px 24px;
-  transition: filter var(--oz-transition, .2s ease);
-}
-
-.oz-ruimte .wp-block-cover.oz-ruimte-banner:hover {
-  filter: brightness(1.08);
-}
-
-.oz-ruimte .wp-block-cover.oz-ruimte-banner .wp-block-cover__inner-container {
-  text-align: center;
-  max-width: 480px;
-}
-
-.oz-ruimte .wp-block-cover.oz-ruimte-banner h3 {
-  color: #fff;
-  font-family: var(--oz-ff-heading);
-  font-size: clamp(22px, 2.2vw, 30px);
-  font-weight: 400;
-  margin: 0 0 12px;
-}
-
-.oz-ruimte .wp-block-cover.oz-ruimte-banner h3 a {
-  color: inherit;
+.oz-banner-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 340px;
   text-decoration: none;
+  color: inherit;
+  overflow: hidden;
 }
 
-.oz-ruimte .wp-block-cover.oz-ruimte-banner p {
-  color: rgba(255, 255, 255, .9);
-  font-size: 14px;
-  margin: 0 0 20px;
+.oz-banner-img {
+  background-size: cover;
+  background-position: center;
+  min-height: 340px;
+  transition: transform .5s ease;
 }
 
-.oz-ruimte .wp-block-cover.oz-ruimte-banner .wp-block-button.is-style-outline .wp-block-button__link {
+.oz-banner-card:hover .oz-banner-img {
+  transform: scale(1.03);
+}
+
+.oz-banner-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px clamp(32px, 5vw, 72px);
+}
+
+.oz-banner-text--dark {
+  background: #1a1a1a;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, .7);
-  background: transparent;
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-size: 13px;
-  transition: background var(--oz-transition, .2s ease), border-color var(--oz-transition, .2s ease);
 }
 
-.oz-ruimte .wp-block-cover.oz-ruimte-banner .wp-block-button.is-style-outline .wp-block-button__link:hover {
-  background: rgba(255, 255, 255, .15);
+.oz-banner-text--teal {
+  background: var(--oz-accent);
+  color: #fff;
+}
+
+.oz-banner-text h3 {
+  font-family: var(--oz-ff-heading);
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 14px;
+}
+
+.oz-banner-text p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .82);
+  margin: 0 0 24px;
+}
+
+.oz-banner-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: #fff;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .4);
+  width: fit-content;
+  transition: border-color .2s ease, gap .2s ease;
+}
+
+.oz-banner-card:hover .oz-banner-btn {
   border-color: #fff;
+  gap: 14px;
+}
+
+/* Tablet: stack image above text per card, keep side-by-side between cards */
+@media (max-width: 1024px) {
+  .oz-banner-card {
+    grid-template-columns: 1fr;
+  }
+  .oz-banner-card--img-right .oz-banner-text {
+    order: 2;
+  }
+  .oz-banner-card--img-right .oz-banner-img {
+    order: 1;
+  }
+}
+
+/* Mobile: stack cards vertically */
+@media (max-width: 767px) {
+  .oz-ruimte .wp-block-group.oz-ruimte-banner-row {
+    grid-template-columns: 1fr;
+  }
+  .oz-banner-img { min-height: 240px; }
+  .oz-banner-text { padding: 36px 24px; }
 }
 
 /* ── Gallery block ── */
