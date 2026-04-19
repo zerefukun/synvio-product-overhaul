@@ -47,16 +47,15 @@
 }
 
 /* ── Section spacing tuning for ruimte pages ──
-   Half-values so the combined gap between adjacent sections equals the target
-   rhythm (44+44=88px desktop, 28+28=56px mobile). Full-bleed banner rows opt
-   out via their own override. */
+   Full 88px top/bottom on desktop, 56px on mobile. Full-bleed banner rows opt
+   out via their own override below. */
 .oz-ruimte .oz-section {
-  padding: 28px 0;
+  padding: 56px 0;
 }
 
 @media (min-width: 768px) {
   .oz-ruimte .oz-section {
-    padding: 44px 0;
+    padding: 88px 0;
   }
 }
 
@@ -234,6 +233,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
+  position: relative;
 }
 
 /* Override the alignfull group inner-container constraint for this row */
@@ -241,6 +241,55 @@
   max-width: none;
   padding: 0;
   display: contents;
+}
+
+/* Center heading overlay — sits on top of both banner cards, absolutely
+   centered. Uses a light card background so the text stays legible against
+   both the dark-left and teal-right panels. */
+.oz-banner-center-heading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: min(90%, 560px);
+  padding: 28px 40px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: var(--oz-radius-lg, 12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  text-align: center;
+  pointer-events: none;
+}
+
+.oz-banner-center-eyebrow {
+  font-family: var(--oz-ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--oz-accent);
+  margin-bottom: 10px;
+}
+
+.oz-banner-center-title {
+  font-family: var(--oz-ff-heading);
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--oz-text-primary);
+  margin: 0;
+}
+
+.oz-banner-center-title em {
+  font-style: italic;
+  color: var(--oz-accent);
+}
+
+@media (max-width: 767px) {
+  .oz-banner-center-heading {
+    padding: 20px 24px;
+    width: min(92%, 420px);
+  }
 }
 
 .oz-banner-card {
