@@ -859,12 +859,28 @@
 /* ── Cover block used as CTA (not hero) ── */
 .oz-ruimte .oz-section--cover {
   padding: 0;
+  background: transparent;
 }
 
 .oz-ruimte .oz-section--cover .wp-block-cover {
+  position: relative;
+  overflow: hidden;
   min-height: 320px;
   border-radius: 0;
   padding: 72px var(--oz-gap);
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-cover__background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+  position: relative;
+  z-index: 1;
 }
 
 .oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
