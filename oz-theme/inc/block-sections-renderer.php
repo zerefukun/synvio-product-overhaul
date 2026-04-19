@@ -24,8 +24,9 @@ defined( 'ABSPATH' ) || exit;
  * @param string $content Raw post_content (Gutenberg block markup).
  */
 function oz_render_block_sections( $content ) {
-	$blocks    = parse_blocks( $content );
-	$section_i = 0;
+	$blocks     = parse_blocks( $content );
+	$section_i  = 0;
+	$hero_used  = false;
 
 	/* Pre-scan: which block indices belong to the stappen-plan timeline. */
 	$timeline_indices = array();
@@ -74,9 +75,16 @@ function oz_render_block_sections( $content ) {
 			echo '</section>';
 
 		} elseif ( $name === 'core/cover' ) {
-			echo '<section class="oz-ruimte__hero" data-reveal>';
-			echo $rendered;
-			echo '</section>';
+			if ( ! $hero_used ) {
+				echo '<section class="oz-ruimte__hero" data-reveal>';
+				echo $rendered;
+				echo '</section>';
+				$hero_used = true;
+			} else {
+				echo '<section class="oz-section oz-section--cover' . $bg . '" data-reveal>';
+				echo $rendered;
+				echo '</section>';
+			}
 
 		} elseif ( $name === 'core/columns' ) {
 			$is_full = ! empty( $block['attrs']['align'] ) && $block['attrs']['align'] === 'full';

@@ -855,3 +855,137 @@
     gap: 24px;
   }
 }
+
+/* ── Cover block used as CTA (not hero) ── */
+.oz-ruimte .oz-section--cover {
+  padding: 0;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-cover {
+  min-height: 320px;
+  border-radius: 0;
+  padding: 72px var(--oz-gap);
+}
+
+.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+  max-width: var(--oz-max-w, 1100px);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.oz-ruimte .oz-section--cover h6 {
+  font-family: var(--oz-ff-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.oz-ruimte .oz-section--cover h2 {
+  font-family: var(--oz-ff-heading);
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 14px;
+}
+
+.oz-ruimte .oz-section--cover h2 em {
+  font-style: italic;
+  color: var(--oz-accent);
+}
+
+.oz-ruimte .oz-section--cover p {
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 640px;
+  margin: 0 auto 28px;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-buttons {
+  justify-content: center;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-button.is-style-outline .wp-block-button__link {
+  color: #fff !important;
+  border-color: #fff !important;
+  background: transparent !important;
+}
+
+.oz-ruimte .oz-section--cover .wp-block-button.is-style-outline .wp-block-button__link:hover {
+  background: rgba(255,255,255,.15) !important;
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-section--cover .wp-block-cover {
+    min-height: 260px;
+    padding: 56px var(--oz-gap);
+  }
+}
+
+/* ── FAQ accordion (native <details>) styled to match homepage FAQ ── */
+.oz-ruimte .wp-block-details {
+  border-bottom: 1px solid var(--oz-border, rgba(19, 83, 80, 0.2));
+  padding: 0;
+  margin: 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.oz-ruimte .wp-block-details > summary {
+  padding: 20px 0;
+  cursor: pointer;
+  font-family: var(--oz-ff-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--oz-text-primary, #1a1a1a);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  transition: color .2s;
+}
+
+.oz-ruimte .wp-block-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.oz-ruimte .wp-block-details > summary:hover {
+  color: var(--oz-accent);
+}
+
+.oz-ruimte .wp-block-details > summary::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(currentColor, currentColor);
+  background-size: 100% 2px, 2px 100%;
+  background-position: center, center;
+  background-repeat: no-repeat;
+  transition: transform .3s;
+}
+
+.oz-ruimte .wp-block-details[open] > summary::after {
+  background-size: 100% 2px, 0 100%;
+}
+
+.oz-ruimte .wp-block-details > :not(summary) {
+  padding-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--oz-text-body, #333);
+  margin: 0;
+}
+
+/* FAQ section heading tweaks: center h6 eyebrow + big h2 when followed by details */
+.oz-ruimte .oz-section > .oz-container > .wp-block-group:has(> .wp-block-group__inner-container > .wp-block-details) h6,
+.oz-ruimte .oz-section > .oz-container > .wp-block-group:has(> .wp-block-group__inner-container > .wp-block-details) h2 {
+  text-align: center;
+}
