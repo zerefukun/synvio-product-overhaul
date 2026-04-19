@@ -141,11 +141,11 @@ $site_name = get_bloginfo( 'name' );
 			<summary class="oz-footer__heading">Openingstijden<?php echo $oz_chevron; ?></summary>
 			<table class="oz-footer__hours">
 				<tbody>
-					<tr><th>Maandag</th><td>9:00 &ndash; 15:30</td></tr>
-					<tr><th>Dinsdag</th><td>9:00 &ndash; 15:30</td></tr>
-					<tr><th>Woensdag</th><td>11:00 &ndash; 15:30</td></tr>
-					<tr><th>Donderdag</th><td>9:00 &ndash; 15:30</td></tr>
-					<tr><th>Vrijdag</th><td>9:00 &ndash; 15:30</td></tr>
+					<tr><th>Maandag</th><td>09:00 &ndash; 15:00</td></tr>
+					<tr><th>Dinsdag</th><td>09:00 &ndash; 15:00</td></tr>
+					<tr><th>Woensdag</th><td>09:00 &ndash; 15:00</td></tr>
+					<tr><th>Donderdag</th><td>09:00 &ndash; 15:00</td></tr>
+					<tr><th>Vrijdag</th><td>09:00 &ndash; 15:00</td></tr>
 					<tr><th>Zaterdag</th><td>11:00 &ndash; 13:00</td></tr>
 					<tr><th>Zondag</th><td><span class="oz-footer__closed">Gesloten</span></td></tr>
 				</tbody>
