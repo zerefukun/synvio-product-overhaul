@@ -59,6 +59,14 @@
   }
 }
 
+/* When a ruimte .oz-section wraps an embedded home-style product-cards section
+   (oz-hp-section), the inner section already supplies its own padding and
+   background. Zero the outer so we don't double up. */
+.oz-ruimte .oz-section:has(> .wp-block-group.oz-hp-section) {
+  padding: 0;
+  background: transparent;
+}
+
 /* Neutralize first/last child vertical margins inside sections so the section
    padding is the sole authority for inter-section spacing. WP core sets
    margin-bottom: 28px on .wp-block-columns and similar blocks, which would

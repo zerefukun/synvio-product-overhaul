@@ -525,6 +525,16 @@ function oz_ruimte_enqueue() {
         ['oz-design-system', 'oz-animations', 'oz-reviews'],
         filemtime(get_stylesheet_directory() . '/css/oz-ruimte.css')
     );
+
+    // Locatie/stucsoorten/ruimte pages embed home-style product cards
+    // (oz-hp-section + oz-hp-pcard). Load the homepage stylesheet so those
+    // .oz-hp-* classes resolve here. The CSS is namespaced so nothing else bleeds.
+    wp_enqueue_style(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
+        ['oz-reviews'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
+    );
 }
 add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
 
