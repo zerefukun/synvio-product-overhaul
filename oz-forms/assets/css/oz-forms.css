@@ -98,13 +98,75 @@
 	min-height: 65px;
 }
 
+/* ───────── Buttons (self-contained, no theme dependency) ───────── */
+
+.oz-form__btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 48px;
+	padding: 12px 24px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	background: #f0ede8;
+	color: var(--oz-color-teal, #135350);
+	font-family: inherit;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1.2;
+	cursor: pointer;
+	text-decoration: none;
+	transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 100ms ease, box-shadow 150ms ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.oz-form__btn:hover {
+	background: #e3dfd8;
+}
+
+.oz-form__btn:focus-visible {
+	outline: 2px solid var(--oz-color-teal, #135350);
+	outline-offset: 2px;
+}
+
+.oz-form__btn:active {
+	transform: translateY(1px);
+}
+
+.oz-form__btn--primary {
+	background: var(--oz-color-teal, #135350);
+	color: #fff;
+}
+
+.oz-form__btn--primary:hover {
+	background: #0f4441;
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(19, 83, 80, 0.18);
+}
+
+.oz-form__prev {
+	background: transparent;
+	color: var(--oz-color-teal, #135350);
+	border-color: #d6d3ce;
+}
+
+.oz-form__prev:hover {
+	background: #f0ede8;
+	border-color: #c0bcb6;
+}
+
 .oz-form__submit {
 	min-width: 200px;
 }
 
-.oz-form__submit[disabled] {
-	opacity: 0.6;
-	cursor: progress;
+.oz-form__btn[disabled] {
+	opacity: 0.55;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
 }
 
 .oz-form__status {
@@ -133,13 +195,15 @@
 	.oz-form {
 		gap: 14px;
 	}
-	.oz-form__submit,
-	.oz-form__next,
-	.oz-form__prev {
+	.oz-form__nav {
+		flex-direction: column-reverse;
+		align-items: stretch;
+	}
+	.oz-form__btn {
 		width: 100%;
 	}
-	.oz-form__nav {
-		flex-direction: column;
+	.oz-form__nav .oz-form__prev {
+		margin-right: 0;
 	}
 }
 
@@ -253,21 +317,17 @@
 
 .oz-form__nav {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 12px;
 	justify-content: flex-end;
 	align-items: center;
 	margin-top: 8px;
+	padding-top: 18px;
+	border-top: 1px solid #ece9e3;
 }
 
-.oz-form__prev {
-	background: transparent;
-	color: var(--oz-color-teal, #135350);
-	border: 1px solid #d6d3ce;
+.oz-form__nav .oz-form__prev {
 	margin-right: auto;
-}
-
-.oz-form__prev:hover {
-	background: #f0ede8;
 }
 
 .oz-form__radios {

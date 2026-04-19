@@ -103,10 +103,14 @@ class Form {
 
 			<div class="oz-form__nav">
 				<?php if ( $has_steps ) : ?>
-					<button type="button" class="oz-form__prev oz-hp-btn oz-hp-btn--ghost" hidden>Vorige</button>
-					<button type="button" class="oz-form__next oz-hp-btn oz-hp-btn--teal">Volgende</button>
+					<button type="button" class="oz-form__btn oz-form__prev" hidden>
+						<span aria-hidden="true">&larr;</span> Vorige
+					</button>
+					<button type="button" class="oz-form__btn oz-form__btn--primary oz-form__next">
+						Volgende <span aria-hidden="true">&rarr;</span>
+					</button>
 				<?php endif; ?>
-				<button type="submit" class="oz-form__submit oz-hp-btn oz-hp-btn--teal"<?php echo $has_steps ? ' hidden' : ''; ?>>
+				<button type="submit" class="oz-form__btn oz-form__btn--primary oz-form__submit"<?php echo $has_steps ? ' hidden' : ''; ?>>
 					<?php echo $submit_lbl; ?>
 				</button>
 			</div>
