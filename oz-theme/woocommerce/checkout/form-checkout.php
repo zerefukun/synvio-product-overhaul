@@ -57,6 +57,11 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 					<?php do_action( 'woocommerce_checkout_order_review' ); ?>
 				</div>
 
+				<div class="oz-checkout__secure" aria-hidden="true">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+					<span><?php esc_html_e( 'Beveiligde SSL-betaalomgeving', 'oz-theme' ); ?></span>
+				</div>
+
 				<?php do_action( 'woocommerce_checkout_after_order_review' ); ?>
 			</div>
 		</div>
