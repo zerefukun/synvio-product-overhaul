@@ -1,13 +1,37 @@
 /* OZ Forms — frontend styles. Uses design tokens from oz-theme. */
 
+/* Universal [hidden] safety: any element with the hidden attribute MUST be
+   display:none, regardless of later display rules (otherwise [hidden] on
+   buttons/steps gets overridden by display: inline-flex / grid). */
+.oz-form [hidden] {
+	display: none !important;
+}
+
 .oz-form {
 	position: relative;
 	display: grid;
 	gap: 18px;
 	max-width: 640px;
-	margin: 0 auto;
+	margin: 32px auto;
+	padding: 28px 28px 24px;
+	background: #fff;
+	border: 1px solid #ece9e3;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(20, 30, 40, 0.05);
 	font-family: var(--oz-font-body, Arial, sans-serif);
 	color: var(--oz-color-text, #333);
+}
+
+.oz-form--steps {
+	max-width: 720px;
+}
+
+@media (max-width: 600px) {
+	.oz-form {
+		margin: 20px auto;
+		padding: 20px 18px 18px;
+		border-radius: 10px;
+	}
 }
 
 .oz-form__field {
@@ -208,10 +232,6 @@
 }
 
 /* ───────── Multi-step ───────── */
-
-.oz-form--steps {
-	max-width: 720px;
-}
 
 .oz-form__step {
 	display: grid;

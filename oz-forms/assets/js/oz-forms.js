@@ -115,7 +115,7 @@
 		var ts      = form.querySelector( '.oz-form__turnstile' );
 		var current = 0;
 
-		function show( idx ) {
+		function show( idx, opts ) {
 			steps.forEach( function ( s, i ) { s.hidden = i !== idx; } );
 			progress.forEach( function ( p, i ) {
 				p.classList.toggle( 'is-active', i === idx );
@@ -131,8 +131,9 @@
 					whenTurnstileReady( function () { renderTurnstile( form ); } );
 				}
 			}
-			// Scroll to top of form on step change for context.
-			form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+			if ( ! opts || opts.scroll !== false ) {
+				form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+			}
 			current = idx;
 		}
 
@@ -151,20 +152,48 @@
 			} );
 		} );
 
-		show( 0 );
+		show( 0, { scroll: false } );
 	}
 
 	function submit( form ) {
 		clearFieldErrors( form );
 		setStatus( form, '', '' );
 
-		// Multi-step: validate current (last) step before submit.
 		var isStepped = form.classList.contains( 'oz-form--steps' );
 		if ( isStepped ) {
-			var visible = form.querySelector( '.oz-form__step:not([hidden])' );
-			if ( visible && ! validateStep( visible ) ) { return; }
+			// Validate every step. Reveal the first invalid one to the user
+			// instead of letting them submit an incomplete multi-step form.
+			var allSteps = form.querySelectorAll( '.oz-form__step' );
+			var firstInvalid = -1;
+			for ( var i = 0; i < allSteps.length; i++ ) {
+				var wasHidden = allSteps[ i ].hidden;
+				allSteps[ i ].hidden = false; // checkValidity needs the field visible
+				var stepOk = validateStep( allSteps[ i ] );
+				allSteps[ i ].hidden = wasHidden;
+				if ( ! stepOk && firstInvalid === -1 ) { firstInvalid = i; }
+			}
+			if ( firstInvalid !== -1 ) {
+				var nextBtn = form.querySelector( '.oz-form__next' );
+				if ( nextBtn ) { nextBtn.click(); } // no-op safety; below jumps directly
+				// Jump to the first invalid step.
+				var stepEls = Array.prototype.slice.call( allSteps );
+				stepEls.forEach( function ( s, idx ) { s.hidden = idx !== firstInvalid; } );
+				var progress = form.querySelectorAll( '.oz-form__progress-step' );
+				progress.forEach( function ( p, idx ) {
+					p.classList.toggle( 'is-active', idx === firstInvalid );
+					p.classList.toggle( 'is-done', idx < firstInvalid );
+				} );
+				var prev = form.querySelector( '.oz-form__prev' );
+				var next = form.querySelector( '.oz-form__next' );
+				var sub  = form.querySelector( '.oz-form__submit' );
+				if ( prev ) { prev.hidden = firstInvalid === 0; }
+				var isLast = firstInvalid === stepEls.length - 1;
+				if ( next ) { next.hidden = isLast; }
+				if ( sub ) { sub.hidden = ! isLast; }
+				validateStep( stepEls[ firstInvalid ] ); // re-mark errors on the now-visible step
+				return;
+			}
 		} else if ( ! form.checkValidity() ) {
-			// Browser-default validation surfacing.
 			form.reportValidity();
 			return;
 		}
