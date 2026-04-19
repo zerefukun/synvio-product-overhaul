@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "oz/form",
+	"version": "0.1.0",
+	"title": "OZ Form",
+	"category": "widgets",
+	"icon": "email-alt",
+	"description": "Insert a custom OZ form (contact, offerte, kleurstalen, workshop, newsletter).",
+	"keywords": ["form", "contact", "offerte"],
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"]
+	},
+	"attributes": {
+		"formId": {
+			"type": "string",
+			"default": ""
+		},
+		"align": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./edit.js",
+	"render": "file:./render.php"
+}

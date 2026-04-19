@@ -1,0 +1,140 @@
+/* OZ Forms — frontend styles. Uses design tokens from oz-theme. */
+
+.oz-form {
+	display: grid;
+	gap: 18px;
+	max-width: 640px;
+	margin: 0 auto;
+	font-family: var(--oz-font-body, Arial, sans-serif);
+	color: var(--oz-color-text, #333);
+}
+
+.oz-form__field {
+	display: grid;
+	gap: 6px;
+}
+
+.oz-form__label {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--oz-color-teal, #135350);
+	letter-spacing: 0.01em;
+}
+
+.oz-form__req {
+	color: #b32d2e;
+	margin-left: 2px;
+}
+
+.oz-form__field input[type="text"],
+.oz-form__field input[type="email"],
+.oz-form__field input[type="tel"],
+.oz-form__field input[type="number"],
+.oz-form__field input[type="url"],
+.oz-form__field input[type="date"],
+.oz-form__field select,
+.oz-form__field textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 12px 14px;
+	border: 1px solid #d6d3ce;
+	border-radius: 6px;
+	background: #fff;
+	font: inherit;
+	color: inherit;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.oz-form__field input:focus,
+.oz-form__field select:focus,
+.oz-form__field textarea:focus {
+	outline: none;
+	border-color: var(--oz-color-teal, #135350);
+	box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.15);
+}
+
+.oz-form__field textarea {
+	resize: vertical;
+	min-height: 120px;
+}
+
+.oz-form__field--checkbox .oz-form__check {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.oz-form__help {
+	font-size: 12px;
+	color: #777;
+}
+
+.oz-form__error {
+	font-size: 13px;
+	color: #b32d2e;
+	min-height: 1em;
+}
+
+.oz-form__field.is-invalid input,
+.oz-form__field.is-invalid select,
+.oz-form__field.is-invalid textarea {
+	border-color: #b32d2e;
+	background: #fff7f7;
+}
+
+/* Honeypot — visually + functionally hidden but reachable enough that bots fill it. */
+.oz-form__hp {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+}
+
+.oz-form__turnstile {
+	min-height: 65px;
+}
+
+.oz-form__submit {
+	justify-self: start;
+	min-width: 200px;
+}
+
+.oz-form__submit[disabled] {
+	opacity: 0.6;
+	cursor: progress;
+}
+
+.oz-form__status {
+	font-size: 14px;
+	padding: 12px 14px;
+	border-radius: 6px;
+	background: transparent;
+	min-height: 0;
+}
+
+.oz-form__status.is-success {
+	background: #eaf3f1;
+	color: var(--oz-color-teal, #135350);
+	border: 1px solid #c7ddd9;
+	min-height: auto;
+}
+
+.oz-form__status.is-error {
+	background: #fbeceb;
+	color: #b32d2e;
+	border: 1px solid #f0c8c5;
+	min-height: auto;
+}
+
+@media (max-width: 600px) {
+	.oz-form {
+		gap: 14px;
+	}
+	.oz-form__submit {
+		justify-self: stretch;
+		width: 100%;
+	}
+}
