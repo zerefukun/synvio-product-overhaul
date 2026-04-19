@@ -45,7 +45,7 @@ class REST {
 
 		$schema = Schema_Registry::get( $form_id );
 		if ( ! $schema ) {
-			return new \WP_REST_Response( array( 'ok' => false, 'message' => 'Onbekend formulier.' ), 400 );
+			return new \WP_REST_Response( array( 'ok' => false, 'message' => 'Onbekend formulier.', 'reason' => 'unknown_form' ), 400 );
 		}
 
 		// 1. Honeypot — bots fill anything.
@@ -67,7 +67,7 @@ class REST {
 		if ( ! $verify['ok'] ) {
 			Submission_CPT::store( $form_id, array(), 'spam', 'turnstile: ' . $verify['error'] );
 			return new \WP_REST_Response(
-				array( 'ok' => false, 'message' => 'Spam-controle mislukt. Vernieuw de pagina en probeer opnieuw.' ),
+				array( 'ok' => false, 'message' => 'Spam-controle mislukt. Vernieuw de pagina en probeer opnieuw.', 'reason' => 'turnstile' ),
 				400
 			);
 		}
@@ -80,6 +80,7 @@ class REST {
 					'ok'      => false,
 					'message' => 'Vul de gemarkeerde velden in.',
 					'errors'  => $result['errors'],
+					'reason'  => 'validation',
 				),
 				422
 			);

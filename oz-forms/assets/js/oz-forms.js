@@ -4,6 +4,36 @@
 
 	var CFG = window.OZ_FORMS_CFG || {};
 
+	/* ═══ ANALYTICS ════════════════════════════════════════════
+	 * dataLayer pushes only — submissions are stored as oz_submission
+	 * CPT, so the server-side log already exists. No beacon needed.
+	 * Safe no-op when dataLayer doesn't exist (ad blockers, no GTM). */
+	function track( form, eventName, params ) {
+		try {
+			window.dataLayer = window.dataLayer || [];
+			var base = {
+				event:        eventName,
+				oz_form_id:   form.getAttribute( 'data-form-id' ) || '',
+				oz_form_type: form.classList.contains( 'oz-form--steps' ) ? 'multi_step' : 'single',
+			};
+			var step = form.querySelector( '.oz-form__step:not([hidden])' );
+			if ( step ) { base.oz_form_step = parseInt( step.getAttribute( 'data-step' ), 10 ) + 1; }
+			window.dataLayer.push( Object.assign( base, params || {} ) );
+		} catch ( e ) { /* never let analytics break the form */ }
+	}
+
+	/* Fire oz_form_start exactly once per form, on first real interaction. */
+	function armStartTracking( form ) {
+		var fired = false;
+		function fire() {
+			if ( fired ) { return; }
+			fired = true;
+			track( form, 'oz_form_start', {} );
+		}
+		form.addEventListener( 'focusin', fire, { once: false } );
+		form.addEventListener( 'change', fire, { once: false } );
+	}
+
 	function ready( fn ) {
 		if ( document.readyState !== 'loading' ) { fn(); }
 		else { document.addEventListener( 'DOMContentLoaded', fn ); }
@@ -138,11 +168,25 @@
 		}
 
 		nextBtn.addEventListener( 'click', function () {
-			if ( ! validateStep( steps[ current ] ) ) { return; }
-			if ( current < steps.length - 1 ) { show( current + 1 ); }
+			if ( ! validateStep( steps[ current ] ) ) {
+				track( form, 'oz_form_validation_error', {
+					oz_form_step: current + 1,
+					oz_error_source: 'next_button',
+				} );
+				return;
+			}
+			if ( current < steps.length - 1 ) {
+				var from = current + 1;
+				show( current + 1 );
+				track( form, 'oz_form_step_advanced', { oz_form_step_from: from, oz_form_step_to: current + 1 } );
+			}
 		} );
 		prevBtn.addEventListener( 'click', function () {
-			if ( current > 0 ) { show( current - 1 ); }
+			if ( current > 0 ) {
+				var from = current + 1;
+				show( current - 1 );
+				track( form, 'oz_form_step_back', { oz_form_step_from: from, oz_form_step_to: current + 1 } );
+			}
 		} );
 
 		// Allow clicking a previous progress step to jump back (not forward).
@@ -173,6 +217,10 @@
 				if ( ! stepOk && firstInvalid === -1 ) { firstInvalid = i; }
 			}
 			if ( firstInvalid !== -1 ) {
+				track( form, 'oz_form_validation_error', {
+					oz_form_step: firstInvalid + 1,
+					oz_error_source: 'submit',
+				} );
 				var nextBtn = form.querySelector( '.oz-form__next' );
 				if ( nextBtn ) { nextBtn.click(); } // no-op safety; below jumps directly
 				// Jump to the first invalid step.
@@ -194,6 +242,7 @@
 				return;
 			}
 		} else if ( ! form.checkValidity() ) {
+			track( form, 'oz_form_validation_error', { oz_error_source: 'submit_native' } );
 			form.reportValidity();
 			return;
 		}
@@ -207,6 +256,8 @@
 		var payload = {};
 		fd.forEach( function ( v, k ) { payload[ k ] = v; } );
 
+		track( form, 'oz_form_submit_attempt', {} );
+
 		fetch( CFG.rest, {
 			method: 'POST',
 			credentials: 'same-origin',
@@ -217,16 +268,34 @@
 			.then( function ( r ) {
 				if ( r.status >= 200 && r.status < 300 && r.body.ok ) {
 					setStatus( form, 'is-success', r.body.message || 'Verstuurd.' );
+					track( form, 'oz_form_submit_success', {} );
+					// Standard GA4 conversion event so Google Ads / GA4 lead
+					// goals fire without GTM having to translate our custom
+					// event. Mirrors the PDP add_to_cart pattern.
+					try {
+						window.dataLayer = window.dataLayer || [];
+						window.dataLayer.push( {
+							event: 'generate_lead',
+							form_id: form.getAttribute( 'data-form-id' ) || '',
+							currency: 'EUR',
+							value: 0,
+						} );
+					} catch ( e ) {}
 					form.reset();
 					resetTurnstile( form );
 					return;
 				}
 				if ( r.body && r.body.errors ) { showFieldErrors( form, r.body.errors ); }
 				setStatus( form, 'is-error', ( r.body && r.body.message ) || 'Er ging iets mis. Probeer opnieuw.' );
+				track( form, 'oz_form_submit_error', {
+					oz_status: r.status,
+					oz_reason: ( r.body && r.body.reason ) || ( r.body && r.body.message ) || 'unknown',
+				} );
 				resetTurnstile( form );
 			} )
 			.catch( function () {
 				setStatus( form, 'is-error', 'Verbinding mislukt. Controleer je internet en probeer opnieuw.' );
+				track( form, 'oz_form_submit_error', { oz_status: 0, oz_reason: 'network' } );
 				resetTurnstile( form );
 			} )
 			.finally( function () {
@@ -294,6 +363,10 @@
 				selects[ existing ].value = '';
 				selects[ existing ].dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				refresh();
+				track( form, 'oz_form_swatch_unpicked', {
+					oz_swatch_code: code,
+					oz_swatch_slot: existing + 1,
+				} );
 				return;
 			}
 			var empty = values.indexOf( '' );
@@ -304,6 +377,10 @@
 			sel.value = code;
 			sel.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 			refresh();
+			track( form, 'oz_form_swatch_picked', {
+				oz_swatch_code: code,
+				oz_swatch_slot: empty + 1,
+			} );
 		}
 
 		swatches.forEach( function ( fig ) {
@@ -334,6 +411,7 @@
 				whenTurnstileReady( function () { renderTurnstile( form ); } );
 			}
 			setupKleurPicker( form );
+			armStartTracking( form );
 			form.addEventListener( 'submit', function ( ev ) {
 				ev.preventDefault();
 				submit( form );
