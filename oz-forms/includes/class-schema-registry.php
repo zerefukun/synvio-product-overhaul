@@ -29,6 +29,10 @@ class Schema_Registry {
 		}
 
 		foreach ( glob( $dir . '/*.php' ) as $file ) {
+			// Skip helper files (e.g. _palettes.php) — they're not schemas.
+			if ( basename( $file )[0] === '_' ) {
+				continue;
+			}
 			$schema = include $file;
 			if ( is_array( $schema ) && ! empty( $schema['id'] ) ) {
 				self::$schemas[ $schema['id'] ] = $schema;

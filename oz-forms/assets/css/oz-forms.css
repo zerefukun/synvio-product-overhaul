@@ -133,8 +133,167 @@
 	.oz-form {
 		gap: 14px;
 	}
-	.oz-form__submit {
-		justify-self: stretch;
+	.oz-form__submit,
+	.oz-form__next,
+	.oz-form__prev {
 		width: 100%;
+	}
+	.oz-form__nav {
+		flex-direction: column;
+	}
+}
+
+/* ───────── Multi-step ───────── */
+
+.oz-form--steps {
+	max-width: 720px;
+}
+
+.oz-form__step {
+	display: grid;
+	gap: 18px;
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+.oz-form__step[hidden] {
+	display: none;
+}
+
+.oz-form__step-title {
+	font-family: var(--oz-font-heading, Georgia, serif);
+	font-size: 22px;
+	font-weight: 600;
+	color: var(--oz-color-teal, #135350);
+	padding: 0 0 4px;
+	margin: 0;
+}
+
+.oz-form__step-intro {
+	margin: -10px 0 0;
+	color: #555;
+	font-size: 14px;
+}
+
+.oz-form__progress {
+	list-style: none;
+	margin: 0 0 24px;
+	padding: 0;
+	display: flex;
+	gap: 8px;
+	counter-reset: step;
+}
+
+.oz-form__progress-step {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	background: #f7f5f2;
+	border: 1px solid #e5e5e3;
+	border-radius: 6px;
+	font-size: 13px;
+	color: #888;
+	cursor: default;
+	transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+
+.oz-form__progress-num {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	background: #e5e5e3;
+	color: #888;
+	font-weight: 600;
+	font-size: 13px;
+	flex-shrink: 0;
+}
+
+.oz-form__progress-label {
+	font-weight: 500;
+}
+
+.oz-form__progress-step.is-active {
+	background: #fff;
+	border-color: var(--oz-color-teal, #135350);
+	color: var(--oz-color-teal, #135350);
+}
+
+.oz-form__progress-step.is-active .oz-form__progress-num {
+	background: var(--oz-color-teal, #135350);
+	color: #fff;
+}
+
+.oz-form__progress-step.is-done {
+	color: var(--oz-color-teal, #135350);
+	cursor: pointer;
+}
+
+.oz-form__progress-step.is-done .oz-form__progress-num {
+	background: var(--oz-color-teal, #135350);
+	color: #fff;
+}
+
+.oz-form__progress-step.is-done .oz-form__progress-num::before {
+	content: "✓";
+}
+
+.oz-form__progress-step.is-done .oz-form__progress-num {
+	font-size: 0; /* hide the number */
+}
+
+.oz-form__progress-step.is-done .oz-form__progress-num::before {
+	font-size: 14px;
+}
+
+.oz-form__nav {
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.oz-form__prev {
+	background: transparent;
+	color: var(--oz-color-teal, #135350);
+	border: 1px solid #d6d3ce;
+}
+
+.oz-form__prev:hover {
+	background: #f0ede8;
+}
+
+.oz-form__radios {
+	display: grid;
+	gap: 8px;
+}
+
+.oz-form__radio {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	border: 1px solid #d6d3ce;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: border-color 120ms ease, background 120ms ease;
+}
+
+.oz-form__radio:has( input:checked ) {
+	border-color: var(--oz-color-teal, #135350);
+	background: #eaf3f1;
+}
+
+@media (max-width: 600px) {
+	.oz-form__progress {
+		flex-direction: column;
+	}
+	.oz-form__progress-step {
+		justify-content: flex-start;
 	}
 }
