@@ -145,17 +145,34 @@
   /* ── Predictive search ──
      Uses: debounce (300ms) + AbortController (cancel stale requests)
            + in-memory LRU cache (skip API for repeated queries)
-           + prefix superset filtering (Algolia pattern)
+           + exhaustive-prefix filter (skip API entirely when safe)
+           + cross-cache substring filter on all seen products (instant
+             visual response — no spinner — while a refining fetch runs in
+             the background to fill in any missing matches)
+           + accent / case-insensitive normalization (semantic match:
+             "cafe" → "Café", "BETON" → "beton")
            + active query guard (ignore out-of-order responses). */
   var debounceTimer = null;
   var activeAbort = null;       /* AbortController for in-flight request */
   var activeQuery = '';          /* latest query we care about */
   var searchCache = new Map();   /* query → products array */
+  var productPool = new Map();   /* id → product (every product we've seen, deduped) */
   var CACHE_MAX = 30;            /* evict oldest after this many entries */
   var PER_PAGE = 6;              /* must match the per_page in the fetch URL */
   var siteUrl = (typeof ozHeaderData !== 'undefined' && ozHeaderData.siteUrl)
     ? ozHeaderData.siteUrl
     : window.location.origin;
+
+  /* Normalize for semantic matching: lowercase + strip accents/diacritics.
+     "Café" and "cafe" collapse to "cafe" so the filter doesn't miss hits
+     just because of Dutch/French accented characters. */
+  function normalize(s) {
+    return (s || '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
 
   if (searchInput) {
     searchInput.addEventListener('input', function () {
@@ -172,31 +189,40 @@
         return;
       }
 
-      /* Exact cache hit — show instantly */
+      activeQuery = q;
+
+      /* Exact cache hit — show instantly, skip network entirely */
       if (searchCache.has(q)) {
-        activeQuery = q;
         cancelInflight();
         renderResults(q, searchCache.get(q));
         return;
       }
 
-      /* Prefix superset: if a shorter prefix returned < PER_PAGE results,
-         its set is exhaustive — filter client-side, skip the API call.
-         E.g. "beton" returned 3 results → "betong" filters those 3 locally. */
+      /* Exhaustive-prefix filter: if a shorter prefix returned < PER_PAGE
+         results, its set is the complete result for the prefix — narrower
+         queries are strict subsets, so we can filter client-side AND skip
+         the API. E.g. "beton" returned 3 → "betonc" filters those 3. */
       var prefixHit = findExhaustivePrefix(q);
       if (prefixHit) {
-        activeQuery = q;
         cancelInflight();
-        var qLower = q.toLowerCase();
-        var filtered = prefixHit.filter(function (p) {
-          return (p.name || '').toLowerCase().indexOf(qLower) !== -1;
-        });
-        /* Cache the derived result so future exact lookups are instant */
+        var filtered = filterByQuery(prefixHit, q);
         cacheResult(q, filtered);
         renderResults(q, filtered);
         return;
       }
 
+      /* Cross-cache substring match: scan every product we've ever seen
+         and render any whose name contains the normalized query. Gives
+         instant feedback (no spinner) while we still fetch in the
+         background, because the pool may be incomplete. */
+      var poolMatches = filterPoolByQuery(q);
+      if (poolMatches.length) {
+        renderResults(q, poolMatches);
+      }
+
+      /* Always fetch — the pool may be missing matching products we've
+         never pulled. The stale guard inside fetchResults discards any
+         response that doesn't match the current activeQuery. */
       debounceTimer = setTimeout(function () { fetchResults(q); }, 300);
     });
   }
@@ -229,11 +255,41 @@
     return null;
   }
 
+  /* Filter a given product array by normalized substring match on name. */
+  function filterByQuery(products, query) {
+    var qNorm = normalize(query);
+    return products.filter(function (p) {
+      return normalize(p.name).indexOf(qNorm) !== -1;
+    });
+  }
+
+  /* Scan every product we've ever seen across any cached query and return
+     the ones matching the normalized query. Capped at PER_PAGE for layout
+     stability — same number of cards as a real fetch would render. */
+  function filterPoolByQuery(query) {
+    var qNorm = normalize(query);
+    var matches = [];
+    productPool.forEach(function (p) {
+      if (matches.length >= PER_PAGE) return;
+      if (normalize(p.name).indexOf(qNorm) !== -1) matches.push(p);
+    });
+    return matches;
+  }
+
+  /* Fold a product array into the dedup pool keyed by id. */
+  function addToPool(products) {
+    if (!products || !products.length) return;
+    products.forEach(function (p) {
+      if (p && p.id != null) productPool.set(p.id, p);
+    });
+  }
+
   function cacheResult(query, products) {
     if (searchCache.size >= CACHE_MAX) {
       searchCache.delete(searchCache.keys().next().value);
     }
     searchCache.set(query, products);
+    addToPool(products);
   }
 
   function cancelInflight() {
@@ -264,18 +320,21 @@
     /* Prefix superset: filter cached shorter-prefix results client-side */
     var prefixHit = findExhaustivePrefix(query);
     if (prefixHit) {
-      var qLower = query.toLowerCase();
-      var filtered = prefixHit.filter(function (p) {
-        return (p.name || '').toLowerCase().indexOf(qLower) !== -1;
-      });
+      var filtered = filterByQuery(prefixHit, query);
       cacheResult(query, filtered);
       renderResults(query, filtered);
       return;
     }
 
-    if (loadingSection) loadingSection.style.display = 'block';
-    if (resultsSection) resultsSection.style.display = 'none';
-    if (noResultsSection) noResultsSection.style.display = 'none';
+    /* If we already have something on-screen from a pool-match pre-render,
+       don't flash a spinner over it — just let the fetch settle in the
+       background. Only show the spinner when the grid is empty. */
+    var showSpinner = !resultsSection || resultsSection.style.display === 'none';
+    if (showSpinner) {
+      if (loadingSection) loadingSection.style.display = 'block';
+      if (resultsSection) resultsSection.style.display = 'none';
+      if (noResultsSection) noResultsSection.style.display = 'none';
+    }
 
     var controller = new AbortController();
     activeAbort = controller;
@@ -289,9 +348,22 @@
         /* Stale guard: if user typed something newer, discard this response */
         if (query !== activeQuery) return;
 
-        cacheResult(query, products || []);
+        var list = products || [];
+        cacheResult(query, list);
 
-        renderResults(query, products || []);
+        /* If the server returned nothing but we've already rendered pool
+           matches on screen, don't wipe them out with "geen resultaten".
+           The pool matches came from products the API previously returned
+           for other queries, so they're still legitimately in catalogue. */
+        if (!list.length) {
+          var fallback = filterPoolByQuery(query);
+          if (fallback.length) {
+            renderResults(query, fallback);
+            return;
+          }
+        }
+
+        renderResults(query, list);
       })
       .catch(function (err) {
         /* AbortError is expected when we cancel — not an actual failure */

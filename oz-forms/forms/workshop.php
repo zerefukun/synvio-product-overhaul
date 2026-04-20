@@ -29,8 +29,8 @@ return array(
 			'fields' => array( 'voornaam', 'achternaam', 'email', 'telefoon' ),
 		),
 		array(
-			'title'  => 'Project & locatie',
-			'fields' => array( 'datum', 'adres', 'object', 'ondergrond', 'informatie' ),
+			'title'  => 'Project',
+			'fields' => array( 'productlijn', 'datum', 'object', 'ondergrond', 'informatie' ),
 		),
 	),
 
@@ -39,15 +39,25 @@ return array(
 		'achternaam' => array( 'label' => 'Achternaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw achternaam' ),
 		'email'      => array( 'label' => 'E-mailadres', 'type' => 'email', 'required' => true, 'maxlength' => 150, 'placeholder' => 'Uw e-mailadres' ),
 		'telefoon'   => array( 'label' => 'Telefoonnummer', 'type' => 'tel', 'required' => false, 'maxlength' => 30, 'placeholder' => 'Uw telefoonnummer' ),
+		'productlijn' => array(
+			'label'       => 'Voor welke productlijn wil je de workshop?',
+			'type'        => 'select',
+			'required'    => true,
+			'placeholder' => 'Kies een productlijn…',
+			'options'     => array(
+				'original'        => 'Original',
+				'microcement'     => 'Microcement',
+				'all-in-one'      => 'All-in-One',
+				'easyline'        => 'Easyline',
+				'metallic-velvet' => 'Metallic Velvet',
+				'lavasteen'       => 'Lavasteen',
+				'niet-zeker'      => 'Nog niet zeker / advies gewenst',
+			),
+		),
 		'datum' => array(
 			'label'    => 'Wanneer moet de workshop plaatsvinden?',
 			'type'     => 'text', 'required' => true, 'maxlength' => 200,
 			'placeholder' => 'Bijv. binnen 4 weken, in juli…',
-		),
-		'adres' => array(
-			'label'    => 'Adres van de locatie',
-			'type'     => 'textarea', 'required' => true, 'rows' => 3, 'maxlength' => 500,
-			'placeholder' => 'Straat + huisnummer, postcode, plaats',
 		),
 		'object' => array(
 			'label'    => 'Wat is het object / hoeveel m²?',
