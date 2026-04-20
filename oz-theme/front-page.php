@@ -16,6 +16,31 @@ do_action( 'oz_before_content' );
 $up = home_url( '/wp-content/uploads' );
 ?>
 
+<?php /* DIAGNOSTIC: kill ALL animations + transitions to isolate NO_LCP cause.
+       Mirrors prefers-reduced-motion behaviour but forced on, homepage-only.
+       Remove after diagnosis. */ ?>
+<style id="oz-no-lcp-diagnostic">
+.oz-hp *,
+.oz-hp *::before,
+.oz-hp *::after {
+	animation-duration: 0s !important;
+	animation-delay: 0s !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0s !important;
+	transition-delay: 0s !important;
+}
+.oz-hp [data-reveal],
+.oz-hp [data-reveal-stagger] > *,
+.oz-hp [data-reveal-img],
+.oz-hp [data-reveal-img] img {
+	opacity: 1 !important;
+	transform: none !important;
+	clip-path: none !important;
+}
+.oz-hp [data-reveal-img] { overflow: visible !important; }
+.oz-hp-trust-track { animation: none !important; }
+</style>
+
 <div id="content" class="oz-hp" role="main">
 
 <?php /* S01 — Glass nav removed. Sitewide oz-header in header.php replaces it. */ ?>
