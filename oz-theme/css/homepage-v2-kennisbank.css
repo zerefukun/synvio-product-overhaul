@@ -12,10 +12,9 @@
 .oz-hp-kb-carousel {
   display: flex;
   gap: 20px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+  /* Scroll props (overflow-x, scroll-snap-type, scroll-behavior,
+     -webkit-overflow-scrolling) moved to homepage-v2-kennisbank-scroll.css
+     for NO_LCP bisection. */
   padding: 0 var(--gap) 16px;
   max-width: calc(var(--max-w) + var(--gap) * 2);
   margin: 0 auto;
@@ -72,7 +71,7 @@
 
 .oz-hp-kb-card {
   flex: 0 0 300px;
-  scroll-snap-align: start;
+  /* scroll-snap-align moved to homepage-v2-kennisbank-scroll.css */
   display: flex;
   flex-direction: column;
   background: var(--white);

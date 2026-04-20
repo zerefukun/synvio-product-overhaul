@@ -1,0 +1,15 @@
+/* ================================================================
+   HOMEPAGE V2 — KENNISBANK SCROLL MECHANICS
+   Sub-bisection of kennisbank. Toggle ?nocss=oz-homepage-v2-kennisbank-scroll.
+   If GREEN when dequeued -> one of these three props is the NO_LCP offender.
+   ================================================================ */
+.oz-hp-kb-carousel {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.oz-hp-kb-card {
+  scroll-snap-align: start;
+}

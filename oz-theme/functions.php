@@ -582,6 +582,13 @@ function oz_homepage_v2_enqueue() {
     );
 
     wp_enqueue_style(
+        'oz-homepage-v2-kennisbank-scroll',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-kennisbank-scroll.css',
+        ['oz-homepage-v2-kennisbank'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-kennisbank-scroll.css')
+    );
+
+    wp_enqueue_style(
         'oz-homepage-v2-faq',
         get_stylesheet_directory_uri() . '/css/homepage-v2-faq.css',
         ['oz-homepage-v2-bottom'],
@@ -663,6 +670,13 @@ function oz_ruimte_enqueue() {
         get_stylesheet_directory_uri() . '/css/homepage-v2-kennisbank.css',
         ['oz-homepage-v2-bottom'],
         filemtime(get_stylesheet_directory() . '/css/homepage-v2-kennisbank.css')
+    );
+
+    wp_enqueue_style(
+        'oz-homepage-v2-kennisbank-scroll',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-kennisbank-scroll.css',
+        ['oz-homepage-v2-kennisbank'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-kennisbank-scroll.css')
     );
 
     wp_enqueue_style(
