@@ -332,3 +332,150 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   TRUSTINDEX WIDGET OVERRIDES
+   Scoped to .oz-reviews-widget (the /reviews/ page wrapper) so
+   we only restyle our own embed, never the plugin elsewhere.
+   Goal: match the .oz-hp-review card style used on homepage +
+   ruimte pages so the aggregator page feels native.
+   ============================================================ */
+.oz-reviews-widget { padding: 24px 0 48px; }
+
+.oz-reviews-widget .ti-widget.ti-goog {
+  font-family: var(--oz-ff-body) !important;
+  color: var(--oz-text-body) !important;
+  padding: 0 !important;
+}
+
+.oz-reviews-widget .ti-widget.ti-goog .ti-header,
+.oz-reviews-widget .ti-widget.ti-goog > .ti-footer {
+  display: none !important;
+}
+
+.oz-reviews-widget .ti-widget-container.ti-col-3 {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 20px !important;
+  max-width: var(--oz-max-w);
+  margin: 0 auto !important;
+  padding: 0 var(--oz-gap) !important;
+}
+
+.oz-reviews-widget .ti-widget .ti-review-item {
+  background: var(--oz-bg-warm) !important;
+  border-radius: 8px !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.oz-reviews-widget .ti-widget .ti-review-item .ti-inner {
+  background: transparent !important;
+  padding: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+.oz-reviews-widget .ti-review-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 0 !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(19, 83, 80, 0.12) !important;
+  order: 3;
+}
+
+.oz-reviews-widget .ti-profile-img img {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+}
+
+.oz-reviews-widget .ti-profile-details { gap: 1px !important; }
+
+.oz-reviews-widget .ti-name {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--oz-text-primary) !important;
+}
+
+.oz-reviews-widget .ti-date {
+  font-size: 11px !important;
+  color: var(--oz-text-muted) !important;
+}
+
+.oz-reviews-widget .ti-stars {
+  order: 1;
+  display: inline-flex !important;
+  gap: 1px !important;
+}
+
+.oz-reviews-widget .ti-star svg { width: 18px !important; height: 18px !important; }
+
+.oz-reviews-widget .ti-star svg path,
+.oz-reviews-widget .ti-star.full-star svg path {
+  fill: var(--oz-accent) !important;
+}
+
+.oz-reviews-widget .ti-review-content,
+.oz-reviews-widget .ti-review-text-container {
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+  color: var(--oz-text-body) !important;
+  order: 2;
+  margin: 0 !important;
+}
+
+.oz-reviews-widget .ti-read-more {
+  color: var(--oz-accent) !important;
+  font-weight: 600 !important;
+}
+
+.oz-reviews-widget .ti-rating-text { display: none !important; }
+
+.oz-reviews-widget .ti-platform-icon { opacity: 0.55; }
+
+.oz-reviews-widget .ti-controls-line {
+  margin-top: 32px !important;
+  justify-content: center !important;
+}
+
+.oz-reviews-widget .ti-prev,
+.oz-reviews-widget .ti-next {
+  background: var(--oz-accent) !important;
+  color: #fff !important;
+  border: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+}
+
+.oz-reviews-widget .ti-prev:hover,
+.oz-reviews-widget .ti-next:hover {
+  background: var(--oz-text-primary) !important;
+}
+
+.oz-reviews-widget .ti-widget .ti-footer-text,
+.oz-reviews-widget .ti-widget .ti-rating-box { display: none !important; }
+
+@media (max-width: 1024px) {
+  .oz-reviews-widget .ti-widget-container.ti-col-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .oz-reviews-widget .ti-widget-container.ti-col-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.oz-reviews-intro {
+  padding: 32px 0 24px;
+  text-align: center;
+}
