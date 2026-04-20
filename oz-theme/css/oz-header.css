@@ -1408,7 +1408,7 @@ body.oz-drawer-open {
   font-family: var(--oz-hdr-ff-heading);
   font-style: italic;
   font-size: 14px;
-  color: rgba(255,255,255,.35);
+  color: rgba(255,255,255,.75);
   margin: 0 0 16px;
 }
 
@@ -1432,7 +1432,7 @@ body.oz-drawer-open {
 
 .oz-footer__legal {
   font-size: 11px;
-  color: rgba(255,255,255,.2);
+  color: rgba(255,255,255,.7);
 }
 
 .oz-footer__heading {
@@ -1441,7 +1441,7 @@ body.oz-drawer-open {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(255,255,255,.35);
+  color: rgba(255,255,255,.75);
   margin: 0 0 16px;
 }
 
@@ -1483,11 +1483,11 @@ body.oz-drawer-open {
 
 .oz-footer__hours th {
   padding-right: 12px;
-  color: rgba(255,255,255,.45);
+  color: rgba(255,255,255,.75);
 }
 
 .oz-footer__closed {
-  color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.7);
   font-style: italic;
 }
 
@@ -1557,7 +1557,7 @@ body.oz-drawer-open {
   padding: 20px 24px;
   text-align: center;
   font-size: 12px;
-  color: rgba(255,255,255,.25);
+  color: rgba(255,255,255,.7);
 }
 
 .oz-footer__bottom p {
@@ -1566,7 +1566,7 @@ body.oz-drawer-open {
 
 .oz-footer__bottom .oz-footer__co2 {
   margin: 0 0 6px;
-  color: rgba(255,255,255,.45);
+  color: rgba(255,255,255,.75);
   font-size: 11px;
   letter-spacing: .5px;
 }

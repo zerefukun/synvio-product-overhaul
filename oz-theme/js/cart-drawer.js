@@ -404,7 +404,7 @@
                 '<div class="oz-cart-item-row">' +
                     '<div class="oz-cart-qty">' +
                         '<button class="oz-cart-qty-btn dec' + (item.qty <= 1 ? ' bin' : '') + '" aria-label="' + (item.qty <= 1 ? 'Verwijderen' : 'Minder') + '">' + decContent + '</button>' +
-                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
+                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99" aria-label="Aantal">' +
                         '<button class="oz-cart-qty-btn inc" aria-label="Meer">\u002B</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +

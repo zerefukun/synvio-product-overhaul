@@ -32,7 +32,13 @@ $banner_line1 = get_theme_mod( 'oz_drawer_banner_line1', 'Beton Cire Webshop' );
 $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 ?>
 <!DOCTYPE html>
-<html <?php language_attributes(); ?> class="no-js">
+<?php
+$oz_lang_attrs = get_language_attributes();
+if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
+	$oz_lang_attrs = 'lang="nl-NL" ' . $oz_lang_attrs;
+}
+?>
+<html <?php echo $oz_lang_attrs; ?> class="no-js">
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">

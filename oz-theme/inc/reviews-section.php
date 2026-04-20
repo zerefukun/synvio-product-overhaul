@@ -85,7 +85,7 @@ function oz_render_reviews_section( $context = 'home' ) {
 				<span class="oz-hp-reviews-rating-label">van de 5</span>
 			</div>
 			<div class="oz-hp-reviews-meta">
-				<div class="oz-hp-reviews-stars-row" aria-label="4,8 van de 5 sterren">
+				<div class="oz-hp-reviews-stars-row" role="img" aria-label="4,8 van de 5 sterren">
 					<?php echo $render_stars( 5 ); ?>
 				</div>
 				<div class="oz-hp-reviews-count">Gebaseerd op <strong>200+</strong> Google reviews</div>
@@ -96,7 +96,7 @@ function oz_render_reviews_section( $context = 'home' ) {
 			<?php foreach ( $reviews as $r ) : ?>
 				<article class="oz-hp-review">
 					<header class="oz-hp-review-head">
-						<div class="oz-hp-review-stars" aria-label="<?php echo esc_attr( $r['stars'] ); ?> van de 5 sterren">
+						<div class="oz-hp-review-stars" role="img" aria-label="<?php echo esc_attr( $r['stars'] ); ?> van de 5 sterren">
 							<?php echo $render_stars( $r['stars'] ); ?>
 						</div>
 						<span class="oz-hp-review-date"><?php echo esc_html( $r['date'] ); ?></span>
