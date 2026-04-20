@@ -10,15 +10,19 @@
  * @package OzTheme
  */
 
+/* DIAGNOSTIC FLAG: suppresses visible <header> render in header.php.
+   Remove after NO_LCP diagnosis. */
+define( 'OZ_DIAG_HIDE_HEADER', true );
+
 get_header();
 do_action( 'oz_before_content' );
 
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<?php /* DIAGNOSTIC: kill ALL animations + transitions + hide header to
-       isolate NO_LCP cause. Mirrors prefers-reduced-motion behaviour
-       but forced on, homepage-only. Remove after diagnosis. */ ?>
+<?php /* DIAGNOSTIC: kill all animations + transitions on homepage.
+       Sections below are wrapped in if(false) so they never enter HTML —
+       actual PHP-level removal, not CSS hide. */ ?>
 <style id="oz-no-lcp-diagnostic">
 .oz-hp *,
 .oz-hp *::before,
@@ -38,35 +42,6 @@ $up = home_url( '/wp-content/uploads' );
 	clip-path: none !important;
 }
 .oz-hp [data-reveal-img] { overflow: visible !important; }
-.oz-hp-trust-track { animation: none !important; }
-
-/* Hide header/nav entirely for diagnostic test */
-.oz-header,
-#oz-menu-drawer,
-.oz-drawer-backdrop,
-#oz-search-modal,
-.oz-search-modal-backdrop {
-	display: none !important;
-}
-
-/* Hide FAQ (S25) + "Meer weten" read-more list (S14) for diagnostic test */
-#faq,
-.oz-hp-learn-list,
-.oz-hp-section:has(.oz-hp-learn-list) {
-	display: none !important;
-}
-
-/* Hide hero (S02) entirely for diagnostic test. Changes which element
-   Lighthouse picks as LCP candidate — if NO_LCP disappears without the
-   hero, the hero image/paint is the cause. */
-.oz-hp-hero {
-	display: none !important;
-}
-
-/* Hide product lines collection (S04) for diagnostic test */
-.oz-hp-section:has(.oz-hp-products-3col) {
-	display: none !important;
-}
 </style>
 
 <div id="content" class="oz-hp" role="main">
@@ -74,8 +49,9 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* S01 — Glass nav removed. Sitewide oz-header in header.php replaces it. */ ?>
 
 <?php /* ================================================================
-       S02 — HERO
+       S02 — HERO — DIAGNOSTIC: removed from PHP output (not CSS-hidden)
        ================================================================ */ ?>
+<?php if ( false ) : ?>
 <section class="oz-hp-hero">
 	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-768x512.avif" ); ?>" alt="" width="768" height="512" loading="eager" fetchpriority="high" decoding="async" data-no-lazy="1">
 	<div class="oz-hp-hero-inner">
@@ -96,6 +72,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <?php /* ================================================================
        S03 — TRUST BAR — TEMPORARILY DISABLED FOR NO_LCP DIAGNOSIS
@@ -127,8 +104,9 @@ $up = home_url( '/wp-content/uploads' );
 */ ?>
 
 <?php /* ================================================================
-       S04 — PRODUCT LINES (3-col grid)
+       S04 — PRODUCT LINES (3-col grid) — DIAGNOSTIC: removed from output
        ================================================================ */ ?>
+<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Collectie</div>
@@ -192,6 +170,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 	</div>
 </section>
+<?php endif; /* end S04 diagnostic wrap */ ?>
 
 <?php /* ================================================================
        S05 — RUIMTES MOZAIEK
@@ -417,8 +396,9 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 <?php /* ================================================================
-       S14 — MEER WETEN (alternating image/text rows with "Lees meer")
+       S14 — MEER WETEN (alternating image/text rows) — DIAGNOSTIC: removed
        ================================================================ */ ?>
+<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Achtergrond</div>
@@ -516,6 +496,7 @@ $up = home_url( '/wp-content/uploads' );
 
 	</div>
 </section>
+<?php endif; /* end S14 diagnostic wrap */ ?>
 
 
 <?php /* ================================================================
@@ -590,8 +571,9 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 <?php /* ================================================================
-       S25 — FAQ
+       S25 — FAQ — DIAGNOSTIC: removed from PHP output
        ================================================================ */ ?>
+<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" id="faq" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">FAQ</div>
@@ -678,6 +660,7 @@ $up = home_url( '/wp-content/uploads' );
 
 	</div>
 </section>
+<?php endif; /* end S25 diagnostic wrap */ ?>
 
 </div>
 

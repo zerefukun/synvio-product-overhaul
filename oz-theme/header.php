@@ -45,6 +45,11 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 
 <div id="wrapper">
 
+<?php /* DIAGNOSTIC: front-page.php defines OZ_DIAG_HIDE_HEADER to skip
+       the header + drawers entirely from PHP output during NO_LCP
+       investigation. Remove both the define() and this wrapper after. */ ?>
+<?php if ( ! defined( 'OZ_DIAG_HIDE_HEADER' ) ) : ?>
+
 <?php /* ================================================================
        HEADER BAR
        Desktop (1024px+): logo left | nav center (mega menus) | icons right
@@ -352,5 +357,7 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 		</div>
 	</div>
 </div>
+
+<?php endif; /* end OZ_DIAG_HIDE_HEADER diagnostic wrap */ ?>
 
 <main id="main">
