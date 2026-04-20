@@ -55,6 +55,13 @@ $up = home_url( '/wp-content/uploads' );
 .oz-hp-section:has(.oz-hp-learn-list) {
 	display: none !important;
 }
+
+/* Hide hero (S02) entirely for diagnostic test. Changes which element
+   Lighthouse picks as LCP candidate — if NO_LCP disappears without the
+   hero, the hero image/paint is the cause. */
+.oz-hp-hero {
+	display: none !important;
+}
 </style>
 
 <div id="content" class="oz-hp" role="main">
