@@ -14,6 +14,12 @@
    Remove after NO_LCP diagnosis. */
 define( 'OZ_DIAG_HIDE_HEADER', true );
 
+/* DIAGNOSTIC: buffer entire output, strip every <img> tag (and srcset/
+   data: image background-images) before send. Browser never fetches
+   any image. Catches logo, footer images, and any section we haven't
+   wrapped in if(false). Remove this ob_start + closing flush after. */
+ob_start();
+
 get_header();
 do_action( 'oz_before_content' );
 
@@ -669,3 +675,10 @@ $up = home_url( '/wp-content/uploads' );
 <?php
 do_action( 'oz_after_content' );
 get_footer();
+
+/* DIAGNOSTIC: strip <img> tags from buffered output before flushing.
+   Also neutralises <picture>/<source> tags that reference images. */
+$html = ob_get_clean();
+$html = preg_replace( '#<img\b[^>]*>#i', '<!-- img removed for diagnostic -->', $html );
+$html = preg_replace( '#<source\b[^>]*>#i', '', $html );
+echo $html;
