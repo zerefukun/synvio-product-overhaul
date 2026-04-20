@@ -563,6 +563,16 @@ function oz_homepage_v2_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/homepage-v2-suspects.css')
     );
 
+    /* Bottom half of homepage-v2.css (S11-S25 + responsive) split out
+       for bisection: ?nocss=oz-homepage-v2-bottom tests the top half
+       alone (S01-S09 + base). */
+    wp_enqueue_style(
+        'oz-homepage-v2-bottom',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-bottom.css',
+        ['oz-homepage-v2'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-bottom.css')
+    );
+
     wp_enqueue_script(
         'oz-homepage-v2',
         get_stylesheet_directory_uri() . '/js/homepage-v2.js',
@@ -617,6 +627,13 @@ function oz_ruimte_enqueue() {
         get_stylesheet_directory_uri() . '/css/homepage-v2-animations.css',
         ['oz-homepage-v2'],
         filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
+    );
+
+    wp_enqueue_style(
+        'oz-homepage-v2-bottom',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-bottom.css',
+        ['oz-homepage-v2'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-bottom.css')
     );
 }
 add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
