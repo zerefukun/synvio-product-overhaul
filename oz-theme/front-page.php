@@ -16,9 +16,9 @@ do_action( 'oz_before_content' );
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<?php /* DIAGNOSTIC: kill ALL animations + transitions to isolate NO_LCP cause.
-       Mirrors prefers-reduced-motion behaviour but forced on, homepage-only.
-       Remove after diagnosis. */ ?>
+<?php /* DIAGNOSTIC: kill ALL animations + transitions + hide header to
+       isolate NO_LCP cause. Mirrors prefers-reduced-motion behaviour
+       but forced on, homepage-only. Remove after diagnosis. */ ?>
 <style id="oz-no-lcp-diagnostic">
 .oz-hp *,
 .oz-hp *::before,
@@ -39,6 +39,15 @@ $up = home_url( '/wp-content/uploads' );
 }
 .oz-hp [data-reveal-img] { overflow: visible !important; }
 .oz-hp-trust-track { animation: none !important; }
+
+/* Hide header/nav entirely for diagnostic test */
+.oz-header,
+#oz-menu-drawer,
+.oz-drawer-backdrop,
+#oz-search-modal,
+.oz-search-modal-backdrop {
+	display: none !important;
+}
 </style>
 
 <div id="content" class="oz-hp" role="main">
