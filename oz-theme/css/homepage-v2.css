@@ -152,18 +152,23 @@
   background: var(--charcoal);
 }
 
-/* Darken the hero img directly via filter (no overlay layer).
-   A ::after overlay can compete with the <img> for "largest paint" in
-   Chrome's LCP algorithm — pseudo-elements are not contentful, so the
-   algorithm can reject both and produce NO_LCP. Filter keeps the paint
-   as a single contentful <img> while still dimming it. */
+/* Darken overlay above the hero img. Z-index 1 keeps it below the
+   content layer (z-index 2) but above the img. */
+.oz-hp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .oz-hp-hero-bg {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100% !important; /* beats .oz-hp img { height: auto } and Flatsome img reset */
+  height: 100% !important;
   object-fit: cover;
-  filter: brightness(.55);
 }
 
 .oz-hp-hero-inner {
@@ -1822,25 +1827,31 @@
   /* Hero doesn't need reveal — it's always visible on load */
 }
 
-/* All non-hero sections: slide up on reveal.
-   Opacity fade intentionally omitted — Chromium bug lighthouse#10869
-   produces NO_LCP on PSI when any element animates opacity 0 -> 1. */
+/* All non-hero sections: fade + slide up on reveal.
+   Start opacity at 0.0001 (not 0) to avoid the Chromium NO_LCP bug —
+   see oz-animations.css for the full explanation. */
 .oz-hp [data-reveal] {
+  opacity: 0.0001;
   transform: translateY(32px);
-  transition: transform .7s cubic-bezier(.4,0,.2,1);
+  transition: opacity .7s cubic-bezier(.4,0,.2,1),
+              transform .7s cubic-bezier(.4,0,.2,1);
 }
 
 .oz-hp [data-reveal].is-visible {
+  opacity: 1;
   transform: translateY(0);
 }
 
 /* Staggered children: product cards, step items, ruimtes cards */
 .oz-hp [data-reveal-stagger] > * {
+  opacity: 0.0001;
   transform: translateY(24px);
-  transition: transform .5s cubic-bezier(.4,0,.2,1);
+  transition: opacity .5s cubic-bezier(.4,0,.2,1),
+              transform .5s cubic-bezier(.4,0,.2,1);
 }
 
 .oz-hp [data-reveal-stagger].is-visible > * {
+  opacity: 1;
   transform: translateY(0);
 }
 

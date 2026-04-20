@@ -9,29 +9,35 @@
      [data-reveal-img]     — clip-path + scale reveal (images)
    ================================================================ */
 
-/* ── Slide up ──
-   NOTE: we intentionally do NOT animate opacity 0 -> 1 here.
-   Chromium bug (lighthouse#10869) keeps LCP measurement open while
-   any element is animating opacity into view, producing a NO_LCP
-   error in PageSpeed Insights even though the page actually renders
-   fine. See docs/SEO-staging-vs-prod-parity-2026-04-20.md for context.
-   Transform-only slide-up gives the same visual rhythm without the bug. */
+/* ── Fade + slide up ──
+   NOTE: start opacity at 0.0001 instead of 0 to avoid the documented
+   Chromium LCP bug (lighthouse#10869 / renaissance-design article).
+   Fully invisible elements (opacity:0) cause Chrome's LCP scanner to
+   ignore the page and emit NO_LCP. A tiny non-zero value is
+   imperceptible to users but keeps the element visible to the LCP
+   scanner, preventing the bug while preserving the fade-in look. */
 [data-reveal] {
+  opacity: 0.0001;
   transform: translateY(28px);
-  transition: transform .7s cubic-bezier(.16, 1, .3, 1);
+  transition: opacity .7s cubic-bezier(.16, 1, .3, 1),
+              transform .7s cubic-bezier(.16, 1, .3, 1);
 }
 
 [data-reveal].oz-visible {
+  opacity: 1;
   transform: translateY(0);
 }
 
 /* ── Staggered children ── */
 [data-reveal-stagger] > * {
+  opacity: 0.0001;
   transform: translateY(20px);
-  transition: transform .5s cubic-bezier(.16, 1, .3, 1);
+  transition: opacity .5s cubic-bezier(.16, 1, .3, 1),
+              transform .5s cubic-bezier(.16, 1, .3, 1);
 }
 
 [data-reveal-stagger].oz-visible > * {
+  opacity: 1;
   transform: translateY(0);
 }
 
