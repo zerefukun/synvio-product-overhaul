@@ -440,3 +440,126 @@
 .oz-kleur-swatch.is-selected .oz-kleur-swatch__badge {
 	display: flex;
 }
+
+/* ───────────────────────── Multiselect (autocomplete) ───────────────────────── */
+.oz-form__multiselect {
+	position: relative;
+}
+
+.oz-form__ms-ui {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 6px 8px;
+	border: 1px solid #d6d3ce;
+	border-radius: 6px;
+	background: #fff;
+	min-height: 42px;
+	align-items: center;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.oz-form__ms-ui:focus-within {
+	border-color: var(--oz-color-teal, #135350);
+	box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.15);
+}
+
+.oz-form__ms-chips {
+	display: contents;
+}
+
+.oz-form__ms-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 4px 4px 10px;
+	background: rgba(19, 83, 80, 0.08);
+	color: var(--oz-color-teal, #135350);
+	border-radius: 999px;
+	font-size: 13px;
+	line-height: 1.2;
+}
+
+.oz-form__ms-chip-x {
+	all: unset;
+	cursor: pointer;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+	color: var(--oz-color-teal, #135350);
+	opacity: 0.7;
+	transition: background 120ms ease, opacity 120ms ease;
+}
+
+.oz-form__ms-chip-x:hover,
+.oz-form__ms-chip-x:focus-visible {
+	background: rgba(19, 83, 80, 0.18);
+	opacity: 1;
+}
+
+.oz-form__ms-search {
+	flex: 1;
+	min-width: 140px;
+	border: 0;
+	outline: none;
+	padding: 4px 6px;
+	font: inherit;
+	font-size: 14px;
+	background: transparent;
+	color: inherit;
+}
+
+.oz-form__ms-suggest {
+	position: absolute;
+	top: calc(100% + 4px);
+	left: 0;
+	right: 0;
+	max-height: 240px;
+	overflow-y: auto;
+	margin: 0;
+	padding: 4px 0;
+	list-style: none;
+	background: #fff;
+	border: 1px solid #d6d3ce;
+	border-radius: 6px;
+	box-shadow: 0 4px 18px rgba(20, 30, 40, 0.08);
+	z-index: 20;
+}
+
+.oz-form__ms-suggest-item {
+	padding: 8px 12px;
+	font-size: 14px;
+	cursor: pointer;
+	color: var(--oz-color-text, #333);
+}
+
+.oz-form__ms-suggest-item.is-active,
+.oz-form__ms-suggest-item:hover {
+	background: rgba(19, 83, 80, 0.08);
+	color: var(--oz-color-teal, #135350);
+}
+
+/* ───────────────────────── File input ───────────────────────── */
+.oz-form__field--file .oz-form__file-input {
+	display: block;
+	width: 100%;
+	padding: 8px 10px;
+	border: 1px dashed #d6d3ce;
+	border-radius: 6px;
+	background: #fafaf8;
+	font: inherit;
+	font-size: 13px;
+	color: inherit;
+}
+
+.oz-form__field--file .oz-form__file-input:focus {
+	outline: none;
+	border-color: var(--oz-color-teal, #135350);
+	border-style: solid;
+	box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.15);
+}

@@ -253,16 +253,17 @@
 		var fd = new FormData( form );
 		fd.append( 'form_id', form.getAttribute( 'data-form-id' ) || '' );
 
-		var payload = {};
-		fd.forEach( function ( v, k ) { payload[ k ] = v; } );
-
 		track( form, 'oz_form_submit_attempt', {} );
 
+		// Post as multipart FormData so that file inputs and multi-value
+		// fields (e.g. producten[]) reach WP without serialization loss.
+		// WP's REST layer merges $_POST and $_FILES into $req, matching our
+		// PHP handler's expectations.
 		fetch( CFG.rest, {
 			method: 'POST',
 			credentials: 'same-origin',
-			headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': CFG.nonce || '' },
-			body: JSON.stringify( payload )
+			headers: { 'X-WP-Nonce': CFG.nonce || '' },
+			body: fd
 		} )
 			.then( function ( res ) { return res.json().then( function ( body ) { return { status: res.status, body: body }; } ); } )
 			.then( function ( r ) {
@@ -400,6 +401,151 @@
 		refresh();
 	}
 
+	/* Autocomplete multi-select: replaces the native <select multiple> with
+	   a search box + chip list. Markup convention:
+	     .oz-form__multiselect[data-name][data-options]
+	       > select.oz-form__multiselect-native (hidden, mirrored state)
+	   All state lives on the native <select>, so server-side code always
+	   reads from the standard form submission (name="foo[]"). */
+	function setupMultiselects( form ) {
+		var containers = form.querySelectorAll( '.oz-form__multiselect' );
+		containers.forEach( function ( box ) {
+			var name   = box.getAttribute( 'data-name' ) || '';
+			var ph     = box.getAttribute( 'data-placeholder' ) || 'Typ om te zoeken…';
+			var native = box.querySelector( '.oz-form__multiselect-native' );
+			if ( ! native ) { return; }
+
+			var options;
+			try { options = JSON.parse( box.getAttribute( 'data-options' ) || '{}' ); }
+			catch ( e ) { options = {}; }
+
+			native.setAttribute( 'hidden', 'hidden' );
+			native.setAttribute( 'aria-hidden', 'true' );
+			native.tabIndex = -1;
+
+			var ui = document.createElement( 'div' );
+			ui.className = 'oz-form__ms-ui';
+			ui.innerHTML =
+				'<div class="oz-form__ms-chips" role="list"></div>' +
+				'<input type="text" class="oz-form__ms-search" placeholder="' + ph.replace( /"/g, '&quot;' ) + '" autocomplete="off" aria-autocomplete="list">' +
+				'<ul class="oz-form__ms-suggest" role="listbox" hidden></ul>';
+			box.appendChild( ui );
+
+			var chipsEl   = ui.querySelector( '.oz-form__ms-chips' );
+			var searchEl  = ui.querySelector( '.oz-form__ms-search' );
+			var suggestEl = ui.querySelector( '.oz-form__ms-suggest' );
+
+			function selectedValues() {
+				return Array.prototype.slice.call( native.options )
+					.filter( function ( o ) { return o.selected; } )
+					.map( function ( o ) { return o.value; } );
+			}
+
+			function setSelected( value, on ) {
+				var opt = Array.prototype.slice.call( native.options )
+					.filter( function ( o ) { return o.value === value; } )[ 0 ];
+				if ( ! opt ) { return; }
+				opt.selected = !! on;
+				native.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				render();
+			}
+
+			function render() {
+				var selected = selectedValues();
+				chipsEl.innerHTML = '';
+				selected.forEach( function ( v ) {
+					var chip = document.createElement( 'span' );
+					chip.className = 'oz-form__ms-chip';
+					chip.setAttribute( 'role', 'listitem' );
+					chip.innerHTML = '<span>' + ( options[ v ] || v ) + '</span>' +
+						'<button type="button" class="oz-form__ms-chip-x" aria-label="Verwijder ' + ( options[ v ] || v ) + '">&times;</button>';
+					chip.querySelector( '.oz-form__ms-chip-x' ).addEventListener( 'click', function () {
+						setSelected( v, false );
+						searchEl.focus();
+					} );
+					chipsEl.appendChild( chip );
+				} );
+				box.classList.toggle( 'has-selection', selected.length > 0 );
+			}
+
+			function filterSuggestions( q ) {
+				var selected = selectedValues();
+				q = ( q || '' ).toLowerCase().trim();
+				var matches = Object.keys( options ).filter( function ( v ) {
+					if ( selected.indexOf( v ) !== -1 ) { return false; }
+					if ( ! q ) { return true; }
+					return ( options[ v ] || '' ).toLowerCase().indexOf( q ) !== -1
+						|| v.toLowerCase().indexOf( q ) !== -1;
+				} );
+				suggestEl.innerHTML = '';
+				if ( ! matches.length ) {
+					suggestEl.hidden = true;
+					return;
+				}
+				matches.forEach( function ( v, i ) {
+					var li = document.createElement( 'li' );
+					li.className = 'oz-form__ms-suggest-item';
+					li.setAttribute( 'role', 'option' );
+					li.setAttribute( 'data-value', v );
+					if ( i === 0 ) { li.classList.add( 'is-active' ); }
+					li.textContent = options[ v ] || v;
+					li.addEventListener( 'mousedown', function ( ev ) {
+						ev.preventDefault(); // keep focus on search
+						setSelected( v, true );
+						searchEl.value = '';
+						filterSuggestions( '' );
+					} );
+					suggestEl.appendChild( li );
+				} );
+				suggestEl.hidden = false;
+			}
+
+			searchEl.addEventListener( 'focus', function () { filterSuggestions( searchEl.value ); } );
+			searchEl.addEventListener( 'input', function () { filterSuggestions( searchEl.value ); } );
+			searchEl.addEventListener( 'blur',  function () {
+				setTimeout( function () { suggestEl.hidden = true; }, 120 );
+			} );
+			searchEl.addEventListener( 'keydown', function ( ev ) {
+				var active = suggestEl.querySelector( '.is-active' );
+				if ( ev.key === 'ArrowDown' ) {
+					ev.preventDefault();
+					if ( suggestEl.hidden ) { filterSuggestions( searchEl.value ); return; }
+					var next = active && active.nextElementSibling;
+					if ( active ) { active.classList.remove( 'is-active' ); }
+					( next || suggestEl.firstElementChild ).classList.add( 'is-active' );
+				} else if ( ev.key === 'ArrowUp' ) {
+					ev.preventDefault();
+					var prev = active && active.previousElementSibling;
+					if ( active ) { active.classList.remove( 'is-active' ); }
+					( prev || suggestEl.lastElementChild ).classList.add( 'is-active' );
+				} else if ( ev.key === 'Enter' ) {
+					if ( ! suggestEl.hidden && active ) {
+						ev.preventDefault();
+						setSelected( active.getAttribute( 'data-value' ), true );
+						searchEl.value = '';
+						filterSuggestions( '' );
+					}
+				} else if ( ev.key === 'Backspace' && searchEl.value === '' ) {
+					var sel = selectedValues();
+					if ( sel.length ) {
+						ev.preventDefault();
+						setSelected( sel[ sel.length - 1 ], false );
+					}
+				} else if ( ev.key === 'Escape' ) {
+					suggestEl.hidden = true;
+				}
+			} );
+
+			box.addEventListener( 'click', function ( ev ) {
+				if ( ev.target === box || ev.target === chipsEl ) {
+					searchEl.focus();
+				}
+			} );
+
+			render();
+		} );
+	}
+
 	ready( function () {
 		var forms = document.querySelectorAll( 'form.oz-form' );
 		if ( ! forms.length ) { return; }
@@ -410,6 +556,7 @@
 			} else {
 				whenTurnstileReady( function () { renderTurnstile( form ); } );
 			}
+			setupMultiselects( form );
 			setupKleurPicker( form );
 			armStartTracking( form );
 			form.addEventListener( 'submit', function ( ev ) {

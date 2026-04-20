@@ -30,11 +30,11 @@ return array(
 		),
 		array(
 			'title'  => 'Het project',
-			'fields' => array( 'reden', 'object', 'ondergrond' ),
+			'fields' => array( 'reden', 'producten', 'object', 'ondergrond' ),
 		),
 		array(
-			'title'  => 'Wanneer & waar',
-			'fields' => array( 'datum', 'adres', 'informatie' ),
+			'title'  => 'Wanneer & extra',
+			'fields' => array( 'datum', 'foto', 'informatie' ),
 		),
 	),
 
@@ -52,6 +52,22 @@ return array(
 				'Materiaal & laten uitvoeren'   => 'Materiaal & laten uitvoeren',
 			),
 		),
+		'producten' => array(
+			'label'       => 'Welke producten heb je op het oog?',
+			'type'        => 'multiselect',
+			'required'    => true,
+			'placeholder' => 'Typ om te zoeken, bijv. "beton ciré"…',
+			'help'        => 'Kies één of meer productlijnen. Geen zorgen over kleuren — die bepalen we samen.',
+			'options'     => array(
+				'betonverf'                => 'Betonverf',
+				'microcement'              => 'Microcement',
+				'beton-cire-easyline'      => 'Beton ciré — Easyline',
+				'beton-cire-all-in-one'    => 'Beton ciré — All-in-One',
+				'beton-cire-original'      => 'Beton ciré — Original',
+				'metallic-velvet'          => 'Metallic Velvet',
+				'weet-ik-nog-niet'         => 'Weet ik nog niet — adviseer mij',
+			),
+		),
 		'object' => array(
 			'label'    => 'Wat is het object / hoeveel m²?',
 			'type'     => 'textarea', 'required' => true, 'rows' => 4, 'maxlength' => 1000,
@@ -67,10 +83,13 @@ return array(
 			'type'     => 'text', 'required' => true, 'maxlength' => 200,
 			'placeholder' => 'Bijv. binnen 4 weken, in juli, geen haast…',
 		),
-		'adres' => array(
-			'label'    => 'Adres en woonplaats van het project',
-			'type'     => 'textarea', 'required' => true, 'rows' => 3, 'maxlength' => 500,
-			'placeholder' => 'Straat + huisnummer, postcode, plaats',
+		'foto' => array(
+			'label'    => 'Foto van de ruimte (optioneel)',
+			'type'     => 'file',
+			'required' => false,
+			'accept'   => 'image/*',
+			'max_size' => 8 * 1024 * 1024,
+			'help'     => 'JPG, PNG of HEIC — helpt ons een betere inschatting te maken.',
 		),
 		'informatie' => array(
 			'label'    => 'Extra informatie',

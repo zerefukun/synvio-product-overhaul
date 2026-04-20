@@ -14,11 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Mailer {
 
-	public static function send( array $schema, array $data ) : void {
+	public static function send( array $schema, array $data, array $attachments = array() ) : void {
 		add_filter( 'wp_mail_content_type', array( __CLASS__, 'html_content_type' ) );
 
 		try {
-			self::send_notification( $schema, $data );
+			self::send_notification( $schema, $data, $attachments );
 			self::send_autoreply( $schema, $data );
 		} finally {
 			remove_filter( 'wp_mail_content_type', array( __CLASS__, 'html_content_type' ) );
@@ -29,7 +29,7 @@ class Mailer {
 		return 'text/html';
 	}
 
-	private static function send_notification( array $schema, array $data ) : void {
+	private static function send_notification( array $schema, array $data, array $attachments = array() ) : void {
 		$to = $schema['notify_to'] ?? get_option( 'admin_email' );
 		$subject = self::resolve( $schema['subject'] ?? ( $schema['title'] ?? 'New submission' ), $data );
 		$body = self::wrap_html(
@@ -43,7 +43,7 @@ class Mailer {
 			$headers[] = 'Reply-To: ' . self::format_address( $data['email'], $name );
 		}
 
-		wp_mail( $to, $subject, $body, $headers );
+		wp_mail( $to, $subject, $body, $headers, $attachments );
 	}
 
 	private static function send_autoreply( array $schema, array $data ) : void {

@@ -72,8 +72,42 @@ class REST {
 			);
 		}
 
-		// 4. Schema validate + sanitize.
+		// 4a. Handle any file uploads — process via wp_handle_upload and
+		// inject the resulting URL into $params so the schema validator sees
+		// a plain string value for the field.
+		$files = $req->get_file_params();
+		$upload_errors = array();
+		$attachments = array();
+		if ( ! empty( $files ) && is_array( $files ) ) {
+			foreach ( $schema['fields'] as $fname => $fspec ) {
+				if ( ( $fspec['type'] ?? '' ) !== 'file' ) {
+					continue;
+				}
+				$file = $files[ $fname ] ?? null;
+				if ( ! $file || empty( $file['tmp_name'] ) || ! empty( $file['error'] ) ) {
+					continue;
+				}
+				$max = (int) ( $fspec['max_size'] ?? ( 5 * 1024 * 1024 ) );
+				if ( ! empty( $file['size'] ) && (int) $file['size'] > $max ) {
+					$upload_errors[ $fname ] = 'Bestand is te groot.';
+					continue;
+				}
+				$uploaded = self::handle_upload( $file );
+				if ( isset( $uploaded['error'] ) ) {
+					$upload_errors[ $fname ] = $uploaded['error'];
+					continue;
+				}
+				$params[ $fname ] = $uploaded['url'];
+				$attachments[]   = $uploaded['file'];
+			}
+		}
+
+		// 4b. Schema validate + sanitize.
 		$result = Form::validate( $schema, $params );
+		if ( ! empty( $upload_errors ) ) {
+			$result['ok']     = false;
+			$result['errors'] = array_merge( $result['errors'], $upload_errors );
+		}
 		if ( ! $result['ok'] ) {
 			return new \WP_REST_Response(
 				array(
@@ -91,7 +125,7 @@ class REST {
 
 		// 6. Email — failures here shouldn't fail the submission for the user.
 		try {
-			Mailer::send( $schema, $result['data'] );
+			Mailer::send( $schema, $result['data'], $attachments );
 		} catch ( \Throwable $e ) {
 			update_post_meta( $post_id, '_oz_mail_error', $e->getMessage() );
 		}
@@ -112,5 +146,37 @@ class REST {
 	private static function client_ip() : string {
 		$ip = $_SERVER['REMOTE_ADDR'] ?? '';
 		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+	}
+
+	/**
+	 * Move an uploaded file into wp-content/uploads via wp_handle_upload.
+	 * Whitelists common image types only — we don't need arbitrary uploads.
+	 *
+	 * @param array $file A single $_FILES entry.
+	 * @return array{error?: string, url?: string, file?: string}
+	 */
+	private static function handle_upload( array $file ) : array {
+		if ( ! function_exists( 'wp_handle_upload' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		$allowed = array(
+			'jpg|jpeg' => 'image/jpeg',
+			'png'      => 'image/png',
+			'webp'     => 'image/webp',
+			'heic'     => 'image/heic',
+			'gif'      => 'image/gif',
+		);
+		$overrides = array(
+			'test_form' => false,
+			'mimes'     => $allowed,
+		);
+		$res = wp_handle_upload( $file, $overrides );
+		if ( isset( $res['error'] ) ) {
+			return array( 'error' => (string) $res['error'] );
+		}
+		return array(
+			'url'  => (string) $res['url'],
+			'file' => (string) $res['file'],
+		);
 	}
 }

@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Field spec:
  *   array(
  *     'label'       => 'Naam',
- *     'type'        => 'text|email|tel|number|textarea|select|checkbox|radio',
+ *     'type'        => 'text|email|tel|number|textarea|select|checkbox|radio|multiselect|file',
  *     'required'    => true,
  *     'placeholder' => 'optional',
  *     'options'     => array('value' => 'label')   // for select/radio/checkbox-group
@@ -184,6 +184,24 @@ class Form {
 				}
 				$control = '<div class="oz-form__radios" role="radiogroup" aria-labelledby="' . esc_attr( $id ) . '-label">' . $radios . '</div>';
 				break;
+			case 'multiselect':
+				// Autocomplete multi-select. JS upgrades the markup into a chip picker;
+				// non-JS fallback is a native multi-select so the form still works.
+				$options    = $spec['options'] ?? array();
+				$placeholder = esc_attr( $spec['placeholder'] ?? 'Typ om te zoeken…' );
+				$opts_json  = wp_json_encode( $options );
+				$opts_html  = '';
+				foreach ( $options as $val => $opt_label ) {
+					$opts_html .= '<option value="' . esc_attr( $val ) . '">' . esc_html( $opt_label ) . '</option>';
+				}
+				$control  = '<div class="oz-form__multiselect" data-name="' . esc_attr( $name ) . '" data-options="' . esc_attr( $opts_json ) . '" data-placeholder="' . $placeholder . '">';
+				$control .= '<select multiple name="' . esc_attr( $name ) . '[]" id="' . esc_attr( $id ) . '"' . $req_attr . ' class="oz-form__multiselect-native">' . $opts_html . '</select>';
+				$control .= '</div>';
+				break;
+			case 'file':
+				$accept   = ! empty( $spec['accept'] ) ? ' accept="' . esc_attr( $spec['accept'] ) . '"' : '';
+				$control  = '<input type="file" id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '"' . $accept . $req_attr . ' class="oz-form__file-input">';
+				break;
 			default:
 				$input_type = in_array( $type, array( 'text', 'email', 'tel', 'number', 'url', 'date' ), true ) ? $type : 'text';
 				$control    = '<input type="' . esc_attr( $input_type ) . '"' . $common . '>';
@@ -210,6 +228,33 @@ class Form {
 
 			if ( is_string( $value ) ) {
 				$value = trim( $value );
+			}
+
+			// File type is handled separately by REST layer ($_FILES).
+			// The REST handler injects the uploaded URL into $raw[$name] before validation,
+			// so if present here it's a string URL; otherwise it's empty.
+			if ( $type === 'file' ) {
+				if ( $required && empty( $value ) ) {
+					$errors[ $name ] = 'Kies een bestand.';
+					continue;
+				}
+				$data[ $name ] = is_string( $value ) ? esc_url_raw( $value ) : '';
+				continue;
+			}
+
+			// Multiselect: value is an array of option keys.
+			if ( $type === 'multiselect' ) {
+				$arr = is_array( $value ) ? $value : array();
+				$allowed = array_keys( $spec['options'] ?? array() );
+				$arr = array_values( array_filter( array_map( 'sanitize_text_field', $arr ), function ( $v ) use ( $allowed ) {
+					return in_array( $v, $allowed, true );
+				} ) );
+				if ( $required && empty( $arr ) ) {
+					$errors[ $name ] = 'Maak minstens één keuze.';
+					continue;
+				}
+				$data[ $name ] = $arr;
+				continue;
 			}
 
 			// Required check.
