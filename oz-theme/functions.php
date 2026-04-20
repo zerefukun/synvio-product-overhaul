@@ -553,6 +553,16 @@ function oz_homepage_v2_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
     );
 
+    /* Three CSS properties correlated with NO_LCP (content-visibility,
+       backdrop-filter) extracted into their own handle so they can be
+       toggled via ?nocss=oz-homepage-v2-suspects. */
+    wp_enqueue_style(
+        'oz-homepage-v2-suspects',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-suspects.css',
+        ['oz-homepage-v2'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-suspects.css')
+    );
+
     wp_enqueue_script(
         'oz-homepage-v2',
         get_stylesheet_directory_uri() . '/js/homepage-v2.js',

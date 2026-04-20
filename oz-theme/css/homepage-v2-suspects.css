@@ -1,0 +1,39 @@
+/* ================================================================
+   HOMEPAGE V2 — NO_LCP SUSPECT PROPERTIES
+   Extracted from homepage-v2.css so they can be toggled via
+   ?nocss=oz-homepage-v2-suspects. These three CSS properties are
+   known Chromium compositing patterns that have been correlated
+   with NO_LCP in Lighthouse:
+
+     - content-visibility: auto   — defers rendering until onscreen;
+       can cause paint events outside Lighthouse's quiet window.
+     - backdrop-filter            — forces a composite layer and
+       post-processing blur pass that the LCP scanner may be waiting
+       on when it tries to settle.
+
+   If dequeueing this file flips PSI from NO_LCP to a real LCP,
+   we've isolated the cause.
+   ================================================================ */
+
+/* S03 — Trust bar content-visibility. Small element below the
+   fold; skip-rendering optimization costs are probably not worth
+   an LCP risk. */
+.oz-hp-trust {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 42px;
+}
+
+/* Hero glass card blur. Loaded from homepage, even if the hero
+   section is sometimes swapped out; included here so all three
+   backdrop-filter uses can be toggled together. */
+.oz-hp-hero-glass {
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+}
+
+/* S14 — Learn row full variant with teal glass text panel over
+   background image. Also uses backdrop-filter. */
+.oz-hp-learn-row--full .oz-hp-learn-text {
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
