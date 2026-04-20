@@ -273,7 +273,8 @@ button.oz-menu-drawer__category-link {
    Transparent header with white text/icons over dark hero images.
    On scroll (is-stuck), reverts to frosted glass with dark text. */
 .oz-header--overlay:not(.is-stuck) {
-  background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 70%, transparent 100%);
+  background-color: rgba(0,0,0,.55);
+  background-image: linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.05) 70%, transparent 100%);
   border-bottom-color: transparent;
 }
 

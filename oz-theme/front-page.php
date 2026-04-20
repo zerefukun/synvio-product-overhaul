@@ -24,7 +24,7 @@ $up = home_url( '/wp-content/uploads' );
        S02 — HERO
        ================================================================ */ ?>
 <section class="oz-hp-hero">
-	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-768x512.avif" ); ?>" alt="" width="768" height="512" loading="eager" fetchpriority="high" decoding="async" data-no-lazy="1">
+	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-1024x683.avif" ); ?>" srcset="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-768x512.avif" ); ?> 768w, <?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-1024x683.avif" ); ?> 1024w, <?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.avif" ); ?> 1536w" sizes="100vw" alt="" width="1024" height="683" loading="eager" fetchpriority="high" decoding="async" data-no-lazy="1">
 	<div class="oz-hp-hero-inner">
 		<div class="oz-hp-hero-text">
 			<h1 class="oz-hp-hero-title">Een unieke stijl met Beton Ciré<span class="oz-hp-hero-title-tag">Dé trend voor vloeren en wanden</span></h1>

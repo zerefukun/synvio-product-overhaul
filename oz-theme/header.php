@@ -46,7 +46,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 	<?php wp_head(); ?>
 </head>
 
-<body <?php body_class(); ?>>
+<body <?php body_class( $has_hero ? 'oz-header-overlay-page' : '' ); ?>>
 <?php wp_body_open(); ?>
 
 <div id="wrapper">

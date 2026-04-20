@@ -119,7 +119,11 @@
 
   /* ── Sticky header: overlay → solid on scroll ── */
   if (header && header.classList.contains('oz-header--overlay')) {
-    document.body.classList.add('oz-header-overlay-page');
+    /* body class is now added server-side in header.php to prevent CLS.
+       Keeping this as a safety fallback for any edge case. */
+    if (!document.body.classList.contains('oz-header-overlay-page')) {
+      document.body.classList.add('oz-header-overlay-page');
+    }
     var threshold = 80;
     var ticking = false;
 
