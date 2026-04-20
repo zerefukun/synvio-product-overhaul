@@ -679,11 +679,14 @@ $up = home_url( '/wp-content/uploads' );
 do_action( 'oz_after_content' );
 get_footer();
 
-/* DIAGNOSTIC: strip <img>, <source>, and every theme-hosted <script>
-   tag from buffered output before flushing. Theme JS is matched by
-   path so WP core / WooCommerce / LiteSpeed scripts still load. */
+/* DIAGNOSTIC: strip <img>, <source>, theme <script>, theme <link>
+   (stylesheets + preload hints for fonts), and our diagnostic <style>
+   block from buffered output. WP core / WooCommerce / LiteSpeed
+   assets still load so the page doesn't completely fall apart. */
 $html = ob_get_clean();
 $html = preg_replace( '#<img\b[^>]*>#i', '<!-- img removed for diagnostic -->', $html );
 $html = preg_replace( '#<source\b[^>]*>#i', '', $html );
 $html = preg_replace( '#<script\b[^>]*\bsrc=["\'][^"\']*/themes/OzTheme/[^"\']*["\'][^>]*></script>#i', '<!-- theme js stripped -->', $html );
+$html = preg_replace( '#<link\b[^>]*\bhref=["\'][^"\']*/themes/OzTheme/[^"\']*["\'][^>]*/?>#i', '<!-- theme css/link stripped -->', $html );
+$html = preg_replace( '#<style\s+id=["\']oz-no-lcp-diag-reveal["\'][^>]*>.*?</style>#is', '<!-- diag style stripped -->', $html );
 echo $html;
