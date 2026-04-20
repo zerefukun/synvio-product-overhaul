@@ -1,6 +1,17 @@
 (function () {
   'use strict';
 
+  // Start marquee only after page load so Lighthouse can settle on an LCP.
+  function startMarquee() {
+    var tracks = document.querySelectorAll('.oz-hp-trust-track');
+    for (var i = 0; i < tracks.length; i++) tracks[i].classList.add('is-running');
+  }
+  if (document.readyState === 'complete') {
+    setTimeout(startMarquee, 500);
+  } else {
+    window.addEventListener('load', function () { setTimeout(startMarquee, 500); });
+  }
+
   var wraps = document.querySelectorAll('.oz-hp-kb-wrap');
   if (!wraps.length) return;
 

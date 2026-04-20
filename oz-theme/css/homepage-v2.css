@@ -296,6 +296,11 @@
 .oz-hp-trust-track {
   display: inline-flex;
   animation: oz-hp-marquee 30s linear infinite;
+  animation-play-state: paused;
+}
+
+.oz-hp-trust-track.is-running {
+  animation-play-state: running;
 }
 
 /* Pause the marquee when scrolled out of view and when the user prefers
