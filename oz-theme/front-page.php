@@ -679,9 +679,11 @@ $up = home_url( '/wp-content/uploads' );
 do_action( 'oz_after_content' );
 get_footer();
 
-/* DIAGNOSTIC: strip <img> tags from buffered output before flushing.
-   Also neutralises <picture>/<source> tags that reference images. */
+/* DIAGNOSTIC: strip <img>, <source>, and every theme-hosted <script>
+   tag from buffered output before flushing. Theme JS is matched by
+   path so WP core / WooCommerce / LiteSpeed scripts still load. */
 $html = ob_get_clean();
 $html = preg_replace( '#<img\b[^>]*>#i', '<!-- img removed for diagnostic -->', $html );
 $html = preg_replace( '#<source\b[^>]*>#i', '', $html );
+$html = preg_replace( '#<script\b[^>]*\bsrc=["\'][^"\']*/themes/OzTheme/[^"\']*["\'][^>]*></script>#i', '<!-- theme js stripped -->', $html );
 echo $html;
