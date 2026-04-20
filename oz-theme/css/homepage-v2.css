@@ -1822,29 +1822,25 @@
   /* Hero doesn't need reveal — it's always visible on load */
 }
 
-/* All non-hero sections: fade + slide up on reveal */
+/* All non-hero sections: slide up on reveal.
+   Opacity fade intentionally omitted — Chromium bug lighthouse#10869
+   produces NO_LCP on PSI when any element animates opacity 0 -> 1. */
 .oz-hp [data-reveal] {
-  opacity: 0;
   transform: translateY(32px);
-  transition: opacity .7s cubic-bezier(.4,0,.2,1),
-              transform .7s cubic-bezier(.4,0,.2,1);
+  transition: transform .7s cubic-bezier(.4,0,.2,1);
 }
 
 .oz-hp [data-reveal].is-visible {
-  opacity: 1;
   transform: translateY(0);
 }
 
 /* Staggered children: product cards, step items, ruimtes cards */
 .oz-hp [data-reveal-stagger] > * {
-  opacity: 0;
   transform: translateY(24px);
-  transition: opacity .5s cubic-bezier(.4,0,.2,1),
-              transform .5s cubic-bezier(.4,0,.2,1);
+  transition: transform .5s cubic-bezier(.4,0,.2,1);
 }
 
 .oz-hp [data-reveal-stagger].is-visible > * {
-  opacity: 1;
   transform: translateY(0);
 }
 
