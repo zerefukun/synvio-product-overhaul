@@ -120,6 +120,9 @@ class OZ_Variations_BCW {
         // Weight-per-m² override — admin field + cart weight filter
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-weight-per-m2.php';
 
+        // Staffelkorting — tiered volume discount on per-m² products
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-staffelkorting.php';
+
         // Analytics — server-side event storage and dashboard (4 classes)
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-store.php';
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-collector.php';
@@ -150,6 +153,9 @@ class OZ_Variations_BCW {
 
         // Weight-per-m² override (admin field + cart weight filter)
         OZ_Weight_Per_M2::init();
+
+        // Staffelkorting (tiered volume discount on configured-line items)
+        OZ_Staffelkorting::init();
 
         // Analytics — event collection (AJAX, runs on all requests)
         OZ_Analytics_Collector::init();
