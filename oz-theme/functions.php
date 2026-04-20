@@ -83,12 +83,14 @@ function oz_design_system_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/oz-design-system.css')
     );
 
-    /* Google Fonts — Raleway + DM Serif Display */
+    /* Self-hosted fonts — Raleway (variable) + DM Serif Display.
+       Dropped Google Fonts CDN: eliminates third-party connection,
+       FOUT, and NO_LCP risk from font-swap opacity animations. */
     wp_enqueue_style(
-        'oz-google-fonts',
-        'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
+        'oz-fonts',
+        get_stylesheet_directory_uri() . '/css/fonts.css',
         [],
-        null
+        filemtime(get_stylesheet_directory() . '/css/fonts.css')
     );
 
     /* Block styles for Gutenberg content */
@@ -102,18 +104,18 @@ function oz_design_system_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
 
 /**
- * Preconnect to Google Fonts CDN so the real font (DM Serif Display for
- * headings, Raleway for body) arrives fast enough that display=swap's FOUT
- * is near-invisible. Without preconnect the fallback shows noticeably
- * before the real font swaps in — that's the "titles look different"
- * regression after disabling LiteSpeed's async font loader.
+ * Preload self-hosted critical fonts so they arrive before first paint and
+ * eliminate FOUT. DM Serif Display (headings) and Raleway (body) are both
+ * visible above the fold on every page. Must fire early in wp_head so
+ * preload hints appear before any <link rel=stylesheet>.
  */
-function oz_fonts_preconnect() {
+function oz_fonts_preload() {
     if (is_admin()) return;
-    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
-    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    $base = get_stylesheet_directory_uri() . '/fonts';
+    echo '<link rel="preload" href="' . esc_url($base . '/dm-serif-display-400.woff2') . '" as="font" type="font/woff2" crossorigin>' . "\n";
+    echo '<link rel="preload" href="' . esc_url($base . '/raleway.woff2') . '" as="font" type="font/woff2" crossorigin>' . "\n";
 }
-add_action('wp_head', 'oz_fonts_preconnect', 1);
+add_action('wp_head', 'oz_fonts_preload', 1);
 
 /**
  * Enqueue scroll-reveal animation CSS + JS on all frontend pages.
