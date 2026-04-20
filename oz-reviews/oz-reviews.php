@@ -22,9 +22,11 @@ define( 'OZ_REVIEWS_URL', plugin_dir_url( __FILE__ ) );
 require_once OZ_REVIEWS_DIR . 'includes/class-cpt.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-meta.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-settings.php';
+require_once OZ_REVIEWS_DIR . 'includes/class-submission.php';
 
 add_action( 'plugins_loaded', function () {
 	OZ_Reviews\CPT::register();
 	OZ_Reviews\Meta::register();
 	OZ_Reviews\Settings::register();
+	OZ_Reviews\Submission::register();
 } );

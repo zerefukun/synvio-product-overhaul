@@ -563,3 +563,48 @@
 	border-style: solid;
 	box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.15);
 }
+
+/* ───────────────────────── Star rating picker ───────────────────────── */
+/* Radios are rendered 5→1 (reversed) so :checked ~ label can fill leftward. */
+.oz-form__rating {
+	display: inline-flex;
+	flex-direction: row-reverse; /* flips visual order back to 1→5 left-to-right */
+	gap: 4px;
+}
+
+.oz-form__rating input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.oz-form__rating label {
+	cursor: pointer;
+	color: #d9d4cc;
+	transition: color 120ms ease, transform 120ms ease;
+	line-height: 0;
+}
+
+.oz-form__rating label svg {
+	width: 34px;
+	height: 34px;
+	fill: currentColor;
+}
+
+/* Fill hovered star + all to its left (earlier in reversed DOM = to the right, */
+/* so :hover ~ label means higher-value stars, which are visually left of it). */
+.oz-form__rating label:hover,
+.oz-form__rating label:hover ~ label,
+.oz-form__rating input[type="radio"]:checked ~ label {
+	color: #f5a623;
+}
+
+.oz-form__rating label:hover {
+	transform: scale(1.1);
+}
+
+.oz-form__rating input[type="radio"]:focus-visible + label {
+	outline: 2px solid var(--oz-color-teal, #135350);
+	outline-offset: 3px;
+	border-radius: 2px;
+}

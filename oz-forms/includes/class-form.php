@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Field spec:
  *   array(
  *     'label'       => 'Naam',
- *     'type'        => 'text|email|tel|number|textarea|select|checkbox|radio|multiselect|file',
+ *     'type'        => 'text|email|tel|number|textarea|select|checkbox|radio|multiselect|file|rating|hidden',
  *     'required'    => true,
  *     'placeholder' => 'optional',
  *     'options'     => array('value' => 'label')   // for select/radio/checkbox-group
@@ -200,8 +200,29 @@ class Form {
 				break;
 			case 'file':
 				$accept   = ! empty( $spec['accept'] ) ? ' accept="' . esc_attr( $spec['accept'] ) . '"' : '';
-				$control  = '<input type="file" id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '"' . $accept . $req_attr . ' class="oz-form__file-input">';
+				$multiple = ! empty( $spec['multiple'] ) ? ' multiple' : '';
+				$input_name = ! empty( $spec['multiple'] ) ? $name . '[]' : $name;
+				$control  = '<input type="file" id="' . esc_attr( $id ) . '" name="' . esc_attr( $input_name ) . '"' . $accept . $multiple . $req_attr . ' class="oz-form__file-input">';
 				break;
+			case 'rating':
+				// 5 radios in reverse so :checked ~ label can fill stars leftward with pure CSS.
+				$radios = '';
+				for ( $n = 5; $n >= 1; $n-- ) {
+					$rid     = $id . '-' . $n;
+					$radios .= '<input type="radio" id="' . esc_attr( $rid ) . '" name="' . esc_attr( $name ) . '" value="' . $n . '"' . $req_attr . '>';
+					$radios .= '<label for="' . esc_attr( $rid ) . '" aria-label="' . $n . ' sterren"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></label>';
+				}
+				$control = '<div class="oz-form__rating" role="radiogroup" aria-label="' . esc_attr( $label ) . '">' . $radios . '</div>';
+				break;
+			case 'hidden':
+				$val = isset( $spec['value'] ) ? (string) $spec['value'] : '';
+				// Optional: populate from ?query_param= so signed email links (TKT-1.3)
+				// and manual test URLs can pre-fill without extra wiring.
+				if ( $val === '' && ! empty( $spec['from_query'] ) && isset( $_GET[ $name ] ) ) {
+					$val = sanitize_text_field( wp_unslash( (string) $_GET[ $name ] ) );
+				}
+				$control = '<input type="hidden" id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '" value="' . esc_attr( $val ) . '">';
+				return $control; // no label/wrapper
 			default:
 				$input_type = in_array( $type, array( 'text', 'email', 'tel', 'number', 'url', 'date' ), true ) ? $type : 'text';
 				$control    = '<input type="' . esc_attr( $input_type ) . '"' . $common . '>';
@@ -231,14 +252,45 @@ class Form {
 			}
 
 			// File type is handled separately by REST layer ($_FILES).
-			// The REST handler injects the uploaded URL into $raw[$name] before validation,
-			// so if present here it's a string URL; otherwise it's empty.
+			// The REST handler injects the uploaded URL(s) into $raw[$name] before validation.
+			// Multi-file fields receive arrays; single-file fields receive strings.
 			if ( $type === 'file' ) {
-				if ( $required && empty( $value ) ) {
-					$errors[ $name ] = 'Kies een bestand.';
+				$is_multi = ! empty( $spec['multiple'] );
+				if ( $is_multi ) {
+					$arr = is_array( $value ) ? array_filter( array_map( 'esc_url_raw', $value ) ) : array();
+					if ( $required && empty( $arr ) ) {
+						$errors[ $name ] = 'Kies minstens één bestand.';
+						continue;
+					}
+					$data[ $name ] = array_values( $arr );
+				} else {
+					if ( $required && empty( $value ) ) {
+						$errors[ $name ] = 'Kies een bestand.';
+						continue;
+					}
+					$data[ $name ] = is_string( $value ) ? esc_url_raw( $value ) : '';
+				}
+				continue;
+			}
+
+			// Rating: 1..5 integer.
+			if ( $type === 'rating' ) {
+				$n = (int) $value;
+				if ( $required && $n < 1 ) {
+					$errors[ $name ] = 'Geef een beoordeling.';
 					continue;
 				}
-				$data[ $name ] = is_string( $value ) ? esc_url_raw( $value ) : '';
+				if ( $n < 0 || $n > 5 ) {
+					$errors[ $name ] = 'Ongeldige beoordeling.';
+					continue;
+				}
+				$data[ $name ] = $n;
+				continue;
+			}
+
+			// Hidden: just sanitize and carry through. Never required-enforced (UI can't surface).
+			if ( $type === 'hidden' ) {
+				$data[ $name ] = sanitize_text_field( (string) $value );
 				continue;
 			}
 

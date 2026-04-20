@@ -83,22 +83,40 @@ class REST {
 				if ( ( $fspec['type'] ?? '' ) !== 'file' ) {
 					continue;
 				}
-				$file = $files[ $fname ] ?? null;
-				if ( ! $file || empty( $file['tmp_name'] ) || ! empty( $file['error'] ) ) {
+				$is_multi = ! empty( $fspec['multiple'] );
+				$entry    = $files[ $fname ] ?? null;
+				if ( ! $entry ) {
 					continue;
 				}
-				$max = (int) ( $fspec['max_size'] ?? ( 5 * 1024 * 1024 ) );
-				if ( ! empty( $file['size'] ) && (int) $file['size'] > $max ) {
-					$upload_errors[ $fname ] = 'Bestand is te groot.';
+				$max       = (int) ( $fspec['max_size'] ?? ( 5 * 1024 * 1024 ) );
+				$max_files = (int) ( $fspec['max_files'] ?? 4 );
+
+				// Normalize into a list of single-file arrays regardless of multi/single.
+				$file_list = $is_multi ? self::flatten_multi_file( $entry ) : array( $entry );
+				if ( $is_multi && count( $file_list ) > $max_files ) {
+					$upload_errors[ $fname ] = sprintf( 'Maximaal %d bestanden.', $max_files );
 					continue;
 				}
-				$uploaded = self::handle_upload( $file );
-				if ( isset( $uploaded['error'] ) ) {
-					$upload_errors[ $fname ] = $uploaded['error'];
-					continue;
+
+				$urls = array();
+				foreach ( $file_list as $file ) {
+					if ( empty( $file['tmp_name'] ) || ! empty( $file['error'] ) ) {
+						continue;
+					}
+					if ( ! empty( $file['size'] ) && (int) $file['size'] > $max ) {
+						$upload_errors[ $fname ] = 'Bestand is te groot.';
+						continue 2;
+					}
+					$uploaded = self::handle_upload( $file );
+					if ( isset( $uploaded['error'] ) ) {
+						$upload_errors[ $fname ] = $uploaded['error'];
+						continue 2;
+					}
+					$urls[]          = $uploaded['url'];
+					$attachments[]   = $uploaded['file'];
 				}
-				$params[ $fname ] = $uploaded['url'];
-				$attachments[]   = $uploaded['file'];
+
+				$params[ $fname ] = $is_multi ? $urls : ( $urls[0] ?? '' );
 			}
 		}
 
@@ -123,14 +141,63 @@ class REST {
 		// 5. Persist.
 		$post_id = Submission_CPT::store( $form_id, $result['data'], 'ok' );
 
+		/**
+		 * Fires after a submission is stored successfully.
+		 * Lets other plugins (oz-reviews) act on specific form_ids — e.g.
+		 * create a wp_comments entry from a product-review submission.
+		 *
+		 * @param string $form_id
+		 * @param int    $post_id     oz_submission post ID
+		 * @param array  $data        Validated/sanitized fields
+		 * @param array  $attachments Absolute paths of uploaded files
+		 */
+		do_action( 'oz_forms_submission_stored', $form_id, $post_id, $result['data'], $attachments );
+
 		// 6. Email — failures here shouldn't fail the submission for the user.
-		try {
-			Mailer::send( $schema, $result['data'], $attachments );
-		} catch ( \Throwable $e ) {
-			update_post_meta( $post_id, '_oz_mail_error', $e->getMessage() );
+		// Schemas can opt out by setting 'skip_email' => true (e.g. reviews, where
+		// the acknowledgement flow is handled by oz-reviews instead).
+		if ( empty( $schema['skip_email'] ) ) {
+			try {
+				Mailer::send( $schema, $result['data'], $attachments );
+			} catch ( \Throwable $e ) {
+				update_post_meta( $post_id, '_oz_mail_error', $e->getMessage() );
+			}
 		}
 
-		return self::ok_response();
+		$response = apply_filters(
+			'oz_forms_submission_response',
+			array(
+				'ok'      => true,
+				'message' => $schema['success_message'] ?? 'Bedankt! We nemen zo snel mogelijk contact met je op.',
+			),
+			$form_id,
+			$result['data']
+		);
+
+		return new \WP_REST_Response( $response, 200 );
+	}
+
+	/**
+	 * Flatten the awkward PHP multi-file shape:
+	 *   ['name' => [a,b], 'tmp_name' => [t1,t2], ...]
+	 * into an array of per-file arrays:
+	 *   [ ['name'=>a,'tmp_name'=>t1,...], ['name'=>b,'tmp_name'=>t2,...] ]
+	 */
+	private static function flatten_multi_file( array $entry ) : array {
+		$out  = array();
+		$keys = array( 'name', 'type', 'tmp_name', 'error', 'size' );
+		if ( ! isset( $entry['name'] ) || ! is_array( $entry['name'] ) ) {
+			// Single-file shape snuck in.
+			return array( $entry );
+		}
+		foreach ( array_keys( $entry['name'] ) as $i ) {
+			$file = array();
+			foreach ( $keys as $k ) {
+				$file[ $k ] = $entry[ $k ][ $i ] ?? null;
+			}
+			$out[] = $file;
+		}
+		return $out;
 	}
 
 	private static function ok_response() : \WP_REST_Response {
