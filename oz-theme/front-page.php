@@ -363,7 +363,7 @@ $up = home_url( '/wp-content/uploads' );
 <?php /* ================================================================
        S14 — MEER WETEN (alternating image/text rows with "Lees meer")
        ================================================================ */ ?>
-<section class="oz-hp-section" data-reveal>
+<section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Achtergrond</div>
 		<h2 class="oz-hp-heading">Meer weten over <em>Beton Ciré</em></h2>
