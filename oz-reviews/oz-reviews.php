@@ -28,6 +28,8 @@ require_once OZ_REVIEWS_DIR . 'includes/class-submission.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-places-client.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-google-sync.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-shortcode.php';
+require_once OZ_REVIEWS_DIR . 'includes/class-schema.php';
+require_once OZ_REVIEWS_DIR . 'includes/class-product-tab.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-cli.php';
 
 add_action( 'plugins_loaded', function () {
@@ -37,6 +39,8 @@ add_action( 'plugins_loaded', function () {
 	OZ_Reviews\Submission::register();
 	OZ_Reviews\Google_Sync::register();
 	OZ_Reviews\Shortcode::register();
+	OZ_Reviews\Schema::register();
+	OZ_Reviews\Product_Tab::register();
 	if ( class_exists( 'OZ_Reviews\\CLI' ) && defined( 'WP_CLI' ) && WP_CLI ) {
 		OZ_Reviews\CLI::register();
 	}
