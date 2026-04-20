@@ -10,57 +10,19 @@
  * @package OzTheme
  */
 
-/* DIAGNOSTIC FLAG: suppresses visible <header> render in header.php.
-   Remove after NO_LCP diagnosis. */
-define( 'OZ_DIAG_HIDE_HEADER', true );
-
-/* DIAGNOSTIC: buffer entire output, strip every <img> tag (and srcset/
-   data: image background-images) before send. Browser never fetches
-   any image. Catches logo, footer images, and any section we haven't
-   wrapped in if(false). Remove this ob_start + closing flush after. */
-ob_start();
-
 get_header();
 do_action( 'oz_before_content' );
 
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<?php /* DIAGNOSTIC: nullify data-reveal opacity/transform/transition rules
-       from homepage-v2.css + oz-animations.css. The opacity: 0.0001 was
-       a documented NO_LCP workaround but clearly isn't helping — forcing
-       opacity: 1 + transform: none on every data-reveal* element so no
-       paint animation ever runs, even before oz-animations.js adds
-       .oz-visible / .is-visible. Scoped to homepage via .oz-hp would
-       miss elements outside that wrapper — use attribute selectors. */ ?>
-<style id="oz-no-lcp-diag-reveal">
-[data-reveal],
-[data-reveal].oz-visible,
-[data-reveal].is-visible,
-[data-reveal-stagger] > *,
-[data-reveal-stagger].oz-visible > *,
-[data-reveal-stagger].is-visible > *,
-[data-reveal-img],
-[data-reveal-img].oz-visible,
-[data-reveal-img] img,
-[data-reveal-img].oz-visible img {
-	opacity: 1 !important;
-	transform: none !important;
-	clip-path: none !important;
-	transition: none !important;
-	animation: none !important;
-}
-[data-reveal-img] { overflow: visible !important; }
-</style>
-
 <div id="content" class="oz-hp" role="main">
 
 <?php /* S01 — Glass nav removed. Sitewide oz-header in header.php replaces it. */ ?>
 
 <?php /* ================================================================
-       S02 — HERO — DIAGNOSTIC: removed from PHP output (not CSS-hidden)
+       S02 — HERO
        ================================================================ */ ?>
-<?php if ( false ) : ?>
 <section class="oz-hp-hero">
 	<img class="oz-hp-hero-bg" src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-768x512.avif" ); ?>" alt="" width="768" height="512" loading="eager" fetchpriority="high" decoding="async" data-no-lazy="1">
 	<div class="oz-hp-hero-inner">
@@ -81,14 +43,10 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 	</div>
 </section>
-<?php endif; ?>
 
 <?php /* ================================================================
-       S03 — TRUST BAR — TEMPORARILY DISABLED FOR NO_LCP DIAGNOSIS
-       The infinite marquee animation is the prime suspect for
-       preventing Lighthouse's quiet window. Re-enable after test.
+       S03 — TRUST BAR
        ================================================================ */ ?>
-<?php /*
 <div class="oz-hp-trust" aria-label="USP balk">
 	<div class="oz-hp-trust-track">
 		<?php
@@ -102,6 +60,7 @@ $up = home_url( '/wp-content/uploads' );
 			'Project ondersteuning',
 			'Showroom Den Haag',
 		];
+		/* Duplicate for seamless loop */
 		for ( $i = 0; $i < 2; $i++ ) {
 			foreach ( $usps as $usp ) {
 				echo '<span class="oz-hp-trust-item"><span class="oz-hp-trust-dot"></span>' . esc_html( $usp ) . '</span>';
@@ -110,12 +69,10 @@ $up = home_url( '/wp-content/uploads' );
 		?>
 	</div>
 </div>
-*/ ?>
 
 <?php /* ================================================================
-       S04 — PRODUCT LINES (3-col grid) — DIAGNOSTIC: removed from output
+       S04 — PRODUCT LINES (3-col grid)
        ================================================================ */ ?>
-<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Collectie</div>
@@ -179,8 +136,6 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 	</div>
 </section>
-<?php endif; /* end S04 diagnostic wrap */ ?>
-
 <?php /* ================================================================
        S05 — RUIMTES MOZAIEK
        ================================================================ */ ?>
@@ -405,9 +360,8 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 <?php /* ================================================================
-       S14 — MEER WETEN (alternating image/text rows) — DIAGNOSTIC: removed
+       S14 — MEER WETEN (alternating image/text rows with "Lees meer")
        ================================================================ */ ?>
-<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Achtergrond</div>
@@ -505,9 +459,6 @@ $up = home_url( '/wp-content/uploads' );
 
 	</div>
 </section>
-<?php endif; /* end S14 diagnostic wrap */ ?>
-
-
 <?php /* ================================================================
        S20 — INSPIRATIE
        ================================================================ */ ?>
@@ -580,9 +531,8 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 <?php /* ================================================================
-       S25 — FAQ — DIAGNOSTIC: removed from PHP output
+       S25 — FAQ
        ================================================================ */ ?>
-<?php if ( false ) : ?>
 <section class="oz-hp-section oz-hp-section--sand" id="faq" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">FAQ</div>
@@ -669,7 +619,6 @@ $up = home_url( '/wp-content/uploads' );
 
 	</div>
 </section>
-<?php endif; /* end S25 diagnostic wrap */ ?>
 
 </div>
 
@@ -678,15 +627,3 @@ $up = home_url( '/wp-content/uploads' );
 <?php
 do_action( 'oz_after_content' );
 get_footer();
-
-/* DIAGNOSTIC: strip <img>, <source>, theme <script>, theme <link>
-   (stylesheets + preload hints for fonts), and our diagnostic <style>
-   block from buffered output. WP core / WooCommerce / LiteSpeed
-   assets still load so the page doesn't completely fall apart. */
-$html = ob_get_clean();
-$html = preg_replace( '#<img\b[^>]*>#i', '<!-- img removed for diagnostic -->', $html );
-$html = preg_replace( '#<source\b[^>]*>#i', '', $html );
-$html = preg_replace( '#<script\b[^>]*\bsrc=["\'][^"\']*/themes/OzTheme/[^"\']*["\'][^>]*></script>#i', '<!-- theme js stripped -->', $html );
-$html = preg_replace( '#<link\b[^>]*\bhref=["\'][^"\']*/themes/OzTheme/[^"\']*["\'][^>]*/?>#i', '<!-- theme css/link stripped -->', $html );
-$html = preg_replace( '#<style\s+id=["\']oz-no-lcp-diag-reveal["\'][^>]*>.*?</style>#is', '<!-- diag style stripped -->', $html );
-echo $html;

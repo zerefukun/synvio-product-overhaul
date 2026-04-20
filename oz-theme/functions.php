@@ -172,6 +172,28 @@ function oz_dequeue_wc_on_non_shop_pages() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 100);
 
 /**
+ * NO_LCP DIAGNOSTIC: dequeue specific CSS handles via ?nocss=handle query param.
+ * Supports comma-separated list, e.g. ?nocss=oz-homepage-v2,oz-animations.
+ * Runs at priority 999 so it happens after every other enqueue.
+ * Remove once the NO_LCP root-cause CSS file is identified.
+ *
+ * Handles: oz-design-system, oz-fonts, oz-blocks, oz-animations,
+ *          oz-homepage-v2, oz-header, oz-cart-drawer, oz-reviews.
+ */
+function oz_diag_dequeue_via_query() {
+    if ( is_admin() ) return;
+    if ( empty( $_GET['nocss'] ) ) return;
+    $list = array_map( 'sanitize_key', explode( ',', wp_unslash( $_GET['nocss'] ) ) );
+    foreach ( $list as $handle ) {
+        if ( $handle === '' ) continue;
+        wp_dequeue_style( $handle );
+        wp_deregister_style( $handle );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'oz_diag_dequeue_via_query', 999 );
+add_action( 'wp_print_styles', 'oz_diag_dequeue_via_query', 999 );
+
+/**
  * Remove WooCommerce default content wrappers.
  * Our archive-product.php has its own layout, and header.php already provides <main>.
  * Without this, WC outputs a nested <main class="site-main"> that breaks DOM nesting
