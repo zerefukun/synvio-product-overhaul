@@ -152,13 +152,24 @@
   background: var(--charcoal);
 }
 
+/* Darken overlay on top of the hero img.
+   Kept as a separate layer (not on the <img>) so the image stays at
+   opacity: 1 and remains a valid LCP candidate for Lighthouse. */
+.oz-hp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .oz-hp-hero-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100% !important; /* beats .oz-hp img { height: auto } and Flatsome img reset */
   object-fit: cover;
-  opacity: .55;
 }
 
 .oz-hp-hero-inner {
@@ -285,6 +296,20 @@
 .oz-hp-trust-track {
   display: inline-flex;
   animation: oz-hp-marquee 30s linear infinite;
+}
+
+/* Pause the marquee when scrolled out of view and when the user prefers
+   reduced motion. Infinite animations can otherwise block Lighthouse from
+   settling on an LCP value and waste CPU on invisible content. */
+.oz-hp-trust {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 42px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oz-hp-trust-track {
+    animation: none;
+  }
 }
 
 .oz-hp-trust-item {

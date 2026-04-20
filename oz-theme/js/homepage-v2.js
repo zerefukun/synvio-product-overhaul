@@ -18,10 +18,16 @@
       return card.getBoundingClientRect().width + gap;
     }
 
+    var maxScroll = 0;
+
+    function recalcBounds() {
+      maxScroll = carousel.scrollWidth - carousel.clientWidth - 1;
+    }
+
     function updateState() {
-      var max = carousel.scrollWidth - carousel.clientWidth - 1;
-      prev.disabled = carousel.scrollLeft <= 0;
-      next.disabled = carousel.scrollLeft >= max;
+      var pos = carousel.scrollLeft;
+      prev.disabled = pos <= 0;
+      next.disabled = pos >= maxScroll;
     }
 
     function scrollByDir(dir) {
@@ -31,7 +37,11 @@
     prev.addEventListener('click', function () { scrollByDir(-1); });
     next.addEventListener('click', function () { scrollByDir(1); });
     carousel.addEventListener('scroll', updateState, { passive: true });
-    window.addEventListener('resize', updateState);
+    window.addEventListener('resize', function () {
+      recalcBounds();
+      updateState();
+    });
+    recalcBounds();
     updateState();
   });
 })();

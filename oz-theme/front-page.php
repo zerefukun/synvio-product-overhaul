@@ -82,7 +82,7 @@ $up = home_url( '/wp-content/uploads' );
 	<div class="oz-hp-products-3col" data-reveal-stagger>
 		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-easyline-all-in-one/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/All-In-One.png" ); ?>" alt="Beton Ciré All-In-One" loading="lazy">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2024/01/All-In-One-510x319.webp" ); ?>" alt="Beton Ciré All-In-One" width="510" height="319" loading="lazy" decoding="async">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré All-In-One</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
@@ -100,7 +100,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-original/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/beton-cire-original.webp" ); ?>" alt="Beton Ciré Original" loading="lazy">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/beton-cire-original.webp" ); ?>" alt="Beton Ciré Original" width="612" height="408" loading="lazy" decoding="async">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré Original</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
@@ -118,7 +118,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/lavasteen-gietvloer/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/lavasteen-epoxystone.avif" ); ?>" alt="Beton Ciré Lavasteen" loading="lazy">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/lavasteen-epoxystone.avif" ); ?>" alt="Beton Ciré Lavasteen" width="612" height="408" loading="lazy" decoding="async">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré Lavasteen</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>

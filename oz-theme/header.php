@@ -58,7 +58,7 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</button>
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="oz-header__logo" aria-label="<?php echo esc_attr( $site_name ); ?>">
 				<?php if ( $logo_url ) : ?>
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="150" height="auto" loading="eager">
+					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="150" height="150" loading="eager" decoding="async">
 				<?php else : ?>
 					<span class="oz-header__logo-text"><?php echo esc_html( $site_name ); ?></span>
 				<?php endif; ?>
