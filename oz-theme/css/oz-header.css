@@ -273,8 +273,7 @@ button.oz-menu-drawer__category-link {
    Transparent header with white text/icons over dark hero images.
    On scroll (is-stuck), reverts to frosted glass with dark text. */
 .oz-header--overlay:not(.is-stuck) {
-  background-color: rgba(0,0,0,.55);
-  background-image: linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.05) 70%, transparent 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,.45) 0%, rgba(0,0,0,.15) 70%, transparent 100%);
   border-bottom-color: transparent;
 }
 
@@ -295,13 +294,17 @@ button.oz-menu-drawer__category-link {
   stroke: #FFF !important;
 }
 
-/* Desktop nav links go white on overlay */
+/* Desktop nav links go white on overlay.
+   background-color ensures axe-core sees enough contrast (5.1:1) for the
+   white link text against a known dark surface — the header gradient
+   has transparent stops so axe falls through to the body (white) otherwise. */
 .oz-header--overlay:not(.is-stuck) .oz-nav__link {
   color: #FFF;
+  background-color: rgba(0,0,0,.55);
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-nav__link:hover {
-  background: rgba(255,255,255,.12);
+  background-color: rgba(0,0,0,.7);
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-nav__chevron {
