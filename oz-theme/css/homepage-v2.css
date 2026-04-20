@@ -152,24 +152,18 @@
   background: var(--charcoal);
 }
 
-/* Darken overlay on top of the hero img.
-   Kept as a separate layer (not on the <img>) so the image stays at
-   opacity: 1 and remains a valid LCP candidate for Lighthouse. */
-.oz-hp-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, .45);
-  z-index: 1;
-  pointer-events: none;
-}
-
+/* Darken the hero img directly via filter (no overlay layer).
+   A ::after overlay can compete with the <img> for "largest paint" in
+   Chrome's LCP algorithm — pseudo-elements are not contentful, so the
+   algorithm can reject both and produce NO_LCP. Filter keeps the paint
+   as a single contentful <img> while still dimming it. */
 .oz-hp-hero-bg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100% !important; /* beats .oz-hp img { height: auto } and Flatsome img reset */
   object-fit: cover;
+  filter: brightness(.55);
 }
 
 .oz-hp-hero-inner {
