@@ -100,7 +100,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/beton-cire-original/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/beton-cire-original.webp" ); ?>" alt="Beton Ciré Original" width="612" height="408" loading="lazy" decoding="async">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/beton-cire-original-550.webp" ); ?>" alt="Beton Ciré Original" width="549" height="366" loading="lazy" decoding="async">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré Original</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
@@ -118,7 +118,7 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-pcard">
 			<a class="oz-hp-pcard-img-wrap" href="/lavasteen-gietvloer/">
-				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/lavasteen-epoxystone.avif" ); ?>" alt="Beton Ciré Lavasteen" width="612" height="408" loading="lazy" decoding="async">
+				<img class="oz-hp-pcard-img" src="<?php echo esc_url( "$up/2026/03/lavasteen-epoxystone-550.webp" ); ?>" alt="Beton Ciré Lavasteen" width="549" height="366" loading="lazy" decoding="async">
 			</a>
 			<h3 class="oz-hp-pcard-name">Beton Ciré Lavasteen</h3>
 			<div class="oz-hp-pcard-label">Kant &amp; Klaar</div>
@@ -149,7 +149,7 @@ $up = home_url( '/wp-content/uploads' );
 	<div class="oz-hp-ruimtes-wrap">
 		<div class="oz-hp-ruimtes-row1" data-reveal-stagger>
 			<a href="/ruimtes/beton-cire-badkamer/" class="oz-hp-ruimtes-card">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/ruimte-badkamer-2.webp" ); ?>" alt="Beton cire badkamer" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/ruimte-badkamer-2-600.webp" ); ?>" alt="Beton cire badkamer" width="600" height="875" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Badkamer</div>
 					<div class="oz-hp-ruimtes-card-desc">Waterdichte betonlook voor douche, wand en vloer. Schimmelwerend en makkelijk te onderhouden.</div>
@@ -157,7 +157,7 @@ $up = home_url( '/wp-content/uploads' );
 				</div>
 			</a>
 			<a href="/ruimtes/beton-cire-keuken/" class="oz-hp-ruimtes-card">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Keuken-Marloes-daily.webp" ); ?>" alt="Beton cire keuken" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Keuken-Marloes-daily-700.webp" ); ?>" alt="Beton cire keuken" width="700" height="933" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Keuken</div>
 					<div class="oz-hp-ruimtes-card-desc">Keukenbladen, aanrecht en spatschermen in naadloze betonlook. Waterbestendig en vlekvrij.</div>
@@ -165,7 +165,7 @@ $up = home_url( '/wp-content/uploads' );
 				</div>
 			</a>
 			<a href="/ruimtes/beton-cire-toilet/" class="oz-hp-ruimtes-card">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/01/Toilet-NA-Pim-Mossel.jpg" ); ?>" alt="Beton cire toilet" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/01/Toilet-NA-Pim-Mossel-700.webp" ); ?>" alt="Beton cire toilet" width="700" height="525" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Toilet</div>
 					<div class="oz-hp-ruimtes-card-desc">Van wastafel tot wand: een naadloze betonlook waar geen tegel of voeg aan te pas komt.</div>
@@ -175,19 +175,19 @@ $up = home_url( '/wp-content/uploads' );
 		</div>
 		<div class="oz-hp-ruimtes-row2" data-reveal-stagger>
 			<a href="/ruimtes/beton-cire-vloer/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-vloer.webp" ); ?>" alt="Beton cire vloer" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-vloer-450.webp" ); ?>" alt="Beton cire vloer" width="450" height="656" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Vloer</div></div>
 			</a>
 			<a href="/ruimtes/beton-cire-wand/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Woonkamer-wand.webp" ); ?>" alt="Beton cire wand" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Woonkamer-wand-450.webp" ); ?>" alt="Beton cire wand" width="450" height="600" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Wand</div></div>
 			</a>
 			<a href="/ruimtes/beton-cire-trappen/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Beton-cire-open-trap.webp" ); ?>" alt="Beton cire trap" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2024/02/Beton-cire-open-trap-450.webp" ); ?>" alt="Beton cire trap" width="450" height="600" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Trap</div></div>
 			</a>
 			<a href="/ruimtes/beton-cire-meubel/" class="oz-hp-ruimtes-card oz-hp-ruimtes-card--compact">
-				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-meubel.webp" ); ?>" alt="Beton cire meubels" loading="lazy">
+				<img class="oz-hp-ruimtes-card-img" src="<?php echo esc_url( "$up/2023/11/ruimte-meubel-450.webp" ); ?>" alt="Beton cire meubels" width="450" height="656" loading="lazy" decoding="async">
 				<div class="oz-hp-ruimtes-card-content"><div class="oz-hp-ruimtes-card-name">Meubels</div></div>
 			</a>
 		</div>
