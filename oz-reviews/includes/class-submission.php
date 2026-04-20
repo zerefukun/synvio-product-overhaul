@@ -23,7 +23,56 @@ class Submission {
 	public static function handle( string $form_id, int $submission_post_id, array $data, array $attachments ) : void {
 		if ( $form_id === 'product-review' ) {
 			self::handle_product_review( $submission_post_id, $data, $attachments );
+		} elseif ( $form_id === 'shop-review' ) {
+			self::handle_shop_review( $submission_post_id, $data, $attachments );
 		}
+	}
+
+	private static function handle_shop_review( int $submission_post_id, array $data, array $attachments ) : void {
+		$title  = wp_strip_all_tags( (string) ( $data['title'] ?? '' ) );
+		$body   = wp_strip_all_tags( (string) ( $data['body'] ?? '' ) );
+		$author = sanitize_text_field( (string) ( $data['naam'] ?? '' ) );
+		$email  = sanitize_email( (string) ( $data['email'] ?? '' ) );
+
+		if ( $author === '' || $body === '' ) {
+			update_post_meta( $submission_post_id, '_oz_review_error', 'missing_author_or_body' );
+			return;
+		}
+
+		$post_id = wp_insert_post( array(
+			'post_type'    => CPT::CPT,
+			'post_status'  => 'pending', // moderation queue
+			'post_title'   => $title !== '' ? $title : $author,
+			'post_content' => $body,
+		), true );
+
+		if ( is_wp_error( $post_id ) || ! $post_id ) {
+			update_post_meta( $submission_post_id, '_oz_review_error', 'wp_insert_post_failed' );
+			return;
+		}
+
+		$meta = array(
+			'rating'       => max( 1, min( 5, (int) ( $data['rating'] ?? 0 ) ) ),
+			'source'       => 'shop_native',
+			'author_name'  => $author,
+			'author_email' => $email,
+			'author_city'  => sanitize_text_field( (string) ( $data['stad'] ?? '' ) ),
+			'publish_time' => gmdate( 'c' ),
+			'project_type' => sanitize_text_field( (string) ( $data['project_type'] ?? '' ) ),
+		);
+		foreach ( $meta as $k => $v ) {
+			if ( $v !== '' && $v !== null ) {
+				update_post_meta( $post_id, '_oz_' . $k, $v );
+			}
+		}
+
+		$photos = isset( $data['photos'] ) && is_array( $data['photos'] ) ? array_values( array_filter( $data['photos'] ) ) : array();
+		if ( ! empty( $photos ) ) {
+			update_post_meta( $post_id, '_oz_photos', $photos );
+		}
+
+		update_post_meta( $post_id, '_oz_submission_id', $submission_post_id );
+		update_post_meta( $submission_post_id, '_oz_review_post_id', $post_id );
 	}
 
 	private static function handle_product_review( int $submission_post_id, array $data, array $attachments ) : void {
