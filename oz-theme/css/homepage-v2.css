@@ -25,9 +25,7 @@
   font-family: var(--ff-body);
   color: var(--text);
   line-height: 1.6;
-  /* clip instead of hidden — prevents horizontal overflow without creating
-     a nested scroll container (hidden implicitly sets overflow-y: auto). */
-  overflow-x: clip;
+  /* overflow-x: clip moved to homepage-v2-suspects.css for NO_LCP diagnosis */
 }
 
 .oz-hp *,

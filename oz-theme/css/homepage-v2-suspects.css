@@ -37,3 +37,10 @@
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
+
+/* Root-level overflow-x: clip. Modern property (Chrome 90+); not a
+   known NO_LCP trigger but user requested it be toggleable. Removing
+   this may cause a horizontal scrollbar if any child overflows. */
+.oz-hp {
+  overflow-x: clip;
+}
