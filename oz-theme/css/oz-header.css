@@ -294,17 +294,13 @@ button.oz-menu-drawer__category-link {
   stroke: #FFF !important;
 }
 
-/* Desktop nav links go white on overlay.
-   background-color ensures axe-core sees enough contrast (5.1:1) for the
-   white link text against a known dark surface — the header gradient
-   has transparent stops so axe falls through to the body (white) otherwise. */
+/* Desktop nav links go white on overlay */
 .oz-header--overlay:not(.is-stuck) .oz-nav__link {
   color: #FFF;
-  background-color: rgba(0,0,0,.55);
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-nav__link:hover {
-  background-color: rgba(0,0,0,.7);
+  background: rgba(255,255,255,.12);
 }
 
 .oz-header--overlay:not(.is-stuck) .oz-nav__chevron {
