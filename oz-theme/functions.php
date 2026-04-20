@@ -234,6 +234,7 @@ if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
  */
 require_once get_stylesheet_directory() . '/inc/block-sections-renderer.php';
 require_once get_stylesheet_directory() . '/inc/reviews-section.php';
+require_once get_stylesheet_directory() . '/inc/search-suggestions.php';
 
 /**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.

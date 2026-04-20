@@ -100,6 +100,46 @@
   margin-bottom: 12px;
 }
 
+/* "Bedoelde je misschien …" — renders below the search title or inside
+   the shop header on WooCommerce search pages. */
+.oz-search-suggestions {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--oz-bg-warm, #f6f2ec);
+  border-left: 3px solid var(--oz-accent, #135350);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--oz-text-body, #333);
+  line-height: 1.5;
+}
+
+.oz-search-suggestions__lead {
+  font-weight: 600;
+  color: var(--oz-accent, #135350);
+  margin-right: 6px;
+}
+
+.oz-search-suggestions__link {
+  color: var(--oz-accent, #135350);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 120ms ease;
+}
+
+.oz-search-suggestions__link em {
+  font-style: italic;
+}
+
+.oz-search-suggestions__link:hover,
+.oz-search-suggestions__link:focus-visible {
+  border-bottom-color: var(--oz-accent, #135350);
+}
+
+.oz-search-suggestions__sep {
+  color: var(--oz-text-muted, #888);
+  margin: 0 4px;
+}
+
 /* ── 404 ── */
 .oz-404 {
   text-align: center;

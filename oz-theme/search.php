@@ -13,6 +13,7 @@ get_header(); ?>
 		<h1 class="oz-search-results__title">
 			<?php printf( esc_html__( 'Zoekresultaten voor: %s', 'oz-theme' ), '<span>' . get_search_query() . '</span>' ); ?>
 		</h1>
+		<?php if ( function_exists( 'oz_render_search_suggestions' ) ) { oz_render_search_suggestions(); } ?>
 	</header>
 
 	<?php if ( have_posts() ) : ?>

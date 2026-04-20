@@ -68,6 +68,7 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
                 <h1 class="oz-shop__title"><?php woocommerce_page_title(); ?></h1>
             <?php endif; ?>
             <?php do_action( 'woocommerce_archive_description' ); ?>
+            <?php if ( is_search() && function_exists( 'oz_render_search_suggestions' ) ) { oz_render_search_suggestions(); } ?>
         </header>
 
         <?php if ( woocommerce_product_loop() ) : ?>

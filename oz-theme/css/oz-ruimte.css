@@ -876,8 +876,10 @@
 }
 
 /* ── Navigation / TOC section ──
-   Ordered list used as anchor links. Restyle as horizontal pill nav. */
-.oz-ruimte .oz-section ol.wp-block-list {
+   Only ordered lists whose items are pure fragment anchors (TOC) become
+   pill nav. Content lists (numbered tips, instructions) keep default
+   ordered-list numbering. */
+.oz-ruimte .oz-section ol.wp-block-list:has(> li > a[href^="#"]) {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -886,15 +888,15 @@
   justify-content: center;
 }
 
-.oz-ruimte .oz-section ol.wp-block-list li {
+.oz-ruimte .oz-section ol.wp-block-list:has(> li > a[href^="#"]) li {
   margin: 0;
 }
 
-.oz-ruimte .oz-section ol.wp-block-list li::marker {
+.oz-ruimte .oz-section ol.wp-block-list:has(> li > a[href^="#"]) li::marker {
   content: '';
 }
 
-.oz-ruimte .oz-section ol.wp-block-list li a {
+.oz-ruimte .oz-section ol.wp-block-list:has(> li > a[href^="#"]) li a {
   display: inline-block;
   padding: 8px 20px;
   border: 1px solid var(--oz-border);
@@ -906,7 +908,7 @@
   transition: all var(--oz-transition);
 }
 
-.oz-ruimte .oz-section ol.wp-block-list li a:hover {
+.oz-ruimte .oz-section ol.wp-block-list:has(> li > a[href^="#"]) li a:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
   background: var(--oz-accent-light);
@@ -2887,11 +2889,20 @@
    Drop between text-heavy groups to add visual rhythm.
    ================================================================ */
 .oz-ruimte .oz-ruimte-inspo-grid {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Grid lives on the inner-container that WP emits between the group div
+   and its children — not the outer wrapper. */
+.oz-ruimte .oz-ruimte-inspo-grid > .wp-block-group__inner-container,
+.oz-ruimte .oz-ruimte-inspo-grid.wp-block-group-is-layout-flow,
+.oz-ruimte .oz-ruimte-inspo-grid:not(:has(> .wp-block-group__inner-container)) {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   padding: 0;
-  max-width: 100%;
   margin: 0;
 }
 
@@ -2899,6 +2910,7 @@
 .oz-ruimte .oz-ruimte-inspo-grid figure {
   margin: 0;
   width: 100%;
+  height: 100%;
 }
 
 .oz-ruimte .oz-ruimte-inspo-grid img {
@@ -2911,7 +2923,9 @@
 }
 
 @media (max-width: 767px) {
-  .oz-ruimte .oz-ruimte-inspo-grid {
+  .oz-ruimte .oz-ruimte-inspo-grid > .wp-block-group__inner-container,
+  .oz-ruimte .oz-ruimte-inspo-grid.wp-block-group-is-layout-flow,
+  .oz-ruimte .oz-ruimte-inspo-grid:not(:has(> .wp-block-group__inner-container)) {
     grid-template-columns: 1fr 1fr;
   }
 }
