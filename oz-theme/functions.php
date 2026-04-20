@@ -632,6 +632,23 @@ function oz_inspiratie_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_inspiratie_enqueue');
 
 /**
+ * Enqueue reviews styles on the /reviews/ hub page.
+ * The page uses .oz-hp-reviews* classes from oz-reviews.css.
+ */
+function oz_reviews_page_enqueue() {
+    if (is_admin()) return;
+    if (! is_page('reviews')) return;
+
+    wp_enqueue_style(
+        'oz-reviews',
+        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_reviews_page_enqueue');
+
+/**
  * Enqueue custom header CSS + JS on all frontend pages.
  * Replaces Flatsome's header entirely — our header.php provides the markup.
  */
