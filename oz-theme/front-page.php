@@ -48,6 +48,13 @@ $up = home_url( '/wp-content/uploads' );
 .oz-search-modal-backdrop {
 	display: none !important;
 }
+
+/* Hide FAQ (S25) + "Meer weten" read-more list (S14) for diagnostic test */
+#faq,
+.oz-hp-learn-list,
+.oz-hp-section:has(.oz-hp-learn-list) {
+	display: none !important;
+}
 </style>
 
 <div id="content" class="oz-hp" role="main">
