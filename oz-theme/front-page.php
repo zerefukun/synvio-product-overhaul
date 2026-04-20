@@ -26,10 +26,32 @@ do_action( 'oz_before_content' );
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<?php /* DIAGNOSTIC: animation/transition kill removed.
-       Sections already removed via if(false) at PHP level; images via
-       ob_start() strip. Nothing left that could meaningfully animate
-       during LCP measurement, so the override is no longer needed. */ ?>
+<?php /* DIAGNOSTIC: nullify data-reveal opacity/transform/transition rules
+       from homepage-v2.css + oz-animations.css. The opacity: 0.0001 was
+       a documented NO_LCP workaround but clearly isn't helping — forcing
+       opacity: 1 + transform: none on every data-reveal* element so no
+       paint animation ever runs, even before oz-animations.js adds
+       .oz-visible / .is-visible. Scoped to homepage via .oz-hp would
+       miss elements outside that wrapper — use attribute selectors. */ ?>
+<style id="oz-no-lcp-diag-reveal">
+[data-reveal],
+[data-reveal].oz-visible,
+[data-reveal].is-visible,
+[data-reveal-stagger] > *,
+[data-reveal-stagger].oz-visible > *,
+[data-reveal-stagger].is-visible > *,
+[data-reveal-img],
+[data-reveal-img].oz-visible,
+[data-reveal-img] img,
+[data-reveal-img].oz-visible img {
+	opacity: 1 !important;
+	transform: none !important;
+	clip-path: none !important;
+	transition: none !important;
+	animation: none !important;
+}
+[data-reveal-img] { overflow: visible !important; }
+</style>
 
 <div id="content" class="oz-hp" role="main">
 
