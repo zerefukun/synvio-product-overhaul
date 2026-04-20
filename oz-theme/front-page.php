@@ -26,29 +26,10 @@ do_action( 'oz_before_content' );
 $up = home_url( '/wp-content/uploads' );
 ?>
 
-<?php /* DIAGNOSTIC: kill all animations + transitions on homepage.
-       Sections below are wrapped in if(false) so they never enter HTML —
-       actual PHP-level removal, not CSS hide. */ ?>
-<style id="oz-no-lcp-diagnostic">
-.oz-hp *,
-.oz-hp *::before,
-.oz-hp *::after {
-	animation-duration: 0s !important;
-	animation-delay: 0s !important;
-	animation-iteration-count: 1 !important;
-	transition-duration: 0s !important;
-	transition-delay: 0s !important;
-}
-.oz-hp [data-reveal],
-.oz-hp [data-reveal-stagger] > *,
-.oz-hp [data-reveal-img],
-.oz-hp [data-reveal-img] img {
-	opacity: 1 !important;
-	transform: none !important;
-	clip-path: none !important;
-}
-.oz-hp [data-reveal-img] { overflow: visible !important; }
-</style>
+<?php /* DIAGNOSTIC: animation/transition kill removed.
+       Sections already removed via if(false) at PHP level; images via
+       ob_start() strip. Nothing left that could meaningfully animate
+       during LCP measurement, so the override is no longer needed. */ ?>
 
 <div id="content" class="oz-hp" role="main">
 
