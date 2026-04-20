@@ -104,9 +104,10 @@
   margin-right: auto;
 }
 
-/* Center headings + text in single-column (non-columns) sections */
+/* Single-column group sections use the full container width (1100px) for
+   coherence with columns-based sections. Paragraphs inside still self-constrain
+   to 720px via the `.oz-ruimte p` rule above, so readability is preserved. */
 .oz-ruimte .oz-section > .oz-container > .wp-block-group {
-  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -116,27 +117,9 @@
   margin-right: auto;
 }
 
-/* Headings in standalone sections center too — direct children or inside top-level groups.
-   The > chains exclude timeline-nested groups and headings inside columns.
-   h6 = eyebrow labels, centered in the same contexts. */
-.oz-ruimte .oz-section > .oz-container > h2,
-.oz-ruimte .oz-section > .oz-container > h3,
-.oz-ruimte .oz-section > .oz-container > h6,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > h2,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > h3,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > h6,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h2,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h3,
-.oz-ruimte .oz-section > .oz-container > .wp-block-group > .wp-block-group__inner-container > h6 {
-  text-align: center;
-}
-
-/* Alignfull groups render without .oz-container — center their headings + eyebrows directly */
-.oz-ruimte .oz-section > .wp-block-group.alignfull h2,
-.oz-ruimte .oz-section > .wp-block-group.alignfull h3,
-.oz-ruimte .oz-section > .wp-block-group.alignfull h6 {
-  text-align: center;
-}
+/* Headings default to left-aligned. Groups that need centering
+   (product showcase, toepassingen, CTA blocks) apply
+   has-text-align-center directly in the block markup. */
 
 /* ── Columns layout — image + text side by side ── */
 .oz-ruimte .wp-block-columns {
@@ -156,6 +139,27 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+}
+
+/* Callout layouts: a `.wp-block-columns` where one column uses `has-background`
+   (e.g. the "Tips" beige callout beside a diagram image). In these layouts the
+   image is usually an illustration/diagram, not a photo — let it render at its
+   natural aspect ratio so it isn't cropped into 4:3. Also give the backgrounded
+   column proper padding so text doesn't touch the edges. */
+.oz-ruimte .wp-block-columns:has(> .wp-block-column.has-background) .wp-block-column .wp-block-image img {
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+.oz-ruimte .wp-block-column.has-background {
+  padding: 32px;
+  border-radius: var(--oz-radius-lg, 12px);
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .wp-block-column.has-background {
+    padding: 24px;
+  }
 }
 
 /* ── Checklists inside group blocks (gereedschap, voorbereiden, etc.) ── */
@@ -553,7 +557,7 @@
 .oz-ruimte .oz-slideshow.swiper {
   position: relative;
   width: 100%;
-  max-width: 1100px;
+  max-width: 550px;
   margin: 0 auto;
   border-radius: var(--oz-radius-lg, 12px);
   overflow: hidden;
