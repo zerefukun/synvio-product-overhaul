@@ -2857,3 +2857,61 @@
     justify-content: flex-start;
   }
 }
+
+/* ================================================================
+   Alternating 50/50 media rows
+   Wrap consecutive wp:columns (image + text) with oz-ruimte-alt to
+   auto-flip the column order on every even row. Editor only has to
+   put image first every time — the browser alternates.
+   Desktop only; mobile already stacks.
+   ================================================================ */
+@media (min-width: 768px) {
+  .oz-ruimte .oz-ruimte-alt > .wp-block-columns:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+}
+
+.oz-ruimte .oz-ruimte-alt > .wp-block-columns {
+  align-items: center;
+}
+
+/* Equal heights + rounded images on alt rows so pairs look intentional */
+.oz-ruimte .oz-ruimte-alt .wp-block-column .wp-block-image img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* ================================================================
+   Inspo grid: full-bleed 3-up image band with zero gap.
+   Drop between text-heavy groups to add visual rhythm.
+   ================================================================ */
+.oz-ruimte .oz-ruimte-inspo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+}
+
+.oz-ruimte .oz-ruimte-inspo-grid .wp-block-image,
+.oz-ruimte .oz-ruimte-inspo-grid figure {
+  margin: 0;
+  width: 100%;
+}
+
+.oz-ruimte .oz-ruimte-inspo-grid img {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .oz-ruimte .oz-ruimte-inspo-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
