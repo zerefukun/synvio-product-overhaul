@@ -102,6 +102,20 @@ function oz_design_system_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
 
 /**
+ * Preconnect to Google Fonts CDN so the real font (DM Serif Display for
+ * headings, Raleway for body) arrives fast enough that display=swap's FOUT
+ * is near-invisible. Without preconnect the fallback shows noticeably
+ * before the real font swaps in — that's the "titles look different"
+ * regression after disabling LiteSpeed's async font loader.
+ */
+function oz_fonts_preconnect() {
+    if (is_admin()) return;
+    echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
+    echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+}
+add_action('wp_head', 'oz_fonts_preconnect', 1);
+
+/**
  * Enqueue scroll-reveal animation CSS + JS on all frontend pages.
  * Unified system: watches [data-reveal], [data-reveal-stagger], [data-reveal-img].
  * Adds .oz-visible via IntersectionObserver.

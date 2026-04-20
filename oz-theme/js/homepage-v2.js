@@ -1,15 +1,24 @@
 (function () {
   'use strict';
 
-  // Start marquee only after page load so Lighthouse can settle on an LCP.
+  // Start marquee only after the browser is truly idle. Continuous animations
+  // prevent Lighthouse from finding the "quiet window" it needs to record an
+  // LCP, so we hold the animation paused until rIC fires (or 3s fallback).
   function startMarquee() {
     var tracks = document.querySelectorAll('.oz-hp-trust-track');
     for (var i = 0; i < tracks.length; i++) tracks[i].classList.add('is-running');
   }
+  function scheduleMarquee() {
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(startMarquee, { timeout: 4000 });
+    } else {
+      setTimeout(startMarquee, 3000);
+    }
+  }
   if (document.readyState === 'complete') {
-    setTimeout(startMarquee, 500);
+    scheduleMarquee();
   } else {
-    window.addEventListener('load', function () { setTimeout(startMarquee, 500); });
+    window.addEventListener('load', scheduleMarquee);
   }
 
   var wraps = document.querySelectorAll('.oz-hp-kb-wrap');
