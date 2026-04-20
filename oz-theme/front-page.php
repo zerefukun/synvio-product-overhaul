@@ -45,8 +45,11 @@ $up = home_url( '/wp-content/uploads' );
 </section>
 
 <?php /* ================================================================
-       S03 — TRUST BAR
+       S03 — TRUST BAR — TEMPORARILY DISABLED FOR NO_LCP DIAGNOSIS
+       The infinite marquee animation is the prime suspect for
+       preventing Lighthouse's quiet window. Re-enable after test.
        ================================================================ */ ?>
+<?php /*
 <div class="oz-hp-trust" aria-label="USP balk">
 	<div class="oz-hp-trust-track">
 		<?php
@@ -60,7 +63,6 @@ $up = home_url( '/wp-content/uploads' );
 			'Project ondersteuning',
 			'Showroom Den Haag',
 		];
-		/* Duplicate for seamless loop */
 		for ( $i = 0; $i < 2; $i++ ) {
 			foreach ( $usps as $usp ) {
 				echo '<span class="oz-hp-trust-item"><span class="oz-hp-trust-dot"></span>' . esc_html( $usp ) . '</span>';
@@ -69,6 +71,7 @@ $up = home_url( '/wp-content/uploads' );
 		?>
 	</div>
 </div>
+*/ ?>
 
 <?php /* ================================================================
        S04 — PRODUCT LINES (3-col grid)
