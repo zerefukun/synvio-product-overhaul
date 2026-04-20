@@ -573,11 +573,19 @@ function oz_homepage_v2_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/homepage-v2-bottom.css')
     );
 
+    /* A2 further split: kennisbank (S24) vs faq (S25) for NO_LCP isolation. */
     wp_enqueue_style(
-        'oz-homepage-v2-bottom-a2',
-        get_stylesheet_directory_uri() . '/css/homepage-v2-bottom-a2.css',
+        'oz-homepage-v2-kennisbank',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-kennisbank.css',
         ['oz-homepage-v2-bottom'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2-bottom-a2.css')
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-kennisbank.css')
+    );
+
+    wp_enqueue_style(
+        'oz-homepage-v2-faq',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-faq.css',
+        ['oz-homepage-v2-bottom'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-faq.css')
     );
 
     wp_enqueue_style(
@@ -651,10 +659,17 @@ function oz_ruimte_enqueue() {
     );
 
     wp_enqueue_style(
-        'oz-homepage-v2-bottom-a2',
-        get_stylesheet_directory_uri() . '/css/homepage-v2-bottom-a2.css',
+        'oz-homepage-v2-kennisbank',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-kennisbank.css',
         ['oz-homepage-v2-bottom'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2-bottom-a2.css')
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-kennisbank.css')
+    );
+
+    wp_enqueue_style(
+        'oz-homepage-v2-faq',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-faq.css',
+        ['oz-homepage-v2-bottom'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-faq.css')
     );
 
     wp_enqueue_style(

@@ -1,0 +1,123 @@
+/* ================================================================
+   HOMEPAGE V2 — S25 FAQ (accordion)
+   Bisection for NO_LCP. Toggle via ?nocss=oz-homepage-v2-faq.
+   Suspects: max-height transitions on .oz-hp-faq-a.
+   ================================================================ */
+.oz-hp-faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--gap);
+}
+
+.oz-hp-faq-item {
+  border-bottom: 1px solid var(--stone);
+}
+
+.oz-hp-faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ff-body);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--charcoal);
+  text-align: left;
+  gap: 16px;
+}
+
+.oz-hp-faq-q:hover { color: var(--teal); }
+
+.oz-hp-faq-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.oz-hp-faq-icon::before,
+.oz-hp-faq-icon::after {
+  content: '';
+  position: absolute;
+  background: currentColor;
+  transition: transform .3s;
+}
+
+.oz-hp-faq-icon::before { width: 100%; height: 2px; top: 50%; transform: translateY(-50%); }
+.oz-hp-faq-icon::after  { width: 2px; height: 100%; left: 50%; transform: translateX(-50%); }
+
+.oz-hp-faq-item.is-open .oz-hp-faq-icon::after { transform: translateX(-50%) scaleY(0); }
+
+.oz-hp-faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s ease, padding .4s;
+}
+
+.oz-hp-faq-item.is-open .oz-hp-faq-a {
+  max-height: 1500px;
+  padding-bottom: 20px;
+}
+
+.oz-hp-faq-a p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Rich-content support for S14 Meer weten accordion */
+.oz-hp-faq-a p + p,
+.oz-hp-faq-a p + ul,
+.oz-hp-faq-a ul + p { margin-top: 12px; }
+
+.oz-hp-faq-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-hp-faq-bullets li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.oz-hp-faq-bullets li + li { margin-top: 6px; }
+
+.oz-hp-faq-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal);
+  opacity: .55;
+}
+
+.oz-hp-faq-a .oz-hp-link {
+  color: var(--teal);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+.oz-hp-faq-a .oz-hp-link:hover { color: #1A6B67; }
+
+.oz-hp-tip {
+  background: rgba(32, 135, 129, 0.06);
+  border-left: 3px solid var(--teal);
+  padding: 14px 18px;
+  border-radius: 4px;
+}
+
+.oz-hp-faq-a .oz-hp-btn { margin-top: 4px; }

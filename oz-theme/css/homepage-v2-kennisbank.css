@@ -1,0 +1,141 @@
+/* ================================================================
+   HOMEPAGE V2 — S24 KENNISBANK (horizontal scrollable carousel)
+   Bisection for NO_LCP. Toggle via ?nocss=oz-homepage-v2-kennisbank.
+   Suspects: scroll-snap-type, scroll-behavior: smooth, overflow-x.
+   ================================================================ */
+.oz-hp-kb-wrap {
+  position: relative;
+  max-width: calc(var(--max-w) + 120px);
+  margin: 0 auto;
+}
+
+.oz-hp-kb-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--gap) 16px;
+  max-width: calc(var(--max-w) + var(--gap) * 2);
+  margin: 0 auto;
+  scrollbar-width: none;
+}
+
+.oz-hp-kb-carousel::-webkit-scrollbar { display: none; }
+
+.oz-hp-kb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--stone);
+  background: #fff;
+  color: var(--teal);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(19, 83, 80, 0.08);
+  transition: background .2s, color .2s, transform .2s, opacity .2s;
+}
+
+.oz-hp-kb-nav:hover {
+  background: var(--teal);
+  color: #fff;
+}
+
+.oz-hp-kb-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.oz-hp-kb-nav:disabled:hover {
+  background: #fff;
+  color: var(--teal);
+}
+
+.oz-hp-kb-nav svg {
+  width: 22px;
+  height: 22px;
+}
+
+.oz-hp-kb-nav--prev { left: 0; }
+.oz-hp-kb-nav--next { right: 0; }
+
+@media (max-width: 880px) {
+  .oz-hp-kb-nav { display: none; }
+}
+
+.oz-hp-kb-card {
+  flex: 0 0 300px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--stone);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color .3s, box-shadow .3s, transform .2s;
+}
+
+.oz-hp-kb-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 8px 24px rgba(19,83,80,.08);
+  transform: translateY(-3px);
+}
+
+.oz-hp-kb-card-img {
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.oz-hp-kb-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s;
+}
+
+.oz-hp-kb-card:hover .oz-hp-kb-card-img img {
+  transform: scale(1.04);
+}
+
+.oz-hp-kb-card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.oz-hp-kb-card-title {
+  font-family: var(--ff-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.oz-hp-kb-card-excerpt {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-light);
+  flex: 1;
+}
+
+.oz-hp-kb-card-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  color: var(--teal);
+  text-transform: uppercase;
+  transition: gap .2s;
+}
