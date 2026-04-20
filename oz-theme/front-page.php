@@ -62,6 +62,11 @@ $up = home_url( '/wp-content/uploads' );
 .oz-hp-hero {
 	display: none !important;
 }
+
+/* Hide product lines collection (S04) for diagnostic test */
+.oz-hp-section:has(.oz-hp-products-3col) {
+	display: none !important;
+}
 </style>
 
 <div id="content" class="oz-hp" role="main">
