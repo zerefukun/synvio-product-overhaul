@@ -294,12 +294,15 @@
 
 .oz-hp-trust-track {
   display: inline-flex;
-  animation: oz-hp-marquee 30s linear infinite;
-  animation-play-state: paused;
 }
 
+/* Declare the animation only after JS adds .is-running (requestIdleCallback).
+   Declaring an infinite animation at page load — even with play-state:paused —
+   keeps Chromium's LCP scanner from finishing, producing NO_LCP in Lighthouse.
+   By scoping the animation shorthand to .is-running, no animation exists on
+   the element until after first paint + idle, so the LCP scanner can settle. */
 .oz-hp-trust-track.is-running {
-  animation-play-state: running;
+  animation: oz-hp-marquee 30s linear infinite;
 }
 
 /* Pause the marquee when scrolled out of view and when the user prefers
