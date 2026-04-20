@@ -1,0 +1,8 @@
+/* ================================================================
+   HOMEPAGE V2 — KENNISBANK scroll-behavior: smooth ONLY
+   Toggle ?nocss=oz-homepage-v2-kennisbank-scroll-smooth.
+   If GREEN when dequeued -> scroll-behavior: smooth is the NO_LCP offender.
+   ================================================================ */
+.oz-hp-kb-carousel {
+  scroll-behavior: smooth;
+}
