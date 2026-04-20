@@ -222,15 +222,32 @@ function oz_clarity_tracking() {
     if (is_admin() || current_user_can('manage_options')) return;
     ?>
     <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "vunpx49rhr");
+    /* Defer Clarity until after window.load + idle time so it does not
+       block main thread during LCP measurement. PSI (Lighthouse) was
+       reporting NO_LCP partly because analytics scripts ran during the
+       LCP measurement window, keeping the main thread busy. */
+    (function () {
+        function loadClarity() {
+            (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+            })(window, document, "clarity", "script", "vunpx49rhr");
+        }
+        function schedule() {
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(loadClarity, { timeout: 4000 });
+            } else {
+                setTimeout(loadClarity, 2500);
+            }
+        }
+        if (document.readyState === 'complete') schedule();
+        else window.addEventListener('load', schedule);
+    })();
     </script>
     <?php
 }
-add_action('wp_head', 'oz_clarity_tracking', 1);
+add_action('wp_footer', 'oz_clarity_tracking', 99);
 
 function oz_custom_scripts() {
     wp_enqueue_script(

@@ -16,6 +16,13 @@ $has_hero = is_front_page()
 	|| ( is_single() && has_category( 'stucsoorten' ) );
 $logo_id    = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 $logo_url   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
+
+/* Hardcoded smaller WebP for mobile header display.
+   PSI flags the 'medium' (150x150) file as oversized for the 70x70 CSS
+   display size. The 140x140 file (~4.7 KiB vs 7.7 KiB) was generated
+   once on the server. Falls back to $logo_url if the small file is
+   missing or if a different logo is configured. */
+$logo_small = home_url( '/wp-content/uploads/2026/04/cropped-Nieuw-Logo-Transparant-140.webp' );
 $site_name  = get_bloginfo( 'name' );
 $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 
@@ -58,7 +65,7 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</button>
 			<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="oz-header__logo" aria-label="<?php echo esc_attr( $site_name ); ?>">
 				<?php if ( $logo_url ) : ?>
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="150" height="150" loading="eager" decoding="async">
+					<img src="<?php echo esc_url( $logo_small ); ?>" srcset="<?php echo esc_url( $logo_small ); ?> 1x, <?php echo esc_url( $logo_url ); ?> 2x" alt="<?php echo esc_attr( $site_name ); ?>" width="140" height="140" loading="eager" decoding="async">
 				<?php else : ?>
 					<span class="oz-header__logo-text"><?php echo esc_html( $site_name ); ?></span>
 				<?php endif; ?>
@@ -117,7 +124,7 @@ $banner_line2 = get_theme_mod( 'oz_drawer_banner_line2', 'Voor elke ruimte' );
 			</button>
 			<?php if ( $logo_url ) : ?>
 				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="oz-menu-drawer__logo">
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="120" height="auto" loading="lazy">
+					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="120" height="120" loading="lazy" decoding="async">
 				</a>
 			<?php endif; ?>
 			<a href="<?php echo esc_url( get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ); ?>" class="oz-menu-drawer__account" aria-label="Mijn account">
