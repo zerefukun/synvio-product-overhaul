@@ -112,6 +112,23 @@ function oz_render_reviews_section( $context = 'home' ) {
 				</article>
 			<?php endforeach; ?>
 		</div>
+
+		<div class="oz-hp-reviews-footer">
+			<a class="oz-hp-reviews-all" href="https://www.google.com/maps/place/Beton+cire+webshop/" target="_blank" rel="noopener">
+				Bekijk alle reviews op Google
+				<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16"><path fill="currentColor" d="M14 3v2h3.59L8 14.59 9.41 16 19 6.41V10h2V3z"/></svg>
+			</a>
+			<div class="oz-hp-reviews-cta">
+				<div class="oz-hp-reviews-cta-text">
+					<strong>Nog vragen?</strong>
+					<span>Bekijk onze veelgestelde vragen of neem contact op.</span>
+				</div>
+				<div class="oz-hp-reviews-cta-buttons">
+					<a class="oz-hp-reviews-btn oz-hp-reviews-btn--outline" href="/veelgestelde-vragen/">Bekijk FAQ</a>
+					<a class="oz-hp-reviews-btn" href="/contact/">Contact</a>
+				</div>
+			</div>
+		</div>
 		<?php echo $header_wrap_close; ?>
 	</section>
 	<?php

@@ -217,7 +217,118 @@
 }
 
 @media (max-width: 767px) {
-  .oz-hp-reviews-grid { grid-template-columns: 1fr; }
+  .oz-hp-reviews-grid {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 14px;
+    padding: 0 var(--oz-gap) 8px;
+    scroll-padding: 0 var(--oz-gap);
+  }
+  .oz-hp-reviews-grid::-webkit-scrollbar { display: none; }
+  .oz-hp-reviews-grid .oz-hp-review {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
   .oz-hp-reviews-summary { gap: 18px; }
   .oz-hp-reviews-big-num { font-size: 52px; }
+}
+
+/* Reviews footer: "alle reviews" link + FAQ/CTA panel */
+.oz-hp-reviews-footer {
+  max-width: var(--oz-max-w);
+  margin: 32px auto 0;
+  padding: 0 var(--oz-gap);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.oz-hp-reviews-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oz-accent);
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.oz-hp-reviews-all:hover { border-bottom-color: var(--oz-accent); }
+.oz-hp-reviews-all svg { flex-shrink: 0; }
+
+.oz-hp-reviews-cta {
+  width: 100%;
+  background: var(--oz-bg-warm);
+  border-radius: 10px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.oz-hp-reviews-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oz-hp-reviews-cta-text strong {
+  font-family: var(--oz-ff-heading);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+}
+
+.oz-hp-reviews-cta-text span {
+  font-size: 14px;
+  color: var(--oz-text-muted);
+}
+
+.oz-hp-reviews-cta-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.oz-hp-reviews-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--oz-accent);
+  background: var(--oz-accent);
+  color: #fff;
+  transition: background 0.2s, color 0.2s;
+}
+.oz-hp-reviews-btn:hover { background: transparent; color: var(--oz-accent); }
+
+.oz-hp-reviews-btn--outline {
+  background: transparent;
+  color: var(--oz-accent);
+}
+.oz-hp-reviews-btn--outline:hover { background: var(--oz-accent); color: #fff; }
+
+@media (max-width: 640px) {
+  .oz-hp-reviews-cta {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    padding: 20px;
+  }
+  .oz-hp-reviews-cta-buttons {
+    justify-content: center;
+  }
 }
