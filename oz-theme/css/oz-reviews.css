@@ -567,6 +567,25 @@
 
 .oz-hp-reviews-carousel .swiper-slide > .oz-hp-review {
   width: 100%;
+  height: 380px;
+  overflow: hidden;
+}
+
+.oz-hp-reviews-carousel .oz-hp-review-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.oz-hp-reviews-carousel .oz-hp-review-photos,
+.oz-hp-reviews-carousel .oz-hp-review-reply,
+.oz-hp-reviews-carousel .oz-hp-review-title {
+  display: none;
+}
+
+.oz-hp-reviews-carousel .oz-hp-review-author {
+  margin-top: auto;
 }
 
 .oz-hp-reviews-nav {
