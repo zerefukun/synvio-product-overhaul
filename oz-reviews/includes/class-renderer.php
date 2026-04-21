@@ -79,6 +79,27 @@ class Renderer {
 		return $out;
 	}
 
+	/** Render a Swiper-powered carousel. JS init lives in oz-theme/js/oz-reviews-carousel.js. */
+	public static function carousel( array $dtos ) : string {
+		if ( empty( $dtos ) ) {
+			return '';
+		}
+		$slides = '';
+		foreach ( $dtos as $dto ) {
+			$slides .= '<div class="swiper-slide">' . self::card( $dto ) . '</div>';
+		}
+		$arrow_left  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>';
+		$arrow_right = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>';
+
+		return '<div class="oz-hp-reviews-carousel">'
+			. '<div class="swiper oz-hp-reviews-swiper">'
+			. '<div class="swiper-wrapper">' . $slides . '</div>'
+			. '</div>'
+			. '<button class="oz-hp-reviews-nav oz-hp-reviews-nav--prev" type="button" aria-label="Vorige reviews">' . $arrow_left . '</button>'
+			. '<button class="oz-hp-reviews-nav oz-hp-reviews-nav--next" type="button" aria-label="Volgende reviews">' . $arrow_right . '</button>'
+			. '</div>';
+	}
+
 	private static function stars( int $n ) : string {
 		$n = max( 0, min( 5, $n ) );
 		$path = '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';

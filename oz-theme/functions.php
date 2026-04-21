@@ -645,6 +645,21 @@ function oz_reviews_page_enqueue() {
         ['oz-design-system'],
         filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
     );
+
+    wp_enqueue_script(
+        'oz-swiper-loader',
+        get_stylesheet_directory_uri() . '/js/swiper-loader.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/swiper-loader.js'),
+        true
+    );
+    wp_enqueue_script(
+        'oz-reviews-carousel',
+        get_stylesheet_directory_uri() . '/js/oz-reviews-carousel.js',
+        ['oz-swiper-loader'],
+        filemtime(get_stylesheet_directory() . '/js/oz-reviews-carousel.js'),
+        true
+    );
 }
 add_action('wp_enqueue_scripts', 'oz_reviews_page_enqueue');
 

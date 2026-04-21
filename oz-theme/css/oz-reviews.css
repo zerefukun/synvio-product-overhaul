@@ -545,3 +545,75 @@
   padding: 32px 0 24px;
   text-align: center;
 }
+
+/* ================================================================
+   Reviews carousel — Swiper-powered slider for /reviews/ hub
+   ================================================================ */
+.oz-hp-reviews-carousel {
+  position: relative;
+  max-width: var(--oz-max-w);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+
+.oz-hp-reviews-carousel .oz-hp-reviews-swiper {
+  overflow: hidden;
+}
+
+.oz-hp-reviews-carousel .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.oz-hp-reviews-carousel .swiper-slide > .oz-hp-review {
+  width: 100%;
+}
+
+.oz-hp-reviews-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--oz-border, rgba(0,0,0,.12));
+  background: #fff;
+  color: var(--oz-text, #222);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  transition: background .15s, color .15s, box-shadow .15s, opacity .15s;
+  padding: 0;
+}
+
+.oz-hp-reviews-nav svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.oz-hp-reviews-nav:hover {
+  background: var(--oz-text, #222);
+  color: #fff;
+}
+
+.oz-hp-reviews-nav.swiper-button-disabled {
+  opacity: .35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.oz-hp-reviews-nav--prev { left: -4px; }
+.oz-hp-reviews-nav--next { right: -4px; }
+
+@media (min-width: 1024px) {
+  .oz-hp-reviews-nav--prev { left: -22px; }
+  .oz-hp-reviews-nav--next { right: -22px; }
+}
+
+@media (max-width: 640px) {
+  .oz-hp-reviews-nav { display: none; }
+}

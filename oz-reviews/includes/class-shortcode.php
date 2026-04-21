@@ -30,6 +30,7 @@ class Shortcode {
 				'source'     => '',
 				'min_rating' => 1,
 				'order'      => 'date',
+				'layout'     => 'grid',
 			),
 			$atts,
 			'oz_reviews'
@@ -76,6 +77,9 @@ class Shortcode {
 			$dtos[] = Review_DTO::from_post( $p );
 		}
 
+		if ( $atts['layout'] === 'carousel' ) {
+			return Renderer::carousel( $dtos );
+		}
 		return Renderer::grid( $dtos );
 	}
 
