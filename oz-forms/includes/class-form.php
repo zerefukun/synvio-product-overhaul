@@ -146,14 +146,17 @@ class Form {
 		$req_mark = $required ? ' <span class="oz-form__req" aria-hidden="true">*</span>' : '';
 		$help     = ! empty( $spec['help'] ) ? '<small class="oz-form__help">' . esc_html( $spec['help'] ) . '</small>' : '';
 
+		$autocomplete = self::resolve_autocomplete( $name, $type, $spec );
+
 		$common = sprintf(
-			' id="%s" name="%s"%s%s%s%s',
+			' id="%s" name="%s"%s%s%s%s%s',
 			esc_attr( $id ),
 			esc_attr( $name ),
 			$req_attr,
 			! empty( $spec['placeholder'] ) ? ' placeholder="' . esc_attr( $spec['placeholder'] ) . '"' : '',
 			! empty( $spec['maxlength'] ) ? ' maxlength="' . (int) $spec['maxlength'] . '"' : '',
-			! empty( $spec['pattern'] ) ? ' pattern="' . esc_attr( $spec['pattern'] ) . '"' : ''
+			! empty( $spec['pattern'] ) ? ' pattern="' . esc_attr( $spec['pattern'] ) . '"' : '',
+			$autocomplete !== '' ? ' autocomplete="' . esc_attr( $autocomplete ) . '"' : ''
 		);
 
 		$control = '';
@@ -246,6 +249,72 @@ class Form {
 		$label_html = $label !== '' ? '<label for="' . esc_attr( $id ) . '" class="oz-form__label">' . esc_html( $label ) . $req_mark . '</label>' : '';
 
 		return '<div class="oz-form__field oz-form__field--' . esc_attr( $type ) . ' oz-form__field--' . esc_attr( sanitize_html_class( $name ) ) . '">' . $label_html . $control . $help . '<span class="oz-form__error" aria-live="polite"></span></div>';
+	}
+
+	/**
+	 * Map a field to a WHATWG autocomplete token so browsers can autofill.
+	 * Explicit 'autocomplete' in the spec always wins (including 'off').
+	 */
+	private static function resolve_autocomplete( string $name, string $type, array $spec ) : string {
+		if ( array_key_exists( 'autocomplete', $spec ) ) {
+			return (string) $spec['autocomplete'];
+		}
+
+		$autofillable = array( 'text', 'email', 'tel', 'number', 'url', 'date' );
+		if ( ! in_array( $type, $autofillable, true ) ) {
+			return '';
+		}
+
+		if ( $type === 'email' ) {
+			return 'email';
+		}
+		if ( $type === 'tel' ) {
+			return 'tel';
+		}
+		if ( $type === 'url' ) {
+			return 'url';
+		}
+
+		$map = array(
+			'name'          => 'name',
+			'naam'          => 'name',
+			'volledige_naam'=> 'name',
+			'fullname'      => 'name',
+			'full_name'     => 'name',
+			'voornaam'      => 'given-name',
+			'given_name'    => 'given-name',
+			'first_name'    => 'given-name',
+			'achternaam'    => 'family-name',
+			'family_name'   => 'family-name',
+			'last_name'     => 'family-name',
+			'mail'          => 'email',
+			'e_mail'        => 'email',
+			'emailadres'    => 'email',
+			'telefoon'      => 'tel',
+			'phone'         => 'tel',
+			'mobiel'        => 'tel',
+			'bedrijf'       => 'organization',
+			'company'       => 'organization',
+			'organization'  => 'organization',
+			'adres'         => 'street-address',
+			'address'       => 'street-address',
+			'straat'        => 'street-address',
+			'street'        => 'street-address',
+			'postcode'      => 'postal-code',
+			'postal_code'   => 'postal-code',
+			'zip'           => 'postal-code',
+			'stad'          => 'address-level2',
+			'plaats'        => 'address-level2',
+			'woonplaats'    => 'address-level2',
+			'city'          => 'address-level2',
+			'provincie'     => 'address-level1',
+			'region'        => 'address-level1',
+			'land'          => 'country-name',
+			'country'       => 'country-name',
+			'website'       => 'url',
+		);
+
+		return $map[ strtolower( $name ) ] ?? '';
 	}
 
 	/**
