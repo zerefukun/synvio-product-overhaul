@@ -53,6 +53,15 @@
   color: var(--oz-accent);
 }
 
+.oz-hp-reviews .oz-hp-section-intro {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--oz-text-primary);
+  max-width: 560px;
+  margin: 12px auto 0;
+  text-align: center;
+}
+
 @media (max-width: 767px) {
   .oz-hp-reviews .oz-hp-eyebrow::before,
   .oz-hp-reviews .oz-hp-eyebrow::after { display: none; }
