@@ -144,6 +144,28 @@
   gap: 14px;
 }
 
+.oz-hp-reviews-grid .oz-hp-review {
+  height: 320px;
+  overflow: hidden;
+}
+
+.oz-hp-reviews-grid .oz-hp-review-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.oz-hp-reviews-grid .oz-hp-review-photos,
+.oz-hp-reviews-grid .oz-hp-review-reply,
+.oz-hp-reviews-grid .oz-hp-review-title {
+  display: none;
+}
+
+.oz-hp-reviews-grid .oz-hp-review-author {
+  margin-top: auto;
+}
+
 .oz-hp-review-head {
   display: flex;
   justify-content: space-between;
