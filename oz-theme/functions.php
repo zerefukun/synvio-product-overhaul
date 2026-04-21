@@ -646,6 +646,28 @@ function oz_reviews_page_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
     );
 
+    wp_enqueue_style(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
+        ['oz-reviews'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
+    );
+
+    wp_enqueue_style(
+        'oz-homepage-v2-animations',
+        get_stylesheet_directory_uri() . '/css/homepage-v2-animations.css',
+        ['oz-homepage-v2'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
+    );
+
+    wp_enqueue_script(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/js/homepage-v2.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/homepage-v2.js'),
+        true
+    );
+
     wp_enqueue_script(
         'oz-swiper-loader',
         get_stylesheet_directory_uri() . '/js/swiper-loader.js',

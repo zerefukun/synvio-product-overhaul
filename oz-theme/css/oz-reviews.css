@@ -667,3 +667,120 @@
 @media (max-width: 640px) {
   .oz-hp-reviews-nav { display: none; }
 }
+
+/* ================================================================
+   Compact review form — used on /reviews/ hub.
+   Overrides oz-forms defaults (12px gap, 22px padding) with tighter
+   spacing and a 2-col grid for pairs so the form reads as one clean
+   card instead of a long list.
+   ================================================================ */
+.oz-form-wrap--review {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+
+.oz-form-wrap--review .oz-form {
+  gap: 10px;
+  margin: 0;
+  padding: 18px 20px 16px;
+  max-width: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(20, 30, 40, .06);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 14px;
+  row-gap: 10px;
+}
+
+.oz-form-wrap--review .oz-form > * {
+  grid-column: 1 / -1;
+}
+
+@container ozform (min-width: 520px) {
+  .oz-form-wrap--review .oz-form__field--naam,
+  .oz-form-wrap--review .oz-form__field--email,
+  .oz-form-wrap--review .oz-form__field--stad,
+  .oz-form-wrap--review .oz-form__field--project_type {
+    grid-column: span 1;
+  }
+}
+
+.oz-form-wrap--review .oz-form__label {
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.oz-form-wrap--review .oz-form__field input[type="text"],
+.oz-form-wrap--review .oz-form__field input[type="email"],
+.oz-form-wrap--review .oz-form__field select,
+.oz-form-wrap--review .oz-form__field textarea {
+  padding: 8px 11px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.oz-form-wrap--review .oz-form__field textarea {
+  min-height: 88px;
+}
+
+.oz-form-wrap--review .oz-form__help {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.oz-form-wrap--review .oz-form__field--rating .oz-form__rating {
+  gap: 2px;
+}
+
+.oz-form-wrap--review .oz-form__error {
+  min-height: 0;
+}
+
+.oz-form-wrap--review .oz-form__field.is-invalid .oz-form__error {
+  min-height: 1em;
+  margin-top: 2px;
+}
+
+.oz-form-wrap--review .oz-form__turnstile {
+  min-height: 0;
+}
+
+.oz-form-wrap--review .oz-form__nav {
+  margin-top: 4px;
+}
+
+.oz-form-wrap--review .oz-form__submit {
+  width: 100%;
+  min-height: 46px;
+  font-size: 15px;
+  background: var(--oz-accent, #135350);
+  color: #fff;
+  border-color: var(--oz-accent, #135350);
+}
+
+.oz-form-wrap--review .oz-form__submit:hover {
+  background: #0f4240;
+}
+
+/* Secondary CTA row under the form */
+.oz-reviews-secondary-cta {
+  max-width: 620px;
+  margin: 20px auto 0;
+  padding: 0 var(--oz-gap);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  text-align: center;
+  font-size: 14px;
+  color: var(--oz-text-muted);
+}
+
+/* Hero variant — reviews page */
+.oz-hp-hero--reviews .oz-hp-hero-title-tag {
+  color: rgba(255, 255, 255, .88);
+  font-weight: 500;
+  letter-spacing: .04em;
+}

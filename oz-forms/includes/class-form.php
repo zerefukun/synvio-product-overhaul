@@ -245,7 +245,7 @@ class Form {
 
 		$label_html = $label !== '' ? '<label for="' . esc_attr( $id ) . '" class="oz-form__label">' . esc_html( $label ) . $req_mark . '</label>' : '';
 
-		return '<div class="oz-form__field oz-form__field--' . esc_attr( $type ) . '">' . $label_html . $control . $help . '<span class="oz-form__error" aria-live="polite"></span></div>';
+		return '<div class="oz-form__field oz-form__field--' . esc_attr( $type ) . ' oz-form__field--' . esc_attr( sanitize_html_class( $name ) ) . '">' . $label_html . $control . $help . '<span class="oz-form__error" aria-live="polite"></span></div>';
 	}
 
 	/**
