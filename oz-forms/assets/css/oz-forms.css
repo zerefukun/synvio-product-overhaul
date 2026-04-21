@@ -100,8 +100,11 @@
 
 .oz-form__error {
 	font-size: 13px;
-	color: #b32d2e;
-	min-height: 1em;
+	color: var(--oz-error, #b32d2e);
+}
+
+.oz-form__error:empty {
+	display: none;
 }
 
 .oz-form__field.is-invalid input,
