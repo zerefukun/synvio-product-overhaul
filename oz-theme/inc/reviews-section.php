@@ -40,6 +40,14 @@ function oz_render_reviews_section( $context = 'home' ) {
 			'meta_key'       => '_oz_publish_time',
 			'orderby'        => 'meta_value',
 			'order'          => 'DESC',
+			'meta_query'     => array(
+				array(
+					'key'     => '_oz_rating',
+					'value'   => 4,
+					'compare' => '>=',
+					'type'    => 'NUMERIC',
+				),
+			),
 		) );
 
 		foreach ( $posts as $p ) {
