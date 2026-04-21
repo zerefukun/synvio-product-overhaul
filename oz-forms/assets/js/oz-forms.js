@@ -546,6 +546,174 @@
 		} );
 	}
 
+	/* Single-select autocomplete combobox. Upgrades a hidden native <select>
+	   into a searchable input + suggestion list. All state lives on the
+	   native <select>, so the form submits name="field"=value as if it were
+	   a normal dropdown — validators treat it identically to `select`.
+
+	   Markup convention (rendered server-side):
+	     .oz-form__autocomplete[data-name][data-options]
+	       > select.oz-form__autocomplete-native (hidden, holds state)
+
+	   Normalization (lowercase + diacritic strip) makes "Ciré" match a
+	   "cire" query, so Dutch/French accents don't break filtering. */
+	function setupAutocompletes( form ) {
+		var containers = form.querySelectorAll( '.oz-form__autocomplete' );
+		containers.forEach( function ( box ) {
+			var ph     = box.getAttribute( 'data-placeholder' ) || 'Typ om te zoeken…';
+			var native = box.querySelector( '.oz-form__autocomplete-native' );
+			if ( ! native ) { return; }
+
+			var options;
+			try { options = JSON.parse( box.getAttribute( 'data-options' ) || '{}' ); }
+			catch ( e ) { options = {}; }
+
+			native.setAttribute( 'hidden', 'hidden' );
+			native.setAttribute( 'aria-hidden', 'true' );
+			native.tabIndex = -1;
+
+			var ui = document.createElement( 'div' );
+			ui.className = 'oz-form__ac-ui';
+			ui.innerHTML =
+				'<input type="text" class="oz-form__ac-search" placeholder="' + ph.replace( /"/g, '&quot;' ) + '" autocomplete="off" aria-autocomplete="list" role="combobox" aria-expanded="false">' +
+				'<button type="button" class="oz-form__ac-clear" aria-label="Wissen" hidden>&times;</button>' +
+				'<ul class="oz-form__ac-suggest" role="listbox" hidden></ul>';
+			box.appendChild( ui );
+
+			var searchEl  = ui.querySelector( '.oz-form__ac-search' );
+			var clearEl   = ui.querySelector( '.oz-form__ac-clear' );
+			var suggestEl = ui.querySelector( '.oz-form__ac-suggest' );
+
+			function normalize( s ) {
+				return ( s || '' ).toString().toLowerCase().normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
+			}
+
+			function selectedValue() {
+				return native.value || '';
+			}
+
+			function setSelected( value ) {
+				native.value = value;
+				native.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				render();
+			}
+
+			function render() {
+				var v = selectedValue();
+				if ( v && options[ v ] ) {
+					searchEl.value = options[ v ];
+					box.classList.add( 'has-selection' );
+					clearEl.hidden = false;
+				} else {
+					box.classList.remove( 'has-selection' );
+					clearEl.hidden = true;
+				}
+			}
+
+			function filterSuggestions( q ) {
+				var qNorm = normalize( q || '' ).trim();
+				var current = selectedValue();
+				// If the query exactly equals the selected label, treat as
+				// empty filter — the user is just re-opening the menu.
+				var currentLabel = current && options[ current ] ? options[ current ] : '';
+				if ( qNorm && currentLabel && normalize( currentLabel ) === qNorm ) {
+					qNorm = '';
+				}
+				var matches = Object.keys( options ).filter( function ( v ) {
+					if ( ! qNorm ) { return true; }
+					return normalize( options[ v ] || '' ).indexOf( qNorm ) !== -1
+						|| normalize( v ).indexOf( qNorm ) !== -1;
+				} );
+				suggestEl.innerHTML = '';
+				if ( ! matches.length ) {
+					suggestEl.hidden = true;
+					searchEl.setAttribute( 'aria-expanded', 'false' );
+					return;
+				}
+				matches.forEach( function ( v, i ) {
+					var li = document.createElement( 'li' );
+					li.className = 'oz-form__ac-suggest-item';
+					li.setAttribute( 'role', 'option' );
+					li.setAttribute( 'data-value', v );
+					if ( v === current ) { li.classList.add( 'is-selected' ); }
+					if ( i === 0 ) { li.classList.add( 'is-active' ); }
+					li.textContent = options[ v ] || v;
+					li.addEventListener( 'mousedown', function ( ev ) {
+						ev.preventDefault();
+						setSelected( v );
+						suggestEl.hidden = true;
+						searchEl.setAttribute( 'aria-expanded', 'false' );
+						searchEl.blur();
+					} );
+					suggestEl.appendChild( li );
+				} );
+				suggestEl.hidden = false;
+				searchEl.setAttribute( 'aria-expanded', 'true' );
+			}
+
+			searchEl.addEventListener( 'focus', function () {
+				// Select all on focus so the user can start typing fresh without
+				// having to manually clear the old label.
+				if ( selectedValue() ) { searchEl.select(); }
+				filterSuggestions( '' );
+			} );
+			searchEl.addEventListener( 'input', function () {
+				// Typing invalidates the current selection until a suggestion
+				// is committed — matches classic combobox behaviour.
+				if ( selectedValue() ) { setSelected( '' ); }
+				filterSuggestions( searchEl.value );
+			} );
+			searchEl.addEventListener( 'blur',  function () {
+				setTimeout( function () {
+					suggestEl.hidden = true;
+					searchEl.setAttribute( 'aria-expanded', 'false' );
+					// If user typed but didn't pick, restore display to last committed selection.
+					render();
+				}, 120 );
+			} );
+			searchEl.addEventListener( 'keydown', function ( ev ) {
+				var active = suggestEl.querySelector( '.is-active' );
+				if ( ev.key === 'ArrowDown' ) {
+					ev.preventDefault();
+					if ( suggestEl.hidden ) { filterSuggestions( searchEl.value ); return; }
+					var next = active && active.nextElementSibling;
+					if ( active ) { active.classList.remove( 'is-active' ); }
+					( next || suggestEl.firstElementChild ).classList.add( 'is-active' );
+				} else if ( ev.key === 'ArrowUp' ) {
+					ev.preventDefault();
+					var prev = active && active.previousElementSibling;
+					if ( active ) { active.classList.remove( 'is-active' ); }
+					( prev || suggestEl.lastElementChild ).classList.add( 'is-active' );
+				} else if ( ev.key === 'Enter' ) {
+					if ( ! suggestEl.hidden && active ) {
+						ev.preventDefault();
+						setSelected( active.getAttribute( 'data-value' ) );
+						suggestEl.hidden = true;
+						searchEl.setAttribute( 'aria-expanded', 'false' );
+						searchEl.blur();
+					}
+				} else if ( ev.key === 'Escape' ) {
+					suggestEl.hidden = true;
+					searchEl.setAttribute( 'aria-expanded', 'false' );
+					render();
+				}
+			} );
+
+			clearEl.addEventListener( 'click', function () {
+				setSelected( '' );
+				searchEl.value = '';
+				searchEl.focus();
+				filterSuggestions( '' );
+			} );
+
+			box.addEventListener( 'click', function ( ev ) {
+				if ( ev.target === box ) { searchEl.focus(); }
+			} );
+
+			render();
+		} );
+	}
+
 	ready( function () {
 		var forms = document.querySelectorAll( 'form.oz-form' );
 		if ( ! forms.length ) { return; }
@@ -557,6 +725,7 @@
 				whenTurnstileReady( function () { renderTurnstile( form ); } );
 			}
 			setupMultiselects( form );
+			setupAutocompletes( form );
 			setupKleurPicker( form );
 			armStartTracking( form );
 			form.addEventListener( 'submit', function ( ev ) {

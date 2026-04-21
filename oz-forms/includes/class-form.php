@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Field spec:
  *   array(
  *     'label'       => 'Naam',
- *     'type'        => 'text|email|tel|number|textarea|select|checkbox|radio|multiselect|file|rating|hidden',
+ *     'type'        => 'text|email|tel|number|textarea|select|autocomplete|checkbox|radio|multiselect|file|rating|hidden',
  *     'required'    => true,
  *     'placeholder' => 'optional',
  *     'options'     => array('value' => 'label')   // for select/radio/checkbox-group
@@ -169,6 +169,21 @@ class Form {
 					$opts_html .= '<option value="' . esc_attr( $val ) . '">' . esc_html( $opt_label ) . '</option>';
 				}
 				$control = '<select' . $common . '>' . $opts_html . '</select>';
+				break;
+			case 'autocomplete':
+				// Single-select combobox with typeahead filtering. JS upgrades
+				// the markup into a searchable dropdown; the non-JS fallback
+				// is a plain native <select> so the form still submits.
+				$options     = $spec['options'] ?? array();
+				$placeholder = $spec['placeholder'] ?? 'Typ om te zoeken…';
+				$opts_json   = wp_json_encode( $options );
+				$opts_html   = '<option value="">' . esc_html( $placeholder ) . '</option>';
+				foreach ( $options as $val => $opt_label ) {
+					$opts_html .= '<option value="' . esc_attr( $val ) . '">' . esc_html( $opt_label ) . '</option>';
+				}
+				$control  = '<div class="oz-form__autocomplete" data-name="' . esc_attr( $name ) . '" data-options="' . esc_attr( $opts_json ) . '" data-placeholder="' . esc_attr( $placeholder ) . '">';
+				$control .= '<select name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '"' . $req_attr . ' class="oz-form__autocomplete-native">' . $opts_html . '</select>';
+				$control .= '</div>';
 				break;
 			case 'checkbox':
 				// Single boolean checkbox.
@@ -339,6 +354,7 @@ class Form {
 					$value = sanitize_textarea_field( $value );
 					break;
 				case 'select':
+				case 'autocomplete':
 					$allowed = array_keys( $spec['options'] ?? array() );
 					if ( ! in_array( $value, $allowed, true ) ) {
 						$errors[ $name ] = 'Maak een geldige keuze.';
