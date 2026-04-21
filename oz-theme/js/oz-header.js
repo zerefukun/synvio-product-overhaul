@@ -92,6 +92,7 @@
     searchDrawer.setAttribute('aria-hidden', 'false');
     lockBody();
     renderRecent();
+    warmPool();
     /* Focus input after transition */
     setTimeout(function () { searchInput && searchInput.focus(); }, 350);
   }
@@ -174,26 +175,69 @@
       .replace(/[\u0300-\u036f]/g, '');
   }
 
-  /* Subsequence match: every char of `needle` appears in `haystack` in order,
-     not necessarily consecutive. Tolerates missing/extra letters in typos --
-     "metalic" matches "metallicstucvelvet" because m-e-t-a-l-i-c all appear
-     in order. Used as a FALLBACK after substring match fails, and gated at
-     4+ chars so short queries like "asd" don't accidentally match long names. */
-  function isSubsequence(needle, haystack) {
-    if (!needle) return true;
-    var i = 0;
-    for (var j = 0; j < haystack.length && i < needle.length; j++) {
-      if (haystack.charCodeAt(j) === needle.charCodeAt(i)) i++;
+  /* Levenshtein edit distance: minimum single-character edits (insert, delete,
+     substitute) to transform `a` into `b`. Classic DP with a rolling row so
+     memory stays O(min(a,b)). Used to rank product tokens against the query —
+     e.g. "metalic" vs "metallic" = 1 edit, so it ranks just below an exact
+     match. Short-circuits when both strings are equal. */
+  function levenshtein(a, b) {
+    if (a === b) return 0;
+    if (!a.length) return b.length;
+    if (!b.length) return a.length;
+    var prev = new Array(b.length + 1);
+    for (var j = 0; j <= b.length; j++) prev[j] = j;
+    for (var i = 1; i <= a.length; i++) {
+      var curr = [ i ];
+      for (var k = 1; k <= b.length; k++) {
+        var cost = a.charCodeAt(i - 1) === b.charCodeAt(k - 1) ? 0 : 1;
+        curr[k] = Math.min(curr[k - 1] + 1, prev[k] + 1, prev[k - 1] + cost);
+      }
+      prev = curr;
     }
-    return i === needle.length;
+    return prev[b.length];
   }
 
-  /* Ranks substring hits before subsequence hits so exact matches stay first.
-     Returns 2 for substring, 1 for subsequence (4+ chars only), 0 for miss. */
-  function fuzzyScore(nameNorm, qNorm) {
-    if (nameNorm.indexOf(qNorm) !== -1) return 2;
-    if (qNorm.length >= 4 && isSubsequence(qNorm, nameNorm)) return 1;
-    return 0;
+  /* Max allowed edit distance scales with query length. Short queries ("fox")
+     get 0 edits to avoid over-matching; medium ("metal") get 1; long
+     ("metallic"+) get 2. Keeps fuzzy results relevant, not noisy. */
+  function maxEdits(qLen) {
+    if (qLen <= 3) return 0;
+    if (qLen <= 6) return 1;
+    return 2;
+  }
+
+  /* Split a normalized product name into word tokens. "metallic velvet 4m2"
+     → ["metallic", "velvet", "4m2"]. Matching per-token lets a typo in a
+     single word score well even when the full name is long. */
+  function tokenize(nameNorm) {
+    return nameNorm.split(/[^a-z0-9]+/).filter(Boolean);
+  }
+
+  /* Score a product name against the query. Lower is better.
+       0   — query is a substring of the full name OR a prefix of any token
+             (e.g. "metal" inside "metallic" → strong match)
+       1-n — min edit distance between query and any token, up to maxEdits
+     Returns Infinity when nothing's close enough. Because callers rank by
+     ascending score, substring/prefix hits always outrank fuzzy hits. */
+  function scoreProduct(nameNorm, qNorm) {
+    if (!qNorm) return Infinity;
+    if (nameNorm.indexOf(qNorm) !== -1) return 0;
+
+    var tokens = tokenize(nameNorm);
+    var limit  = maxEdits(qNorm.length);
+    var best   = Infinity;
+
+    for (var i = 0; i < tokens.length; i++) {
+      var t = tokens[i];
+      if (t.indexOf(qNorm) === 0) return 0;
+      /* Skip tokens whose length is too different — a valid edit distance
+         ≤ limit requires |len(a) - len(b)| ≤ limit. Cheap early-out. */
+      if (Math.abs(t.length - qNorm.length) > limit) continue;
+      var d = levenshtein(t, qNorm);
+      if (d < best) best = d;
+      if (best === 0) break;
+    }
+    return best <= limit ? best : Infinity;
   }
 
   if (searchInput) {
@@ -277,33 +321,32 @@
     return null;
   }
 
-  /* Filter a given product array using fuzzyScore (substring + subsequence
-     fallback) and return substring matches before subsequence matches. */
+  /* Filter + rank a product array by closeness to the query. Lower scoreProduct
+     result = better match, so ascending sort puts exact/prefix hits first,
+     then typo-tolerant hits ranked by edit distance. */
   function filterByQuery(products, query) {
     var qNorm = normalize(query);
-    var hits = [];
+    var scored = [];
     products.forEach(function (p) {
-      var score = fuzzyScore(normalize(p.name), qNorm);
-      if (score > 0) hits.push({ p: p, score: score });
+      var s = scoreProduct(normalize(p.name), qNorm);
+      if (s !== Infinity) scored.push({ p: p, s: s });
     });
-    hits.sort(function (a, b) { return b.score - a.score; });
-    return hits.map(function (x) { return x.p; });
+    scored.sort(function (a, b) { return a.s - b.s; });
+    return scored.map(function (x) { return x.p; });
   }
 
-  /* Scan every product we've ever seen across any cached query and return
-     the ones matching the normalized query (substring or subsequence fallback).
-     Capped at PER_PAGE for layout stability — same number of cards as a real
-     fetch would render. Substring hits ranked before subsequence hits. */
+  /* Scan every product we've ever seen across any cached query, rank by
+     closeness, return the top PER_PAGE. Same fuzzy scorer as filterByQuery
+     — pool-match rendering stays consistent with API-match rendering. */
   function filterPoolByQuery(query) {
     var qNorm = normalize(query);
-    var substringHits = [];
-    var subsequenceHits = [];
+    var scored = [];
     productPool.forEach(function (p) {
-      var score = fuzzyScore(normalize(p.name), qNorm);
-      if (score === 2) substringHits.push(p);
-      else if (score === 1) subsequenceHits.push(p);
+      var s = scoreProduct(normalize(p.name), qNorm);
+      if (s !== Infinity) scored.push({ p: p, s: s });
     });
-    return substringHits.concat(subsequenceHits).slice(0, PER_PAGE);
+    scored.sort(function (a, b) { return a.s - b.s; });
+    return scored.slice(0, PER_PAGE).map(function (x) { return x.p; });
   }
 
   /* Fold a product array into the dedup pool keyed by id. */
@@ -327,6 +370,28 @@
       activeAbort.abort();
       activeAbort = null;
     }
+  }
+
+  /* Pre-fetch a broad set of products once per session so the fuzzy scorer
+     has real data to rank against on the very first keystroke. Without this,
+     a fresh visitor typing "metalic" would get an empty API response (WC
+     Store API uses substring LIKE, can't match typos) and no pool to fall
+     back on. A single 100-item fetch costs one request but makes first-query
+     typo tolerance work instantly. */
+  var poolWarmed = false;
+  function warmPool() {
+    if (poolWarmed) return;
+    poolWarmed = true;
+    var url = siteUrl + '/wp-json/wc/store/v1/products?per_page=100&orderby=popularity';
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (products) {
+        if (products && products.length) addToPool(products);
+      })
+      .catch(function () {
+        /* Let the next drawer-open retry on failure */
+        poolWarmed = false;
+      });
   }
 
   function hideResults() {
