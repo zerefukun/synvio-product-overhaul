@@ -262,14 +262,34 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 					</a>
 				</li>
 				<?php foreach ( $children_map[ $item->ID ] as $child ) : ?>
-				<li class="oz-menu-drawer__subcategory-item">
-					<a href="<?php echo esc_url( $child->url ); ?>" class="oz-menu-drawer__subcategory-link">
-						<span><?php echo esc_html( $child->title ); ?></span>
-						<?php if ( ! empty( $children_map[ $child->ID ] ) ) : ?>
-							<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-						<?php endif; ?>
-					</a>
-				</li>
+					<?php $has_grandchildren = ! empty( $children_map[ $child->ID ] ); ?>
+					<?php if ( $has_grandchildren ) : ?>
+					<li class="oz-menu-drawer__subcategory-item has-grandchildren">
+						<div class="oz-menu-drawer__subcategory-row">
+							<a href="<?php echo esc_url( $child->url ); ?>" class="oz-menu-drawer__subcategory-link">
+								<span><?php echo esc_html( $child->title ); ?></span>
+							</a>
+							<button type="button" class="oz-menu-drawer__subcategory-toggle" aria-expanded="false" aria-label="<?php echo esc_attr( $child->title ); ?> uitklappen">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+							</button>
+						</div>
+						<ul class="oz-menu-drawer__grandchildren">
+							<?php foreach ( $children_map[ $child->ID ] as $grandchild ) : ?>
+							<li class="oz-menu-drawer__grandchild-item">
+								<a href="<?php echo esc_url( $grandchild->url ); ?>" class="oz-menu-drawer__grandchild-link">
+									<span><?php echo esc_html( $grandchild->title ); ?></span>
+								</a>
+							</li>
+							<?php endforeach; ?>
+						</ul>
+					</li>
+					<?php else : ?>
+					<li class="oz-menu-drawer__subcategory-item">
+						<a href="<?php echo esc_url( $child->url ); ?>" class="oz-menu-drawer__subcategory-link">
+							<span><?php echo esc_html( $child->title ); ?></span>
+						</a>
+					</li>
+					<?php endif; ?>
 				<?php endforeach; ?>
 			</ul>
 		</div>

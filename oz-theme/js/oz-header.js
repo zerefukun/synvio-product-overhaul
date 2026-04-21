@@ -86,6 +86,19 @@
     btn.addEventListener('click', closeAllSubmenus);
   });
 
+  /* Sub-sub (grandchildren) accordion inside a drill-down panel */
+  var grandchildToggles = document.querySelectorAll('.oz-menu-drawer__subcategory-toggle');
+  grandchildToggles.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var li = btn.closest('.has-grandchildren');
+      if (!li) return;
+      var expanded = li.classList.toggle('is-expanded');
+      btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+  });
+
   /* ── Search drawer ── */
   function openSearch() {
     searchDrawer.classList.add('is-open');

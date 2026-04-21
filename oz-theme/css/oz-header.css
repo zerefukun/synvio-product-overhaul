@@ -709,6 +709,81 @@ body.oz-header-overlay-page {
   color: var(--oz-hdr-teal);
 }
 
+/* Sub-sub accordion (grandchildren inside a subcategory panel) */
+.oz-menu-drawer__subcategory-item.has-grandchildren .oz-menu-drawer__subcategory-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.oz-menu-drawer__subcategory-item.has-grandchildren .oz-menu-drawer__subcategory-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.oz-menu-drawer__subcategory-toggle {
+  flex: 0 0 auto;
+  width: 52px;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--oz-hdr-stone);
+  cursor: pointer;
+  color: var(--oz-hdr-charcoal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s, color .15s, transform .2s;
+  padding: 0;
+}
+
+.oz-menu-drawer__subcategory-toggle:hover {
+  background: var(--oz-hdr-sand);
+  color: var(--oz-hdr-teal);
+}
+
+.oz-menu-drawer__subcategory-toggle svg {
+  transition: transform .2s ease;
+}
+
+.oz-menu-drawer__subcategory-item.is-expanded .oz-menu-drawer__subcategory-toggle svg {
+  transform: rotate(180deg);
+}
+
+.oz-menu-drawer__grandchildren {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+  background: var(--oz-hdr-sand);
+}
+
+.oz-menu-drawer__subcategory-item.is-expanded .oz-menu-drawer__grandchildren {
+  max-height: 1000px;
+}
+
+.oz-menu-drawer__grandchild-item {
+  margin: 0;
+  padding: 0;
+}
+
+.oz-menu-drawer__grandchild-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px 12px 40px;
+  text-decoration: none;
+  color: var(--oz-hdr-charcoal);
+  font-family: var(--oz-hdr-ff-body);
+  font-size: 13px;
+  font-weight: 400;
+  transition: background .15s, color .15s;
+}
+
+.oz-menu-drawer__grandchild-link:hover {
+  background: var(--oz-hdr-stone);
+  color: var(--oz-hdr-teal);
+}
+
 
 /* ================================================================
    SEARCH DRAWER — slides from left

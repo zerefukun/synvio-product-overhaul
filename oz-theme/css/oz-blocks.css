@@ -594,15 +594,25 @@
 
 .oz-cat-nav__link {
   flex: 1;
+  min-width: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   padding: 8px 12px;
   color: var(--oz-text-body);
   text-decoration: none;
   font-size: 14px;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   border-radius: var(--oz-radius);
   transition: background var(--oz-transition), color var(--oz-transition);
+}
+
+.oz-cat-nav__count {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .oz-cat-nav__link:hover {

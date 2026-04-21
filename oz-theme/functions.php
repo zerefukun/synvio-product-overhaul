@@ -878,7 +878,7 @@ function oz_cart_drawer_get() {
 
         $items[] = [
             'key'        => $cart_key,
-            'name'       => $display_name,
+            'name'       => html_entity_decode($display_name, ENT_QUOTES, 'UTF-8'),
             'price'      => floatval($product->get_price()),
             'qty'        => $cart_item['quantity'],
             'image'      => $image_url,
@@ -1361,7 +1361,7 @@ function oz_format_product_card($product) {
 
     return [
         'id'        => $product->get_id(),
-        'name'      => $product->get_name(),
+        'name'      => html_entity_decode($product->get_name(), ENT_QUOTES, 'UTF-8'),
         'price'     => floatval($product->get_price()),
         'image'     => $image_url,
         'permalink' => $product->get_permalink(),

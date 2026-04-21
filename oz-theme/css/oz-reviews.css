@@ -778,6 +778,19 @@
   color: var(--oz-text-muted);
 }
 
+/* Override global --outline (designed for dark hero) so the button is
+   legible on the light sand background. */
+.oz-reviews-secondary-cta .oz-hp-btn--outline {
+  background: transparent;
+  border: 1.5px solid var(--teal);
+  color: var(--teal);
+}
+
+.oz-reviews-secondary-cta .oz-hp-btn--outline:hover {
+  background: var(--teal);
+  color: var(--white);
+}
+
 /* Hero variant — reviews page */
 .oz-hp-hero--reviews .oz-hp-hero-title-tag {
   color: rgba(255, 255, 255, .88);
