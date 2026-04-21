@@ -174,6 +174,28 @@
       .replace(/[\u0300-\u036f]/g, '');
   }
 
+  /* Subsequence match: every char of `needle` appears in `haystack` in order,
+     not necessarily consecutive. Tolerates missing/extra letters in typos --
+     "metalic" matches "metallicstucvelvet" because m-e-t-a-l-i-c all appear
+     in order. Used as a FALLBACK after substring match fails, and gated at
+     4+ chars so short queries like "asd" don't accidentally match long names. */
+  function isSubsequence(needle, haystack) {
+    if (!needle) return true;
+    var i = 0;
+    for (var j = 0; j < haystack.length && i < needle.length; j++) {
+      if (haystack.charCodeAt(j) === needle.charCodeAt(i)) i++;
+    }
+    return i === needle.length;
+  }
+
+  /* Ranks substring hits before subsequence hits so exact matches stay first.
+     Returns 2 for substring, 1 for subsequence (4+ chars only), 0 for miss. */
+  function fuzzyScore(nameNorm, qNorm) {
+    if (nameNorm.indexOf(qNorm) !== -1) return 2;
+    if (qNorm.length >= 4 && isSubsequence(qNorm, nameNorm)) return 1;
+    return 0;
+  }
+
   if (searchInput) {
     searchInput.addEventListener('input', function () {
       var q = searchInput.value.trim();
@@ -255,25 +277,33 @@
     return null;
   }
 
-  /* Filter a given product array by normalized substring match on name. */
+  /* Filter a given product array using fuzzyScore (substring + subsequence
+     fallback) and return substring matches before subsequence matches. */
   function filterByQuery(products, query) {
     var qNorm = normalize(query);
-    return products.filter(function (p) {
-      return normalize(p.name).indexOf(qNorm) !== -1;
+    var hits = [];
+    products.forEach(function (p) {
+      var score = fuzzyScore(normalize(p.name), qNorm);
+      if (score > 0) hits.push({ p: p, score: score });
     });
+    hits.sort(function (a, b) { return b.score - a.score; });
+    return hits.map(function (x) { return x.p; });
   }
 
   /* Scan every product we've ever seen across any cached query and return
-     the ones matching the normalized query. Capped at PER_PAGE for layout
-     stability — same number of cards as a real fetch would render. */
+     the ones matching the normalized query (substring or subsequence fallback).
+     Capped at PER_PAGE for layout stability — same number of cards as a real
+     fetch would render. Substring hits ranked before subsequence hits. */
   function filterPoolByQuery(query) {
     var qNorm = normalize(query);
-    var matches = [];
+    var substringHits = [];
+    var subsequenceHits = [];
     productPool.forEach(function (p) {
-      if (matches.length >= PER_PAGE) return;
-      if (normalize(p.name).indexOf(qNorm) !== -1) matches.push(p);
+      var score = fuzzyScore(normalize(p.name), qNorm);
+      if (score === 2) substringHits.push(p);
+      else if (score === 1) subsequenceHits.push(p);
     });
-    return matches;
+    return substringHits.concat(subsequenceHits).slice(0, PER_PAGE);
   }
 
   /* Fold a product array into the dedup pool keyed by id. */
@@ -351,14 +381,24 @@
         var list = products || [];
         cacheResult(query, list);
 
-        /* If the server returned nothing but we've already rendered pool
-           matches on screen, don't wipe them out with "geen resultaten".
-           The pool matches came from products the API previously returned
-           for other queries, so they're still legitimately in catalogue. */
+        /* If the server returned nothing, try to rescue the query:
+           1. Pool fallback: fuzzy-match across every product we've cached
+              so far (handles typos like "metalic" → "Metallic Stuc Velvet"
+              if the pool already contains those products).
+           2. Stem retry: the WC Store API uses a strict substring LIKE on
+              post_title. A typo like "metalic" returns 0 because "metallic"
+              contains no "metalic" substring. Retrying with the first 4 chars
+              ("meta") matches the real product; we then fuzzy-filter the
+              response client-side to keep only products matching the original
+              typed query. One retry max — bounded network cost. */
         if (!list.length) {
           var fallback = filterPoolByQuery(query);
           if (fallback.length) {
             renderResults(query, fallback);
+            return;
+          }
+          if (query.length >= 5) {
+            fetchStemAndFilter(query);
             return;
           }
         }
@@ -369,6 +409,38 @@
         /* AbortError is expected when we cancel — not an actual failure */
         if (err && err.name === 'AbortError') return;
         if (loadingSection) loadingSection.style.display = 'none';
+      });
+  }
+
+  /* Retry-with-shorter-query fallback. Uses a 4-char stem of the original
+     query so the WC Store API's strict substring search can find products
+     the user actually meant (typos). The response is then fuzzy-filtered
+     against the original query so we only show relevant matches.
+     Runs at most once per query — fetchResults has already fired the
+     original attempt and concluded it returned 0 results. */
+  function fetchStemAndFilter(query) {
+    var stem = query.slice(0, 4);
+    var url  = siteUrl + '/wp-json/wc/store/v1/products?search=' +
+      encodeURIComponent(stem) + '&per_page=' + PER_PAGE;
+
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (products) {
+        /* Stale guard */
+        if (query !== activeQuery) return;
+        var list = products || [];
+        if (list.length) addToPool(list);
+        var matched = filterByQuery(list, query);
+        if (matched.length) {
+          cacheResult(query, matched);
+          renderResults(query, matched);
+        } else {
+          cacheResult(query, []);
+          renderResults(query, []);
+        }
+      })
+      .catch(function () {
+        renderResults(query, []);
       });
   }
 

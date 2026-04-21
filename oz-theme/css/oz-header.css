@@ -828,6 +828,18 @@ body.oz-header-overlay-page {
   color: var(--oz-hdr-text-muted);
 }
 
+/* Hide the native browser clear X on type="search" inputs — we have our own
+   custom clear button (#oz-search-clear). Without this, Chrome/Edge render
+   their own X, resulting in two clear icons stacked on top of each other. */
+.oz-search-drawer__input::-webkit-search-cancel-button,
+.oz-search-drawer__input::-webkit-search-decoration,
+.oz-search-drawer__input::-webkit-search-results-button,
+.oz-search-drawer__input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .oz-search-drawer__clear {
   display: flex;
   align-items: center;
