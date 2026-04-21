@@ -73,7 +73,7 @@ class CLI {
 			}
 
 			$dto = Review_DTO::from_array( array(
-				'source'       => 'import',
+				'source'       => 'google',
 				'external_id'  => Review_DTO::external_id( $author, $publish ),
 				'rating'       => (int) ( $r['rating'] ?? 0 ),
 				'author_name'  => $author,
