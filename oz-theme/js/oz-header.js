@@ -226,31 +226,75 @@
     return nameNorm.split(/[^a-z0-9]+/).filter(Boolean);
   }
 
+  /* Subsequence gap scorer — catches dropped-letter typos that Levenshtein
+     at limit=1 misses. "metlic" is a subsequence of "metallic" (every letter
+     in order), with 2 internal gaps (the 'a' and second 'l'). Returns the
+     gap count (lower = better), or Infinity if not a valid subsequence or
+     a guard fails.
+
+     Guards (all must pass, else Infinity):
+       - query length ≥ 5          (shorter words over-match: "red" → "reduced")
+       - token.length ≤ 1.7 × query.length  (prevent "red" → "reduction")
+       - first char must match     (anchors the match, cheap rejection)
+       - gaps ≤ 2                  (2+ skipped letters = probably a different word)
+     Trailing token chars after the query is consumed are NOT counted —
+     natural suffixes ("-en", "-s") aren't typos. */
+  function subsequenceGaps(query, token) {
+    if (query.length < 5) return Infinity;
+    if (token.length > query.length * 1.7) return Infinity;
+    if (query.charCodeAt(0) !== token.charCodeAt(0)) return Infinity;
+
+    var qi = 0, gaps = 0, lastIdx = -1;
+    for (var j = 0; j < token.length; j++) {
+      if (token.charCodeAt(j) === query.charCodeAt(qi)) {
+        if (lastIdx >= 0) gaps += (j - lastIdx - 1);
+        lastIdx = j;
+        qi++;
+        if (qi >= query.length) break;
+      }
+    }
+    if (qi < query.length) return Infinity;
+    if (gaps > 2) return Infinity;
+    return gaps;
+  }
+
   /* Score a product name against the query. Lower is better.
-       0   — query is a substring of the full name OR a prefix of any token
-             (e.g. "metal" inside "metallic" → strong match)
-       1-n — min edit distance between query and any token, up to maxEdits
+       0     — query is a substring of the full name OR a prefix of any token
+               (e.g. "metal" inside "metallic" → strong match)
+       0.5-n — subsequence hit on any token (e.g. "metlic" in "metallic"),
+               tiered as 0.5 + gaps * 0.2 so these rank BETWEEN exact hits
+               and 1-edit Levenshtein hits
+       1-n   — min Levenshtein distance between query and any token, up to maxEdits
      Returns Infinity when nothing's close enough. Because callers rank by
      ascending score, substring/prefix hits always outrank fuzzy hits. */
   function scoreProduct(nameNorm, qNorm) {
     if (!qNorm) return Infinity;
     if (nameNorm.indexOf(qNorm) !== -1) return 0;
 
-    var tokens = tokenize(nameNorm);
-    var limit  = maxEdits(qNorm.length);
-    var best   = Infinity;
+    var tokens   = tokenize(nameNorm);
+    var limit    = maxEdits(qNorm.length);
+    var bestLev  = Infinity;
+    var bestSub  = Infinity;
 
     for (var i = 0; i < tokens.length; i++) {
       var t = tokens[i];
       if (t.indexOf(qNorm) === 0) return 0;
-      /* Skip tokens whose length is too different — a valid edit distance
-         ≤ limit requires |len(a) - len(b)| ≤ limit. Cheap early-out. */
-      if (Math.abs(t.length - qNorm.length) > limit) continue;
-      var d = levenshtein(t, qNorm);
-      if (d < best) best = d;
-      if (best === 0) break;
+
+      /* Subsequence check — independent of Levenshtein window */
+      var g = subsequenceGaps(qNorm, t);
+      if (g < bestSub) bestSub = g;
+
+      /* Levenshtein — skip tokens whose length is too different. A valid
+         edit distance ≤ limit requires |len(a) - len(b)| ≤ limit. */
+      if (Math.abs(t.length - qNorm.length) <= limit) {
+        var d = levenshtein(t, qNorm);
+        if (d < bestLev) bestLev = d;
+      }
     }
-    return best <= limit ? best : Infinity;
+
+    if (bestLev <= limit) return bestLev;
+    if (bestSub !== Infinity) return 0.5 + bestSub * 0.2;
+    return Infinity;
   }
 
   if (searchInput) {
@@ -334,6 +378,23 @@
     return null;
   }
 
+  /* Collapse scored hits into a final ranked list, with a noise guard:
+     if there are already 3+ "hard" hits (score ≤ 0, exact substring/prefix),
+     drop all fuzzy hits (> 0). Reserves typo tolerance for when real
+     matches are thin. */
+  var HARD_HIT_THRESHOLD = 3;
+  function finalizeScored(scored) {
+    var hardCount = 0;
+    for (var i = 0; i < scored.length; i++) {
+      if (scored[i].s <= 0) hardCount++;
+    }
+    scored.sort(function (a, b) { return a.s - b.s; });
+    if (hardCount >= HARD_HIT_THRESHOLD) {
+      scored = scored.filter(function (x) { return x.s <= 0; });
+    }
+    return scored.map(function (x) { return x.p; });
+  }
+
   /* Filter + rank a product array by closeness to the query. Lower scoreProduct
      result = better match, so ascending sort puts exact/prefix hits first,
      then typo-tolerant hits ranked by edit distance. */
@@ -344,8 +405,7 @@
       var s = scoreProduct(normalize(p.name), qNorm);
       if (s !== Infinity) scored.push({ p: p, s: s });
     });
-    scored.sort(function (a, b) { return a.s - b.s; });
-    return scored.map(function (x) { return x.p; });
+    return finalizeScored(scored);
   }
 
   /* Scan every product we've ever seen across any cached query, rank by
@@ -358,8 +418,7 @@
       var s = scoreProduct(normalize(p.name), qNorm);
       if (s !== Infinity) scored.push({ p: p, s: s });
     });
-    scored.sort(function (a, b) { return a.s - b.s; });
-    return scored.slice(0, PER_PAGE).map(function (x) { return x.p; });
+    return finalizeScored(scored).slice(0, PER_PAGE);
   }
 
   /* Fold a product array into the dedup pool keyed by id. */
