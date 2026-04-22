@@ -210,9 +210,9 @@
     return prev[b.length];
   }
 
-  /* Max allowed edit distance scales with query length. Short queries ("fox")
-     get 0 edits to avoid over-matching; medium ("metal") get 1; long
-     ("metallic"+) get 2. Keeps fuzzy results relevant, not noisy. */
+  /* Max allowed edit distance scales with query length. Very short queries
+     ("fox") get 0 edits to avoid over-matching; 4-6 char ("bton","metal")
+     get 1; 7+ ("metallic") get 2. Keeps fuzzy results relevant, not noisy. */
   function maxEdits(qLen) {
     if (qLen <= 3) return 0;
     if (qLen <= 6) return 1;
@@ -288,12 +288,16 @@
 
   /* Score a product name against the query. Lower is better.
      Single-word query: delegates to scoreWord.
-     Multi-word query: splits on whitespace and requires EVERY word to
-     match somewhere in the name (order-agnostic AND-semantics, so
-     "cire beton" finds "Beton Ciré" products). Aggregated by average
-     so a 2-word query with both words exact (0) scores 0, keeping it
-     comparable to single-word scores. Whole-phrase substring is still
-     the strongest short-circuit (catches "beton cire" exactly). */
+     Multi-word query: soft-OR with a majority-match requirement.
+       - Each word scored independently against the name.
+       - Missing words (Infinity) cost MISSING_PENALTY (ranks those hits
+         below real multi-word matches, but still surfaces them).
+       - Require at least ceil(N/2) words to match — stops "xyz abc"
+         (both junk) from matching, but lets "velet vloer" through when
+         velet→velvet hits and vloer isn't in the product title (it's
+         often a category concept, not a name token).
+     Whole-phrase substring is still the strongest short-circuit. */
+  var MISSING_PENALTY = 2;
   function scoreProduct(nameNorm, qNorm) {
     if (!qNorm) return Infinity;
     if (nameNorm.indexOf(qNorm) !== -1) return 0;
@@ -305,12 +309,17 @@
       return scoreWord(nameNorm, tokens, qNorm);
     }
 
-    var total = 0;
+    var total = 0, matched = 0;
     for (var i = 0; i < qWords.length; i++) {
       var s = scoreWord(nameNorm, tokens, qWords[i]);
-      if (s === Infinity) return Infinity;
-      total += s;
+      if (s === Infinity) {
+        total += MISSING_PENALTY;
+      } else {
+        total += s;
+        matched++;
+      }
     }
+    if (matched < Math.ceil(qWords.length / 2)) return Infinity;
     return total / qWords.length;
   }
 
@@ -533,7 +542,12 @@
         if (query !== activeQuery) return;
 
         var list = products || [];
-        cacheResult(query, list);
+        /* Only cache non-empty results. Caching empty would poison the
+           query for the rest of the session: the pool may still be
+           warming when a fuzzy-match query first fires, and we want the
+           NEXT keystroke of the same query to re-evaluate against the
+           now-populated pool instead of hitting a cached []. */
+        if (list.length) cacheResult(query, list);
 
         /* If the server returned nothing, try to rescue the query:
            1. Pool fallback: fuzzy-match across every product we've cached
@@ -589,7 +603,7 @@
           cacheResult(query, matched);
           renderResults(query, matched);
         } else {
-          cacheResult(query, []);
+          /* Don't cache empty — let the next keystroke retry */
           renderResults(query, []);
         }
       })
