@@ -35,7 +35,7 @@ class OZ_Analytics_Dashboard {
             'woocommerce',
             'BCW Analytics',
             'BCW Analytics',
-            'manage_woocommerce',
+            'manage_options',
             'oz-bcw-analytics',
             [__CLASS__, 'render']
         );

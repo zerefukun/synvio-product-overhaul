@@ -191,7 +191,10 @@ class OZ_Cart_Manager {
             'oz_custom_color'   => $text('oz_custom_color'),
             'oz_selected_color' => $text('oz_selected_color'),
             'oz_pakket'         => $text('oz_pakket'),
-            'oz_cart_image'     => $text('oz_cart_image'),
+            // oz_cart_image is rendered as <img src> in cart/admin views.
+            // Only accept same-origin http(s) URLs so attackers can't embed
+            // data:, ftp:, or external tracking pixels.
+            'oz_cart_image'     => self::sanitize_same_origin_url($text('oz_cart_image')),
         ];
 
         // PU layers (0-3, clamped)
@@ -206,6 +209,28 @@ class OZ_Cart_Manager {
         }
 
         return $data;
+    }
+
+    /**
+     * Accept a URL only if it's on the current site (same home_url host).
+     * Rejects data:, ftp:, external origins — these would embed a tracking
+     * pixel or arbitrary content in the cart drawer / admin order view.
+     */
+    private static function sanitize_same_origin_url($url) {
+        $url = (string) $url;
+        if ($url === '') {
+            return '';
+        }
+        $clean = esc_url_raw($url, ['http', 'https']);
+        if ($clean === '') {
+            return '';
+        }
+        $our_host   = wp_parse_url(home_url(), PHP_URL_HOST);
+        $their_host = wp_parse_url($clean, PHP_URL_HOST);
+        if (!$our_host || !$their_host || strcasecmp($our_host, $their_host) !== 0) {
+            return '';
+        }
+        return $clean;
     }
 
     /**
@@ -276,11 +301,12 @@ class OZ_Cart_Manager {
                 $cart_item[$mk] = $values[$mk];
             }
         }
-        // Generic addon keys (oz_addon_*), page mode, and tool price/size overrides
+        // Generic addon keys (oz_addon_*), page mode, and tool size label.
+        // Deliberately does NOT rehydrate `oz_tool_price` — client-supplied
+        // prices are never trusted; tool prices come from the WC product.
         foreach ($values as $vk => $vv) {
             if (strpos($vk, self::$addon_prefix) === 0
                 || $vk === 'oz_page_mode'
-                || $vk === 'oz_tool_price'
                 || $vk === 'oz_tool_size'
                 || $vk === 'oz_wapo_addon') {
                 $cart_item[$vk] = $vv;
@@ -321,11 +347,9 @@ class OZ_Cart_Manager {
                     $cart_item
                 );
             }
-            // Tool products with size-specific price override (e.g. Verfbak 18cm)
-            elseif (isset($cart_item['oz_tool_price'])) {
-                $product->set_price(floatval($cart_item['oz_tool_price']));
-                continue; // Price is absolute, not additive — skip base price logic
-            }
+            // Tool products never need a price override — each size is its own
+            // WC product with an authoritative price. Any legacy oz_tool_price
+            // on a cart item is ignored (the WC product price wins).
             else {
                 continue; // Not our product
             }
@@ -391,11 +415,12 @@ class OZ_Cart_Manager {
                 $item->add_meta_data('_' . $cart_key, $values[$cart_key]);
             }
         }
-        // Generic addon keys (oz_addon_*), page mode, and tool size overrides
+        // Generic addon keys (oz_addon_*), page mode, and tool size label.
+        // `oz_tool_price` is intentionally NOT persisted — authoritative price
+        // is the WC product's own price.
         foreach ($values as $vk => $vv) {
             if (strpos($vk, self::$addon_prefix) === 0
                 || $vk === 'oz_page_mode'
-                || $vk === 'oz_tool_price'
                 || $vk === 'oz_tool_size') {
                 $item->add_meta_data('_' . $vk, $vv);
             }
@@ -550,41 +575,42 @@ class OZ_Cart_Manager {
         $items = [];
 
         if ($tool_data['mode'] === 'set') {
-            // The Kant & Klaar set itself — no custom data so identical adds merge
-            if ($tool_data['set_id'] > 0) {
+            // SECURITY: whitelist the set_id against the server-side catalog so
+            // an attacker can't smuggle an arbitrary product in via the "set" path.
+            if ($tool_data['set_id'] > 0
+                && OZ_Product_Line_Config::is_valid_tool_set_id($tool_data['set_id'])) {
                 $items[] = ['product_id' => $tool_data['set_id'], 'qty' => 1, 'cart_data' => []];
             }
 
-            // Extras on top of set
+            // Extras on top of set — each (slug, wcId, sizeLabel) validated
             foreach ($tool_data['extras'] as $extra_id => $extra) {
-                if ($extra['wcId'] > 0 && $extra['qty'] > 0) {
-                    // Only add cart_data for size variants — keeps tools mergeable
-                    // Tools with same wcId + same size will share the same cart hash
-                    $cart_data = [];
-                    if (!empty($extra['sizeLabel'])) {
-                        $cart_data['oz_tool_size'] = $extra['sizeLabel'];
-                        // Price override only needed for non-default sizes
-                        if ($extra['price'] > 0) {
-                            $cart_data['oz_tool_price'] = $extra['price'];
-                        }
-                    }
-                    $items[] = ['product_id' => $extra['wcId'], 'qty' => $extra['qty'], 'cart_data' => $cart_data];
+                if (!($extra['wcId'] > 0 && $extra['qty'] > 0)) {
+                    continue;
                 }
+                $size_label = isset($extra['sizeLabel']) ? (string) $extra['sizeLabel'] : '';
+                if (!OZ_Product_Line_Config::validate_tool_selection($extra_id, $extra['wcId'], $size_label)) {
+                    continue;
+                }
+                $cart_data = [];
+                if ($size_label !== '') {
+                    $cart_data['oz_tool_size'] = $size_label;
+                }
+                $items[] = ['product_id' => $extra['wcId'], 'qty' => $extra['qty'], 'cart_data' => $cart_data];
             }
         } elseif ($tool_data['mode'] === 'individual') {
-            // Each selected individual tool
             foreach ($tool_data['tools'] as $tool_id => $tool) {
-                if ($tool['wcId'] > 0 && $tool['qty'] > 0) {
-                    // Only add cart_data for size variants — keeps tools mergeable
-                    $cart_data = [];
-                    if (!empty($tool['sizeLabel'])) {
-                        $cart_data['oz_tool_size'] = $tool['sizeLabel'];
-                        if ($tool['price'] > 0) {
-                            $cart_data['oz_tool_price'] = $tool['price'];
-                        }
-                    }
-                    $items[] = ['product_id' => $tool['wcId'], 'qty' => $tool['qty'], 'cart_data' => $cart_data];
+                if (!($tool['wcId'] > 0 && $tool['qty'] > 0)) {
+                    continue;
                 }
+                $size_label = isset($tool['sizeLabel']) ? (string) $tool['sizeLabel'] : '';
+                if (!OZ_Product_Line_Config::validate_tool_selection($tool_id, $tool['wcId'], $size_label)) {
+                    continue;
+                }
+                $cart_data = [];
+                if ($size_label !== '') {
+                    $cart_data['oz_tool_size'] = $size_label;
+                }
+                $items[] = ['product_id' => $tool['wcId'], 'qty' => $tool['qty'], 'cart_data' => $cart_data];
             }
         }
 
@@ -609,6 +635,10 @@ class OZ_Cart_Manager {
      * Sanitize a nested tool items array from $_POST.
      * Handles oz_extras[id][qty], oz_extras[id][wcId], oz_extras[id][wapoAddon].
      *
+     * SECURITY: "price" is deliberately NOT accepted from the client. Tool prices
+     * are authoritative on the server (each size is a distinct WC product or a
+     * known catalog entry). The stored WC product price is used directly.
+     *
      * @param mixed $raw  Raw $_POST array (may not be array)
      * @return array  Sanitized ['id' => ['qty' => int, 'wcId' => int, 'wapoAddon' => string]]
      */
@@ -626,7 +656,6 @@ class OZ_Cart_Manager {
                 'qty'       => isset($data['qty']) ? max(1, intval($data['qty'])) : 1,
                 'wcId'      => isset($data['wcId']) ? intval($data['wcId']) : 0,
                 'wapoAddon' => isset($data['wapoAddon']) ? sanitize_text_field($data['wapoAddon']) : '',
-                'price'     => isset($data['price']) ? floatval($data['price']) : 0,
                 'sizeLabel' => isset($data['sizeLabel']) ? sanitize_text_field($data['sizeLabel']) : '',
             ];
         }

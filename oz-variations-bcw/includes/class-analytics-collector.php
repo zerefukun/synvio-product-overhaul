@@ -116,6 +116,12 @@ class OZ_Analytics_Collector {
         // Validate and sanitize JSON event data — decode then re-encode
         // (sanitize_text_field would corrupt JSON with HTML entities or special chars)
         $raw_data = isset($_POST['event_data']) ? wp_unslash($_POST['event_data']) : '{}';
+        // Hard size cap — stops a bot flooding 64KB payloads to fill the
+        // analytics table (TEXT column otherwise accepts up to 64KB).
+        if (strlen((string) $raw_data) > 4096) {
+            wp_send_json_error('Event data too large', 413);
+            return;
+        }
         $decoded  = json_decode($raw_data, true);
         if (!is_array($decoded)) {
             wp_send_json_error('Invalid event data', 400);
@@ -142,8 +148,20 @@ class OZ_Analytics_Collector {
         // Uses WC session cookie if available, falls back to a hash of IP + user agent
         $session_id = self::get_session_id();
 
+        // Per-session + per-IP rate limit — defends against scripted firehose
+        // attacks on the events table. Real users send <1 event/sec; 20/5s is
+        // roomy enough for burst activity (opening cart drawer fires several).
+        $ip  = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $rl_key = 'oz_an_rl_' . md5($session_id . '|' . $ip);
+        $rl_hits = (int) get_transient($rl_key);
+        if ($rl_hits >= 20) {
+            wp_send_json_error('rate_limited', 429);
+            return;
+        }
+        set_transient($rl_key, $rl_hits + 1, 5);
+
         // Persistent visitor ID from oz_vid cookie (links sessions across visits)
-        $visitor_id = isset($_COOKIE['oz_vid']) ? sanitize_text_field($_COOKIE['oz_vid']) : '';
+        $visitor_id = isset($_COOKIE['oz_vid']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_vid'])) : '';
 
         // Store the event — log failures for admin visibility
         $result = OZ_Analytics_Store::insert($event_name, $event_data, $source, $product_id, $session_id, $visitor_id);
@@ -222,7 +240,10 @@ class OZ_Analytics_Collector {
     public static function ajax_active_sessions() {
         check_ajax_referer('oz_active_sessions');
 
-        if (!current_user_can('manage_woocommerce')) {
+        // Administrators only — Shop Managers (manage_woocommerce) must NOT
+        // see raw session IDs, which can be used to resume cart sessions
+        // if the analytics DB / view is ever leaked.
+        if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized', 403);
             return;
         }
@@ -250,7 +271,10 @@ class OZ_Analytics_Collector {
     public static function ajax_traffic_landings() {
         check_ajax_referer('oz_traffic_landings');
 
-        if (!current_user_can('manage_woocommerce')) {
+        // Administrators only — Shop Managers (manage_woocommerce) must NOT
+        // see raw session IDs, which can be used to resume cart sessions
+        // if the analytics DB / view is ever leaked.
+        if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized', 403);
             return;
         }

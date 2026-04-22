@@ -1,0 +1,158 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+<!-- wp:flatsome/uxbuilder -->
+[row]
+
+[col span__sm="12" align="center"]
+
+[ux_text line_height="0.75" text_align="center"]
+
+<p class="has-text-align-center pre-title"><span style="font-size: 80%; color: #444444;">TOEPASSINGEN</span></p>
+<h2 class="wp-block-heading has-text-align-center"><span style="font-size: 120%; color: #444444;">Waar wil je Beton Ciré <em>gebruiken</em>?</span></h2>
+[/ux_text]
+
+[/col]
+
+[/row]
+[gap height="30px"]
+[row]
+
+[col span="6" span__sm="12"]
+
+[ux_banner height="450px" bg="13623" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-badkamer/"]
+
+[text_box width="80" position_x="50" position_y="50"]
+
+<h3 style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.3em;">Beton Ciré voor elke Badkamer</h3>
+[button text="Meer informatie" letter_case="lowercase" color="white" style="underline" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-badkamer/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="6" span__sm="12"]
+
+[ux_banner height="450px" bg="13620" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-keuken/"]
+
+[text_box width="80" position_x="50" position_y="50"]
+
+<h3 style="text-transform: uppercase; letter-spacing: 2px; font-size: 1.3em;">Ook voor iedere Keuken</h3>
+[button text="Meer informatie" letter_case="lowercase" color="white" style="underline" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-keuken/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+
+[/row]
+[gap height="10px"]
+[row]
+
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="13638" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-vloer/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Vloeren" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-vloer/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="13636" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-toilet/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Toilet" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-toilet/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="12236" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-trappen/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Trappen" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-trappen/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="13622" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-meubel/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Meubels" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-meubel/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="13635" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-over-tegels/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Over tegels" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-over-tegels/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+[col span="2" span__sm="6"]
+
+[ux_banner height="250px" bg="13643" bg_overlay="rgba(0,0,0,0.2)" hover="zoom" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-wand/"]
+
+[text_box text_color="dark" width="100" padding="5px 15px 10px 15px" position_x="50" position_y="100" bg="rgba(255,255,255,0.94)" radius="8"]
+
+[button text="Wanden" style="underline" icon="icon-angle-right" icon_reveal="true" link="https://staging.beton-cire-webshop.nl/ruimtes/beton-cire-wand/"]
+
+[/text_box]
+
+[/ux_banner]
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12" align="center"]
+
+<h2>Overtuigd? Kies voor Beton Ciré!</h2>
+<p>Kies voor een prachtige afwerking van je meubels, wanden, vloeren en natte ruimten met Beton ciré! Bekijk onze producten om de natuurlijke Betonlook te maken voor ieder object. Bij ons vindt je de originele Beton ciré, uiteraard van de hoogste kwaliteit.</p>
+[button text="Bekijk onze producten" color="secondary" radius="10" link="https://staging.beton-cire-webshop.nl/producten/"]
+
+[/col]
+
+[/row]
+[row]
+
+[col span__sm="12"]
+
+<h2>Geïnteresseerd in Beton Ciré voor je ruimtes? Vraag kleurstalen aan!</h2>
+<p>Wij begrijpen dat het maken van een keuze omtrent kleur lastig kan zijn, helemaal als je alleen een plaatje ziet op een website.</p>
+<p>Zodoende kun je bij ons ook gratis <a href="https://staging.beton-cire-webshop.nl/kleurstalen-aanvragen/"><strong>kleurstalen</strong></a> aanvragen. Ook kun je een <strong><a href="https://staging.beton-cire-webshop.nl/product/kleurenpakket/">Kleurpakket</a></strong> aanvragen.</p>
+<p>Bezoek onze <strong><a href="https://staging.beton-cire-webshop.nl/beton-cire-showroom/">showroom</a></strong> in Den Haag voor advies, inspiratie en een eventuele workshop bij je bestelling!</p>
+
+[/col]
+
+[/row]
+<!-- /wp:flatsome/uxbuilder -->
+

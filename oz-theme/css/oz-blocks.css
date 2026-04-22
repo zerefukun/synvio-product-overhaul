@@ -1,0 +1,1545 @@
+/* ================================================================
+   OZ BLOCKS — Frontend styles for Gutenberg core blocks
+   Loaded on all pages after oz-design-system.css.
+   Makes Gutenberg content look native to our design.
+   ================================================================ */
+
+/* ── Post Grid (blog/archive listings) ── */
+.oz-post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin: 40px 0;
+}
+
+.oz-post-grid .oz-card__title {
+  font-size: var(--oz-text-lg);
+  margin-bottom: 8px;
+}
+
+.oz-post-grid .oz-card__title a {
+  color: var(--oz-text-primary);
+  text-decoration: none;
+}
+
+.oz-post-grid .oz-card__title a:hover {
+  color: var(--oz-accent);
+}
+
+.oz-post-grid .oz-card__excerpt {
+  font-size: 14px;
+  color: var(--oz-text-body);
+}
+
+/* ── Article (single post) ── */
+.oz-article__hero {
+  max-height: 480px;
+  overflow: hidden;
+}
+
+.oz-article__hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oz-article__inner {
+  max-width: 720px;
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.oz-article__header {
+  margin-bottom: 40px;
+}
+
+.oz-article__title {
+  margin-top: 8px;
+}
+
+.oz-article__content > * + * {
+  margin-top: 1.5em;
+}
+
+.oz-article__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--oz-border);
+}
+
+.oz-article__nav-link {
+  font-size: 14px;
+  color: var(--oz-accent);
+}
+
+/* ── Archive / Search ── */
+.oz-archive__header,
+.oz-search-results__header {
+  padding: 48px 0 24px;
+}
+
+.oz-archive__title,
+.oz-search-results__title {
+  font-size: var(--oz-text-2xl);
+}
+
+.oz-archive__desc {
+  color: var(--oz-text-body);
+  margin-top: 8px;
+}
+
+.oz-search-results__empty {
+  text-align: center;
+  padding: 80px 0;
+}
+
+.oz-search-results__empty h2 {
+  margin-bottom: 12px;
+}
+
+/* "Bedoelde je misschien …" — renders below the search title or inside
+   the shop header on WooCommerce search pages. */
+.oz-search-suggestions {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--oz-bg-warm, #f6f2ec);
+  border-left: 3px solid var(--oz-accent, #135350);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--oz-text-body, #333);
+  line-height: 1.5;
+}
+
+.oz-search-suggestions__lead {
+  font-weight: 600;
+  color: var(--oz-accent, #135350);
+  margin-right: 6px;
+}
+
+.oz-search-suggestions__link {
+  color: var(--oz-accent, #135350);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 120ms ease;
+}
+
+.oz-search-suggestions__link em {
+  font-style: italic;
+}
+
+.oz-search-suggestions__link:hover,
+.oz-search-suggestions__link:focus-visible {
+  border-bottom-color: var(--oz-accent, #135350);
+}
+
+.oz-search-suggestions__sep {
+  color: var(--oz-text-muted, #888);
+  margin: 0 4px;
+}
+
+/* ── 404 ── */
+.oz-404 {
+  text-align: center;
+  padding: 120px 0;
+}
+
+.oz-404__title {
+  font-size: 120px;
+  color: var(--oz-border);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.oz-404__text {
+  font-size: var(--oz-text-lg);
+  margin-bottom: 32px;
+}
+
+.oz-404__actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Headings (Gutenberg blocks) ── */
+.oz-page__content h1,
+.oz-page__content h2,
+.oz-page__content h3,
+.oz-page__content h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.oz-page__content h1:first-child,
+.oz-page__content h2:first-child,
+.oz-page__content h3:first-child {
+  margin-top: 0;
+}
+
+/* ── Paragraphs ── */
+.oz-page__content p {
+  max-width: 720px;
+}
+
+/* ── Core Blocks: Columns ── */
+.wp-block-columns {
+  gap: var(--oz-gap) !important;
+}
+
+/* ── Core Blocks: Buttons ──
+   Override WP core defaults (dark grey bg, 9999px radius, 100% width).
+   Unstyled buttons default to fill (accent bg, white text). */
+.wp-block-button__link {
+  font-family: var(--oz-ff-body);
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: var(--oz-radius) !important;
+  padding: 12px 28px !important;
+  transition: all var(--oz-transition);
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+  width: auto !important;
+  display: inline-block;
+}
+
+.wp-block-button__link:hover {
+  background: var(--oz-accent-hover) !important;
+}
+
+.wp-block-button.is-style-fill .wp-block-button__link {
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text) !important;
+}
+
+.wp-block-button.is-style-fill .wp-block-button__link:hover {
+  background: var(--oz-accent-hover) !important;
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link {
+  border: 2px solid var(--oz-border) !important;
+  color: var(--oz-text-primary) !important;
+  background: transparent !important;
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover {
+  border-color: var(--oz-accent) !important;
+  color: var(--oz-accent) !important;
+  background: transparent !important;
+}
+
+/* ── Core Blocks: Separator ── */
+.wp-block-separator {
+  border: none;
+  border-top: 1px solid var(--oz-border);
+  opacity: 1;
+}
+
+.wp-block-separator.is-style-wide {
+  max-width: 100%;
+}
+
+/* ── Core Blocks: Quote ── */
+.wp-block-quote {
+  border-left: 4px solid var(--oz-accent);
+  padding: 16px 24px;
+  margin: 2em 0;
+  font-style: italic;
+  color: var(--oz-text-primary);
+}
+
+.wp-block-quote cite {
+  display: block;
+  margin-top: 8px;
+  font-size: var(--oz-text-sm);
+  font-style: normal;
+  color: var(--oz-text-muted);
+}
+
+/* ── Core Blocks: Cover ── */
+.wp-block-cover {
+  border-radius: var(--oz-radius-lg);
+  overflow: hidden;
+  min-height: 400px;
+}
+
+/* Headings inside covers inherit the container's color (white on dark overlays).
+   Needed because global-styles is dequeued, so .has-white-color has no rule. */
+.wp-block-cover h1,
+.wp-block-cover h2,
+.wp-block-cover h3,
+.wp-block-cover h4,
+.wp-block-cover h5,
+.wp-block-cover h6 {
+  color: inherit;
+}
+
+/* WP color preset: white text (global-styles dequeued, so we define it ourselves) */
+.has-white-color.has-text-color {
+  color: #FFF !important;
+}
+
+/* ── Core Blocks: Image ── */
+.wp-block-image img {
+  border-radius: var(--oz-radius);
+}
+
+.wp-block-image figcaption {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ── Core Blocks: List ── */
+.wp-block-list {
+  padding-left: 1.5em;
+  list-style: disc;
+}
+
+.wp-block-list li {
+  margin-bottom: 0.5em;
+}
+
+.wp-block-list li::marker {
+  color: var(--oz-accent);
+}
+
+/* ── Core Blocks: Table ── */
+.wp-block-table table {
+  width: 100%;
+}
+
+.wp-block-table th,
+.wp-block-table td {
+  padding: 12px 16px;
+  border: 1px solid var(--oz-border);
+  text-align: left;
+}
+
+.wp-block-table th {
+  background: var(--oz-bg-warm);
+  font-weight: 600;
+  color: var(--oz-text-primary);
+}
+
+/* ── Core Blocks: Group (section backgrounds) ── */
+.wp-block-group.has-oz-bg-warm-background-color {
+  background-color: var(--oz-bg-warm) !important;
+}
+
+.wp-block-group.has-oz-accent-light-background-color {
+  background-color: var(--oz-accent-light) !important;
+}
+
+.wp-block-group.has-oz-text-primary-background-color {
+  background-color: var(--oz-text-primary) !important;
+  color: #FFF;
+}
+
+/* ── WooCommerce: Shop Grid ── */
+.woocommerce ul.products {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .woocommerce ul.products {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .woocommerce ul.products {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+
+/* ── WooCommerce: Product Card ── */
+/* Reset WC's float layout — our grid handles positioning */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product,
+.oz-product-card {
+  width: auto;
+  float: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oz-product-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--oz-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--oz-border-light);
+  transition: box-shadow var(--oz-transition);
+}
+
+.oz-product-card__link:hover {
+  box-shadow: var(--oz-shadow-md);
+}
+
+.oz-product-card__image {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+  position: relative;
+}
+
+.oz-product-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--oz-transition);
+}
+
+.oz-product-card__link:hover .oz-product-card__img {
+  transform: scale(1.04);
+}
+
+.oz-product-card__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--oz-cta);
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.oz-product-card__body {
+  padding: 16px;
+}
+
+.oz-product-card__title {
+  font-family: var(--oz-ff-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--oz-text-primary);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.oz-product-card__price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+}
+
+.oz-product-card__price del {
+  color: var(--oz-text-muted);
+  font-weight: 400;
+  margin-right: 6px;
+}
+
+.oz-product-card__price ins {
+  text-decoration: none;
+  color: var(--oz-cta);
+}
+
+/* ── WooCommerce: Breadcrumbs ── */
+/* 0-3-0 specificity to beat WC's .woocommerce .woocommerce-breadcrumb (0-2-0) */
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted);
+  margin: 0 0 8px;
+}
+
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb a {
+  color: var(--oz-text-muted);
+  text-decoration: none;
+}
+
+.oz-shop__layout .oz-shop__main .woocommerce-breadcrumb a:hover {
+  color: var(--oz-accent);
+}
+
+/* ── WooCommerce: Shop Layout (sidebar + grid) ── */
+.oz-shop__header {
+  padding: 16px 0 20px;
+}
+
+.oz-shop__title {
+  font-size: var(--oz-text-2xl);
+  margin-bottom: 4px;
+}
+
+/*
+ * Single grid: sidebar left, main content right.
+ * Breadcrumb, header, toolbar, and grid share the same main column.
+ * On mobile: single column, sidebar hidden behind toggle.
+ */
+.oz-shop__layout {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 0;
+    max-width: calc(var(--oz-max-w) + 220px + 40px);
+    margin: 0 auto;
+    padding: 32px var(--oz-gap) 0;
+  }
+}
+
+/* ── Sidebar ── */
+.oz-shop__sidebar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__sidebar {
+    display: block;
+    position: sticky;
+    top: calc(var(--oz-hdr-height, 72px) + 24px);
+    align-self: start;
+    max-height: calc(100vh - var(--oz-hdr-height, 72px) - 48px);
+    overflow-y: auto;
+    padding-right: 32px;
+    border-right: 1px solid var(--oz-border-light);
+    margin-right: 8px;
+  }
+
+  .oz-shop__filter-close {
+    display: none;
+  }
+}
+
+/* Mobile: slide-in overlay */
+.oz-shop__sidebar.is-open {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background: var(--oz-bg-page);
+  z-index: 1000;
+  padding: 24px;
+  overflow-y: auto;
+  box-shadow: 4px 0 24px rgba(0,0,0,.15);
+}
+
+.oz-shop__filter-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.oz-shop__sidebar-title {
+  font-family: var(--oz-ff-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--oz-border-light);
+}
+
+/* Category navigation links */
+.oz-cat-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-cat-nav__item {
+  margin-bottom: 2px;
+}
+
+/* Top-level parent headings: always open, not clickable */
+.oz-cat-nav__heading {
+  display: block;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--oz-text-muted);
+}
+
+.oz-cat-nav__item--heading + .oz-cat-nav__item--heading {
+  margin-top: 16px;
+}
+
+/* Row: link + toggle button side by side */
+.oz-cat-nav__row {
+  display: flex;
+  align-items: center;
+}
+
+.oz-cat-nav__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition);
+}
+
+.oz-cat-nav__count {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.oz-cat-nav__link:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-accent);
+}
+
+.oz-cat-nav__item.is-active > .oz-cat-nav__row > .oz-cat-nav__link {
+  background: var(--oz-accent-light, #E8F0F0);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+/* Toggle button for expand/collapse */
+.oz-cat-nav__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--oz-text-muted);
+  cursor: pointer;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition), transform 0.2s ease;
+}
+
+.oz-cat-nav__toggle:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-text-primary);
+}
+
+/* Rotate chevron when open */
+.oz-cat-nav__item.is-open > .oz-cat-nav__row > .oz-cat-nav__toggle {
+  transform: rotate(180deg);
+}
+
+.oz-cat-nav__count {
+  font-size: 12px;
+  color: var(--oz-text-muted);
+  background: var(--oz-bg-warm);
+  padding: 1px 8px;
+  border-radius: 10px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.oz-cat-nav__item.is-active > .oz-cat-nav__row > .oz-cat-nav__link .oz-cat-nav__count {
+  background: var(--oz-accent);
+  color: #FFF;
+}
+
+/* Subcategory list — collapsed by default, shown when is-open */
+.oz-cat-nav__sub {
+  list-style: none;
+  padding: 0 0 0 16px;
+  margin: 0;
+  display: none;
+}
+
+.oz-cat-nav__item.is-open > .oz-cat-nav__sub {
+  display: block;
+}
+
+.oz-cat-nav__sub .oz-cat-nav__link {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+/* 3rd level gets extra indent */
+.oz-cat-nav__sub .oz-cat-nav__sub {
+  padding-left: 12px;
+}
+
+.oz-cat-nav__sub .oz-cat-nav__sub .oz-cat-nav__link {
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+/* Sidebar widgets (registered via shop-sidebar widget area) */
+.oz-sidebar-widget {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--oz-border-light);
+}
+
+.oz-sidebar-widget__title {
+  font-family: var(--oz-ff-heading);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 12px;
+}
+
+/* Style WC widget lists that end up in the sidebar */
+.oz-sidebar-widget ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.oz-sidebar-widget ul li a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: var(--oz-radius);
+  transition: background var(--oz-transition), color var(--oz-transition);
+}
+
+.oz-sidebar-widget ul li a:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-accent);
+}
+
+.oz-sidebar-widget ul li.current-cat > a {
+  background: var(--oz-accent-light, #E8F0F0);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+/* ── Kleurstalen sidebar banner ── */
+.oz-shop__stalen-banner {
+  margin-top: 24px;
+  border-radius: var(--oz-radius-lg, 12px);
+  overflow: hidden;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border: 1px solid var(--oz-border-light, #E8E8E6);
+}
+
+.oz-shop__stalen-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-shop__stalen-body {
+  padding: 20px;
+}
+
+.oz-shop__stalen-body .oz-eyebrow {
+  margin-bottom: 8px;
+}
+
+.oz-shop__stalen-title {
+  font-family: var(--oz-ff-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 8px;
+}
+
+.oz-shop__stalen-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--oz-text-muted);
+  margin: 0 0 16px;
+}
+
+.oz-shop__stalen-banner .oz-btn {
+  width: fit-content;
+}
+
+/* ── Fixed decorative image in right gutter on wide desktops ── */
+.oz-shop__deco {
+  display: none;
+}
+
+@media (min-width: 1440px) {
+  .oz-shop__deco {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: clamp(180px, 15vw, 340px);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .oz-shop__deco img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--oz-radius-lg, 12px) 0 0 var(--oz-radius-lg, 12px);
+    opacity: 0.18;
+    mask-image: linear-gradient(to right, transparent, black 30%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 30%);
+  }
+}
+
+/* ── Shop Toolbar ── */
+.oz-shop__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Filter toggle: visible on mobile, hidden on desktop */
+.oz-shop__filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__filter-toggle {
+    display: none;
+  }
+}
+
+.woocommerce-result-count {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted);
+}
+
+.woocommerce-ordering select {
+  padding: 8px 16px;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  font-family: var(--oz-ff-body);
+  font-size: var(--oz-text-sm);
+  background: var(--oz-bg-page);
+  cursor: pointer;
+}
+
+/* On mobile the main area gets container padding + top spacing */
+.oz-shop__main {
+  padding: 24px var(--oz-gap) 0;
+}
+
+@media (min-width: 1024px) {
+  .oz-shop__main {
+    padding: 0;
+  }
+}
+
+/* Product grid keeps 4 cols — main area is the full container width */
+@media (min-width: 1024px) {
+  .oz-shop__main ul.products {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── WooCommerce: Cart Page ── */
+.oz-cart-page__items {
+  margin-bottom: 32px;
+}
+
+.oz-cart-item {
+  display: grid;
+  grid-template-columns: 80px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--oz-border-light);
+}
+
+.oz-cart-item__image img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--oz-radius);
+}
+
+.oz-cart-item__name a {
+  font-weight: 500;
+  color: var(--oz-text-primary);
+  text-decoration: none;
+}
+
+.oz-cart-item__name a:hover {
+  color: var(--oz-accent);
+}
+
+.oz-cart-item__price {
+  font-size: 14px;
+  color: var(--oz-text-muted);
+  margin-top: 4px;
+}
+
+.oz-cart-item__subtotal {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.oz-cart-item__remove-btn {
+  font-size: 20px;
+  color: var(--oz-text-muted);
+  text-decoration: none;
+  padding: 4px;
+  transition: color var(--oz-transition);
+}
+
+.oz-cart-item__remove-btn:hover {
+  color: var(--oz-error);
+}
+
+.oz-cart-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.oz-cart-page__totals {
+  max-width: 480px;
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .oz-cart-item {
+    grid-template-columns: 64px 1fr;
+    gap: 12px;
+  }
+  .oz-cart-item__subtotal { grid-column: 2; }
+  .oz-cart-item__remove { grid-column: 2; justify-self: end; }
+}
+
+/* ── WooCommerce: Checkout ── */
+.oz-checkout__columns {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 48px;
+  padding: 48px 0;
+}
+
+.oz-checkout__section {
+  margin-bottom: 32px;
+}
+
+.oz-checkout__order-review {
+  position: sticky;
+  top: calc(var(--oz-header-height) + 24px);
+  background: var(--oz-bg-warm);
+  padding: 32px;
+  border-radius: var(--oz-radius-lg);
+}
+
+.oz-checkout__order-review h3 {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+  .oz-checkout__columns {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .oz-checkout__order-review {
+    position: static;
+  }
+}
+
+/* ── WooCommerce: Thank You ── */
+.oz-thankyou {
+  text-align: center;
+  padding: 80px 0;
+}
+
+.oz-thankyou__success {
+  margin-bottom: 40px;
+}
+
+.oz-thankyou__icon {
+  margin-bottom: 16px;
+}
+
+.oz-thankyou__icon svg {
+  display: inline-block;
+}
+
+.oz-thankyou__order-number {
+  font-size: var(--oz-text-lg);
+  margin-top: 8px;
+}
+
+.oz-thankyou__details {
+  text-align: left;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.oz-thankyou__failed {
+  background: #FFF5F5;
+  border: 1px solid var(--oz-error);
+  border-radius: var(--oz-radius-lg);
+  padding: 40px;
+  margin-bottom: 32px;
+}
+
+/* ── WooCommerce: My Account ── */
+.oz-account__columns {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 40px;
+  padding: 48px 0;
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul {
+  list-style: none;
+  padding: 0;
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li a {
+  display: block;
+  padding: 10px 16px;
+  border-radius: var(--oz-radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--oz-text-body);
+  text-decoration: none;
+  transition: all var(--oz-transition);
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li a:hover {
+  background: var(--oz-bg-warm);
+  color: var(--oz-accent);
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li.is-active a {
+  background: var(--oz-accent-light);
+  color: var(--oz-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .oz-account__columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .oz-account__nav .woocommerce-MyAccount-navigation ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ── WooCommerce: Login/Register ── */
+.oz-login__columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 48px 0;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.oz-login__card {
+  background: var(--oz-bg-page);
+  border: 1px solid var(--oz-border-light);
+  border-radius: var(--oz-radius-lg);
+  padding: 32px;
+}
+
+.oz-login__card h2 {
+  margin-bottom: 24px;
+}
+
+@media (max-width: 767px) {
+  .oz-login__columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ── WooCommerce: Form styling ── */
+.woocommerce form .form-row {
+  margin-bottom: 16px;
+}
+
+.woocommerce form .form-row label {
+  display: block;
+  font-size: var(--oz-text-sm);
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  margin-bottom: 6px;
+}
+
+.woocommerce form .form-row .input-text,
+.woocommerce form .form-row select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  font-family: var(--oz-ff-body);
+  font-size: var(--oz-text-base);
+  transition: border-color var(--oz-transition);
+}
+
+.woocommerce form .form-row .input-text:focus,
+.woocommerce form .form-row select:focus {
+  outline: none;
+  border-color: var(--oz-accent);
+  box-shadow: 0 0 0 3px var(--oz-accent-light);
+}
+
+/* ── Pagination (WP .nav-links + WC .woocommerce-pagination) ──
+   WC uses .woocommerce nav.woocommerce-pagination ul (0-3-4).
+   Prefix with .woocommerce to win the specificity battle. */
+.nav-links,
+body.woocommerce nav.woocommerce-pagination ul {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 40px 0;
+  list-style: none;
+  padding: 0;
+}
+
+.nav-links .page-numbers,
+.woocommerce nav.woocommerce-pagination ul li .page-numbers {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  font-size: var(--oz-text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--oz-text-body);
+  background: transparent;
+  transition: border-color var(--oz-transition), color var(--oz-transition), background var(--oz-transition);
+}
+
+.nav-links a.page-numbers:hover,
+.woocommerce nav.woocommerce-pagination ul li a.page-numbers:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+  background: transparent;
+}
+
+.nav-links .page-numbers.current,
+.woocommerce nav.woocommerce-pagination ul li span.page-numbers.current {
+  background: var(--oz-accent);
+  color: #FFF;
+  border-color: var(--oz-accent);
+}
+
+/* Dots separator */
+.nav-links .page-numbers.dots,
+.woocommerce nav.woocommerce-pagination ul li .page-numbers.dots {
+  border-color: transparent;
+  background: none;
+  min-width: auto;
+  padding: 0 4px;
+  color: var(--oz-text-muted);
+}
+
+/* Next/prev arrows */
+.nav-links .page-numbers.next,
+.nav-links .page-numbers.prev,
+.woocommerce nav.woocommerce-pagination ul li a.next,
+.woocommerce nav.woocommerce-pagination ul li a.prev {
+  font-size: var(--oz-text-base);
+}
+
+/* ── WooCommerce: Notices ── */
+.woocommerce-message,
+.woocommerce-info {
+  background: var(--oz-accent-light);
+  border-left: 4px solid var(--oz-accent);
+  padding: 16px 20px;
+  border-radius: var(--oz-radius);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.woocommerce-error {
+  background: #FFF5F5;
+  border-left: 4px solid var(--oz-error);
+  padding: 16px 20px;
+  border-radius: var(--oz-radius);
+  margin-bottom: 24px;
+  font-size: 14px;
+  list-style: none;
+}
+
+.woocommerce-error li {
+  margin-bottom: 4px;
+}
+
+/* ── Flatsome Shortcode Stubs ──
+   Uses negative-margin gutters (not CSS gap) because shortcode columns
+   have inline flex-basis percentages that assume 100% total width. */
+.oz-fs-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(var(--oz-gap) / -2);
+}
+
+.oz-fs-col {
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 0 calc(var(--oz-gap) / 2);
+  margin-bottom: var(--oz-gap);
+}
+
+/* Collapsed row: zero gutters */
+.oz-fs-row.oz-fs-row--collapse {
+  margin: 0;
+}
+
+.oz-fs-row--collapse > .oz-fs-col {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+/* Full-width breakout: override negative-margin gutters */
+.oz-fs-row.oz-fs-row--full {
+  max-width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+.oz-fs-section {
+  padding: 40px;
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--oz-radius-lg);
+  text-align: center;
+}
+
+.oz-fs-section h1 {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.oz-fs-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--oz-radius-lg);
+}
+
+/* Bottom-weighted gradient for text readability on image banners.
+   Banners with --overlay use ::before with custom color instead. */
+.oz-fs-banner:not(.oz-fs-banner--overlay)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0,0,0,0.15) 40%,
+    rgba(0,0,0,0.5) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity var(--oz-transition);
+}
+
+.oz-fs-banner:hover:not(.oz-fs-banner--overlay)::after {
+  opacity: 0.7;
+}
+
+/* Explicit overlay via bg_overlay shortcode attribute.
+   Color value comes from --oz-fs-overlay custom property on the element. */
+.oz-fs-banner--overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--oz-fs-overlay);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hover lift for cards with hover="zoom" */
+.oz-fs-banner--hover-zoom {
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.oz-fs-banner--hover-zoom:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.oz-fs-banner__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Banner link fills entire card for clickability.
+   Browser auto-closes nested <a> tags, so this link is empty but still navigable. */
+.oz-fs-banner__link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Text box passes clicks through to the banner link below.
+   Interactive children (buttons, links) reclaim pointer-events. */
+.oz-fs-text-box {
+  position: absolute;
+  padding: 20px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.oz-fs-text-box a,
+.oz-fs-text-box button {
+  pointer-events: auto;
+  position: relative;
+  z-index: 3;
+}
+
+.oz-fs-text-box--center { text-align: center; }
+.oz-fs-text-box--left { text-align: left; }
+.oz-fs-text-box--right { text-align: right; }
+
+/* Dark text in pill-style text boxes (overrides banner white text) */
+.oz-fs-text-box--dark h2,
+.oz-fs-text-box--dark h3,
+.oz-fs-text-box--dark p {
+  color: var(--oz-text-primary);
+  text-shadow: none;
+}
+
+.oz-fs-text-box--depth {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Banner text: white on dark overlay.
+   Strong text-shadow matches Flatsome text_depth for readability without heavy overlays. */
+.oz-fs-banner h2,
+.oz-fs-banner h3 {
+  color: #FFF;
+  text-shadow: 0 0 15px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.oz-fs-banner p {
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Inline links inside banner text: inherit white, no underline.
+   Excludes .oz-fs-button which manages its own color via modifier classes. */
+.oz-fs-banner .oz-fs-text-box a:not(.oz-fs-button) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.oz-fs-gap {
+  display: block;
+}
+
+.oz-fs-divider {
+  border: none;
+  border-top: 1px solid var(--oz-border);
+  margin: 20px 0;
+}
+
+.oz-fs-accordion {
+  margin: 20px 0;
+}
+
+.oz-fs-accordion__item {
+  border-bottom: 1px solid var(--oz-border);
+}
+
+.oz-fs-accordion__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  font-weight: 600;
+  color: var(--oz-text-primary);
+  cursor: pointer;
+  font-family: var(--oz-ff-body);
+  font-size: var(--oz-text-base);
+}
+
+.oz-fs-accordion__title::after {
+  content: '+';
+  font-size: 20px;
+  color: var(--oz-text-muted);
+  transition: transform var(--oz-transition);
+}
+
+.oz-fs-accordion__item.is-open .oz-fs-accordion__title::after {
+  content: '\2212';
+}
+
+.oz-fs-accordion__content {
+  display: none;
+  padding: 0 0 16px;
+  color: var(--oz-text-body);
+  line-height: 1.6;
+}
+
+.oz-fs-accordion__item.is-open .oz-fs-accordion__content {
+  display: block;
+}
+
+.oz-fs-image-box {
+  text-align: center;
+}
+
+.oz-fs-image-box__img {
+  margin-bottom: 16px;
+  border-radius: var(--oz-radius);
+}
+
+.oz-fs-image-box__title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.oz-fs-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: var(--oz-radius);
+  font-family: var(--oz-ff-body);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--oz-transition), color var(--oz-transition), border-color var(--oz-transition), opacity var(--oz-transition);
+}
+
+.oz-fs-button--primary {
+  background: var(--oz-accent);
+  color: #FFF;
+}
+
+.oz-fs-button--primary:hover {
+  background: var(--oz-accent-hover);
+}
+
+.oz-fs-button--cta {
+  background: var(--oz-cta);
+  color: #FFF;
+}
+
+.oz-fs-button--outline {
+  border: 2px solid var(--oz-border);
+  color: var(--oz-text-primary);
+  background: transparent;
+}
+
+.oz-fs-button--link {
+  background: transparent;
+  padding: 0;
+  color: var(--oz-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.oz-fs-button--link:hover {
+  color: var(--oz-accent-hover);
+}
+
+/* White link button for use on dark overlays */
+.oz-fs-button--white.oz-fs-button--link {
+  color: #FFF;
+}
+
+.oz-fs-button--white.oz-fs-button--link:hover {
+  opacity: 0.85;
+}
+
+.oz-fs-button--secondary {
+  background: var(--oz-text-primary);
+  color: #FFF;
+}
+
+.oz-fs-button--secondary:hover {
+  background: var(--oz-text-body);
+}
+
+/* Arrow icon inside buttons — only GPU-composited properties */
+.oz-fs-button__icon {
+  font-size: 1.3em;
+  line-height: 1;
+  transition: transform var(--oz-transition), opacity var(--oz-transition);
+}
+
+.oz-fs-button:hover .oz-fs-button__icon {
+  transform: translateX(4px);
+}
+
+/* Reveal-on-hover: hidden until parent hovered */
+.oz-fs-button__icon--reveal {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.oz-fs-button:hover .oz-fs-button__icon--reveal {
+  opacity: 1;
+  transform: translateX(4px);
+}
+
+/* ── Row / column modifiers (migrated from inline PHP) ── */
+.oz-fs-row--middle { align-items: center; }
+.oz-fs-col--left   { text-align: left; }
+.oz-fs-col--center { text-align: center; }
+.oz-fs-col--right  { text-align: right; }
+.oz-fs-col--light  { color: #FFF; }
+.oz-fs-section--dark { color: #FFF; }
+
+/* ── Video responsive embed ── */
+.oz-fs-video { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+.oz-fs-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* ── Responsive column overrides ── */
+@media (max-width: 767px) {
+  .oz-fs-col--hide-mobile { display: none !important; }
+  .oz-fs-col {
+    flex: 0 0 var(--oz-fs-col-sm, 100%) !important;
+    max-width: var(--oz-fs-col-sm, 100%) !important;
+  }
+  .oz-fs-col[style*="--oz-fs-col-padding-sm"] { padding: var(--oz-fs-col-padding-sm) !important; }
+}
+
+@media (min-width: 768px) {
+  .oz-fs-col--show-mobile-only { display: none !important; }
+}
