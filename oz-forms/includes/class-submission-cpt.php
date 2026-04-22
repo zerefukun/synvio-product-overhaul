@@ -22,6 +22,7 @@ class Submission_CPT {
 		add_action( 'pre_get_posts', array( __CLASS__, 'apply_form_type_filter' ) );
 		add_action( 'admin_post_oz_forms_export', array( __CLASS__, 'export_csv' ) );
 		add_action( 'admin_notices', array( __CLASS__, 'export_button' ) );
+		add_action( 'add_meta_boxes_' . self::CPT, array( __CLASS__, 'register_meta_boxes' ) );
 	}
 
 	public static function register_post_type() : void {
@@ -41,6 +42,75 @@ class Submission_CPT {
 				'show_in_rest'      => false,
 			)
 		);
+	}
+
+	/* ────────────────────────── Detail view ────────────────────────── */
+
+	public static function register_meta_boxes() : void {
+		add_meta_box(
+			'oz_submission_data',
+			'Inzending',
+			array( __CLASS__, 'render_data_meta_box' ),
+			self::CPT,
+			'normal',
+			'high'
+		);
+		add_meta_box(
+			'oz_submission_meta',
+			'Details',
+			array( __CLASS__, 'render_meta_meta_box' ),
+			self::CPT,
+			'side',
+			'default'
+		);
+	}
+
+	public static function render_data_meta_box( \WP_Post $post ) : void {
+		$form_id = (string) get_post_meta( $post->ID, '_oz_form', true );
+		$data    = get_post_meta( $post->ID, '_oz_data', true );
+		$schema  = Schema_Registry::get( $form_id );
+		$fields  = is_array( $schema ) && isset( $schema['fields'] ) ? $schema['fields'] : array();
+
+		if ( ! is_array( $data ) || empty( $data ) ) {
+			echo '<p><em>Geen velden opgeslagen voor deze inzending.</em></p>';
+			return;
+		}
+
+		echo '<table class="widefat striped" style="margin:0;">';
+		echo '<tbody>';
+		foreach ( $data as $key => $value ) {
+			$label = isset( $fields[ $key ]['label'] ) ? (string) $fields[ $key ]['label'] : (string) $key;
+			if ( is_array( $value ) ) {
+				$rendered = esc_html( implode( ', ', array_map( 'strval', $value ) ) );
+			} else {
+				$rendered = nl2br( esc_html( (string) $value ) );
+			}
+			echo '<tr>';
+			echo '<th style="width:30%;text-align:left;padding:10px 12px;vertical-align:top;">' . esc_html( $label ) . '</th>';
+			echo '<td style="padding:10px 12px;">' . $rendered . '</td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
+	}
+
+	public static function render_meta_meta_box( \WP_Post $post ) : void {
+		$form   = (string) get_post_meta( $post->ID, '_oz_form', true );
+		$status = (string) get_post_meta( $post->ID, '_oz_status', true );
+		$note   = (string) get_post_meta( $post->ID, '_oz_note', true );
+		$ip     = (string) get_post_meta( $post->ID, '_oz_ip', true );
+		$ua     = (string) get_post_meta( $post->ID, '_oz_ua', true );
+
+		echo '<p><strong>Formulier:</strong><br>' . esc_html( $form ) . '</p>';
+		echo '<p><strong>Status:</strong><br>' . ( $status === 'spam' ? '<span style="color:#b32d2e;">spam</span>' : esc_html( $status ) ) . '</p>';
+		if ( $note !== '' ) {
+			echo '<p><strong>Notitie:</strong><br>' . esc_html( $note ) . '</p>';
+		}
+		if ( $ip !== '' ) {
+			echo '<p><strong>IP:</strong><br><code>' . esc_html( $ip ) . '</code></p>';
+		}
+		if ( $ua !== '' ) {
+			echo '<p><strong>User-agent:</strong><br><small style="word-break:break-all;">' . esc_html( $ua ) . '</small></p>';
+		}
 	}
 
 	/**
