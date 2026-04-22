@@ -1,11 +1,132 @@
 /*
 Theme Name:     Oz Theme
+Template:       flatsome
 Author:         Ozmarketing
 Author URI:     https://ozmarketing.nl
-Description:    Standalone theme for Beton Cire Webshop. Custom header, footer, WooCommerce templates, and Gutenberg block styling.
-Version:        2.0.0
-Requires at least: 6.0
-Requires PHP:   7.4
+Description:    Flatsome Integratie betonciré webshop gebouwd op Flatsome theme framework.
+Version:        1.08.0
 License:        Ozmarketing - All rights reserved
-Text Domain:    oz-theme
 */
+
+/* Phase 4 cleanup: all .yith-wapo-* / #yith-wapo-* / #wapo-* CSS removed.
+ * oz-variations-bcw handles all product option styling now. */
+
+@import url("../flatsome/style.css");
+
+/* FLATSOME CUSTOM CSS */
+.ux-quantity__button-container {
+    display: inline-flex!important;
+    height: 100%;
+    margin-right: 5px;
+}
+
+.nav .nav-dropdown {
+    border-radius: 0px !important;
+}
+
+.nav-dropdown {
+    margin-top: 2px!important;
+}
+
+.nav-dropdown-default {
+    padding: 10px 20px!important;
+}
+/* FLATSOME CUSTOM CSS EINDE */
+
+.button.alt, .button.checkout, .checkout-button, .secondary {
+	border-radius: 5px!important;
+}
+
+.woocommerce-tabs.wc-tabs-wrapper.container.tabbed-content {
+    margin-top: 20px;
+}
+
+/* RAL row layout */
+.lrow-ral {
+    justify-content: left!important;
+    left: 12.71%;
+    margin-bottom: 50px!important;
+    position: relative;
+}
+
+.lrow-ral .col {
+    width: 220px;
+    position: relative;
+    justify-content: left;
+}
+
+/* Form columns */
+.col-xs-12.col-sm-6 {
+    width: 48%;
+    margin: 0 2% 0px 0px;
+}
+
+.col-xs-12.col-sm-6 > p > label > span > input {
+    padding: 10% 4%;
+    font-size: medium;
+    font-family: 'Lexend';
+    font-weight: 400;
+}
+
+.wpcf7-form-control-wrap {
+    font-size: medium;
+    font-weight: 400;
+}
+
+.col-xs-12 {
+    width: 98%;
+}
+
+.col-xs-12  > p > label > span > input {
+    padding: 30px 20px
+}
+
+.alignnone {
+    scale:0.75;
+    margin-top:-8px;
+    }
+@media (min-width: 600px) {
+    .wp-block-gallery.has-nested-images.columns-8 figure.wp-block-image:not(#individual-image) {
+        width: calc(12.5% - var(--wp--style--unstable-gallery-gap, 16px)*.875);
+    }
+}
+
+/* MOBIEL STYLES */
+@media (max-width: 768px) {
+    .quantity, .text-center .quantity{
+        margin-bottom: 1%!important;
+    }
+
+    .quantity+.button {
+        font-size: 0.8em;
+    }
+
+    .alignnone {
+    scale:0.75;
+    margin-top:40px;
+    }
+
+    .ozscale{
+        scale: 0.5;
+    }
+
+    .wp-block-image {
+        margin: 0;
+        width: calc(50% - var(--wp--style--unstable-gallery-gap, 16px)/2);
+    }
+}
+
+/* CSS fallback for Flatsome mega menu hover.
+ * Flatsome relies on JS (hoverIntent + flatsome.js) to show dropdowns.
+ * If JS hasn't loaded yet (39 blocking scripts before it), the menu is dead.
+ * This pure-CSS hover makes the dropdown visible immediately on hover,
+ * so the menu works even while JS is still loading.
+ * Once flatsome.js loads, it takes over with hoverIntent for a smoother delay. */
+@media (min-width: 850px) {
+  .has-dropdown:hover > .nav-dropdown,
+  .has-dropdown:focus-within > .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+  }
+}

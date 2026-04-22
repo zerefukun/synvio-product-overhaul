@@ -404,7 +404,7 @@
                 '<div class="oz-cart-item-row">' +
                     '<div class="oz-cart-qty">' +
                         '<button class="oz-cart-qty-btn dec' + (item.qty <= 1 ? ' bin' : '') + '" aria-label="' + (item.qty <= 1 ? 'Verwijderen' : 'Minder') + '">' + decContent + '</button>' +
-                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99" aria-label="Aantal">' +
+                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
                         '<button class="oz-cart-qty-btn inc" aria-label="Meer">\u002B</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +
@@ -973,16 +973,6 @@
 
             /* Open our drawer on click (capture phase = fires first) */
             cartAnchors[i].addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                openDrawer('cart_icon');
-            }, true);
-        }
-
-        /* Custom OZ header cart icon (replaces Flatsome header entirely) */
-        var ozCartIcon = document.getElementById('oz-cart-icon');
-        if (ozCartIcon) {
-            ozCartIcon.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 openDrawer('cart_icon');

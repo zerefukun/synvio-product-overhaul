@@ -7,8 +7,6 @@ on:
     paths:
       - "oz-variations-bcw/**"
       - "oz-theme/**"
-      - "oz-forms/**"
-      - "oz-reviews/**"
       - ".github/workflows/deploy-bcw-staging.yml"
   workflow_dispatch:
 
@@ -69,8 +67,6 @@ jobs:
           port="${BCW_PORT:-22}"
           ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
             "mkdir -p /home/betoncire/staging/wp-content/plugins/oz-variations-bcw \
-                      /home/betoncire/staging/wp-content/plugins/oz-forms \
-                      /home/betoncire/staging/wp-content/plugins/oz-reviews \
                       /home/betoncire/staging/wp-content/themes/OzTheme"
 
       - name: Deploy plugin files to staging
@@ -96,40 +92,6 @@ jobs:
             ./oz-variations-bcw/ \
             "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/plugins/oz-variations-bcw/"
 
-      - name: Deploy oz-forms plugin to staging
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
-        run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          rsync -az --delete \
-            --exclude ".git" \
-            --exclude ".DS_Store" \
-            --exclude "node_modules" \
-            -e "ssh -p $port" \
-            ./oz-forms/ \
-            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/plugins/oz-forms/"
-
-      - name: Deploy oz-reviews plugin to staging
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
-        run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          rsync -az --delete \
-            --exclude ".git" \
-            --exclude ".DS_Store" \
-            --exclude "node_modules" \
-            -e "ssh -p $port" \
-            ./oz-reviews/ \
-            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/plugins/oz-reviews/"
-
       - name: Deploy child theme to staging
         shell: bash
         env:
@@ -145,15 +107,3 @@ jobs:
             -e "ssh -p $port" \
             ./oz-theme/ \
             "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/themes/OzTheme/"
-
-      - name: Purge LiteSpeed cache
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
-        run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
-            "cd /home/betoncire/staging && wp litespeed-purge all 2>/dev/null || true"

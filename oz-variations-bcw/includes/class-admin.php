@@ -585,13 +585,6 @@ class OZ_BCW_Admin {
             return;
         }
 
-        // SECURITY: nonce alone is not enough — a low-priv user with a stolen
-        // nonce could save product meta. Verify the current user can actually
-        // edit this product.
-        if (!current_user_can('edit_product', $product_id)) {
-            return;
-        }
-
         // Save page mode — only for non-line products
         if (isset($_POST['oz_page_mode'])) {
             $mode = sanitize_text_field($_POST['oz_page_mode']);

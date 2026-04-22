@@ -1,219 +1,5 @@
 <?php
 
-/* ================================================================
-   OZ THEME — Standalone WordPress + WooCommerce theme
-   No parent theme. All styling via oz-design-system.css + component CSS.
-   ================================================================ */
-
-/**
- * Theme setup — register supports, menus, image sizes.
- * Runs on after_setup_theme so WordPress is ready.
- */
-function oz_theme_setup() {
-    add_theme_support('title-tag');
-    add_theme_support('post-thumbnails');
-    add_theme_support('custom-logo', ['height' => 80, 'width' => 240, 'flex-height' => true, 'flex-width' => true]);
-    add_theme_support('html5', ['search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script']);
-    add_theme_support('responsive-embeds');
-    add_theme_support('align-wide');
-    add_theme_support('editor-styles');
-    add_theme_support('wp-block-styles');
-
-    /* WooCommerce */
-    add_theme_support('woocommerce');
-    add_theme_support('wc-product-gallery-zoom');
-    add_theme_support('wc-product-gallery-lightbox');
-    add_theme_support('wc-product-gallery-slider');
-
-    /* Editor styles — mirrors frontend design system */
-    add_editor_style('css/oz-editor.css');
-
-    /* Block color palette matching design tokens */
-    add_theme_support('editor-color-palette', [
-        ['name' => 'Accent (Teal)',   'slug' => 'oz-accent',       'color' => '#135350'],
-        ['name' => 'Accent Hover',    'slug' => 'oz-accent-hover', 'color' => '#0E3E3C'],
-        ['name' => 'Accent Light',    'slug' => 'oz-accent-light', 'color' => '#E8F0F0'],
-        ['name' => 'CTA (Orange)',    'slug' => 'oz-cta',          'color' => '#E67C00'],
-        ['name' => 'Text Primary',    'slug' => 'oz-text-primary', 'color' => '#1A1A1A'],
-        ['name' => 'Text Body',       'slug' => 'oz-text-body',    'color' => '#555555'],
-        ['name' => 'Background Warm', 'slug' => 'oz-bg-warm',      'color' => '#F5F4F0'],
-        ['name' => 'Background Page', 'slug' => 'oz-bg-page',      'color' => '#FFFFFF'],
-        ['name' => 'Border',          'slug' => 'oz-border',       'color' => '#E5E5E3'],
-    ]);
-
-    /* Block font sizes matching type scale */
-    add_theme_support('editor-font-sizes', [
-        ['name' => 'Small',   'slug' => 'small',   'size' => 12],
-        ['name' => 'Normal',  'slug' => 'normal',  'size' => 16],
-        ['name' => 'Medium',  'slug' => 'medium',  'size' => 20],
-        ['name' => 'Large',   'slug' => 'large',   'size' => 25],
-        ['name' => 'X-Large', 'slug' => 'x-large', 'size' => 31],
-        ['name' => 'Huge',    'slug' => 'huge',    'size' => 39],
-    ]);
-}
-add_action('after_setup_theme', 'oz_theme_setup');
-
-/**
- * Register widget areas.
- */
-function oz_widgets_init() {
-    register_sidebar([
-        'name'          => 'Shop Sidebar',
-        'id'            => 'shop-sidebar',
-        'description'   => 'Widgets below the category navigation on shop pages (e.g. price filter).',
-        'before_widget' => '<div id="%1$s" class="oz-sidebar-widget %2$s">',
-        'after_widget'  => '</div>',
-        'before_title'  => '<h3 class="oz-sidebar-widget__title">',
-        'after_title'   => '</h3>',
-    ]);
-}
-add_action('widgets_init', 'oz_widgets_init');
-
-/**
- * Enqueue design system CSS on all frontend pages.
- * Loads first so component CSS can rely on the tokens and reset.
- */
-function oz_design_system_enqueue() {
-    if (is_admin()) return;
-
-    wp_enqueue_style(
-        'oz-design-system',
-        get_stylesheet_directory_uri() . '/css/oz-design-system.css',
-        [],
-        filemtime(get_stylesheet_directory() . '/css/oz-design-system.css')
-    );
-
-    /* Self-hosted fonts — Raleway (variable) + DM Serif Display.
-       Dropped Google Fonts CDN: eliminates third-party connection,
-       FOUT, and NO_LCP risk from font-swap opacity animations. */
-    wp_enqueue_style(
-        'oz-fonts',
-        get_stylesheet_directory_uri() . '/css/fonts.css',
-        [],
-        filemtime(get_stylesheet_directory() . '/css/fonts.css')
-    );
-
-    /* Block styles for Gutenberg content */
-    wp_enqueue_style(
-        'oz-blocks',
-        get_stylesheet_directory_uri() . '/css/oz-blocks.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-blocks.css')
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
-
-/**
- * Preload self-hosted critical fonts so they arrive before first paint and
- * eliminate FOUT. DM Serif Display (headings) and Raleway (body) are both
- * visible above the fold on every page. Must fire early in wp_head so
- * preload hints appear before any <link rel=stylesheet>.
- */
-function oz_fonts_preload() {
-    if (is_admin()) return;
-    $base = get_stylesheet_directory_uri() . '/fonts';
-    echo '<link rel="preload" href="' . esc_url($base . '/dm-serif-display-400.woff2') . '" as="font" type="font/woff2" crossorigin>' . "\n";
-    echo '<link rel="preload" href="' . esc_url($base . '/raleway.woff2') . '" as="font" type="font/woff2" crossorigin>' . "\n";
-}
-add_action('wp_head', 'oz_fonts_preload', 1);
-
-/**
- * Enqueue scroll-reveal animation CSS + JS on all frontend pages.
- * Unified system: watches [data-reveal], [data-reveal-stagger], [data-reveal-img].
- * Adds .oz-visible via IntersectionObserver.
- */
-function oz_animations_enqueue() {
-    if (is_admin()) return;
-
-    wp_enqueue_style(
-        'oz-animations',
-        get_stylesheet_directory_uri() . '/css/oz-animations.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-animations.css')
-    );
-
-    wp_enqueue_script(
-        'oz-animations',
-        get_stylesheet_directory_uri() . '/js/oz-animations.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/js/oz-animations.js'),
-        true
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_animations_enqueue', 6);
-
-/**
- * Remove ALL WooCommerce default CSS sitewide — we provide our own via oz-blocks.css.
- * WC's layout, general, and smallscreen styles all conflict with our design system.
- */
-function oz_dequeue_wc_layout_styles() {
-    wp_dequeue_style('woocommerce-layout');
-    wp_dequeue_style('woocommerce-smallscreen');
-    wp_dequeue_style('woocommerce-general');
-}
-add_action('wp_enqueue_scripts', 'oz_dequeue_wc_layout_styles', 20);
-
-/**
- * Dequeue WooCommerce + WC Blocks styles on non-WC pages.
- * Runs at priority 100 because WC Blocks re-enqueues after priority 20.
- */
-function oz_dequeue_wc_on_non_shop_pages() {
-    if ( is_admin() ) return;
-
-    $is_wc_page = function_exists('is_woocommerce') && (
-        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
-    );
-    if ( $is_wc_page ) return;
-
-    wp_dequeue_style('woocommerce-general');
-    wp_dequeue_style('wc-blocks-style');
-    wp_dequeue_style('wc-blocks-vendors-style');
-}
-add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 100);
-
-/**
- * Remove WooCommerce default content wrappers.
- * Our archive-product.php has its own layout, and header.php already provides <main>.
- * Without this, WC outputs a nested <main class="site-main"> that breaks DOM nesting
- * and causes double padding on the shop grid.
- */
-remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
-remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
-
-/**
- * Shop sidebar walker — collapsible category nav from a curated WP menu.
- */
-require_once get_stylesheet_directory() . '/inc/class-shop-sidebar-walker.php';
-
-/**
- * Mega menu walker — desktop horizontal nav with dropdown panels.
- */
-require_once get_stylesheet_directory() . '/inc/class-mega-menu-walker.php';
-
-/**
- * Load Flatsome shortcode compatibility layer.
- * Existing pages use Flatsome UX Builder shortcodes extensively.
- * These stubs output semantic HTML with our design classes.
- */
-if (file_exists(get_stylesheet_directory() . '/inc/flatsome-shortcodes.php')) {
-    require_once get_stylesheet_directory() . '/inc/flatsome-shortcodes.php';
-}
-
-/**
- * Load block patterns for Gutenberg.
- */
-if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
-    require_once get_stylesheet_directory() . '/inc/block-patterns.php';
-}
-
-/**
- * Load block-section renderer used by page-ruimte.php and single.php
- * (for stucsoorten category posts).
- */
-require_once get_stylesheet_directory() . '/inc/block-sections-renderer.php';
-require_once get_stylesheet_directory() . '/inc/reviews-section.php';
-require_once get_stylesheet_directory() . '/inc/search-suggestions.php';
-
 /**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
  * Free tool, loads async, no performance impact.
@@ -223,25 +9,14 @@ require_once get_stylesheet_directory() . '/inc/search-suggestions.php';
  * Preload the LCP hero image on the homepage.
  * Eliminates the ~960ms "resource load delay" where the browser waits for
  * render-blocking CSS before discovering the <img> in the DOM.
- *
- * The hero <img> in front-page.php uses a responsive srcset (768w, 1024w,
- * 1536w) with sizes="100vw". The preload link must mirror that exactly via
- * imagesrcset/imagesizes — otherwise the browser preloads one fixed URL
- * but picks a different one from the srcset at render time, and logs a
- * "preloaded but not used" warning.
+ * With preload, the image downloads in parallel with CSS.
  */
 function oz_preload_hero_image() {
     if (!is_front_page()) return;
-    $base   = home_url('/wp-content/uploads/2026/03/Beton-Badkamer-Placeholder-2-1');
-    $src    = $base . '-1024x683.avif';
-    $srcset = $base . '-768x512.avif 768w, '
-            . $base . '-1024x683.avif 1024w, '
-            . $base . '.avif 1536w';
-    echo '<link rel="preload" as="image" '
-       . 'href="' . esc_url($src) . '" '
-       . 'imagesrcset="' . esc_attr($srcset) . '" '
-       . 'imagesizes="100vw" '
-       . 'fetchpriority="high">' . "\n";
+    $hero_url = wp_get_attachment_image_url(28735, 'medium_large');
+    if ($hero_url) {
+        echo '<link rel="preload" as="image" href="' . esc_url($hero_url) . '" fetchpriority="high">' . "\n";
+    }
 }
 add_action('wp_head', 'oz_preload_hero_image', 1);
 
@@ -250,32 +25,15 @@ function oz_clarity_tracking() {
     if (is_admin() || current_user_can('manage_options')) return;
     ?>
     <script type="text/javascript">
-    /* Defer Clarity until after window.load + idle time so it does not
-       block main thread during LCP measurement. PSI (Lighthouse) was
-       reporting NO_LCP partly because analytics scripts ran during the
-       LCP measurement window, keeping the main thread busy. */
-    (function () {
-        function loadClarity() {
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "vunpx49rhr");
-        }
-        function schedule() {
-            if ('requestIdleCallback' in window) {
-                window.requestIdleCallback(loadClarity, { timeout: 4000 });
-            } else {
-                setTimeout(loadClarity, 2500);
-            }
-        }
-        if (document.readyState === 'complete') schedule();
-        else window.addEventListener('load', schedule);
-    })();
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vunpx49rhr");
     </script>
     <?php
 }
-add_action('wp_footer', 'oz_clarity_tracking', 99);
+add_action('wp_head', 'oz_clarity_tracking', 1);
 
 function oz_custom_scripts() {
     wp_enqueue_script(
@@ -291,14 +49,22 @@ function oz_custom_scripts() {
 }
 add_action('wp_enqueue_scripts', 'oz_custom_scripts');
 
+function load_font_awesome() {
+    wp_enqueue_style('font-awesome', '//use.fontawesome.com/releases/v5.8.1/css/all.css');
+}
+add_action('wp_enqueue_scripts', 'load_font_awesome');
+add_action('admin_enqueue_scripts', 'load_font_awesome');
+
 /**
  * Defer non-critical CSS by switching rel to preload + onload swap.
  * Prevents render-blocking for stylesheets that aren't needed above the fold.
  */
 function oz_defer_non_critical_css($tag, $handle) {
-    $defer_handles = ['fue-followups'];
+    $defer_handles = ['font-awesome', 'fue-followups'];
     if (in_array($handle, $defer_handles, true)) {
+        // preload + onload swap pattern: loads without blocking render
         $tag = str_replace("rel='stylesheet'", "rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", $tag);
+        // noscript fallback for non-JS browsers
         $tag .= '<noscript>' . str_replace("rel='preload' as='style' onload=\"this.onload=null;this.rel='stylesheet'\"", "rel='stylesheet'", $tag) . '</noscript>';
     }
     return $tag;
@@ -343,7 +109,29 @@ function oz_defer_swiper_css($tag, $handle) {
 }
 add_filter('style_loader_tag', 'oz_defer_swiper_css', 10, 2);
 
-/* Flatsome banner aria-labels removed — shortcode stubs handle accessibility. */
+/**
+ * Add aria-labels to Flatsome banner links that have no accessible name.
+ * Flatsome's [ux_banner link="..."] generates <a class="fill"> wrappers
+ * with no text content — screen readers can't identify them.
+ * Extracts a label from the URL slug (e.g. "beton-cire-badkamer" -> "Badkamer").
+ */
+function oz_add_banner_aria_labels($content) {
+    // Match Flatsome's banner fill links: <a class="fill" href="..."><div class="fill banner-link"></div></a>
+    return preg_replace_callback(
+        '/<a\s+class="fill"\s+href="([^"]+)">\s*<div\s+class="fill banner-link"><\/div>\s*<\/a>/',
+        function ($m) {
+            $url = $m[1];
+            // Extract last URL segment as label
+            $path = trim(parse_url($url, PHP_URL_PATH), '/');
+            $slug = basename($path);
+            // Clean slug: "beton-cire-badkamer" -> "Beton cire badkamer"
+            $label = ucfirst(str_replace('-', ' ', $slug));
+            return '<a class="fill" href="' . esc_url($url) . '" aria-label="' . esc_attr($label) . '"><div class="fill banner-link"></div></a>';
+        },
+        $content
+    );
+}
+add_filter('the_content', 'oz_add_banner_aria_labels', 999);
 
 /* M² Calculator removed — Phase 4 cleanup (was dead code, no products use it) */
 /* Oz Handleiding removed — no longer used */
@@ -369,16 +157,7 @@ function oz_capture_attribution_cookies() {
             // Don't overwrite existing — first touch wins
             if (!isset($_COOKIE[$cookie_name])) {
                 $value = sanitize_text_field($_GET[$param]);
-                // httponly so JS can't read it; samesite=Lax so it doesn't
-                // travel in cross-site iframes; secure so it only goes over HTTPS.
-                setcookie($cookie_name, $value, [
-                    'expires'  => time() + 86400 * 30,
-                    'path'     => '/',
-                    'domain'   => '',
-                    'secure'   => true,
-                    'httponly' => true,
-                    'samesite' => 'Lax',
-                ]);
+                setcookie($cookie_name, $value, time() + 86400 * 30, '/', '', true, false);
                 $_COOKIE[$cookie_name] = $value; // Available in same request
             }
         }
@@ -394,9 +173,9 @@ function oz_apply_attribution_fallback($order) {
         return; // WC attribution worked, don't override
     }
 
-    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_source'])) : '';
-    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_medium'])) : '';
-    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_campaign'])) : '';
+    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field($_COOKIE['oz_utm_source']) : '';
+    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field($_COOKIE['oz_utm_medium']) : '';
+    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field($_COOKIE['oz_utm_campaign']) : '';
 
     // Determine source type
     $source_type = 'typein';
@@ -414,8 +193,10 @@ function oz_apply_attribution_fallback($order) {
 }
 
 
-/* Flatsome mini-cart filter removed — no parent theme, no Flatsome mini-cart.
- * Our header.php renders its own cart icon; cart-drawer.js opens the drawer. */
+/* Disable Flatsome's built-in mini-cart dropdown entirely.
+ * When true, Flatsome renders the cart icon as a plain <a> link.
+ * Our JS intercepts .header-cart-link clicks to open our drawer instead. */
+add_filter('flatsome_disable_mini_cart', '__return_true');
 
 /**
  * Get the WooCommerce free shipping minimum amount.
@@ -471,7 +252,13 @@ function oz_cart_drawer_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/cart-drawer.css')
     );
 
-    /* Google Fonts now loaded by oz_design_system_enqueue() */
+    // Google Fonts (may already be enqueued by plugin, but wp_enqueue is idempotent by handle)
+    wp_enqueue_style(
+        'oz-google-fonts-drawer',
+        'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Raleway:wght@400;500;600;700&display=swap',
+        [],
+        null
+    );
 
     // Shared Swiper CDN loader — used by cart drawer and product page USP ticker
     wp_enqueue_script(
@@ -503,266 +290,6 @@ function oz_cart_drawer_enqueue() {
     ]);
 }
 add_action('wp_enqueue_scripts', 'oz_cart_drawer_enqueue');
-
-/**
- * Enqueue cart + checkout page styles on /winkelwagen/ and /afrekenen/.
- * Styles live in oz-cart-checkout.css and reuse design system tokens.
- */
-function oz_cart_checkout_enqueue() {
-    if (is_admin()) return;
-    if (!function_exists('is_cart')) return;
-    if (!is_cart() && !is_checkout()) return;
-
-    wp_enqueue_style(
-        'oz-cart-checkout',
-        get_stylesheet_directory_uri() . '/css/oz-cart-checkout.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-cart-checkout.css')
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_cart_checkout_enqueue');
-
-/**
- * Enqueue homepage v2 CSS only on the front page.
- * Styles are namespaced with .oz-hp- prefix so they can't bleed into other pages.
- */
-function oz_homepage_v2_enqueue() {
-    if (is_admin() || ! is_front_page()) return;
-
-    wp_enqueue_style(
-        'oz-reviews',
-        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
-    );
-
-    wp_enqueue_style(
-        'oz-homepage-v2',
-        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
-        ['oz-reviews'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
-    );
-
-    /* Marquee + scroll-reveal keyframes — kept separate so they can be
-       toggled via ?nocss=oz-homepage-v2-animations for NO_LCP tests. */
-    wp_enqueue_style(
-        'oz-homepage-v2-animations',
-        get_stylesheet_directory_uri() . '/css/homepage-v2-animations.css',
-        ['oz-homepage-v2'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
-    );
-
-    wp_enqueue_script(
-        'oz-homepage-v2',
-        get_stylesheet_directory_uri() . '/js/homepage-v2.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/js/homepage-v2.js'),
-        true
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_homepage_v2_enqueue');
-
-/**
- * Enqueue ruimte page styles when the Ruimte template is active OR when
- * viewing a stucsoorten-category single post (same block-section layout).
- */
-function oz_ruimte_enqueue() {
-    if (is_admin()) return;
-
-    $needs_ruimte_css = is_page_template('page-ruimte.php')
-        || is_page_template('sitemap-template.php')
-        || ( is_single() && has_category( 'stucsoorten' ) );
-
-    if ( ! $needs_ruimte_css ) return;
-
-    wp_enqueue_style(
-        'oz-reviews',
-        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
-    );
-
-    wp_enqueue_style(
-        'oz-ruimte',
-        get_stylesheet_directory_uri() . '/css/oz-ruimte.css',
-        ['oz-design-system', 'oz-animations', 'oz-reviews'],
-        filemtime(get_stylesheet_directory() . '/css/oz-ruimte.css')
-    );
-
-    // Locatie/stucsoorten/ruimte pages embed home-style product cards
-    // (oz-hp-section + oz-hp-pcard). Load the homepage stylesheet so those
-    // .oz-hp-* classes resolve here. The CSS is namespaced so nothing else bleeds.
-    wp_enqueue_style(
-        'oz-homepage-v2',
-        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
-        ['oz-reviews'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
-    );
-
-    /* Homepage scroll-reveal + marquee keyframes — required by pages that
-       render .oz-hp-trust and [data-reveal] sections (ruimte/locatie/stuc). */
-    wp_enqueue_style(
-        'oz-homepage-v2-animations',
-        get_stylesheet_directory_uri() . '/css/homepage-v2-animations.css',
-        ['oz-homepage-v2'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
-    );
-
-}
-add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
-
-/**
- * Enqueue the inspiratie slideshow script on /inspiratie/ only.
- * Depends on swiper-loader for the shared Swiper v11 CDN bundle.
- */
-function oz_inspiratie_enqueue() {
-    if (is_admin()) return;
-    if (! is_page('inspiratie')) return;
-
-    wp_enqueue_script(
-        'oz-inspiratie',
-        get_stylesheet_directory_uri() . '/js/oz-inspiratie.js',
-        ['oz-swiper-loader'],
-        filemtime(get_stylesheet_directory() . '/js/oz-inspiratie.js'),
-        true
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_inspiratie_enqueue');
-
-/**
- * Enqueue reviews styles on the /reviews/ hub page.
- * The page uses .oz-hp-reviews* classes from oz-reviews.css.
- */
-function oz_reviews_page_enqueue() {
-    if (is_admin()) return;
-    if (! is_page('reviews')) return;
-
-    wp_enqueue_style(
-        'oz-reviews',
-        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
-    );
-
-    wp_enqueue_style(
-        'oz-homepage-v2',
-        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
-        ['oz-reviews'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
-    );
-
-    wp_enqueue_style(
-        'oz-homepage-v2-animations',
-        get_stylesheet_directory_uri() . '/css/homepage-v2-animations.css',
-        ['oz-homepage-v2'],
-        filemtime(get_stylesheet_directory() . '/css/homepage-v2-animations.css')
-    );
-
-    wp_enqueue_script(
-        'oz-homepage-v2',
-        get_stylesheet_directory_uri() . '/js/homepage-v2.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/js/homepage-v2.js'),
-        true
-    );
-
-    wp_enqueue_script(
-        'oz-swiper-loader',
-        get_stylesheet_directory_uri() . '/js/swiper-loader.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/js/swiper-loader.js'),
-        true
-    );
-    wp_enqueue_script(
-        'oz-reviews-carousel',
-        get_stylesheet_directory_uri() . '/js/oz-reviews-carousel.js',
-        ['oz-swiper-loader'],
-        filemtime(get_stylesheet_directory() . '/js/oz-reviews-carousel.js'),
-        true
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_reviews_page_enqueue');
-
-/**
- * Enqueue custom header CSS + JS on all frontend pages.
- * Replaces Flatsome's header entirely — our header.php provides the markup.
- */
-function oz_header_enqueue() {
-    if (is_admin()) return;
-
-    wp_enqueue_style(
-        'oz-header',
-        get_stylesheet_directory_uri() . '/css/oz-header.css',
-        [],
-        filemtime(get_stylesheet_directory() . '/css/oz-header.css')
-    );
-
-    wp_enqueue_script(
-        'oz-header',
-        get_stylesheet_directory_uri() . '/js/oz-header.js',
-        [],
-        filemtime(get_stylesheet_directory() . '/js/oz-header.js'),
-        true
-    );
-
-    wp_localize_script('oz-header', 'ozHeaderData', [
-        'siteUrl' => home_url(),
-    ]);
-}
-add_action('wp_enqueue_scripts', 'oz_header_enqueue');
-
-/**
- * Register nav menus used by our custom header + drawer.
- */
-register_nav_menus([
-    'oz-primary'        => 'Primary Menu (OZ Header)',
-    'oz-drawer-footer'  => 'Drawer Footer Links',
-    'oz-shop-sidebar'   => 'Shop Sidebar Categories',
-]);
-
-/**
- * Customizer: drawer banner image + overlay text.
- * Appearance > Customize > Menu Drawer Banner
- */
-function oz_drawer_banner_customizer( $wp_customize ) {
-    $wp_customize->add_section('oz_drawer_banner', [
-        'title'    => 'Menu Drawer Banner',
-        'priority' => 35,
-    ]);
-
-    /* Banner image */
-    $wp_customize->add_setting('oz_drawer_banner_image', [
-        'default'           => '',
-        'sanitize_callback' => 'esc_url_raw',
-    ]);
-    $wp_customize->add_control( new WP_Customize_Image_Control($wp_customize, 'oz_drawer_banner_image', [
-        'label'   => 'Banner Image',
-        'section' => 'oz_drawer_banner',
-    ]));
-
-    /* Overlay line 1 (small text, e.g. brand name) */
-    $wp_customize->add_setting('oz_drawer_banner_line1', [
-        'default'           => 'Beton Cire Webshop',
-        'sanitize_callback' => 'sanitize_text_field',
-    ]);
-    $wp_customize->add_control('oz_drawer_banner_line1', [
-        'label'   => 'Line 1 (small)',
-        'section' => 'oz_drawer_banner',
-        'type'    => 'text',
-    ]);
-
-    /* Overlay line 2 (large tagline) */
-    $wp_customize->add_setting('oz_drawer_banner_line2', [
-        'default'           => 'Voor elke ruimte',
-        'sanitize_callback' => 'sanitize_text_field',
-    ]);
-    $wp_customize->add_control('oz_drawer_banner_line2', [
-        'label'   => 'Line 2 (large)',
-        'section' => 'oz_drawer_banner',
-        'type'    => 'text',
-    ]);
-}
-add_action('customize_register', 'oz_drawer_banner_customizer');
 
 /**
  * Output cart drawer HTML template in the footer of every page.
@@ -876,7 +403,7 @@ function oz_cart_drawer_get() {
 
         $items[] = [
             'key'        => $cart_key,
-            'name'       => html_entity_decode($display_name, ENT_QUOTES, 'UTF-8'),
+            'name'       => $display_name,
             'price'      => floatval($product->get_price()),
             'qty'        => $cart_item['quantity'],
             'image'      => $image_url,
@@ -952,23 +479,9 @@ function oz_cart_drawer_add() {
 
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $qty        = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
-    // Clamp qty to sensible UI-backed range — stops "add 999999 to deplete stock" abuse.
-    $qty = max(1, min(99, $qty));
 
     if (!$product_id) {
         wp_send_json_error('Missing product ID');
-        return;
-    }
-
-    // Server-side trust: client may POST any product ID. Reject drafts,
-    // private/password-protected, non-purchasable, or out-of-stock items.
-    $product = wc_get_product($product_id);
-    if (!$product
-        || $product->get_status() !== 'publish'
-        || !$product->is_purchasable()
-        || !$product->is_in_stock()
-        || $product->get_catalog_visibility() === 'hidden') {
-        wp_send_json_error('Product not available');
         return;
     }
 
@@ -1044,18 +557,11 @@ function oz_recently_viewed_get() {
     // Batch-fetch all products in one query (warms WC object cache)
     wc_get_products(['include' => $ids, 'limit' => 10]);
 
-    // Build response using shared formatter, preserving localStorage order.
-    // Gate on publish + catalog-visible + purchasable so this endpoint cannot
-    // be used to enumerate hidden/members-only product pricing.
+    // Build response using shared formatter, preserving localStorage order
     $products = [];
     foreach ($ids as $pid) {
         $product = wc_get_product($pid); // served from cache after batch fetch
-        if (!$product
-            || $product->get_status() !== 'publish'
-            || $product->get_catalog_visibility() === 'hidden'
-            || !$product->is_purchasable()) {
-            continue;
-        }
+        if (!$product || $product->get_status() !== 'publish') continue;
 
         $products[] = oz_format_product_card($product);
     }
@@ -1380,7 +886,7 @@ function oz_format_product_card($product) {
 
     return [
         'id'        => $product->get_id(),
-        'name'      => html_entity_decode($product->get_name(), ENT_QUOTES, 'UTF-8'),
+        'name'      => $product->get_name(),
         'price'     => floatval($product->get_price()),
         'image'     => $image_url,
         'permalink' => $product->get_permalink(),
@@ -1404,38 +910,46 @@ function oz_cart_drawer_format_upsell($product_id) {
 }
 
 /**
- * FAQ schema output.
- * Accordion shortcode stubs call oz_faq_schema_add() during rendering
- * to accumulate Q&A pairs. This footer hook outputs deduplicated FAQPage schema.
- * No redundant do_shortcode() — piggybacks on the normal render pass.
+ * Override Flatsome's FAQ schema output to deduplicate questions.
+ * Flatsome accumulates FAQ items in a global array across all rendered
+ * accordions on the page, causing massive duplication on category/listing pages.
+ * This replaces Flatsome's hook with a deduplicating version.
  */
-function oz_faq_schema_add( $question, $answer ) {
-    global $oz_faq_items;
-    if ( ! is_array( $oz_faq_items ) ) $oz_faq_items = [];
-    $oz_faq_items[] = [ 'q' => $question, 'a' => $answer ];
-}
+function oz_dedup_faq_schema() {
+    global $flatsome_accordion_faq_schema;
 
-function oz_faq_schema_output() {
-    global $oz_faq_items;
-    if ( empty( $oz_faq_items ) ) return;
-
-    $seen   = [];
-    $unique = [];
-    foreach ( $oz_faq_items as $faq ) {
-        $q = wp_strip_all_tags( trim( $faq['q'] ) );
-        $a = wp_kses_post( trim( $faq['a'] ) );
-        if ( $q && $a && ! isset( $seen[ $q ] ) ) {
-            $seen[ $q ] = true;
-            $unique[]   = [ '@type' => 'Question', 'name' => $q, 'acceptedAnswer' => [ '@type' => 'Answer', 'text' => $a ] ];
-        }
+    if (empty($flatsome_accordion_faq_schema)) {
+        return;
     }
 
-    if ( empty( $unique ) ) return;
+    // Deduplicate by question text
+    $seen = [];
+    $unique = [];
+    foreach ($flatsome_accordion_faq_schema as $faq) {
+        $key = wp_strip_all_tags($faq['question']);
+        if (isset($seen[$key])) continue;
+        $seen[$key] = true;
+        $unique[] = [
+            '@type'          => 'Question',
+            'name'           => $key,
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => wp_kses_post($faq['answer']),
+            ],
+        ];
+    }
 
-    $json = [ '@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => $unique ];
-    echo '<script type="application/ld+json">' . wp_json_encode( $json ) . '</script>';
+    $json = [
+        '@context'   => 'https://schema.org',
+        '@type'      => 'FAQPage',
+        'mainEntity' => $unique,
+    ];
+
+    echo '<script type="application/ld+json">' . wp_json_encode($json) . '</script>';
 }
-add_action( 'wp_footer', 'oz_faq_schema_output' );
+// Remove Flatsome's original (duplicating) FAQ schema output, replace with deduped version
+remove_action('wp_footer', 'flatsome_print_faq_schema');
+add_action('wp_footer', 'oz_dedup_faq_schema');
 
 /**
  * Remove block editor scripts from the frontend.
@@ -1452,8 +966,8 @@ add_action('wp_enqueue_scripts', 'oz_dequeue_frontend_block_editor', 100);
 
 /**
  * Remove plugin scripts that load on every page but are only needed in specific contexts.
- * Reduces blocking JS on non-product pages by removing scripts
- * that are only needed in specific contexts.
+ * Reduces blocking JS count from ~40 to ~33 on non-product pages,
+ * letting flatsome.js (mega menu) execute sooner.
  */
 function oz_dequeue_unnecessary_scripts() {
     if (is_admin()) return;
@@ -1516,88 +1030,23 @@ function oz_dequeue_unnecessary_scripts() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_unnecessary_scripts', 100);
 
 /**
- * Remove WordPress/plugin bloat CSS from the frontend.
- * Runs at priority 9999 to catch late enqueues.
+ * Remove WordPress admin/editor CSS from the frontend.
+ * These are enqueued by Gutenberg/block editor plugins and have no effect on the frontend,
+ * but they block rendering (~77 KB total). Runs at priority 9999 to catch late enqueues.
  */
-function oz_remove_bloat_styles_from_frontend() {
+function oz_remove_admin_styles_from_frontend() {
     if (is_admin()) return;
 
-    /* Dashicons: admin toolbar icons — only needed for logged-in admins */
+    // dashicons: admin toolbar icons — only needed for logged-in admins
     if (!is_user_logged_in()) {
         wp_dequeue_style('dashicons');
         wp_deregister_style('dashicons');
     }
 
-    /* Gutenberg block editor styles leaked onto the frontend */
+    // Gutenberg block editor styles leaked onto the frontend by Popup Maker and other plugins
     wp_dequeue_style('wp-block-editor');
     wp_dequeue_style('wp-components');
     wp_dequeue_style('wp-preferences');
     wp_dequeue_style('popup-maker-block-library-style');
-
-    /* WP classic theme compat — we use our own design system */
-    wp_dequeue_style('classic-theme-styles');
-
-    /* Font Awesome — not used in our theme, 4 handleiding pages
-       used a fa-file-pdf icon but we'll replace with inline SVG */
-    wp_dequeue_style('font-awesome');
-    wp_deregister_style('font-awesome');
-
-    /* Contact Form 7 — only load on pages with forms */
-    $has_cf7 = false;
-    if (is_singular()) {
-        $post = get_post();
-        if ($post && strpos($post->post_content, 'contact-form-7') !== false) {
-            $has_cf7 = true;
-        }
-    }
-    if (!$has_cf7) {
-        wp_dequeue_style('contact-form-7');
-    }
-
-    /* Variation Price Display — only needed on product pages */
-    if (!is_product()) {
-        wp_dequeue_style('vpd-public');
-        wp_dequeue_script('vpd-public');
-    }
-
-    /* WC Blocks may re-enqueue even after priority 100 — final catch */
-    $is_wc_page = function_exists('is_woocommerce') && (
-        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
-    );
-    if (!$is_wc_page) {
-        wp_dequeue_style('wc-blocks-style');
-        wp_dequeue_style('wc-blocks-vendors-style');
-    }
 }
-add_action('wp_enqueue_scripts', 'oz_remove_bloat_styles_from_frontend', 9999);
-
-/**
- * Remove WP global styles (theme.json inline CSS).
- * WP generates these via wp_enqueue_global_styles which runs at wp_enqueue_scripts priority 10.
- * Dequeuing the handle at 9999 doesn't always work because it's inline CSS, so we
- * remove the action that generates it entirely.
- */
-remove_action('wp_enqueue_scripts', 'wp_enqueue_global_styles');
-remove_action('wp_footer', 'wp_enqueue_global_styles', 1);
-
-/**
- * Final dequeue at wp_print_styles — catches styles that WC Blocks
- * re-enqueues after wp_enqueue_scripts.
- * Deregister forces WP to forget the handle entirely so it can't be re-enqueued.
- */
-function oz_final_style_cleanup() {
-    if (is_admin()) return;
-
-    $is_wc_page = function_exists('is_woocommerce') && (
-        is_woocommerce() || is_cart() || is_checkout() || is_account_page()
-    );
-    if (!$is_wc_page) {
-        wp_dequeue_style('wc-blocks-style');
-        wp_deregister_style('wc-blocks-style');
-        wp_dequeue_style('wc-blocks-vendors-style');
-        wp_deregister_style('wc-blocks-vendors-style');
-    }
-
-    wp_dequeue_style('global-styles');
-}
-add_action('wp_print_styles', 'oz_final_style_cleanup', 9999);
+add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);

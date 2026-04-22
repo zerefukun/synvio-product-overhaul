@@ -27,6 +27,3 @@ bucket-label-design.html
 *.webp
 *.svg
 *.ico
-
-# But DO track theme image assets
-!oz-theme/img/**
