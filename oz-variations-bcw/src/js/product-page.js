@@ -599,16 +599,20 @@ function toggleFormula(mode) {
     P.basePrice = _preToggleBasePrice;
     P.productName = _preToggleProductName;
 
-    // Preserve compatible options back to K&K
+    // Preserve compatible options back to self-line
+    // If self IS K&K: clear selectedColor (K&K uses URL-driven variant navigation).
+    // If self IS ZM: keep selectedColor (ZM uses static swatch click, selection
+    // must survive toggle-back or the color label vanishes).
+    var selfIsZm = (P.productLine || '').indexOf('-zm') !== -1;
     updateState({
       // PU layers: keep current selection
       puLayers:   S.puLayers,
-      // Primer: restore K&K default (was hidden in ZM)
+      // Primer: restore default (hidden on ZM, so only affects K&K)
       primer:     findDefault(P.primerOptions, 'label'),
-      // Toepassing: K&K doesn't have it, clear
-      toepassing: null,
-      // Color: clear ZM static selection (K&K uses variant navigation)
-      selectedColor: '',
+      // Toepassing: only ZM has it; K&K clears
+      toepassing: selfIsZm ? S.toepassing : null,
+      // Color: preserve on ZM, clear on K&K
+      selectedColor: selfIsZm ? S.selectedColor : '',
       // Tools: if ZM set was selected, auto-switch to K&K set
       toolMode:   S.toolMode === 'set' ? 'set' : S.toolMode,
     });
@@ -1168,8 +1172,12 @@ function handleClick(e) {
       for (var si = 0; si < allSwatches.length; si++) {
         allSwatches[si].classList.toggle('selected', allSwatches[si] === swatch);
       }
-      // Swap main image from variant data (if available)
-      var fullImg = findVariantField(colorName, 'fullImage');
+      // Swap main image from variant data — on ZM line use zmFullImage,
+      // fall back to fullImage for lines without ZM variant data
+      var swatchIsZm = (P.productLine || '').indexOf('-zm') !== -1;
+      var fullImg = swatchIsZm
+        ? (findVariantField(colorName, 'zmFullImage') || findVariantField(colorName, 'fullImage'))
+        : findVariantField(colorName, 'fullImage');
       if (fullImg) swapMainImage(fullImg);
       syncUI();
       return;

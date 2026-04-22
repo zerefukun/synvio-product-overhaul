@@ -1388,15 +1388,16 @@
         P.isBase = _preToggleIsBase;
         P.basePrice = _preToggleBasePrice;
         P.productName = _preToggleProductName;
+        var selfIsZm = (P.productLine || "").indexOf("-zm") !== -1;
         updateState({
           // PU layers: keep current selection
           puLayers: S.puLayers,
-          // Primer: restore K&K default (was hidden in ZM)
+          // Primer: restore default (hidden on ZM, so only affects K&K)
           primer: findDefault(P.primerOptions, "label"),
-          // Toepassing: K&K doesn't have it, clear
-          toepassing: null,
-          // Color: clear ZM static selection (K&K uses variant navigation)
-          selectedColor: "",
+          // Toepassing: only ZM has it; K&K clears
+          toepassing: selfIsZm ? S.toepassing : null,
+          // Color: preserve on ZM, clear on K&K
+          selectedColor: selfIsZm ? S.selectedColor : "",
           // Tools: if ZM set was selected, auto-switch to K&K set
           toolMode: S.toolMode === "set" ? "set" : S.toolMode
         });
@@ -1792,7 +1793,8 @@
           for (var si = 0; si < allSwatches.length; si++) {
             allSwatches[si].classList.toggle("selected", allSwatches[si] === swatch);
           }
-          var fullImg = findVariantField(colorName, "fullImage");
+          var swatchIsZm = (P.productLine || "").indexOf("-zm") !== -1;
+          var fullImg = swatchIsZm ? findVariantField(colorName, "zmFullImage") || findVariantField(colorName, "fullImage") : findVariantField(colorName, "fullImage");
           if (fullImg) swapMainImage(fullImg);
           syncUI();
           return;
