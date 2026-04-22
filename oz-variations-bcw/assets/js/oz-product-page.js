@@ -1538,6 +1538,7 @@
       }
       if (container.children.length <= 1) container.style.display = "none";
     }, swapContent = function(MT) {
+      captureOriginalContent();
       function setSectionVisible(innerEl, sectionSelector, visible) {
         if (!innerEl) return;
         var section = sectionSelector ? innerEl.closest(sectionSelector) : innerEl;
@@ -2529,16 +2530,6 @@
     _preToggleMainImgSrc = "";
     _preToggleGalleryHtml = "";
     _originalContent = null;
-    if (P.modeToggle) {
-      captureOnce = function() {
-        captureOriginalContent();
-      };
-      if (window.requestIdleCallback) {
-        requestIdleCallback(captureOnce);
-      } else {
-        setTimeout(captureOnce, 100);
-      }
-    }
     window._ozToggleFormula = P.modeToggle ? toggleFormula : null;
     TOOL_STATE_KEY = "oz_bcw_tool_state";
     _sheetScrollY = 0;
@@ -2658,7 +2649,6 @@
   var _preToggleMainImgSrc;
   var _preToggleGalleryHtml;
   var _originalContent;
-  var captureOnce;
   var TOOL_STATE_KEY;
   var _sheetScrollY;
   var lightbox;

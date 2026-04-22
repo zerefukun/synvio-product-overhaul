@@ -819,6 +819,12 @@ function rebuildGalleryForZM(colorName) {
  * Swap USPs, specs, FAQ, and description from pre-loaded toggle target data.
  */
 function swapContent(MT) {
+  // Guarantee a fresh snapshot of the original sections right before we overwrite
+  // them. Relying on requestIdleCallback alone was racy — on pages with slow
+  // third-party scripts, idle fired with empty innerHTML, so restoreContent had
+  // nothing to put back and the description stayed stuck on the target line.
+  captureOriginalContent();
+
   // Each section: if target has data → fill + show; if empty → hide the whole
   // section so stale source-line content can never leak into the target view.
   function setSectionVisible(innerEl, sectionSelector, visible) {
@@ -991,16 +997,9 @@ function rebuildPuOptions() {
   btnsWrap.innerHTML = html;
 }
 
-// Capture original content on first toggle
-if (P.modeToggle) {
-  // Use requestIdleCallback to capture after initial render
-  var captureOnce = function() { captureOriginalContent(); };
-  if (window.requestIdleCallback) {
-    requestIdleCallback(captureOnce);
-  } else {
-    setTimeout(captureOnce, 100);
-  }
-}
+// Capture is now deferred to the first swapContent() call so we always
+// snapshot the real PHP-rendered content (pre-toggle). Idle-callback timing
+// was racy on slow pages and could cache an empty descContent, breaking restore.
 
 // Export toggleFormula for navigation.js popstate handler
 window._ozToggleFormula = P.modeToggle ? toggleFormula : null;
