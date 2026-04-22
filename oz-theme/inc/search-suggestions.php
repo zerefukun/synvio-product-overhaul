@@ -227,11 +227,29 @@ function oz_get_search_suggestions( string $query, int $limit = 3 ) : array {
 /**
  * Render the suggestion banner. Safe to call on any page; no-ops when
  * there's nothing useful to say.
+ *
+ * If the current request was auto-corrected from a typo'd query
+ * (see oz_auto_correct_empty_search), show a "Resultaten voor X (je
+ * zocht op Y)" notice instead of the clickable suggestion list.
  */
 function oz_render_search_suggestions( ?string $query = null ) : void {
 	if ( $query === null ) {
 		$query = (string) get_search_query();
 	}
+
+	$corrected_from = isset( $_GET['oz_corrected_from'] ) ? (string) wp_unslash( $_GET['oz_corrected_from'] ) : '';
+	if ( $corrected_from !== '' ) {
+		$corrected_from = sanitize_text_field( $corrected_from );
+		?>
+		<aside class="oz-search-suggestions oz-search-suggestions--corrected" role="note">
+			<span class="oz-search-suggestions__lead">
+				Resultaten voor <em><?php echo esc_html( $query ); ?></em> — je zocht op <em><?php echo esc_html( $corrected_from ); ?></em>.
+			</span>
+		</aside>
+		<?php
+		return;
+	}
+
 	$suggestions = oz_get_search_suggestions( $query );
 	if ( empty( $suggestions ) ) {
 		return;
@@ -245,3 +263,59 @@ function oz_render_search_suggestions( ?string $query = null ) : void {
 	</aside>
 	<?php
 }
+
+/**
+ * Auto-correct zero-result searches by redirecting to the top suggestion.
+ *
+ * Only fires on the main search query, when WP found zero posts, and
+ * when we have at least one confident suggestion (guarded inside
+ * oz_get_search_suggestions by per-token distance budgets). Adds
+ * oz_corrected_from so the template can explain the swap.
+ *
+ * Uses a 302 (temporary) redirect — the original URL is still a valid
+ * search, just an empty one today. Also guards against redirect loops
+ * by refusing to fire if oz_corrected_from is already in the URL.
+ */
+function oz_auto_correct_empty_search() : void {
+	if ( is_admin() || ! is_main_query() ) {
+		return;
+	}
+	if ( ! is_search() ) {
+		return;
+	}
+	if ( isset( $_GET['oz_corrected_from'] ) ) {
+		return;
+	}
+
+	global $wp_query;
+	if ( ! $wp_query || (int) $wp_query->found_posts > 0 ) {
+		return;
+	}
+
+	$query = (string) get_search_query();
+	if ( $query === '' ) {
+		return;
+	}
+
+	$suggestions = oz_get_search_suggestions( $query, 1 );
+	if ( empty( $suggestions ) ) {
+		return;
+	}
+
+	$top = reset( $suggestions );
+	if ( empty( $top['query'] ) || $top['query'] === $query ) {
+		return;
+	}
+
+	$args = array(
+		's'                  => $top['query'],
+		'oz_corrected_from'  => $query,
+	);
+	if ( ! empty( $_GET['post_type'] ) ) {
+		$args['post_type'] = sanitize_key( wp_unslash( $_GET['post_type'] ) );
+	}
+
+	wp_safe_redirect( add_query_arg( $args, home_url( '/' ) ), 302 );
+	exit;
+}
+add_action( 'template_redirect', 'oz_auto_correct_empty_search' );
