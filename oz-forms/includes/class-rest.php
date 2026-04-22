@@ -221,7 +221,16 @@ class REST {
 	 * attachments don't clutter wp-content/uploads/YYYY/MM alongside product
 	 * images, and admins can prune form-media independently.
 	 *
-	 * Whitelists common image types only — we don't need arbitrary uploads.
+	 * Security layers applied (belt-and-braces):
+	 *   1. Hard MIME whitelist — only image formats we actually need.
+	 *   2. Extension whitelist via wp_handle_upload's mimes override.
+	 *   3. finfo_file() — reads the file's magic bytes server-side; fails if
+	 *      the real content doesn't match the claimed MIME (blocks spoofed
+	 *      polyglot/phar/php files dressed as images).
+	 *   4. Filename sanitation — reject anything containing a dangerous
+	 *      double-extension (.php, .phtml, .phar, .pl, .py, .sh, .cgi, etc.).
+	 *   5. Hardened target dir — .htaccess + index.html dropped on first
+	 *      upload to block PHP execution and directory listing.
 	 *
 	 * @param array $file A single $_FILES entry.
 	 * @return array{error?: string, url?: string, file?: string}
@@ -230,6 +239,23 @@ class REST {
 		if ( ! function_exists( 'wp_handle_upload' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 		}
+
+		// Defensive: reject filenames with a script extension anywhere in the name.
+		// wp_unique_filename already prevents collisions, but double-extensions like
+		// "evil.php.jpg" should never even be attempted.
+		$name = isset( $file['name'] ) ? (string) $file['name'] : '';
+		if ( preg_match( '/\.(php\d?|phtml|phar|pl|py|sh|cgi|asp|aspx|jsp|htaccess|htpasswd)(\.|$)/i', $name ) ) {
+			return array( 'error' => 'Bestandsnaam bevat een niet-toegestane extensie.' );
+		}
+
+		// Verify the actual file content (magic bytes) matches an allowed image type.
+		// Trusting $file['type'] (client-supplied Content-Type) is not enough.
+		$allowed_mimes = array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic' );
+		$real_mime = self::detect_mime( $file['tmp_name'] ?? '' );
+		if ( $real_mime === '' || ! in_array( $real_mime, $allowed_mimes, true ) ) {
+			return array( 'error' => 'Ongeldig of niet-toegestaan bestandstype.' );
+		}
+
 		$allowed = array(
 			'jpg|jpeg' => 'image/jpeg',
 			'png'      => 'image/png',
@@ -249,10 +275,71 @@ class REST {
 		if ( isset( $res['error'] ) ) {
 			return array( 'error' => (string) $res['error'] );
 		}
+
+		// Ensure the upload dir has .htaccess + index.html guards.
+		self::harden_upload_dir( dirname( (string) $res['file'] ) );
+
 		return array(
 			'url'  => (string) $res['url'],
 			'file' => (string) $res['file'],
 		);
+	}
+
+	/**
+	 * Detect the MIME type of a file from its magic bytes. Returns '' on failure.
+	 */
+	private static function detect_mime( string $path ) : string {
+		if ( $path === '' || ! is_readable( $path ) ) {
+			return '';
+		}
+		if ( function_exists( 'finfo_open' ) ) {
+			$finfo = finfo_open( FILEINFO_MIME_TYPE );
+			if ( $finfo ) {
+				$mime = (string) finfo_file( $finfo, $path );
+				finfo_close( $finfo );
+				return $mime;
+			}
+		}
+		// Fallback — getimagesize reads magic bytes too and covers the image formats we allow.
+		$info = @getimagesize( $path );
+		if ( is_array( $info ) && ! empty( $info['mime'] ) ) {
+			return (string) $info['mime'];
+		}
+		return '';
+	}
+
+	/**
+	 * Drop .htaccess and index.html into the target directory (idempotent).
+	 * .htaccess disables PHP execution and script handling; index.html blocks
+	 * directory listing on servers that otherwise allow it.
+	 *
+	 * Walks up one level to harden /uploads/oz-forms root as well.
+	 */
+	private static function harden_upload_dir( string $dir ) : void {
+		$base = trailingslashit( wp_upload_dir()['basedir'] ?? '' ) . 'oz-forms';
+		$dirs = array( $dir, $base );
+		foreach ( array_unique( $dirs ) as $d ) {
+			if ( ! is_dir( $d ) ) {
+				continue;
+			}
+			$htaccess = $d . '/.htaccess';
+			if ( ! file_exists( $htaccess ) ) {
+				$rules = "# oz-forms upload dir — no script execution allowed.\n"
+					. "<FilesMatch \"\\.(php\\d?|phtml|phar|pl|py|sh|cgi|asp|aspx|jsp)$\">\n"
+					. "    Require all denied\n"
+					. "</FilesMatch>\n"
+					. "<IfModule mod_php7.c>\n    php_flag engine off\n</IfModule>\n"
+					. "<IfModule mod_php8.c>\n    php_flag engine off\n</IfModule>\n"
+					. "Options -Indexes -ExecCGI\n"
+					. "RemoveHandler .php .phtml .phar .pl .py .sh .cgi\n"
+					. "AddType text/plain .php .phtml .phar .pl .py .sh .cgi\n";
+				@file_put_contents( $htaccess, $rules );
+			}
+			$index = $d . '/index.html';
+			if ( ! file_exists( $index ) ) {
+				@file_put_contents( $index, '' );
+			}
+		}
 	}
 
 	/**
