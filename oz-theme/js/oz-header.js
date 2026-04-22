@@ -236,7 +236,8 @@
        - query length ≥ 5          (shorter words over-match: "red" → "reduced")
        - token.length ≤ 1.7 × query.length  (prevent "red" → "reduction")
        - first char must match     (anchors the match, cheap rejection)
-       - gaps ≤ 2                  (2+ skipped letters = probably a different word)
+       - gaps ≤ 3                  (budget for multi-letter drops like
+                                    "metlc" → "metallic", which skips a, l, i)
      Trailing token chars after the query is consumed are NOT counted —
      natural suffixes ("-en", "-s") aren't typos. */
   function subsequenceGaps(query, token) {
@@ -254,40 +255,28 @@
       }
     }
     if (qi < query.length) return Infinity;
-    if (gaps > 2) return Infinity;
+    if (gaps > 3) return Infinity;
     return gaps;
   }
 
-  /* Score a product name against the query. Lower is better.
-       0     — query is a substring of the full name OR a prefix of any token
-               (e.g. "metal" inside "metallic" → strong match)
-       0.5-n — subsequence hit on any token (e.g. "metlic" in "metallic"),
-               tiered as 0.5 + gaps * 0.2 so these rank BETWEEN exact hits
-               and 1-edit Levenshtein hits
-       1-n   — min Levenshtein distance between query and any token, up to maxEdits
-     Returns Infinity when nothing's close enough. Because callers rank by
-     ascending score, substring/prefix hits always outrank fuzzy hits. */
-  function scoreProduct(nameNorm, qNorm) {
-    if (!qNorm) return Infinity;
-    if (nameNorm.indexOf(qNorm) !== -1) return 0;
+  /* Score a SINGLE query word against a product's name + tokens. Lower is
+     better. Same tiering as scoreProduct below:
+       0     — word is a substring of the full name
+       0.5-n — subsequence hit on any token (tiered 0.5 + gaps*0.2)
+       1-n   — min Levenshtein to any token, up to maxEdits */
+  function scoreWord(nameNorm, tokens, qWord) {
+    if (nameNorm.indexOf(qWord) !== -1) return 0;
 
-    var tokens   = tokenize(nameNorm);
-    var limit    = maxEdits(qNorm.length);
-    var bestLev  = Infinity;
-    var bestSub  = Infinity;
+    var limit   = maxEdits(qWord.length);
+    var bestLev = Infinity;
+    var bestSub = Infinity;
 
     for (var i = 0; i < tokens.length; i++) {
       var t = tokens[i];
-      if (t.indexOf(qNorm) === 0) return 0;
-
-      /* Subsequence check — independent of Levenshtein window */
-      var g = subsequenceGaps(qNorm, t);
+      var g = subsequenceGaps(qWord, t);
       if (g < bestSub) bestSub = g;
-
-      /* Levenshtein — skip tokens whose length is too different. A valid
-         edit distance ≤ limit requires |len(a) - len(b)| ≤ limit. */
-      if (Math.abs(t.length - qNorm.length) <= limit) {
-        var d = levenshtein(t, qNorm);
+      if (Math.abs(t.length - qWord.length) <= limit) {
+        var d = levenshtein(t, qWord);
         if (d < bestLev) bestLev = d;
       }
     }
@@ -295,6 +284,34 @@
     if (bestLev <= limit) return bestLev;
     if (bestSub !== Infinity) return 0.5 + bestSub * 0.2;
     return Infinity;
+  }
+
+  /* Score a product name against the query. Lower is better.
+     Single-word query: delegates to scoreWord.
+     Multi-word query: splits on whitespace and requires EVERY word to
+     match somewhere in the name (order-agnostic AND-semantics, so
+     "cire beton" finds "Beton Ciré" products). Aggregated by average
+     so a 2-word query with both words exact (0) scores 0, keeping it
+     comparable to single-word scores. Whole-phrase substring is still
+     the strongest short-circuit (catches "beton cire" exactly). */
+  function scoreProduct(nameNorm, qNorm) {
+    if (!qNorm) return Infinity;
+    if (nameNorm.indexOf(qNorm) !== -1) return 0;
+
+    var tokens = tokenize(nameNorm);
+    var qWords = qNorm.split(/\s+/).filter(Boolean);
+
+    if (qWords.length <= 1) {
+      return scoreWord(nameNorm, tokens, qNorm);
+    }
+
+    var total = 0;
+    for (var i = 0; i < qWords.length; i++) {
+      var s = scoreWord(nameNorm, tokens, qWords[i]);
+      if (s === Infinity) return Infinity;
+      total += s;
+    }
+    return total / qWords.length;
   }
 
   if (searchInput) {
