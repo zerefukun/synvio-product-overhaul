@@ -216,7 +216,11 @@ class REST {
 	}
 
 	/**
-	 * Move an uploaded file into wp-content/uploads via wp_handle_upload.
+	 * Move an uploaded file into wp-content/uploads/oz-forms/YYYY/MM/ via
+	 * wp_handle_upload. Kept separate from the normal media library so form
+	 * attachments don't clutter wp-content/uploads/YYYY/MM alongside product
+	 * images, and admins can prune form-media independently.
+	 *
 	 * Whitelists common image types only — we don't need arbitrary uploads.
 	 *
 	 * @param array $file A single $_FILES entry.
@@ -237,7 +241,11 @@ class REST {
 			'test_form' => false,
 			'mimes'     => $allowed,
 		);
+
+		add_filter( 'upload_dir', array( __CLASS__, 'filter_upload_dir_to_oz_forms' ) );
 		$res = wp_handle_upload( $file, $overrides );
+		remove_filter( 'upload_dir', array( __CLASS__, 'filter_upload_dir_to_oz_forms' ) );
+
 		if ( isset( $res['error'] ) ) {
 			return array( 'error' => (string) $res['error'] );
 		}
@@ -245,5 +253,19 @@ class REST {
 			'url'  => (string) $res['url'],
 			'file' => (string) $res['file'],
 		);
+	}
+
+	/**
+	 * upload_dir filter — route form uploads into /uploads/oz-forms/YYYY/MM.
+	 * Prepends /oz-forms to whatever subdir WP would otherwise use.
+	 *
+	 * @param array $dirs
+	 */
+	public static function filter_upload_dir_to_oz_forms( array $dirs ) : array {
+		$subdir = '/oz-forms' . ( $dirs['subdir'] ?? '' );
+		$dirs['path']   = $dirs['basedir'] . $subdir;
+		$dirs['url']    = $dirs['baseurl'] . $subdir;
+		$dirs['subdir'] = $subdir;
+		return $dirs;
 	}
 }
