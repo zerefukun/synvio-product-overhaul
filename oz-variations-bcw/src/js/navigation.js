@@ -57,15 +57,23 @@ export function initNavigation(onAfterNavigate) {
   _initialIsBase = P.isBase;
   _onAfterNavigate = onAfterNavigate || null;
 
-  // Tag the initial history entry so popstate can restore it
-  history.replaceState({ productId: P.productId }, '', location.href);
+  // Tag the initial history entry so popstate can restore it. When the page
+  // participates in the formula toggle, mark it as 'self' so the back button
+  // from a toggled-to-target entry can drive toggleFormula back.
+  history.replaceState(
+    { productId: P.productId, formulaMode: P.modeToggle ? 'self' : undefined },
+    '',
+    location.href
+  );
 
   window.addEventListener('popstate', function(e) {
     if (!e.state) return;
 
-    // Formula toggle popstate — restore K&K or ZM mode
+    // Formula toggle popstate — restore K&K or ZM mode. Pass fromPopstate=true
+    // so toggleFormula doesn't push a fresh history entry (the browser has
+    // already navigated; pushing again would corrupt the stack).
     if (e.state.formulaMode && window._ozToggleFormula) {
-      window._ozToggleFormula(e.state.formulaMode);
+      window._ozToggleFormula(e.state.formulaMode, true);
       return;
     }
 

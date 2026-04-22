@@ -843,11 +843,15 @@
     _initialProductId = parseInt(P.productId, 10) || P.productId;
     _initialIsBase = P.isBase;
     _onAfterNavigate = onAfterNavigate || null;
-    history.replaceState({ productId: P.productId }, "", location.href);
+    history.replaceState(
+      { productId: P.productId, formulaMode: P.modeToggle ? "self" : void 0 },
+      "",
+      location.href
+    );
     window.addEventListener("popstate", function(e) {
       if (!e.state) return;
       if (e.state.formulaMode && window._ozToggleFormula) {
-        window._ozToggleFormula(e.state.formulaMode);
+        window._ozToggleFormula(e.state.formulaMode, true);
         return;
       }
       if (e.state.productId) {
@@ -1328,7 +1332,7 @@
       html += "</div>";
       html += "</div>";
       DOM.colorModeSlot.innerHTML = html;
-    }, toggleFormula = function(mode) {
+    }, toggleFormula = function(mode, fromPopstate) {
       if (!P.modeToggle || S.formulaMode === mode) return;
       var prevMode = S.formulaMode;
       var MT = P.modeToggle;
@@ -1372,11 +1376,13 @@
           // Qty: preserved automatically (not in this patch)
         });
         swapContent(MT);
-        history.pushState(
-          { productId: MT.targetProductId, formulaMode: "target" },
-          "",
-          MT.targetUrl
-        );
+        if (!fromPopstate) {
+          history.pushState(
+            { productId: MT.targetProductId, formulaMode: "target" },
+            "",
+            MT.targetUrl
+          );
+        }
       } else {
         if (_originalP) {
           var keys = Object.keys(_originalP);
@@ -1402,11 +1408,13 @@
           toolMode: S.toolMode === "set" ? "set" : S.toolMode
         });
         restoreContent();
-        history.pushState(
-          { productId: P.productId, formulaMode: "self" },
-          "",
-          _preToggleUrl
-        );
+        if (!fromPopstate) {
+          history.pushState(
+            { productId: P.productId, formulaMode: "self" },
+            "",
+            _preToggleUrl
+          );
+        }
       }
       var isZM = (P.productLine || "").indexOf("-zm") !== -1;
       swapVariantImages(isZM);

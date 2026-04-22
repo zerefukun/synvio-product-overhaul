@@ -520,9 +520,11 @@ var _preToggleGalleryHtml = '';
  * Toggle between K&K and ZM formula modes.
  * Swaps product config, options, content, URL, and tool set.
  *
- * @param {string} mode  'self' (current/original line) or 'target' (toggled line)
+ * @param {string}  mode          'self' (current/original line) or 'target' (toggled line)
+ * @param {boolean} fromPopstate  true when driven by browser back/forward
+ *                                — skip internal pushState (URL already updated)
  */
-function toggleFormula(mode) {
+function toggleFormula(mode, fromPopstate) {
   if (!P.modeToggle || S.formulaMode === mode) return;
 
   var prevMode = S.formulaMode;
@@ -579,11 +581,13 @@ function toggleFormula(mode) {
     // Swap content sections from pre-loaded data
     swapContent(MT);
 
-    // pushState to ZM URL
-    history.pushState(
-      { productId: MT.targetProductId, formulaMode: 'target' },
-      '', MT.targetUrl
-    );
+    // pushState to target URL (skip when driven by popstate — browser already there)
+    if (!fromPopstate) {
+      history.pushState(
+        { productId: MT.targetProductId, formulaMode: 'target' },
+        '', MT.targetUrl
+      );
+    }
   } else {
     // Restore K&K config values (PU options, primer options, tools, etc.)
     if (_originalP) {
@@ -620,11 +624,13 @@ function toggleFormula(mode) {
     // Restore original content
     restoreContent();
 
-    // pushState back to pre-toggle URL (the color variant they were on)
-    history.pushState(
-      { productId: P.productId, formulaMode: 'self' },
-      '', _preToggleUrl
-    );
+    // pushState back to pre-toggle URL (skip when driven by popstate)
+    if (!fromPopstate) {
+      history.pushState(
+        { productId: P.productId, formulaMode: 'self' },
+        '', _preToggleUrl
+      );
+    }
   }
 
   // isZM reflects the CURRENT line after toggle, not the raw mode — the page may
