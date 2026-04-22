@@ -80,17 +80,46 @@ class Submission_CPT {
 		echo '<tbody>';
 		foreach ( $data as $key => $value ) {
 			$label = isset( $fields[ $key ]['label'] ) ? (string) $fields[ $key ]['label'] : (string) $key;
-			if ( is_array( $value ) ) {
-				$rendered = esc_html( implode( ', ', array_map( 'strval', $value ) ) );
-			} else {
-				$rendered = nl2br( esc_html( (string) $value ) );
-			}
+			$rendered = self::render_value( $value );
 			echo '<tr>';
 			echo '<th style="width:30%;text-align:left;padding:10px 12px;vertical-align:top;">' . esc_html( $label ) . '</th>';
 			echo '<td style="padding:10px 12px;">' . $rendered . '</td>';
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * Render a single field value for the admin detail view.
+	 * Handles arrays, URLs (clickable link), and image URLs (thumbnail + link).
+	 *
+	 * @param mixed $value
+	 */
+	private static function render_value( $value ) : string {
+		if ( is_array( $value ) ) {
+			$parts = array();
+			foreach ( $value as $v ) {
+				$parts[] = self::render_value( $v );
+			}
+			return implode( '<br>', $parts );
+		}
+
+		$str = (string) $value;
+		$trimmed = trim( $str );
+
+		// URL? Render as link (with thumbnail for images).
+		if ( $trimmed !== '' && preg_match( '#^https?://#i', $trimmed ) && filter_var( $trimmed, FILTER_VALIDATE_URL ) ) {
+			$is_image = (bool) preg_match( '/\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i', $trimmed );
+			if ( $is_image ) {
+				return '<a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">'
+					. '<img src="' . esc_url( $trimmed ) . '" alt="" style="max-width:280px;max-height:280px;display:block;margin:4px 0 8px;border:1px solid #ddd;border-radius:4px;">'
+					. '</a>'
+					. '<small><a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">Open in nieuw tabblad</a></small>';
+			}
+			return '<a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">' . esc_html( $trimmed ) . '</a>';
+		}
+
+		return nl2br( esc_html( $str ) );
 	}
 
 	public static function render_meta_meta_box( \WP_Post $post ) : void {
