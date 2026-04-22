@@ -811,9 +811,18 @@ function rebuildGalleryForZM(colorName) {
  * Swap USPs, specs, FAQ, and description from pre-loaded toggle target data.
  */
 function swapContent(MT) {
+  // Each section: if target has data → fill + show; if empty → hide the whole
+  // section so stale source-line content can never leak into the target view.
+  function setSectionVisible(innerEl, sectionSelector, visible) {
+    if (!innerEl) return;
+    var section = sectionSelector ? innerEl.closest(sectionSelector) : innerEl;
+    if (section) section.style.display = visible ? '' : 'none';
+  }
+
   // USPs
   var uspList = document.querySelector('.oz-short-desc ul');
-  if (uspList && MT.targetUsps && MT.targetUsps.length) {
+  var hasUsps = !!(MT.targetUsps && MT.targetUsps.length);
+  if (uspList && hasUsps) {
     var uspHtml = '';
     for (var i = 0; i < MT.targetUsps.length; i++) {
       if (!MT.targetUsps[i]) continue;
@@ -821,29 +830,32 @@ function swapContent(MT) {
     }
     uspList.innerHTML = uspHtml;
   }
+  setSectionVisible(uspList, '.oz-short-desc', hasUsps);
 
   // Specs table
   var specsBody = document.querySelector('.oz-specs-table tbody');
-  if (specsBody && MT.targetSpecs) {
-    var specKeys = Object.keys(MT.targetSpecs);
-    if (specKeys.length) {
-      var specHtml = '';
-      for (var s = 0; s < specKeys.length; s++) {
-        specHtml += '<tr><th>' + specKeys[s] + '</th><td>' + MT.targetSpecs[specKeys[s]] + '</td></tr>';
-      }
-      specsBody.innerHTML = specHtml;
+  var specKeys = MT.targetSpecs ? Object.keys(MT.targetSpecs) : [];
+  var hasSpecs = specKeys.length > 0;
+  if (specsBody && hasSpecs) {
+    var specHtml = '';
+    for (var s = 0; s < specKeys.length; s++) {
+      specHtml += '<tr><th>' + specKeys[s] + '</th><td>' + MT.targetSpecs[specKeys[s]] + '</td></tr>';
     }
+    specsBody.innerHTML = specHtml;
   }
+  setSectionVisible(specsBody, '.oz-specs-table', hasSpecs);
 
   // FAQ
   var faqList = document.querySelector('.oz-faq-list');
-  if (faqList && MT.targetFaq && MT.targetFaq.length) {
+  var hasFaq = !!(MT.targetFaq && MT.targetFaq.length);
+  if (faqList && hasFaq) {
     var faqHtml = '';
     for (var f = 0; f < MT.targetFaq.length; f++) {
       faqHtml += '<details class="oz-faq-item"><summary class="oz-faq-question">' + MT.targetFaq[f].q + '</summary><div class="oz-faq-answer">' + MT.targetFaq[f].a + '</div></details>';
     }
     faqList.innerHTML = faqHtml;
   }
+  setSectionVisible(faqList, null, hasFaq);
 
   // Description
   if (DOM.descContent && MT.targetDescription) {
@@ -886,10 +898,15 @@ function restoreContent() {
   if (!_originalContent) return;
   var uspList = document.querySelector('.oz-short-desc ul');
   if (uspList && _originalContent.uspsHtml) uspList.innerHTML = _originalContent.uspsHtml;
+  var uspSection = uspList && uspList.closest('.oz-short-desc');
+  if (uspSection) uspSection.style.display = '';
   var specsBody = document.querySelector('.oz-specs-table tbody');
   if (specsBody && _originalContent.specsHtml) specsBody.innerHTML = _originalContent.specsHtml;
+  var specsWrap = specsBody && specsBody.closest('.oz-specs-table');
+  if (specsWrap) specsWrap.style.display = '';
   var faqList = document.querySelector('.oz-faq-list');
   if (faqList && _originalContent.faqHtml) faqList.innerHTML = _originalContent.faqHtml;
+  if (faqList) faqList.style.display = '';
   if (DOM.descContent && _originalContent.descHtml) {
     DOM.descContent.innerHTML = _originalContent.descHtml;
     DOM.descContent.classList.remove('expanded');

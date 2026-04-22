@@ -1061,7 +1061,7 @@
       return data;
     }, displayColor = function(colorName) {
       if (!colorName) return "";
-      if (S.formulaMode === "target" || P.productLine && P.productLine.indexOf("-zm") !== -1) {
+      if (P.productLine && P.productLine.indexOf("-zm") !== -1) {
         var match = colorName.match(/\b(\d{4})\s*$/);
         if (match) return match[1];
       }
@@ -1257,6 +1257,10 @@
       }
       if (DOM.stickyDOptions) {
         var parts = [];
+        if (P.modeToggle && P.modeToggle.labelSelf && P.modeToggle.labelTarget) {
+          var modeLabel = S.formulaMode === "target" ? P.modeToggle.labelTarget : P.modeToggle.labelSelf;
+          parts.push(modeLabel);
+        }
         if (S.puLayers !== null && S.puLayers !== void 0) {
           if (S.puLayers === 0) {
             parts.push("Geen PU");
@@ -1533,8 +1537,14 @@
       }
       if (container.children.length <= 1) container.style.display = "none";
     }, swapContent = function(MT) {
+      function setSectionVisible(innerEl, sectionSelector, visible) {
+        if (!innerEl) return;
+        var section = sectionSelector ? innerEl.closest(sectionSelector) : innerEl;
+        if (section) section.style.display = visible ? "" : "none";
+      }
       var uspList = document.querySelector(".oz-short-desc ul");
-      if (uspList && MT.targetUsps && MT.targetUsps.length) {
+      var hasUsps = !!(MT.targetUsps && MT.targetUsps.length);
+      if (uspList && hasUsps) {
         var uspHtml = "";
         for (var i = 0; i < MT.targetUsps.length; i++) {
           if (!MT.targetUsps[i]) continue;
@@ -1542,25 +1552,28 @@
         }
         uspList.innerHTML = uspHtml;
       }
+      setSectionVisible(uspList, ".oz-short-desc", hasUsps);
       var specsBody = document.querySelector(".oz-specs-table tbody");
-      if (specsBody && MT.targetSpecs) {
-        var specKeys = Object.keys(MT.targetSpecs);
-        if (specKeys.length) {
-          var specHtml = "";
-          for (var s = 0; s < specKeys.length; s++) {
-            specHtml += "<tr><th>" + specKeys[s] + "</th><td>" + MT.targetSpecs[specKeys[s]] + "</td></tr>";
-          }
-          specsBody.innerHTML = specHtml;
+      var specKeys = MT.targetSpecs ? Object.keys(MT.targetSpecs) : [];
+      var hasSpecs = specKeys.length > 0;
+      if (specsBody && hasSpecs) {
+        var specHtml = "";
+        for (var s = 0; s < specKeys.length; s++) {
+          specHtml += "<tr><th>" + specKeys[s] + "</th><td>" + MT.targetSpecs[specKeys[s]] + "</td></tr>";
         }
+        specsBody.innerHTML = specHtml;
       }
+      setSectionVisible(specsBody, ".oz-specs-table", hasSpecs);
       var faqList = document.querySelector(".oz-faq-list");
-      if (faqList && MT.targetFaq && MT.targetFaq.length) {
+      var hasFaq = !!(MT.targetFaq && MT.targetFaq.length);
+      if (faqList && hasFaq) {
         var faqHtml = "";
         for (var f = 0; f < MT.targetFaq.length; f++) {
           faqHtml += '<details class="oz-faq-item"><summary class="oz-faq-question">' + MT.targetFaq[f].q + '</summary><div class="oz-faq-answer">' + MT.targetFaq[f].a + "</div></details>";
         }
         faqList.innerHTML = faqHtml;
       }
+      setSectionVisible(faqList, null, hasFaq);
       if (DOM.descContent && MT.targetDescription) {
         DOM.descContent.innerHTML = MT.targetDescription;
         DOM.descContent.classList.remove("expanded");
@@ -1588,10 +1601,15 @@
       if (!_originalContent) return;
       var uspList = document.querySelector(".oz-short-desc ul");
       if (uspList && _originalContent.uspsHtml) uspList.innerHTML = _originalContent.uspsHtml;
+      var uspSection = uspList && uspList.closest(".oz-short-desc");
+      if (uspSection) uspSection.style.display = "";
       var specsBody = document.querySelector(".oz-specs-table tbody");
       if (specsBody && _originalContent.specsHtml) specsBody.innerHTML = _originalContent.specsHtml;
+      var specsWrap = specsBody && specsBody.closest(".oz-specs-table");
+      if (specsWrap) specsWrap.style.display = "";
       var faqList = document.querySelector(".oz-faq-list");
       if (faqList && _originalContent.faqHtml) faqList.innerHTML = _originalContent.faqHtml;
+      if (faqList) faqList.style.display = "";
       if (DOM.descContent && _originalContent.descHtml) {
         DOM.descContent.innerHTML = _originalContent.descHtml;
         DOM.descContent.classList.remove("expanded");

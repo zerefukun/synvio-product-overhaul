@@ -202,8 +202,23 @@ class OZ_Product_Line_Config {
             'cats'           => [],
             'product_ids'    => [11152],
             'share_colors_from' => 'original',
-            'usps'           => [],   // Patrick fills via admin
-            'specs'          => [],   // Patrick fills via admin
+            'usps'           => [
+                'Zelf mengen uit mortel, pigment en resin — meer controle over textuur en tempo',
+                'Voordeliger per m² dan de Kant-en-Klaar variant',
+                'Primer standaard inbegrepen — compleet pakket, niets los bijbestellen',
+                'Dezelfde 48 kleuren als de Kant-en-Klaar Original',
+            ],
+            'specs'          => [
+                'Type'            => 'Zelf te mengen mortel + pigment + resin',
+                'Verpakking'     => 'Pakket per 5 m²',
+                'Laagdikte'       => '1-2 mm',
+                'Lagen'           => '2 lagen',
+                'Droogtijd'       => '24 uur per laag',
+                'Geschikt voor'   => 'Wand, vloer, meubel, badkamer, douche',
+                'Waterdicht'      => 'Ja, met PU toplaag',
+                'Verbruik'        => 'Wand ~2 kg/m² · vloer ~1 kg/m² per laag',
+                'Inclusief'       => 'Mortel + pigment + resin + primer',
+            ],
             'base_id'        => null,
             'unit'           => '5m²',
             'unitM2'         => 5,
@@ -222,7 +237,14 @@ class OZ_Product_Line_Config {
                 'label_self'        => 'Zelf Mengen & Mixen',
                 'label_target'      => 'Kant-en-Klaar',
             ],
-            'faq'            => [],   // Patrick fills via admin
+            'faq'            => [
+                ['q' => 'Wat is het verschil met de Kant-en-Klaar Original?', 'a' => 'Bij Zelf Mengen & Mixen meng je de mortel, het pigment en de resin zelf aan op het moment van aanbrengen. Dat geeft je volledige controle over textuur en tempo, en is voordeliger per m². De Kant-en-Klaar is een voorgemengde pasta op kleur — één stap minder, iets duurder.'],
+                ['q' => 'Is zelf mengen moeilijk?', 'a' => 'Het kost iets meer tijd, maar met onze <a href="/handleidingen/handleiding-beton-cire-original-zelf-meng-en-mixen/">handleiding</a> is het goed zelf te doen. Meng kleine porties tegelijk (één wandvlak per keer) voor het meest egale resultaat.'],
+                ['q' => 'Hoeveel m² zit er in één pakket?', 'a' => 'Eén pakket is goed voor 5 m² wandoppervlak (2 lagen à ~1 kg/m²). Voor vloeren reken je ~1 kg per m² per laag. Wij adviseren altijd 10% extra te bestellen voor snijverlies en kleine onregelmatigheden.'],
+                ['q' => 'Welke kleuren kan ik kiezen?', 'a' => 'Je kiest uit dezelfde 48 kleuren als de Kant-en-Klaar Original — de 1000-serie. Het pigment wordt per pakket meegeleverd in de door jou gekozen kleur.'],
+                ['q' => 'Is een PU toplaag nodig?', 'a' => 'Voor vloeren en natte ruimtes (badkamer, douche) zijn 2 lagen PU essentieel — waterdicht en krasbestendig. Voor droge wanden is PU optioneel, maar het maakt schoonmaken wel makkelijker.'],
+                ['q' => 'Kan ik later overstappen naar Kant-en-Klaar?', 'a' => 'Ja, schakel op elk moment tussen de twee varianten via de Kant-en-Klaar / Zelf Mengen-knop bovenaan de productpagina.'],
+            ],
         ],
 
         // ─── ALL-IN-ONE ──────────────────────────────────────────────
