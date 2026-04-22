@@ -245,14 +245,25 @@ require_once get_stylesheet_directory() . '/inc/search-suggestions.php';
  * Preload the LCP hero image on the homepage.
  * Eliminates the ~960ms "resource load delay" where the browser waits for
  * render-blocking CSS before discovering the <img> in the DOM.
- * With preload, the image downloads in parallel with CSS.
+ *
+ * The hero <img> in front-page.php uses a responsive srcset (768w, 1024w,
+ * 1536w) with sizes="100vw". The preload link must mirror that exactly via
+ * imagesrcset/imagesizes — otherwise the browser preloads one fixed URL
+ * but picks a different one from the srcset at render time, and logs a
+ * "preloaded but not used" warning.
  */
 function oz_preload_hero_image() {
     if (!is_front_page()) return;
-    $hero_url = wp_get_attachment_image_url(28735, 'medium_large');
-    if ($hero_url) {
-        echo '<link rel="preload" as="image" href="' . esc_url($hero_url) . '" fetchpriority="high">' . "\n";
-    }
+    $base   = home_url('/wp-content/uploads/2026/03/Beton-Badkamer-Placeholder-2-1');
+    $src    = $base . '-1024x683.avif';
+    $srcset = $base . '-768x512.avif 768w, '
+            . $base . '-1024x683.avif 1024w, '
+            . $base . '.avif 1536w';
+    echo '<link rel="preload" as="image" '
+       . 'href="' . esc_url($src) . '" '
+       . 'imagesrcset="' . esc_attr($srcset) . '" '
+       . 'imagesizes="100vw" '
+       . 'fetchpriority="high">' . "\n";
 }
 add_action('wp_head', 'oz_preload_hero_image', 1);
 
