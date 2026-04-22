@@ -40,7 +40,10 @@ class Review_DTO {
 			'source'       => $source,
 			'external_id'  => (string) ( $in['external_id'] ?? '' ),
 			'rating'       => max( 1, min( 5, (int) ( $in['rating'] ?? 5 ) ) ),
-			'author_name'  => wp_strip_all_tags( (string) ( $in['author_name'] ?? 'Anoniem' ) ),
+			// Strip invisible Unicode format/control chars (RTL overrides, zero-width,
+			// bidi markers) — these render as invisible glyphs in the admin queue and
+			// let attackers impersonate other reviewers or hide characters.
+			'author_name'  => preg_replace( '/[\x{0000}-\x{001F}\x{007F}\x{200B}-\x{200F}\x{202A}-\x{202E}\x{2060}-\x{206F}\x{FEFF}]+/u', '', wp_strip_all_tags( (string) ( $in['author_name'] ?? 'Anoniem' ) ) ),
 			'author_photo' => esc_url_raw( (string) ( $in['author_photo'] ?? '' ) ),
 			'author_city'  => sanitize_text_field( (string) ( $in['author_city'] ?? '' ) ),
 			'date_iso'     => (string) ( $in['date_iso'] ?? '' ),

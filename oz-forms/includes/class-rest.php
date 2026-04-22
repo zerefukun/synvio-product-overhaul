@@ -48,16 +48,25 @@ class REST {
 			return new \WP_REST_Response( array( 'ok' => false, 'message' => 'Onbekend formulier.', 'reason' => 'unknown_form' ), 400 );
 		}
 
-		// 1. Honeypot — bots fill anything.
+		// 0. Per-IP rate limit — 10 submissions per hour per IP across all forms.
+		// Rejected requests are NOT persisted, so botnets can't bloat wp_posts.
+		$rate_err = self::rate_limit_check( $form_id, $params );
+		if ( $rate_err !== null ) {
+			return new \WP_REST_Response(
+				array( 'ok' => false, 'message' => 'Te veel verzoeken. Probeer het later opnieuw.', 'reason' => $rate_err ),
+				429
+			);
+		}
+
+		// 1. Honeypot — bots fill anything. Don't persist — a spam flood would
+		// bloat wp_posts otherwise (every bot POST = one row).
 		if ( ! empty( $params['oz_website'] ) ) {
-			Submission_CPT::store( $form_id, array(), 'spam', 'honeypot-tripped' );
 			return self::ok_response();
 		}
 
-		// 2. Time-trap — submissions in <3s are bots.
+		// 2. Time-trap — submissions in <3s are bots. Same no-persist rule.
 		$started = isset( $params['oz_t'] ) ? (int) $params['oz_t'] : 0;
 		if ( $started > 0 && ( time() - $started ) < 3 ) {
-			Submission_CPT::store( $form_id, array(), 'spam', 'time-trap: ' . ( time() - $started ) . 's' );
 			return self::ok_response();
 		}
 
@@ -213,6 +222,48 @@ class REST {
 	private static function client_ip() : string {
 		$ip = $_SERVER['REMOTE_ADDR'] ?? '';
 		return filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+	}
+
+	/**
+	 * Token-bucket-ish rate limit using transients.
+	 *
+	 * - Per IP: 10 req/hour (any form)
+	 * - For product-review: extra 3/day per email, 1/day per (IP,product_id)
+	 *
+	 * Returns null when request is allowed, otherwise a reason string.
+	 */
+	private static function rate_limit_check( string $form_id, array $params ) : ?string {
+		$ip = self::client_ip();
+		if ( $ip !== '' ) {
+			$key = 'oz_sub_ip_' . md5( $ip );
+			$hits = (int) get_transient( $key );
+			if ( $hits >= 10 ) {
+				return 'rate_ip_hour';
+			}
+			set_transient( $key, $hits + 1, HOUR_IN_SECONDS );
+		}
+
+		if ( $form_id === 'product-review' ) {
+			$email = isset( $params['email'] ) ? strtolower( trim( (string) $params['email'] ) ) : '';
+			if ( $email !== '' ) {
+				$ekey = 'oz_rev_em_' . md5( $email );
+				$ehits = (int) get_transient( $ekey );
+				if ( $ehits >= 3 ) {
+					return 'rate_email_day';
+				}
+				set_transient( $ekey, $ehits + 1, DAY_IN_SECONDS );
+			}
+			$product_id = isset( $params['product_id'] ) ? (int) $params['product_id'] : 0;
+			if ( $ip !== '' && $product_id > 0 ) {
+				$pkey = 'oz_rev_ip_pid_' . md5( $ip . '|' . $product_id );
+				if ( get_transient( $pkey ) ) {
+					return 'rate_ip_product_day';
+				}
+				set_transient( $pkey, 1, DAY_IN_SECONDS );
+			}
+		}
+
+		return null;
 	}
 
 	/**

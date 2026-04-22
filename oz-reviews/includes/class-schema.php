@@ -72,6 +72,8 @@ class Schema {
 			'review'          => $reviews,
 		);
 
-		echo "\n<script type=\"application/ld+json\">" . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>\n";
+		// JSON_HEX_TAG prevents a review body containing </script> from ever
+		// breaking out of the LD-JSON block and injecting arbitrary HTML.
+		echo "\n<script type=\"application/ld+json\">" . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG ) . "</script>\n";
 	}
 }

@@ -98,7 +98,7 @@ class Settings {
 					<tr>
 						<th scope="row"><label for="oz-reviews-places-key">Places API (New) key</label></th>
 						<td>
-							<input type="text" id="oz-reviews-places-key"
+							<input type="password" id="oz-reviews-places-key"
 								name="<?php echo esc_attr( self::OPTION ); ?>[google_places_api_key]"
 								value="<?php echo esc_attr( $opts['google_places_api_key'] ); ?>"
 								class="regular-text" autocomplete="off">

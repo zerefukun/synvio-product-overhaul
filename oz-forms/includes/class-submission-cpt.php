@@ -107,14 +107,29 @@ class Submission_CPT {
 		$str = (string) $value;
 		$trimmed = trim( $str );
 
-		// URL? Render as link (with thumbnail for images).
+		// URL? Render as link (with thumbnail only for images we host ourselves).
 		if ( $trimmed !== '' && preg_match( '#^https?://#i', $trimmed ) && filter_var( $trimmed, FILTER_VALIDATE_URL ) ) {
-			$is_image = (bool) preg_match( '/\.(jpe?g|png|gif|webp|avif|svg)(\?|$)/i', $trimmed );
-			if ( $is_image ) {
+			// Deliberately excludes SVG — SVGs can carry inline <script> that
+			// would execute in the admin origin when the img is loaded via
+			// some browser contexts, or when an admin opens it in a new tab.
+			$is_image_ext = (bool) preg_match( '/\.(jpe?g|png|gif|webp|avif)(\?|$)/i', $trimmed );
+			// Only inline-preview images hosted on our own uploads dir. Any
+			// external URL could be a tracking pixel aimed at the admin's IP
+			// or a huge image that hangs the admin view.
+			$uploads    = wp_get_upload_dir();
+			$our_base   = isset( $uploads['baseurl'] ) ? (string) $uploads['baseurl'] : '';
+			$is_own_url = ( $our_base !== '' && stripos( $trimmed, $our_base ) === 0 );
+			if ( $is_image_ext && $is_own_url ) {
 				return '<a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">'
 					. '<img src="' . esc_url( $trimmed ) . '" alt="" style="max-width:280px;max-height:280px;display:block;margin:4px 0 8px;border:1px solid #ddd;border-radius:4px;">'
 					. '</a>'
 					. '<small><a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">Open in nieuw tabblad</a></small>';
+			}
+			// External URL or non-image: render as plain escaped text, NOT as
+			// a clickable link — clicking an attacker-submitted URL from the
+			// admin leaks the admin's IP + referrer.
+			if ( ! $is_own_url ) {
+				return esc_html( $trimmed );
 			}
 			return '<a href="' . esc_url( $trimmed ) . '" target="_blank" rel="noopener">' . esc_html( $trimmed ) . '</a>';
 		}
@@ -310,7 +325,7 @@ class Submission_CPT {
 		header( 'Content-Disposition: attachment; filename="oz-submissions-' . ( $form ?: 'all' ) . '-' . gmdate( 'Y-m-d' ) . '.csv"' );
 
 		$out = fopen( 'php://output', 'w' );
-		fputcsv( $out, $columns );
+		fputcsv( $out, array_map( array( __CLASS__, 'csv_escape' ), $columns ) );
 		foreach ( $posts as $p ) {
 			$d = get_post_meta( $p->ID, '_oz_data', true );
 			$row = array(
@@ -321,9 +336,25 @@ class Submission_CPT {
 			foreach ( array_slice( $columns, 3 ) as $k ) {
 				$row[] = is_array( $d[ $k ] ?? null ) ? wp_json_encode( $d[ $k ] ) : (string) ( $d[ $k ] ?? '' );
 			}
-			fputcsv( $out, $row );
+			fputcsv( $out, array_map( array( __CLASS__, 'csv_escape' ), $row ) );
 		}
 		fclose( $out );
 		exit;
+	}
+
+	/**
+	 * Escape a CSV cell to neutralize spreadsheet formula injection.
+	 * If a value starts with =, +, -, @, tab, or CR it will be interpreted
+	 * as a formula by Excel/Numbers/Sheets — prepend a single quote so the
+	 * cell is treated as plain text.
+	 *
+	 * @param mixed $value
+	 */
+	private static function csv_escape( $value ) : string {
+		$str = (string) $value;
+		if ( $str !== '' && preg_match( "/^[=+\-@\t\r]/", $str ) ) {
+			return "'" . $str;
+		}
+		return $str;
 	}
 }

@@ -172,28 +172,6 @@ function oz_dequeue_wc_on_non_shop_pages() {
 add_action('wp_enqueue_scripts', 'oz_dequeue_wc_on_non_shop_pages', 100);
 
 /**
- * NO_LCP DIAGNOSTIC: dequeue specific CSS handles via ?nocss=handle query param.
- * Supports comma-separated list, e.g. ?nocss=oz-homepage-v2,oz-animations.
- * Runs at priority 999 so it happens after every other enqueue.
- * Remove once the NO_LCP root-cause CSS file is identified.
- *
- * Handles: oz-design-system, oz-fonts, oz-blocks, oz-animations,
- *          oz-homepage-v2, oz-header, oz-cart-drawer, oz-reviews.
- */
-function oz_diag_dequeue_via_query() {
-    if ( is_admin() ) return;
-    if ( empty( $_GET['nocss'] ) ) return;
-    $list = array_map( 'sanitize_key', explode( ',', wp_unslash( $_GET['nocss'] ) ) );
-    foreach ( $list as $handle ) {
-        if ( $handle === '' ) continue;
-        wp_dequeue_style( $handle );
-        wp_deregister_style( $handle );
-    }
-}
-add_action( 'wp_enqueue_scripts', 'oz_diag_dequeue_via_query', 999 );
-add_action( 'wp_print_styles', 'oz_diag_dequeue_via_query', 999 );
-
-/**
  * Remove WooCommerce default content wrappers.
  * Our archive-product.php has its own layout, and header.php already provides <main>.
  * Without this, WC outputs a nested <main class="site-main"> that breaks DOM nesting
@@ -391,7 +369,16 @@ function oz_capture_attribution_cookies() {
             // Don't overwrite existing — first touch wins
             if (!isset($_COOKIE[$cookie_name])) {
                 $value = sanitize_text_field($_GET[$param]);
-                setcookie($cookie_name, $value, time() + 86400 * 30, '/', '', true, false);
+                // httponly so JS can't read it; samesite=Lax so it doesn't
+                // travel in cross-site iframes; secure so it only goes over HTTPS.
+                setcookie($cookie_name, $value, [
+                    'expires'  => time() + 86400 * 30,
+                    'path'     => '/',
+                    'domain'   => '',
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
                 $_COOKIE[$cookie_name] = $value; // Available in same request
             }
         }
@@ -407,9 +394,9 @@ function oz_apply_attribution_fallback($order) {
         return; // WC attribution worked, don't override
     }
 
-    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field($_COOKIE['oz_utm_source']) : '';
-    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field($_COOKIE['oz_utm_medium']) : '';
-    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field($_COOKIE['oz_utm_campaign']) : '';
+    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_source'])) : '';
+    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_medium'])) : '';
+    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_campaign'])) : '';
 
     // Determine source type
     $source_type = 'typein';
@@ -965,9 +952,23 @@ function oz_cart_drawer_add() {
 
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $qty        = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
+    // Clamp qty to sensible UI-backed range — stops "add 999999 to deplete stock" abuse.
+    $qty = max(1, min(99, $qty));
 
     if (!$product_id) {
         wp_send_json_error('Missing product ID');
+        return;
+    }
+
+    // Server-side trust: client may POST any product ID. Reject drafts,
+    // private/password-protected, non-purchasable, or out-of-stock items.
+    $product = wc_get_product($product_id);
+    if (!$product
+        || $product->get_status() !== 'publish'
+        || !$product->is_purchasable()
+        || !$product->is_in_stock()
+        || $product->get_catalog_visibility() === 'hidden') {
+        wp_send_json_error('Product not available');
         return;
     }
 
@@ -1043,11 +1044,18 @@ function oz_recently_viewed_get() {
     // Batch-fetch all products in one query (warms WC object cache)
     wc_get_products(['include' => $ids, 'limit' => 10]);
 
-    // Build response using shared formatter, preserving localStorage order
+    // Build response using shared formatter, preserving localStorage order.
+    // Gate on publish + catalog-visible + purchasable so this endpoint cannot
+    // be used to enumerate hidden/members-only product pricing.
     $products = [];
     foreach ($ids as $pid) {
         $product = wc_get_product($pid); // served from cache after batch fetch
-        if (!$product || $product->get_status() !== 'publish') continue;
+        if (!$product
+            || $product->get_status() !== 'publish'
+            || $product->get_catalog_visibility() === 'hidden'
+            || !$product->is_purchasable()) {
+            continue;
+        }
 
         $products[] = oz_format_product_card($product);
     }

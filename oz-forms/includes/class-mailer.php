@@ -73,7 +73,13 @@ class Mailer {
 	}
 
 	private static function format_address( string $email, string $name = '' ) : string {
-		$name = trim( wp_strip_all_tags( $name ) );
+		// SECURITY: strip all CR/LF/TAB/NUL before interpolating into a mail
+		// header, otherwise a submitter can inject extra headers (Bcc, Subject)
+		// by embedding \r\n in the name field. wp_strip_all_tags leaves those
+		// control bytes in place, so we must handle them explicitly.
+		$name = (string) wp_strip_all_tags( $name );
+		$name = preg_replace( '/[\r\n\t\0\x0B]+/', ' ', $name );
+		$name = trim( mb_substr( (string) $name, 0, 100 ) );
 		return $name !== '' ? sprintf( '%s <%s>', $name, $email ) : $email;
 	}
 

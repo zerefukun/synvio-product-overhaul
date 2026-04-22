@@ -110,13 +110,22 @@ class Submission {
 		// WooCommerce-native meta — star rating and verified-buyer flag.
 		update_comment_meta( $comment_id, 'rating', max( 1, min( 5, (int) ( $data['rating'] ?? 0 ) ) ) );
 
+		// Verified-buyer flag requires BOTH (a) the order contains the product
+		// for this email, AND (b) an HMAC token that only our signed email
+		// links carry. Without the token, the email match alone is bypassable
+		// because billing emails are guessable (info@, contact@, etc.).
 		$order_id = (int) ( $data['order_id'] ?? 0 );
-		if ( $order_id > 0 ) {
-			$verified = self::order_contains_product( $order_id, $product_id, (string) ( $data['email'] ?? '' ) );
-			update_comment_meta( $comment_id, 'verified', $verified ? 1 : 0 );
-			if ( $verified ) {
-				update_comment_meta( $comment_id, '_oz_verified_order', $order_id );
+		$token    = (string) ( $data['token'] ?? '' );
+		$email    = (string) ( $data['email'] ?? '' );
+		$verified = false;
+		if ( $order_id > 0 && $token !== '' && $email !== '' ) {
+			if ( self::verify_review_token( $token, $product_id, $order_id, $email ) ) {
+				$verified = self::order_contains_product( $order_id, $product_id, $email );
 			}
+		}
+		update_comment_meta( $comment_id, 'verified', $verified ? 1 : 0 );
+		if ( $verified ) {
+			update_comment_meta( $comment_id, '_oz_verified_order', $order_id );
 		}
 
 		// Review-specific meta (oz-reviews own namespace).
@@ -164,6 +173,23 @@ class Submission {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Sign a review token. Used when we generate a "leave a review" email link.
+	 * Ties the token to product + order + email so it can't be replayed elsewhere.
+	 */
+	public static function sign_review_token( int $product_id, int $order_id, string $email ) : string {
+		$payload = $product_id . '|' . $order_id . '|' . strtolower( trim( $email ) );
+		return hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
+	}
+
+	/**
+	 * Constant-time verify of a review token.
+	 */
+	private static function verify_review_token( string $token, int $product_id, int $order_id, string $email ) : bool {
+		$expected = self::sign_review_token( $product_id, $order_id, $email );
+		return is_string( $token ) && hash_equals( $expected, $token );
 	}
 
 	private static function client_ip() : string {

@@ -412,7 +412,9 @@ class Form {
 					}
 					break;
 				case 'tel':
-					$value = preg_replace( '/[^0-9+()\-\s]/', '', (string) $value );
+					// Keep literal space only — \s would allow CRLF/tabs which could become
+					// a CRLF-injection vector if the value is ever used in a raw mail header.
+					$value = preg_replace( '/[^0-9+()\- ]/', '', (string) $value );
 					break;
 				case 'number':
 					if ( ! is_numeric( $value ) ) {
