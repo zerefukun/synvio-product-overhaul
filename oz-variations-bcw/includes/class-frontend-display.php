@@ -349,6 +349,32 @@ class OZ_Frontend_Display {
                         }
                     }
 
+                    // Named-by-formula galleries so JS can pick the right one regardless
+                    // of direction (K&K→ZM or ZM→K&K). The "target" gallery is whichever
+                    // side we're toggling to; zm/kk are absolute references.
+                    $is_self_zm = (strpos($line_key, '-zm') !== false);
+                    $zm_gallery = $is_self_zm ? [] : $target_gallery;
+                    $kk_gallery = $is_self_zm ? $target_gallery : [];
+                    if ($is_self_zm) {
+                        // current product IS ZM — capture its own gallery as zmGallery
+                        foreach ($product->get_gallery_image_ids() as $gid) {
+                            $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                            $g_large = wp_get_attachment_image_url($gid, 'large');
+                            if ($g_thumb && $g_large) {
+                                $zm_gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                            }
+                        }
+                    } else {
+                        // current product IS K&K — capture its own gallery as kkGallery
+                        foreach ($product->get_gallery_image_ids() as $gid) {
+                            $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                            $g_large = wp_get_attachment_image_url($gid, 'large');
+                            if ($g_thumb && $g_large) {
+                                $kk_gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                            }
+                        }
+                    }
+
                     $js_data['modeToggle'] = [
                         'labelSelf'           => $mode_toggle['label_self'],
                         'labelTarget'         => $mode_toggle['label_target'],
@@ -372,6 +398,8 @@ class OZ_Frontend_Display {
                         'targetFaq'           => $target_faq,
                         'targetDescription'   => apply_filters('the_content', $target_product->get_description()),
                         'targetGallery'       => $target_gallery,
+                        'zmGallery'           => $zm_gallery,
+                        'kkGallery'           => $kk_gallery,
                     ];
                 }
             }
@@ -711,17 +739,36 @@ class OZ_Frontend_Display {
             }
             $seen_colors[$color] = true;
 
-            // Use ZM image if available, fall back to K&K featured image
+            // Populate BOTH K&K images and ZM images so toggle can swap either
+            // direction (user may land on ZM page from search and toggle to K&K).
+            $kk_image_id = get_post_thumbnail_id($vid);
             $zm_image_id = get_post_meta($vid, '_oz_zm_image_id', true);
-            $image_id    = $zm_image_id ?: get_post_thumbnail_id($vid);
-            $image_url   = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
+
+            $variant = wc_get_product($vid);
+            $gallery = [];
+            if ($variant) {
+                foreach ($variant->get_gallery_image_ids() as $gid) {
+                    $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
+                    $g_large = wp_get_attachment_image_url($gid, 'large');
+                    if ($g_thumb && $g_large) {
+                        $gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                    }
+                }
+            }
 
             $variants[$vid] = [
-                'color'     => $color,
-                'url'       => '#',
-                'image'     => $image_url,
-                'fullImage' => $image_id ? wp_get_attachment_image_url($image_id, 'large') : '',
-                'gallery'   => [],
+                'color'        => $color,
+                'url'          => get_permalink($vid),
+                'image'        => $kk_image_id ? wp_get_attachment_image_url($kk_image_id, 'thumbnail') : '',
+                'fullImage'    => $kk_image_id ? wp_get_attachment_image_url($kk_image_id, 'large') : '',
+                'zmImage'      => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'thumbnail') : '',
+                'zmFullImage'  => $zm_image_id ? wp_get_attachment_image_url($zm_image_id, 'large') : '',
+                'gallery'      => $gallery,
+                'price'        => $variant ? floatval($variant->get_price()) : 0,
+                'regularPrice' => $variant ? floatval($variant->get_regular_price()) : 0,
+                'onSale'       => $variant ? $variant->is_on_sale() : false,
+                'title'        => $variant ? $variant->get_name() : '',
+                'description'  => $variant ? apply_filters('the_content', $variant->get_description()) : '',
             ];
         }
 

@@ -623,7 +623,10 @@ function toggleFormula(mode) {
     );
   }
 
-  var isZM = (mode === 'target');
+  // isZM reflects the CURRENT line after toggle, not the raw mode — the page may
+  // be the ZM product itself (user lands via search), in which case mode='target'
+  // actually means K&K. P.productLine is the reliable signal.
+  var isZM = (P.productLine || '').indexOf('-zm') !== -1;
 
   // Swap images: ZM shows old bucket photos, K&K shows new avif photos
   swapVariantImages(isZM);
@@ -798,8 +801,9 @@ function rebuildGalleryForZM(colorName) {
     container.appendChild(createThumb(zmThumb, zmFull, 0, true));
   }
 
-  // ZM product generic gallery images (lifestyle shots from product 11152)
-  var zmGallery = (P.modeToggle && P.modeToggle.targetGallery) || [];
+  // ZM product generic gallery images — named by formula so it works whether
+  // ZM is the self or target side of the toggle.
+  var zmGallery = (P.modeToggle && (P.modeToggle.zmGallery || P.modeToggle.targetGallery)) || [];
   for (var i = 0; i < zmGallery.length; i++) {
     container.appendChild(createThumb(zmGallery[i].thumb, zmGallery[i].full, i + 1, false));
   }

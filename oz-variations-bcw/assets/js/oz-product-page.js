@@ -1407,7 +1407,7 @@
           _preToggleUrl
         );
       }
-      var isZM = mode === "target";
+      var isZM = (P.productLine || "").indexOf("-zm") !== -1;
       swapVariantImages(isZM);
       var selfShowcase = document.querySelector('.oz-showcase[data-showcase-mode="self"]');
       var targetShowcase = document.querySelector('.oz-showcase[data-showcase-mode="target"]');
@@ -1531,7 +1531,7 @@
       if (zmThumb && zmFull) {
         container.appendChild(createThumb(zmThumb, zmFull, 0, true));
       }
-      var zmGallery = P.modeToggle && P.modeToggle.targetGallery || [];
+      var zmGallery = P.modeToggle && (P.modeToggle.zmGallery || P.modeToggle.targetGallery) || [];
       for (var i = 0; i < zmGallery.length; i++) {
         container.appendChild(createThumb(zmGallery[i].thumb, zmGallery[i].full, i + 1, false));
       }
