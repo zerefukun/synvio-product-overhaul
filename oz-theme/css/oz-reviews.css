@@ -829,9 +829,13 @@
 }
 
 .oz-hp-trustindex-logo {
+  /* The Trustindex SVG has viewBox 288x48.2 but no intrinsic width/height.
+     Chrome resolves naturalWidth/Height to 0, so width:auto collapses to 0.
+     Set both dimensions explicitly (preserving the 6:1 aspect ratio). */
+  width: 108px;
   height: 18px;
-  width: auto;
   display: block;
+  object-fit: contain;
 }
 
 .oz-hp-trustindex-badge-sep {
