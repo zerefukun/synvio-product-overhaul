@@ -375,6 +375,16 @@ class OZ_Frontend_Display {
                         }
                     }
 
+                    // Base featured images named by formula — JS falls back to these
+                    // when no color variant is selected (user on the base product and
+                    // toggles: main image needs to swap to the other side's base photo).
+                    $self_base_img_id  = get_post_thumbnail_id($product->get_id());
+                    $target_base_img_id = get_post_thumbnail_id($target_pid);
+                    $self_base_image   = $self_base_img_id   ? wp_get_attachment_image_url($self_base_img_id,   'large') : '';
+                    $target_base_image = $target_base_img_id ? wp_get_attachment_image_url($target_base_img_id, 'large') : '';
+                    $zm_base_image = $is_self_zm ? $self_base_image : $target_base_image;
+                    $kk_base_image = $is_self_zm ? $target_base_image : $self_base_image;
+
                     $js_data['modeToggle'] = [
                         'labelSelf'           => $mode_toggle['label_self'],
                         'labelTarget'         => $mode_toggle['label_target'],
@@ -400,6 +410,8 @@ class OZ_Frontend_Display {
                         'targetGallery'       => $target_gallery,
                         'zmGallery'           => $zm_gallery,
                         'kkGallery'           => $kk_gallery,
+                        'zmBaseImage'         => $zm_base_image,
+                        'kkBaseImage'         => $kk_base_image,
                     ];
                 }
             }

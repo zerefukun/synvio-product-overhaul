@@ -1464,13 +1464,20 @@
       syncUI();
     }, swapVariantImages = function(toZM) {
       var currentColor = S.selectedColor || P.currentColor || "";
+      var MT = P.modeToggle || {};
       if (toZM) {
         var zmFull = findVariantField(currentColor, "zmFullImage") || findVariantField(currentColor, "fullImage");
+        if (!currentColor && MT.zmBaseImage) {
+          zmFull = MT.zmBaseImage;
+        }
         if (zmFull) swapMainImage(zmFull);
         rebuildGalleryForZM(currentColor);
       } else {
         var selectedColor = S.selectedColor || P.currentColor || "";
         var kkFull = findVariantField(selectedColor, "fullImage");
+        if (!selectedColor && MT.kkBaseImage) {
+          kkFull = MT.kkBaseImage;
+        }
         if (kkFull) {
           swapMainImage(kkFull);
           var vKeys = Object.keys(P.variants);

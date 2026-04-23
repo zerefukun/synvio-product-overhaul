@@ -710,11 +710,17 @@ function toggleFormula(mode, fromPopstate) {
  */
 function swapVariantImages(toZM) {
   var currentColor = S.selectedColor || P.currentColor || '';
+  var MT = P.modeToggle || {};
 
   if (toZM) {
-    // Swap main image to ZM version for current color
-    // zmFullImage exists on K&K variant data; on direct ZM load, fullImage IS the ZM image
+    // Swap main image to ZM version for current color; if no color is selected
+    // (user is on the base product), fall back to the ZM product's own featured
+    // image from modeToggle — variants[baseId] has K&K image only, which would
+    // leave the main photo unchanged during a toggle from base K&K → ZM.
     var zmFull = findVariantField(currentColor, 'zmFullImage') || findVariantField(currentColor, 'fullImage');
+    if (!currentColor && MT.zmBaseImage) {
+      zmFull = MT.zmBaseImage;
+    }
     if (zmFull) swapMainImage(zmFull);
 
     // Rebuild gallery: ZM color image + ZM product generic gallery
@@ -723,6 +729,9 @@ function swapVariantImages(toZM) {
     // Restore K&K image for the color the user had selected in ZM mode
     var selectedColor = S.selectedColor || P.currentColor || '';
     var kkFull = findVariantField(selectedColor, 'fullImage');
+    if (!selectedColor && MT.kkBaseImage) {
+      kkFull = MT.kkBaseImage;
+    }
     if (kkFull) {
       swapMainImage(kkFull);
       // Also navigate to the K&K variant so gallery + URL match the color
