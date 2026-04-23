@@ -175,13 +175,15 @@ class Renderer {
 
 		$cached = '<div class="oz-hp-trustindex-badge" role="note" aria-label="Reviews geverifieerd via Trustindex">'
 			. '<span class="oz-hp-trustindex-badge-mark" aria-hidden="true">'
-			. '<img src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="" width="18" height="18" loading="lazy" decoding="async">'
+			. '<img src="https://cdn.trustindex.io/assets/platform/Trustindex/icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">'
 			. '</span>'
 			. '<span class="oz-hp-trustindex-badge-text">'
 			. $check_svg
 			. ' Reviews geverifieerd via <a href="https://www.trustindex.io/" target="_blank" rel="noopener">Trustindex</a>'
 			. ' &middot; '
-			. '<a href="' . esc_url( $google_reviews_url ) . '" target="_blank" rel="noopener">Bekijk op Google</a>'
+			. '<a class="oz-hp-trustindex-google-link" href="' . esc_url( $google_reviews_url ) . '" target="_blank" rel="noopener">'
+			. '<img class="oz-hp-trustindex-google-icon" src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="" width="14" height="14" loading="lazy" decoding="async">'
+			. 'Bekijk op Google</a>'
 			. '</span>'
 			. '</div>';
 

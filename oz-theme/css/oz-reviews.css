@@ -825,8 +825,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
@@ -834,9 +834,23 @@
 }
 
 .oz-hp-trustindex-badge-mark img {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.oz-hp-trustindex-google-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.oz-hp-trustindex-google-icon {
   width: 14px;
   height: 14px;
-  display: block;
+  display: inline-block;
+  vertical-align: middle;
+  border-bottom: 0 !important;
 }
 
 .oz-hp-trustindex-badge-text {
