@@ -10,8 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Stores options in wp_options under key 'oz_reviews_settings'.
  *
  * Option shape:
- *   google_place_id    string  (e.g. ChIJj-6B3Xe3xUcRmjg1lTEhkIM)
- *   request_delay_days int     (days after order-completed to send first email)
+ *   google_place_id    string  (e.g. ChIJj-6B3Xe3xUcRmjg1lTEhkIM — used for "leave a review on Google" CTA)
+ *   request_delay_days int     (days after order-completed to send first email — Trustindex owns delivery)
  *   reminder_delay_days int    (days after first email if no review received)
  *   slack_webhook_url  string  (low-rating alerts)
  *   slack_min_rating   int     (1..5, alert when review <= this rating)
@@ -22,12 +22,11 @@ class Settings {
 
 	public static function defaults() : array {
 		return array(
-			'google_place_id'       => 'ChIJj-6B3Xe3xUcRmjg1lTEhkIM',
-			'google_places_api_key' => '',
-			'request_delay_days'    => 3,
-			'reminder_delay_days'   => 10,
-			'slack_webhook_url'     => '',
-			'slack_min_rating'      => 3,
+			'google_place_id'     => 'ChIJj-6B3Xe3xUcRmjg1lTEhkIM',
+			'request_delay_days'  => 3,
+			'reminder_delay_days' => 10,
+			'slack_webhook_url'   => '',
+			'slack_min_rating'    => 3,
 		);
 	}
 
@@ -65,12 +64,11 @@ class Settings {
 
 	public static function sanitize( $input ) : array {
 		$out = self::defaults();
-		$out['google_place_id']       = sanitize_text_field( $input['google_place_id'] ?? '' );
-		$out['google_places_api_key'] = sanitize_text_field( $input['google_places_api_key'] ?? '' );
-		$out['request_delay_days']    = max( 0, min( 60, (int) ( $input['request_delay_days'] ?? 3 ) ) );
-		$out['reminder_delay_days']   = max( 0, min( 90, (int) ( $input['reminder_delay_days'] ?? 10 ) ) );
-		$out['slack_webhook_url']     = esc_url_raw( $input['slack_webhook_url'] ?? '' );
-		$out['slack_min_rating']      = max( 1, min( 5, (int) ( $input['slack_min_rating'] ?? 3 ) ) );
+		$out['google_place_id']     = sanitize_text_field( $input['google_place_id'] ?? '' );
+		$out['request_delay_days']  = max( 0, min( 60, (int) ( $input['request_delay_days'] ?? 3 ) ) );
+		$out['reminder_delay_days'] = max( 0, min( 90, (int) ( $input['reminder_delay_days'] ?? 10 ) ) );
+		$out['slack_webhook_url']   = esc_url_raw( $input['slack_webhook_url'] ?? '' );
+		$out['slack_min_rating']    = max( 1, min( 5, (int) ( $input['slack_min_rating'] ?? 3 ) ) );
 		return $out;
 	}
 
@@ -92,36 +90,34 @@ class Settings {
 								name="<?php echo esc_attr( self::OPTION ); ?>[google_place_id]"
 								value="<?php echo esc_attr( $opts['google_place_id'] ); ?>"
 								class="regular-text">
-							<p class="description">Used for the direct-to-Google review CTA and for the daily Places API sync.</p>
+							<p class="description">Used for the "leave a review on Google" CTA. Trustindex owns the scraping pipeline; no API key needed here.</p>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row"><label for="oz-reviews-places-key">Places API (New) key</label></th>
+						<th scope="row">Trustindex sync status</th>
 						<td>
-							<input type="password" id="oz-reviews-places-key"
-								name="<?php echo esc_attr( self::OPTION ); ?>[google_places_api_key]"
-								value="<?php echo esc_attr( $opts['google_places_api_key'] ); ?>"
-								class="regular-text" autocomplete="off">
-							<p class="description">Google Cloud API key with Places API (New) enabled. Used once daily to sync the 5 most-recent reviews. Historical reviews come from one-time scrape import.</p>
 							<?php
-							$last = get_option( 'oz_reviews_last_sync' );
+							$last = get_option( 'oz_reviews_last_trustindex_sync' );
 							if ( is_array( $last ) && ! empty( $last['ran_at'] ) ) {
 								$when = human_time_diff( (int) $last['ran_at'], time() );
 								if ( ! empty( $last['ok'] ) ) {
 									printf(
-										'<p class="description"><strong>Laatste sync:</strong> %s geleden — ingevoegd: %d, bijgewerkt: %d, overgeslagen: %d</p>',
+										'<p class="description"><strong>Laatste Trustindex-snapshot:</strong> %s geleden &mdash; totaal: %d, ingevoegd: %d, bijgewerkt: %d, overgeslagen: %d</p>',
 										esc_html( $when ),
+										(int) ( $last['total'] ?? 0 ),
 										(int) ( $last['inserted'] ?? 0 ),
 										(int) ( $last['updated'] ?? 0 ),
 										(int) ( $last['skipped'] ?? 0 )
 									);
 								} else {
 									printf(
-										'<p class="description" style="color:#b32d2e;"><strong>Laatste sync mislukte:</strong> %s (%s geleden)</p>',
+										'<p class="description" style="color:#b32d2e;"><strong>Laatste snapshot mislukte:</strong> %s (%s geleden)</p>',
 										esc_html( (string) ( $last['error'] ?? 'onbekend' ) ),
 										esc_html( $when )
 									);
 								}
+							} else {
+								echo '<p class="description">Nog geen snapshot uitgevoerd. Draait dagelijks; handmatig via <code>wp oz-reviews trustindex-sync</code>.</p>';
 							}
 							?>
 						</td>

@@ -5,6 +5,10 @@
  * Class prefix .oz-hp-* is historical (originated on the homepage) but the CSS
  * now lives in oz-reviews.css and works anywhere the file is enqueued.
  *
+ * Data source: live Trustindex table. Per project rule the homepage + ruimte
+ * pages show only what Trustindex currently has cached. The /reviews/ hub is
+ * the ONLY place that reads the accumulated archive (via [oz_reviews source="cpt"]).
+ *
  * @package OzTheme
  */
 
@@ -17,57 +21,32 @@ defined( 'ABSPATH' ) || exit;
  *                        'ruimte' for stucsoorten/ruimte pages (oz-section wrapper).
  */
 function oz_render_reviews_section( $context = 'home' ) {
-	$star        = '<svg class="oz-hp-star" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
-	$star_empty  = '<svg class="oz-hp-star oz-hp-star--empty" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
-
-	$render_stars = function ( $n ) use ( $star, $star_empty ) {
-		$out = '';
-		for ( $i = 1; $i <= 5; $i++ ) {
-			$out .= $i <= $n ? $star : $star_empty;
-		}
-		return $out;
-	};
-
-	$dtos = array();
+	$dtos             = array();
 	$aggregate_rating = 4.8;
-	$aggregate_count  = 200;
+	$aggregate_count  = 159;
 
-	if ( class_exists( '\\OZ_Reviews\\CPT' ) && class_exists( '\\OZ_Reviews\\Review_DTO' ) && class_exists( '\\OZ_Reviews\\Renderer' ) ) {
-		$posts = get_posts( array(
-			'post_type'      => \OZ_Reviews\CPT::CPT,
-			'post_status'    => 'publish',
-			'posts_per_page' => 6,
-			'meta_key'       => '_oz_publish_time',
-			'orderby'        => 'meta_value',
-			'order'          => 'DESC',
-			'meta_query'     => array(
-				array(
-					'key'     => '_oz_rating',
-					'value'   => 4,
-					'compare' => '>=',
-					'type'    => 'NUMERIC',
-				),
-			),
-		) );
-
-		foreach ( $posts as $p ) {
-			$dtos[] = \OZ_Reviews\Review_DTO::from_post( $p );
+	if ( class_exists( '\\OZ_Reviews\\Trustindex_Sync' ) && class_exists( '\\OZ_Reviews\\Review_DTO' ) && class_exists( '\\OZ_Reviews\\Renderer' ) ) {
+		$rows = \OZ_Reviews\Trustindex_Sync::fetch_rows();
+		foreach ( $rows as $row ) {
+			$dto = \OZ_Reviews\Review_DTO::from_trustindex_row( $row );
+			if ( $dto['rating'] < 4 ) {
+				continue; // homepage/ruimte stay positive; /reviews/ shows all
+			}
+			$dtos[] = $dto;
+			if ( count( $dtos ) >= 6 ) {
+				break;
+			}
 		}
 
-		$agg = get_option( 'oz_reviews_google_aggregate' );
-		if ( is_array( $agg ) && ! empty( $agg['rating_count'] ) ) {
-			$aggregate_rating = (float) $agg['rating'];
-			$aggregate_count  = (int) $agg['rating_count'];
-		}
+		$agg              = \OZ_Reviews\Trustindex_Sync::get_resolved_aggregate( $aggregate_rating, $aggregate_count );
+		$aggregate_rating = (float) $agg['rating'];
+		$aggregate_count  = (int) $agg['rating_count'];
 	}
 
-	$is_ruimte    = ( $context === 'ruimte' );
-	$section_cls  = $is_ruimte ? 'oz-section oz-hp-reviews' : 'oz-hp-section oz-hp-reviews';
+	$is_ruimte         = ( $context === 'ruimte' );
+	$section_cls       = $is_ruimte ? 'oz-section oz-hp-reviews' : 'oz-hp-section oz-hp-reviews';
 	$header_wrap_open  = $is_ruimte ? '<div class="oz-container">' : '';
 	$header_wrap_close = $is_ruimte ? '</div>' : '';
-
-	$rating_str  = number_format_i18n( $aggregate_rating, 1 );
-	$stars_round = (int) round( $aggregate_rating );
 	?>
 	<section class="<?php echo esc_attr( $section_cls ); ?>" data-reveal>
 		<?php echo $header_wrap_open; ?>
@@ -76,18 +55,7 @@ function oz_render_reviews_section( $context = 'home' ) {
 			<h2 class="oz-hp-heading">Echte ervaringen, <em>echte klanten</em></h2>
 		</div>
 
-		<div class="oz-hp-reviews-summary">
-			<div class="oz-hp-reviews-rating">
-				<span class="oz-hp-reviews-big-num"><?php echo esc_html( $rating_str ); ?></span>
-				<span class="oz-hp-reviews-rating-label">van de 5</span>
-			</div>
-			<div class="oz-hp-reviews-meta">
-				<div class="oz-hp-reviews-stars-row" role="img" aria-label="<?php echo esc_attr( $rating_str ); ?> van de 5 sterren">
-					<?php echo $render_stars( $stars_round ); ?>
-				</div>
-				<div class="oz-hp-reviews-count">Gebaseerd op <strong><?php echo esc_html( $aggregate_count ); ?>+</strong> Google reviews</div>
-			</div>
-		</div>
+		<?php echo \OZ_Reviews\Renderer::summary( $aggregate_rating, $aggregate_count ); ?>
 
 		<?php if ( ! empty( $dtos ) ) : ?>
 			<?php echo \OZ_Reviews\Renderer::grid( $dtos ); ?>

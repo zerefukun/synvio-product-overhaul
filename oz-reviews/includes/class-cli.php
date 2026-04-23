@@ -12,11 +12,17 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 /**
  * WP-CLI commands for oz-reviews.
  *
+ *   wp oz-reviews trustindex-sync
+ *       → Snapshot Trustindex's cached Google reviews into the CPT archive.
+ *         Same job the daily cron runs — use this to backfill or verify.
+ *
  *   wp oz-reviews sync-google
- *       → Run the Places API sync now (bypasses cron schedule).
+ *       → Legacy alias. Now delegates to trustindex-sync (Places API sync retired).
  *
  *   wp oz-reviews import-google <file>
- *       → Bulk-import a JSON dump of scraped Google reviews. File format:
+ *       → Bulk-import a JSON dump of historically scraped Google reviews.
+ *         Stored with source='import' so they're distinguishable from live
+ *         Trustindex snapshots. File format:
  *         [
  *           {
  *             "author_name": "Jan Jansen",
@@ -29,23 +35,35 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
  *           ...
  *         ]
  *
- *   wp oz-reviews list [--source=google]
+ *   wp oz-reviews list [--source=trustindex|import|shop_native]
  *       → List review posts for sanity checks.
  */
 class CLI {
 
 	public static function register() : void {
+		\WP_CLI::add_command( 'oz-reviews trustindex-sync', array( __CLASS__, 'trustindex_sync' ) );
 		\WP_CLI::add_command( 'oz-reviews sync-google', array( __CLASS__, 'sync_google' ) );
 		\WP_CLI::add_command( 'oz-reviews import-google', array( __CLASS__, 'import_google' ) );
 		\WP_CLI::add_command( 'oz-reviews list', array( __CLASS__, 'list_reviews' ) );
 	}
 
-	public static function sync_google() : void {
-		$res = Google_Sync::run();
-		if ( ! $res['ok'] ) {
+	public static function trustindex_sync() : void {
+		$res = Trustindex_Sync::run();
+		if ( empty( $res['ok'] ) ) {
 			\WP_CLI::error( 'Sync failed: ' . ( $res['error'] ?? 'unknown' ) );
 		}
-		\WP_CLI::success( sprintf( 'Inserted %d, updated %d, skipped %d.', $res['inserted'], $res['updated'], $res['skipped'] ) );
+		\WP_CLI::success( sprintf(
+			'Trustindex snapshot: %d total, %d inserted, %d updated, %d skipped.',
+			(int) $res['total'],
+			(int) $res['inserted'],
+			(int) $res['updated'],
+			(int) $res['skipped']
+		) );
+	}
+
+	public static function sync_google() : void {
+		\WP_CLI::log( 'Direct Places API sync is retired. Delegating to Trustindex snapshot.' );
+		self::trustindex_sync();
 	}
 
 	public static function import_google( array $args ) : void {
@@ -73,7 +91,7 @@ class CLI {
 			}
 
 			$dto = Review_DTO::from_array( array(
-				'source'       => 'google',
+				'source'       => 'import',
 				'external_id'  => Review_DTO::external_id( $author, $publish ),
 				'rating'       => (int) ( $r['rating'] ?? 0 ),
 				'author_name'  => $author,

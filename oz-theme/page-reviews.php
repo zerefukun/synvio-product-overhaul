@@ -15,12 +15,14 @@ do_action( 'oz_before_content' );
 
 $up = home_url( '/wp-content/uploads' );
 
-$aggregate = get_option( 'oz_reviews_google_aggregate' );
-$rating    = is_array( $aggregate ) && ! empty( $aggregate['rating'] ) ? (float) $aggregate['rating'] : 4.8;
-$count     = is_array( $aggregate ) && ! empty( $aggregate['rating_count'] ) ? (int) $aggregate['rating_count'] : 169;
+if ( class_exists( '\\OZ_Reviews\\Trustindex_Sync' ) ) {
+	$agg = \OZ_Reviews\Trustindex_Sync::get_resolved_aggregate( 4.8, 169 );
+} else {
+	$agg = array( 'rating' => 4.8, 'rating_count' => 169 );
+}
+$rating     = (float) $agg['rating'];
+$count      = (int) $agg['rating_count'];
 $rating_str = number_format_i18n( $rating, 1 );
-
-$star_svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
 ?>
 
 <div id="content" class="oz-hp oz-reviews-page" role="main">
@@ -44,10 +46,7 @@ $star_svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColo
 			<div class="oz-hp-eyebrow">Google reviews</div>
 			<div class="oz-hp-hero-glass-title"><?php echo esc_html( $rating_str ); ?> / 5,0</div>
 			<div class="oz-hp-reviews-stars-row" role="img" aria-label="<?php echo esc_attr( $rating_str ); ?> van de 5 sterren" style="margin: 4px 0 10px;">
-				<?php for ( $i = 1; $i <= 5; $i++ ) :
-					$cls = $i <= (int) round( $rating ) ? 'oz-hp-star' : 'oz-hp-star oz-hp-star--empty';
-					echo '<span class="' . esc_attr( $cls ) . '">' . $star_svg . '</span>';
-				endfor; ?>
+				<?php echo class_exists( '\\OZ_Reviews\\Renderer' ) ? \OZ_Reviews\Renderer::stars( (int) round( $rating ) ) : ''; ?>
 			</div>
 			<p class="oz-hp-hero-glass-desc">Gebaseerd op <strong><?php echo esc_html( $count ); ?>+</strong> geverifieerde Google reviews van echte klanten door heel Nederland.</p>
 			<a href="#oz-reviews-lijst" class="oz-hp-hero-glass-link">Bekijk de reviews <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
@@ -92,7 +91,8 @@ $star_svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColo
 
 	<?php echo do_shortcode( '[oz_reviews_summary]' ); ?>
 
-	<?php echo do_shortcode( '[oz_reviews count="200" layout="carousel"]' ); ?>
+	<?php /* /reviews/ hub = full accumulated archive (CPT) — every snapshot ever taken. */ ?>
+	<?php echo do_shortcode( '[oz_reviews source="cpt" count="200" layout="carousel"]' ); ?>
 </section>
 
 <?php /* ================================================================

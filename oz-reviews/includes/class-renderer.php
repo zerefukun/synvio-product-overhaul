@@ -14,6 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Renderer {
 
+	private const STAR_PATH = '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';
+
 	/** Render one review card from a DTO. */
 	public static function card( array $dto ) : string {
 		$stars_html = self::stars( (int) $dto['rating'] );
@@ -76,6 +78,7 @@ class Renderer {
 			$out .= self::card( $dto );
 		}
 		$out .= '</div>';
+		$out .= self::trust_badge();
 		return $out;
 	}
 
@@ -97,18 +100,92 @@ class Renderer {
 			. '</div>'
 			. '<button class="oz-hp-reviews-nav oz-hp-reviews-nav--prev" type="button" aria-label="Vorige reviews">' . $arrow_left . '</button>'
 			. '<button class="oz-hp-reviews-nav oz-hp-reviews-nav--next" type="button" aria-label="Volgende reviews">' . $arrow_right . '</button>'
+			. '</div>'
+			. self::trust_badge();
+	}
+
+	/**
+	 * Render the canonical aggregate-summary block (big number + stars row + count line).
+	 * Used by the [oz_reviews_summary] shortcode AND by theme templates that
+	 * build a reviews section inline (reviews-section.php, page-reviews.php).
+	 */
+	public static function summary( float $rating, int $count, string $count_label = 'Gebaseerd op <strong>%d+</strong> Google reviews' ) : string {
+		if ( $count <= 0 ) {
+			return '';
+		}
+		$rating_str  = number_format_i18n( $rating, 1 );
+		$stars_round = (int) round( $rating );
+
+		$stars = '';
+		for ( $i = 1; $i <= 5; $i++ ) {
+			$cls    = $i <= $stars_round ? 'oz-hp-star' : 'oz-hp-star oz-hp-star--empty';
+			$stars .= '<svg class="' . $cls . '" viewBox="0 0 24 24" aria-hidden="true">' . self::STAR_PATH . '</svg>';
+		}
+
+		// sprintf is applied to a trusted caller-provided label (the default
+		// and known templates) — escape the numeric count before injection.
+		$count_html = sprintf( $count_label, (int) $count );
+
+		return '<div class="oz-hp-reviews-summary">'
+			. '<div class="oz-hp-reviews-rating">'
+			. '<span class="oz-hp-reviews-big-num">' . esc_html( $rating_str ) . '</span>'
+			. '<span class="oz-hp-reviews-rating-label">van de 5</span>'
+			. '</div>'
+			. '<div class="oz-hp-reviews-meta">'
+			. '<div class="oz-hp-reviews-stars-row" role="img" aria-label="' . esc_attr( $rating_str ) . ' van de 5 sterren">' . $stars . '</div>'
+			. '<div class="oz-hp-reviews-count">' . $count_html . '</div>'
+			. '</div>'
 			. '</div>';
 	}
 
-	private static function stars( int $n ) : string {
+	/**
+	 * Render a 0..5 stars row. Public so theme templates don't have to
+	 * re-implement the SVG path + loop.
+	 */
+	public static function stars( int $n, string $wrap_class = '' ) : string {
 		$n = max( 0, min( 5, $n ) );
-		$path = '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';
-		$out  = '';
+		$out = '';
 		for ( $i = 1; $i <= 5; $i++ ) {
 			$cls  = $i <= $n ? 'oz-hp-star' : 'oz-hp-star oz-hp-star--empty';
-			$out .= '<svg class="' . $cls . '" viewBox="0 0 24 24" aria-hidden="true">' . $path . '</svg>';
+			$out .= '<svg class="' . $cls . '" viewBox="0 0 24 24" aria-hidden="true">' . self::STAR_PATH . '</svg>';
+		}
+		if ( $wrap_class !== '' ) {
+			return '<div class="' . esc_attr( $wrap_class ) . '" role="img" aria-label="' . esc_attr( $n ) . ' van de 5 sterren">' . $out . '</div>';
 		}
 		return $out;
+	}
+
+	/**
+	 * Trustindex trust badge — shown under every review block.
+	 *
+	 * Signals to customers that the reviews are collected + verified through
+	 * Trustindex (a third-party service), not self-moderated. Links to the
+	 * public Google reviews page for maximum transparency.
+	 */
+	public static function trust_badge() : string {
+		static $cached = null;
+		if ( $cached !== null ) {
+			return $cached;
+		}
+
+		$place_id           = (string) Settings::get( 'google_place_id' );
+		$google_reviews_url = 'https://search.google.com/local/reviews?placeid=' . rawurlencode( $place_id );
+
+		$check_svg = '<svg class="oz-hp-trustindex-check" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19l12-12-1.4-1.4z"/></svg>';
+
+		$cached = '<div class="oz-hp-trustindex-badge" role="note" aria-label="Reviews geverifieerd via Trustindex">'
+			. '<span class="oz-hp-trustindex-badge-mark" aria-hidden="true">'
+			. '<img src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="" width="18" height="18" loading="lazy" decoding="async">'
+			. '</span>'
+			. '<span class="oz-hp-trustindex-badge-text">'
+			. $check_svg
+			. ' Reviews geverifieerd via <a href="https://www.trustindex.io/" target="_blank" rel="noopener">Trustindex</a>'
+			. ' &middot; '
+			. '<a href="' . esc_url( $google_reviews_url ) . '" target="_blank" rel="noopener">Bekijk op Google</a>'
+			. '</span>'
+			. '</div>';
+
+		return $cached;
 	}
 }
 

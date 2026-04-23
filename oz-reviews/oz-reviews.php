@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: OZ Reviews
- * Description: Custom review system for Beton Ciré Webshop. Native product reviews (extends WooCommerce wp_comments), shop-wide reviews (oz_shop_review CPT), email automation via Action Scheduler, Google Business Profile sync, moderation UI, schema.org markup. Replaces Trustindex.
+ * Description: Custom review system for Beton Ciré Webshop. Native product reviews (extends WooCommerce wp_comments), shop-wide reviews (oz_shop_review CPT), email automation via Action Scheduler, daily Trustindex snapshot sync for persistent Google-review archive, moderation UI, schema.org markup. Integrates with Trustindex for the collection pipeline; owns presentation.
  * Version: 0.1.0
  * Author: OzIS
  * Text Domain: oz-reviews
@@ -25,8 +25,8 @@ require_once OZ_REVIEWS_DIR . 'includes/class-cpt.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-meta.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-settings.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-submission.php';
-require_once OZ_REVIEWS_DIR . 'includes/class-places-client.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-google-sync.php';
+require_once OZ_REVIEWS_DIR . 'includes/class-trustindex-sync.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-shortcode.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-schema.php';
 require_once OZ_REVIEWS_DIR . 'includes/class-product-tab.php';
@@ -38,6 +38,7 @@ add_action( 'plugins_loaded', function () {
 	OZ_Reviews\Settings::register();
 	OZ_Reviews\Submission::register();
 	OZ_Reviews\Google_Sync::register();
+	OZ_Reviews\Trustindex_Sync::register();
 	OZ_Reviews\Shortcode::register();
 	OZ_Reviews\Schema::register();
 	OZ_Reviews\Product_Tab::register();
@@ -47,4 +48,7 @@ add_action( 'plugins_loaded', function () {
 } );
 
 // Clean up daily cron on plugin deactivation so we don't leave orphan jobs.
-register_deactivation_hook( __FILE__, array( 'OZ_Reviews\\Google_Sync', 'unschedule' ) );
+register_deactivation_hook( __FILE__, function () {
+	OZ_Reviews\Google_Sync::unschedule();
+	OZ_Reviews\Trustindex_Sync::unschedule();
+} );

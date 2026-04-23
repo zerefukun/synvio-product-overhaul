@@ -39,21 +39,7 @@ class Product_Tab {
 		echo '<div class="oz-hp-reviews oz-hp-reviews--pdp">';
 
 		if ( $count > 0 ) {
-			$rating_str  = number_format_i18n( $avg, 1 );
-			$stars_round = (int) round( $avg );
-			$path        = '<path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';
-			$stars       = '';
-			for ( $i = 1; $i <= 5; $i++ ) {
-				$cls    = $i <= $stars_round ? 'oz-hp-star' : 'oz-hp-star oz-hp-star--empty';
-				$stars .= '<svg class="' . $cls . '" viewBox="0 0 24 24" aria-hidden="true">' . $path . '</svg>';
-			}
-			echo '<div class="oz-hp-reviews-summary">'
-				. '<div class="oz-hp-reviews-rating"><span class="oz-hp-reviews-big-num">' . esc_html( $rating_str ) . '</span>'
-				. '<span class="oz-hp-reviews-rating-label">van de 5</span></div>'
-				. '<div class="oz-hp-reviews-meta">'
-				. '<div class="oz-hp-reviews-stars-row">' . $stars . '</div>'
-				. '<div class="oz-hp-reviews-count">Gebaseerd op <strong>' . esc_html( $count ) . '</strong> productreviews</div>'
-				. '</div></div>';
+			echo Renderer::summary( (float) $avg, (int) $count, 'Gebaseerd op <strong>%d</strong> productreviews' );
 		}
 
 		$comments = get_comments( array(

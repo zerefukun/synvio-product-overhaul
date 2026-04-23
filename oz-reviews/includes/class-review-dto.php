@@ -13,8 +13,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * rendering. Adding a new source = implementing from_* into this shape.
  *
  * Shape:
- *   id            string    unique per source ("google:<sha1>", "product:<comment_id>", "shop:<post_id>")
- *   source        string    'google' | 'product_native' | 'shop_native' | 'import'
+ *   id            string    unique per source ("google:<sha1>", "product:<comment_id>", "shop:<post_id>", "trustindex:<reviewId>")
+ *   source        string    'google' | 'product_native' | 'shop_native' | 'import' | 'trustindex'
  *   external_id   string    for dedup on google/import sources (sha1 of author+publish_time)
  *   rating        int       1..5
  *   author_name   string
@@ -31,6 +31,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   source_label  string    UI label: "Google review" | "Geverifieerde aanschaf" | "Shop review"
  */
 class Review_DTO {
+
+	public const SOURCE_GOOGLE         = 'google';
+	public const SOURCE_IMPORT         = 'import';
+	public const SOURCE_TRUSTINDEX     = 'trustindex';
+	public const SOURCE_PRODUCT_NATIVE = 'product_native';
+	public const SOURCE_SHOP_NATIVE    = 'shop_native';
 
 	/** Build canonical DTO from a raw associative array (already normalized fields). */
 	public static function from_array( array $in ) : array {
@@ -105,10 +111,44 @@ class Review_DTO {
 		) );
 	}
 
+	/**
+	 * Trustindex DB row (OTBgD_trustindex_google_reviews) → DTO.
+	 *
+	 * Trustindex stores Google reviews it scraped into its own table. The row
+	 * is a plain stdClass/array with columns: id, user, user_photo, text,
+	 * rating, date (Y-m-d), reviewId (Google's stable review id), reply.
+	 *
+	 * We treat these as source='trustindex' (vs 'google' which was the old
+	 * Places API direct path). The reviewId column is Google's canonical id
+	 * and is our natural dedup key — no sha1 fingerprint needed.
+	 */
+	public static function from_trustindex_row( $row ) : array {
+		$row = (array) $row;
+		$review_id = (string) ( $row['reviewId'] ?? '' );
+		$date      = (string) ( $row['date'] ?? '' );
+		// Trustindex stores date as Y-m-d. Upgrade to ISO 8601 at local noon so
+		// ordering + Dutch formatting both work without timezone surprises.
+		$date_iso  = $date !== '' ? $date . 'T12:00:00+00:00' : '';
+
+		return self::from_array( array(
+			'id'           => self::SOURCE_TRUSTINDEX . ':' . $review_id,
+			'source'       => self::SOURCE_TRUSTINDEX,
+			'external_id'  => $review_id,
+			'rating'       => (int) round( (float) ( $row['rating'] ?? 5 ) ),
+			'author_name'  => (string) ( $row['user'] ?? 'Anoniem' ),
+			'author_photo' => (string) ( $row['user_photo'] ?? '' ),
+			'date_iso'     => $date_iso,
+			'body'         => (string) ( $row['text'] ?? '' ),
+			'staff_reply'  => (string) ( $row['reply'] ?? '' ),
+			'verified'     => false,
+		) );
+	}
+
 	private static function source_label( string $source, bool $verified ) : string {
 		switch ( $source ) {
 			case 'google':
 			case 'import':
+			case 'trustindex':
 				return 'Google review';
 			case 'product_native':
 				return $verified ? 'Geverifieerde aanschaf' : 'Webshop review';
