@@ -72,8 +72,21 @@ class OZ_Ajax_Handlers {
     /**
      * Return a fresh nonce for add-to-cart.
      * Called when page cache served a stale nonce.
+     *
+     * Per-IP throttle: a bot farm could mint unlimited fresh nonces and use
+     * them to keep cart endpoints reachable. Cap at 30 mints per 5 minutes.
      */
     public static function ajax_refresh_nonce() {
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        if ($ip !== '') {
+            $key = 'oz_refn_' . md5($ip);
+            $hits = (int) get_transient($key);
+            if ($hits >= 30) {
+                wp_send_json_error('rate_limited');
+                return;
+            }
+            set_transient($key, $hits + 1, 5 * MINUTE_IN_SECONDS);
+        }
         wp_send_json_success(['nonce' => wp_create_nonce('oz_bcw_cart')]);
     }
 
@@ -96,7 +109,11 @@ class OZ_Ajax_Handlers {
         }
 
         $product = wc_get_product($product_id);
-        if (!$product || $product->get_status() !== 'publish') {
+        if (!$product
+            || $product->get_status() !== 'publish'
+            || !$product->is_purchasable()
+            || !$product->is_in_stock()
+            || $product->get_catalog_visibility() === 'hidden') {
             wp_send_json_error('Product niet gevonden.');
         }
 

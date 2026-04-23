@@ -157,7 +157,16 @@ function oz_capture_attribution_cookies() {
             // Don't overwrite existing — first touch wins
             if (!isset($_COOKIE[$cookie_name])) {
                 $value = sanitize_text_field($_GET[$param]);
-                setcookie($cookie_name, $value, time() + 86400 * 30, '/', '', true, false);
+                // httponly so JS can't read it; samesite=Lax so it doesn't
+                // travel in cross-site iframes; secure so it only goes over HTTPS.
+                setcookie($cookie_name, $value, [
+                    'expires'  => time() + 86400 * 30,
+                    'path'     => '/',
+                    'domain'   => '',
+                    'secure'   => true,
+                    'httponly' => true,
+                    'samesite' => 'Lax',
+                ]);
                 $_COOKIE[$cookie_name] = $value; // Available in same request
             }
         }
@@ -173,9 +182,9 @@ function oz_apply_attribution_fallback($order) {
         return; // WC attribution worked, don't override
     }
 
-    $utm_source  = isset($_COOKIE['oz_utm_source']) ? sanitize_text_field($_COOKIE['oz_utm_source']) : '';
-    $utm_medium  = isset($_COOKIE['oz_utm_medium']) ? sanitize_text_field($_COOKIE['oz_utm_medium']) : '';
-    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field($_COOKIE['oz_utm_campaign']) : '';
+    $utm_source   = isset($_COOKIE['oz_utm_source'])   ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_source']))   : '';
+    $utm_medium   = isset($_COOKIE['oz_utm_medium'])   ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_medium']))   : '';
+    $utm_campaign = isset($_COOKIE['oz_utm_campaign']) ? sanitize_text_field(wp_unslash($_COOKIE['oz_utm_campaign'])) : '';
 
     // Determine source type
     $source_type = 'typein';
@@ -479,9 +488,19 @@ function oz_cart_drawer_add() {
 
     $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
     $qty        = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
+    // Clamp qty to a sensible range — prevents "add 999999 to drain stock" abuse.
+    $qty = max(1, min(99, $qty));
 
     if (!$product_id) {
         wp_send_json_error('Missing product ID');
+        return;
+    }
+
+    // Server-side trust: client may POST any product ID. Reject drafts,
+    // private/password-protected, non-purchasable, or out-of-stock items.
+    $product = wc_get_product($product_id);
+    if (!$product || $product->get_status() !== 'publish' || !$product->is_purchasable() || !$product->is_in_stock()) {
+        wp_send_json_error('Product not available');
         return;
     }
 

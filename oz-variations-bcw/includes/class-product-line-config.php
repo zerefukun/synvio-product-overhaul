@@ -1575,6 +1575,55 @@ class OZ_Product_Line_Config {
     ];
 
     /**
+     * Security: validate that a submitted (tool slug, wcId, sizeLabel) triple
+     * exists in the canonical catalog. Used to reject tampered add-to-cart
+     * payloads where an attacker might submit a price/size that doesn't
+     * correspond to a real catalog entry.
+     *
+     * Returns false for any unknown tool slug, wcId mismatch, or unknown size label.
+     */
+    public static function validate_tool_selection($tool_slug, $wc_id, $size_label = '') {
+        $slug = is_string($tool_slug) ? $tool_slug : '';
+        if ($slug === '' || !isset(self::$tool_catalog[$slug])) {
+            return false;
+        }
+        $wc_id = (int) $wc_id;
+        $size_label = (string) $size_label;
+        $tool = self::$tool_catalog[$slug];
+
+        if ($size_label !== '') {
+            if (empty($tool['sizes'])) {
+                return false;
+            }
+            foreach ($tool['sizes'] as $size) {
+                if ((string) ($size['label'] ?? '') === $size_label
+                    && (int) ($size['wcId'] ?? 0) === $wc_id) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return (int) ($tool['wcId'] ?? 0) === $wc_id;
+    }
+
+    /**
+     * Security: confirm a submitted wcId is a legitimate tool-set product.
+     * Rejects attempts to smuggle any other product into the "set" path.
+     */
+    public static function is_valid_tool_set_id($wc_id) {
+        $wc_id = (int) $wc_id;
+        if ($wc_id <= 0) {
+            return false;
+        }
+        foreach (self::$tool_sets as $set) {
+            if ((int) ($set['id'] ?? 0) === $wc_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get tool/gereedschap configuration for JS.
      * Composes from single-source catalog — no data duplication.
      *
