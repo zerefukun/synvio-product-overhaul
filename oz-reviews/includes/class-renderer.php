@@ -174,17 +174,18 @@ class Renderer {
 		$check_svg = '<svg class="oz-hp-trustindex-check" viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path fill="currentColor" d="M9 16.2 4.8 12l-1.4 1.4L9 19l12-12-1.4-1.4z"/></svg>';
 
 		$cached = '<div class="oz-hp-trustindex-badge" role="note" aria-label="Reviews geverifieerd via Trustindex">'
-			. '<span class="oz-hp-trustindex-badge-mark" aria-hidden="true">'
-			. '<img src="https://cdn.trustindex.io/assets/platform/Trustindex/icon.svg" alt="" width="22" height="22" loading="lazy" decoding="async">'
-			. '</span>'
+			. '<a class="oz-hp-trustindex-logo-link" href="https://www.trustindex.io/" target="_blank" rel="noopener" aria-label="Trustindex">'
+			. '<img class="oz-hp-trustindex-logo" src="https://cdn.trustindex.io/assets/platform/Trustindex/logo-dark.svg" alt="Trustindex" width="120" height="20" loading="lazy" decoding="async">'
+			. '</a>'
+			. '<span class="oz-hp-trustindex-badge-sep" aria-hidden="true"></span>'
 			. '<span class="oz-hp-trustindex-badge-text">'
 			. $check_svg
-			. ' Reviews geverifieerd via <a href="https://www.trustindex.io/" target="_blank" rel="noopener">Trustindex</a>'
-			. ' &middot; '
+			. '<span>Reviews geverifieerd</span>'
+			. '</span>'
+			. '<span class="oz-hp-trustindex-badge-sep" aria-hidden="true"></span>'
 			. '<a class="oz-hp-trustindex-google-link" href="' . esc_url( $google_reviews_url ) . '" target="_blank" rel="noopener">'
 			. '<img class="oz-hp-trustindex-google-icon" src="https://cdn.trustindex.io/assets/platform/Google/icon.svg" alt="" width="14" height="14" loading="lazy" decoding="async">'
-			. 'Bekijk op Google</a>'
-			. '</span>'
+			. '<span>Bekijk op Google</span></a>'
 			. '</div>';
 
 		return $cached;
