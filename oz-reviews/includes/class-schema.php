@@ -22,8 +22,8 @@ class Schema {
 			return;
 		}
 
-		$agg = get_option( 'oz_reviews_google_aggregate' );
-		if ( ! is_array( $agg ) || empty( $agg['rating_count'] ) ) {
+		$agg = Trustindex_Sync::get_aggregate();
+		if ( empty( $agg['rating_count'] ) ) {
 			return;
 		}
 
