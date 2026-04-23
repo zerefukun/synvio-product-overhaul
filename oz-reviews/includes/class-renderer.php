@@ -175,7 +175,7 @@ class Renderer {
 
 		$cached = '<div class="oz-hp-trustindex-badge" role="note" aria-label="Reviews geverifieerd via Trustindex">'
 			. '<a class="oz-hp-trustindex-logo-link" href="https://www.trustindex.io/" target="_blank" rel="noopener" aria-label="Trustindex">'
-			. '<img class="oz-hp-trustindex-logo" src="https://cdn.trustindex.io/assets/platform/Trustindex/logo-dark.svg" alt="Trustindex" width="120" height="20" loading="lazy" decoding="async">'
+			. '<img class="oz-hp-trustindex-logo" src="https://cdn.trustindex.io/assets/platform/Trustindex/logo.svg" alt="Trustindex" width="120" height="20" loading="lazy" decoding="async">'
 			. '</a>'
 			. '<span class="oz-hp-trustindex-badge-sep" aria-hidden="true"></span>'
 			. '<span class="oz-hp-trustindex-badge-text">'

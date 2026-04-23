@@ -896,7 +896,10 @@
 
 .oz-hp-hero .oz-hp-trustindex-badge a { color: #fff; }
 .oz-hp-hero .oz-hp-trustindex-badge-sep { background: rgba(255, 255, 255, .24); }
-.oz-hp-hero .oz-hp-trustindex-logo { filter: invert(1) brightness(1.3); }
+/* On the dark hero, swap the light-bg wordmark for the white-fill variant. */
+.oz-hp-hero .oz-hp-trustindex-logo {
+  content: url('https://cdn.trustindex.io/assets/platform/Trustindex/logo-dark.svg');
+}
 
 @media (max-width: 560px) {
   .oz-hp-trustindex-badge {
