@@ -32,7 +32,6 @@ $up = home_url( '/wp-content/uploads' );
 			<p class="oz-hp-hero-desc">Voor in alle ruimtes: badkamer, toilet, vloer, muur &amp; trap. Kant-en-klare pasta in 50+ kleuren &mdash; bestel online of bezoek onze showroom in Den Haag.</p>
 			<div class="oz-hp-hero-ctas">
 				<a href="/ruimtes/" class="oz-hp-btn oz-hp-btn--teal">Meer informatie</a>
-				<a href="/beton-cire-original/" class="oz-hp-btn oz-hp-btn--outline">Beton Ciré Original Kant &amp; Klaar</a>
 			</div>
 		</div>
 		<div class="oz-hp-hero-glass">
