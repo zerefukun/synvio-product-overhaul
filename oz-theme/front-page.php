@@ -32,6 +32,7 @@ $up = home_url( '/wp-content/uploads' );
 			<p class="oz-hp-hero-desc">Voor in alle ruimtes: badkamer, toilet, vloer, muur &amp; trap. Kant-en-klare pasta in 50+ kleuren &mdash; bestel online of bezoek onze showroom in Den Haag.</p>
 			<div class="oz-hp-hero-ctas">
 				<a href="/ruimtes/" class="oz-hp-btn oz-hp-btn--teal">Meer informatie</a>
+				<a href="/kleurstalen/" class="oz-hp-btn oz-hp-btn--outline oz-hp-hero-cta-mobile">Gratis kleurstalen aanvragen</a>
 			</div>
 		</div>
 		<div class="oz-hp-hero-glass">
@@ -75,7 +76,7 @@ $up = home_url( '/wp-content/uploads' );
 <section class="oz-hp-section oz-hp-section--sand" data-reveal>
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Collectie</div>
-		<h2 class="oz-hp-heading">Onze producten voor de <em>badkamer</em></h2>
+		<h2 class="oz-hp-heading">Onze producten voor <em>elke ruimte</em></h2>
 		<p class="oz-hp-section-intro">Kies het product dat het beste bij jouw project past. Alle producten zijn waterdicht en geschikt voor natte ruimtes.</p>
 	</div>
 	<div class="oz-hp-products-3col" data-reveal-stagger>

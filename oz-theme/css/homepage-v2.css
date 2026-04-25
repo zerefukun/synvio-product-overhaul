@@ -131,6 +131,12 @@
 }
 .oz-hp-btn--outline:hover { border-color: var(--white); color: var(--white); }
 
+/* Hero kleurstalen CTA — only on viewports where the glass card is hidden */
+.oz-hp-hero-cta-mobile { display: none; }
+@media (max-width: 1024px) {
+  .oz-hp-hero-cta-mobile { display: inline-block; }
+}
+
 .oz-hp-btn--dark {
   background: var(--charcoal);
   color: var(--white);
