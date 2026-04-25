@@ -1416,6 +1416,7 @@
   position: relative;
   max-width: calc(var(--max-w) + 120px);
   margin: 0 auto;
+  padding: 0 0 0 20px;
 }
 
 .oz-hp-kb-carousel {
