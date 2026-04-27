@@ -305,9 +305,11 @@
 	}
 
 	/* Wire any .oz-kleur-grid on the page to the kleurstalen form's
-	   kleur1..kleur4 selects. Click a swatch → fills the next empty slot
-	   (and badges the swatch with the slot number). Click an already
-	   selected swatch → clears that slot. Manual select changes sync back. */
+	   kleur1..kleur4 selects. Tapping a swatch opens a preview lightbox
+	   with a "+ Voeg toe aan stalen" CTA — clicking the CTA fills the next
+	   empty slot (or removes it if already chosen). A sticky bottom bar
+	   shows live 0/4..4/4 progress and turns into the "Volgende →" CTA
+	   once all 4 are picked. Manual select changes sync back. */
 	function setupKleurPicker( form ) {
 		var grids   = document.querySelectorAll( '.oz-kleur-grid' );
 		if ( ! grids.length ) { return; }
@@ -331,6 +333,7 @@
 				fig.setAttribute( 'role', 'button' );
 				fig.setAttribute( 'tabindex', '0' );
 				fig.setAttribute( 'aria-pressed', 'false' );
+				fig.setAttribute( 'aria-haspopup', 'dialog' );
 				var badge = document.createElement( 'span' );
 				badge.className = 'oz-kleur-swatch__badge';
 				badge.setAttribute( 'aria-hidden', 'true' );
@@ -339,11 +342,20 @@
 			} );
 		} );
 
+		var lightbox = buildKleurLightbox();
+		document.body.appendChild( lightbox.root );
+		var bar = buildKleurBar();
+		document.body.appendChild( bar.root );
+
+		function values() {
+			return selects.map( function ( s ) { return s.value || ''; } );
+		}
+
 		function refresh() {
-			var values = selects.map( function ( s ) { return s.value || ''; } );
+			var v = values();
 			swatches.forEach( function ( fig ) {
 				var code = fig.dataset.kleurCode;
-				var slot = values.indexOf( code );
+				var slot = v.indexOf( code );
 				var badge = fig.querySelector( '.oz-kleur-swatch__badge' );
 				if ( slot >= 0 ) {
 					fig.classList.add( 'is-selected' );
@@ -355,11 +367,13 @@
 					if ( badge ) { badge.textContent = ''; }
 				}
 			} );
+			bar.update( v );
 		}
 
+		// Returns 'picked' | 'removed' | 'full' | 'invalid'
 		function pick( code ) {
-			var values = selects.map( function ( s ) { return s.value || ''; } );
-			var existing = values.indexOf( code );
+			var v = values();
+			var existing = v.indexOf( code );
 			if ( existing >= 0 ) {
 				selects[ existing ].value = '';
 				selects[ existing ].dispatchEvent( new Event( 'change', { bubbles: true } ) );
@@ -368,13 +382,13 @@
 					oz_swatch_code: code,
 					oz_swatch_slot: existing + 1,
 				} );
-				return;
+				return 'removed';
 			}
-			var empty = values.indexOf( '' );
-			if ( empty < 0 ) { return; } // all 4 filled
+			var empty = v.indexOf( '' );
+			if ( empty < 0 ) { return 'full'; }
 			var sel = selects[ empty ];
 			var hasOption = !! sel.querySelector( 'option[value="' + code + '"]' );
-			if ( ! hasOption ) { return; }
+			if ( ! hasOption ) { return 'invalid'; }
 			sel.value = code;
 			sel.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 			refresh();
@@ -382,14 +396,28 @@
 				oz_swatch_code: code,
 				oz_swatch_slot: empty + 1,
 			} );
+			return 'picked';
+		}
+
+		function openSwatch( fig ) {
+			var code = fig.dataset.kleurCode;
+			var img  = fig.querySelector( 'img' );
+			lightbox.show( {
+				code:    code,
+				imgSrc:  img ? ( img.currentSrc || img.src ) : '',
+				imgAlt:  img ? img.alt : code,
+				values:  values(),
+				onPick:  function () { return pick( code ); },
+				onClose: function () { try { fig.focus(); } catch ( e ) {} },
+			} );
 		}
 
 		swatches.forEach( function ( fig ) {
-			fig.addEventListener( 'click', function () { pick( fig.dataset.kleurCode ); } );
+			fig.addEventListener( 'click', function () { openSwatch( fig ); } );
 			fig.addEventListener( 'keydown', function ( e ) {
 				if ( e.key === 'Enter' || e.key === ' ' ) {
 					e.preventDefault();
-					pick( fig.dataset.kleurCode );
+					openSwatch( fig );
 				}
 			} );
 		} );
@@ -398,7 +426,229 @@
 			s.addEventListener( 'change', refresh );
 		} );
 
+		// Bar wiring: scroll back to form, or click the form's own next button.
+		bar.onScroll( function () {
+			form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+		} );
+		bar.onAdvance( function () {
+			var nextBtn = form.querySelector( '.oz-form__next' );
+			form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+			if ( nextBtn ) {
+				// Defer the click until after the smooth-scroll starts, so the
+				// step-change animation is visible rather than buried offscreen.
+				setTimeout( function () { nextBtn.click(); }, 350 );
+			}
+		} );
+
+		// Hide bar when the form is in viewport (no need to duplicate progress).
+		if ( 'IntersectionObserver' in window ) {
+			var io = new IntersectionObserver( function ( entries ) {
+				entries.forEach( function ( e ) {
+					if ( e.isIntersecting ) { bar.suppress(); }
+					else { bar.unsuppress(); }
+				} );
+			}, { threshold: 0.4 } );
+			io.observe( form );
+		}
+
 		refresh();
+	}
+
+	/* Lightbox: full-screen color preview + add/remove CTA. Self-contained,
+	   appended to body once per page. show()/close() are idempotent. */
+	function buildKleurLightbox() {
+		var root = document.createElement( 'div' );
+		root.className = 'oz-kleur-lb';
+		root.setAttribute( 'aria-hidden', 'true' );
+		root.innerHTML = ''
+			+ '<div class="oz-kleur-lb__backdrop" data-oz-close></div>'
+			+ '<div class="oz-kleur-lb__dialog" role="dialog" aria-modal="true" aria-labelledby="oz-kleur-lb-title">'
+			+   '<button type="button" class="oz-kleur-lb__close" aria-label="Sluiten" data-oz-close>&#10005;</button>'
+			+   '<div class="oz-kleur-lb__preview"><img alt="" /></div>'
+			+   '<h3 id="oz-kleur-lb-title" class="oz-kleur-lb__title"></h3>'
+			+   '<p class="oz-kleur-lb__status" aria-live="polite"></p>'
+			+   '<button type="button" class="oz-kleur-lb__cta"></button>'
+			+ '</div>';
+
+		var img        = root.querySelector( '.oz-kleur-lb__preview img' );
+		var titleEl    = root.querySelector( '.oz-kleur-lb__title' );
+		var statusEl   = root.querySelector( '.oz-kleur-lb__status' );
+		var ctaBtn     = root.querySelector( '.oz-kleur-lb__cta' );
+		var lastFocus  = null;
+		var currentCb  = null; // { onPick, onClose, code }
+
+		function describeStatus( code, vals ) {
+			var existing = vals.indexOf( code );
+			var picked   = vals.filter( Boolean ).length;
+			if ( existing >= 0 ) {
+				return {
+					text: 'Toegevoegd als kleur ' + ( existing + 1 ) + ' van 4.',
+					cta:  'Verwijderen uit stalen',
+					mode: 'remove',
+				};
+			}
+			if ( picked >= 4 ) {
+				return {
+					text: 'Je hebt al 4 stalen gekozen. Tik in de balk onderaan op een gekozen kleur om te wisselen.',
+					cta:  'Sluiten',
+					mode: 'full',
+				};
+			}
+			return {
+				text: 'Geselecteerd: ' + picked + ' van 4 stalen.',
+				cta:  '+ Voeg toe aan stalen',
+				mode: 'add',
+			};
+		}
+
+		function paint( code, vals ) {
+			var s = describeStatus( code, vals );
+			statusEl.textContent = s.text;
+			ctaBtn.textContent   = s.cta;
+			ctaBtn.dataset.mode  = s.mode;
+			ctaBtn.classList.toggle( 'oz-kleur-lb__cta--remove', s.mode === 'remove' );
+			ctaBtn.classList.toggle( 'oz-kleur-lb__cta--full',   s.mode === 'full' );
+		}
+
+		function show( opts ) {
+			lastFocus = document.activeElement;
+			currentCb = opts;
+			img.src = opts.imgSrc || '';
+			img.alt = opts.imgAlt || opts.code;
+			titleEl.textContent = opts.code;
+			paint( opts.code, opts.values );
+			root.classList.add( 'is-open' );
+			root.setAttribute( 'aria-hidden', 'false' );
+			document.documentElement.classList.add( 'oz-kleur-lb-open' );
+			setTimeout( function () { try { ctaBtn.focus(); } catch ( e ) {} }, 40 );
+		}
+
+		function close() {
+			root.classList.remove( 'is-open' );
+			root.setAttribute( 'aria-hidden', 'true' );
+			document.documentElement.classList.remove( 'oz-kleur-lb-open' );
+			var cb = currentCb;
+			currentCb = null;
+			if ( cb && typeof cb.onClose === 'function' ) { cb.onClose(); }
+			else if ( lastFocus && lastFocus.focus ) { try { lastFocus.focus(); } catch ( e ) {} }
+		}
+
+		ctaBtn.addEventListener( 'click', function () {
+			if ( ! currentCb ) { close(); return; }
+			var mode = ctaBtn.dataset.mode;
+			if ( mode === 'full' ) { close(); return; }
+			var result = currentCb.onPick();
+			// Brief visual confirmation, then close. afterAction is implicit.
+			if ( result === 'picked' ) { statusEl.textContent = 'Toegevoegd!'; }
+			else if ( result === 'removed' ) { statusEl.textContent = 'Verwijderd.'; }
+			setTimeout( close, 450 );
+		} );
+
+		root.querySelectorAll( '[data-oz-close]' ).forEach( function ( el ) {
+			el.addEventListener( 'click', close );
+		} );
+
+		document.addEventListener( 'keydown', function ( e ) {
+			if ( root.classList.contains( 'is-open' ) && e.key === 'Escape' ) { close(); }
+		} );
+
+		return { root: root, show: show, close: close };
+	}
+
+	/* Sticky bottom bar showing 0/4..4/4 progress + CTA that scrolls the user
+	   back to the form (or fires "Volgende →" when complete). Hidden until the
+	   user has picked at least one swatch OR scrolled past the form. */
+	function buildKleurBar() {
+		var root = document.createElement( 'div' );
+		root.className = 'oz-kleur-bar';
+		root.setAttribute( 'aria-hidden', 'true' );
+		root.setAttribute( 'role', 'status' );
+		root.innerHTML = ''
+			+ '<div class="oz-kleur-bar__inner">'
+			+   '<div class="oz-kleur-bar__slots" aria-hidden="true">'
+			+     '<span class="oz-kleur-bar__slot" data-slot="0"></span>'
+			+     '<span class="oz-kleur-bar__slot" data-slot="1"></span>'
+			+     '<span class="oz-kleur-bar__slot" data-slot="2"></span>'
+			+     '<span class="oz-kleur-bar__slot" data-slot="3"></span>'
+			+   '</div>'
+			+   '<div class="oz-kleur-bar__copy">'
+			+     '<span class="oz-kleur-bar__count">0 van 4</span>'
+			+     '<span class="oz-kleur-bar__hint">kleuren gekozen</span>'
+			+   '</div>'
+			+   '<button type="button" class="oz-kleur-bar__cta"></button>'
+			+ '</div>';
+
+		var slotEls   = root.querySelectorAll( '.oz-kleur-bar__slot' );
+		var countEl   = root.querySelector( '.oz-kleur-bar__count' );
+		var hintEl    = root.querySelector( '.oz-kleur-bar__hint' );
+		var ctaBtn    = root.querySelector( '.oz-kleur-bar__cta' );
+		var ctaMode   = 'scroll'; // 'scroll' | 'advance'
+		var onScrollFn  = null;
+		var onAdvanceFn = null;
+		var hasPicked   = false;
+		var suppressed  = false;
+
+		function update( vals ) {
+			var picked = 0;
+			for ( var i = 0; i < 4; i++ ) {
+				var slot = slotEls[ i ];
+				var v = vals[ i ];
+				if ( v ) {
+					slot.classList.add( 'is-filled' );
+					slot.textContent = v;
+					picked++;
+				} else {
+					slot.classList.remove( 'is-filled' );
+					slot.textContent = '';
+				}
+			}
+			countEl.textContent = picked + ' van 4';
+			if ( picked === 4 ) {
+				hintEl.textContent = 'Klaar!';
+				ctaBtn.textContent = 'Volgende →';
+				ctaMode = 'advance';
+				root.classList.add( 'is-complete' );
+			} else {
+				hintEl.textContent = 'kleuren gekozen';
+				ctaBtn.textContent = 'Naar formulier ↑';
+				ctaMode = 'scroll';
+				root.classList.remove( 'is-complete' );
+			}
+			if ( picked > 0 ) {
+				hasPicked = true;
+				render();
+			}
+		}
+
+		function render() {
+			if ( hasPicked && ! suppressed ) {
+				root.classList.add( 'is-visible' );
+				root.setAttribute( 'aria-hidden', 'false' );
+			} else {
+				root.classList.remove( 'is-visible' );
+				root.setAttribute( 'aria-hidden', 'true' );
+			}
+		}
+
+		function suppress() { suppressed = true; render(); }
+		function unsuppress() { suppressed = false; render(); }
+
+		ctaBtn.addEventListener( 'click', function () {
+			if ( ctaMode === 'advance' && typeof onAdvanceFn === 'function' ) {
+				onAdvanceFn();
+			} else if ( typeof onScrollFn === 'function' ) {
+				onScrollFn();
+			}
+		} );
+
+		return {
+			root: root,
+			update: update,
+			suppress: suppress,
+			unsuppress: unsuppress,
+			onScroll:  function ( fn ) { onScrollFn  = fn; },
+			onAdvance: function ( fn ) { onAdvanceFn = fn; },
+		};
 	}
 
 	/* Autocomplete multi-select: replaces the native <select multiple> with
