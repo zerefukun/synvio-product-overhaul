@@ -55,6 +55,15 @@ class OZ_Staffelkorting {
             'pct'         => 5,
             'window_days' => 30,
         ],
+        // Returning-customer bonus (added 30/04/26): when a customer's
+        // billing email has at least `min_orders` previously completed orders,
+        // we add an extra percentage as a cart fee. CLV play that complements
+        // the kleurstalen first-order bonus.
+        'returning_bonus' => [
+            'enabled'    => false,
+            'pct'        => 5,
+            'min_orders' => 1, // 1 = "second order or later", 2 = "third order or later"
+        ],
     ];
 
     public static function init() {
@@ -161,6 +170,70 @@ class OZ_Staffelkorting {
                 }
             }
         }
+
+        // Returning-customer bonus: stacks on top of tier + sample bonus.
+        // Looks up the customer's prior completed-order count via WC. For
+        // logged-in users we use their user id; for guest checkout we use
+        // billing_email if the user has typed it in already.
+        $rb = isset($rules['returning_bonus']) && is_array($rules['returning_bonus'])
+            ? $rules['returning_bonus']
+            : self::$default_rules['returning_bonus'];
+
+        if (!empty($rb['enabled'])) {
+            $min_orders = max(1, intval($rb['min_orders'] ?? 1));
+            $rb_pct = floatval($rb['pct'] ?? 0);
+            if ($rb_pct > 0 && self::customer_has_min_prior_orders($min_orders)) {
+                $rb_amount = $eligible_subtotal * ($rb_pct / 100);
+                if ($rb_amount > 0) {
+                    $label = sprintf(
+                        __('Trouwe-klant-korting %s%%', 'oz-variations-bcw'),
+                        rtrim(rtrim(number_format($rb_pct, 1, ',', ''), '0'), ',')
+                    );
+                    $cart->add_fee($label, -$rb_amount, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns true when the customer has at least $min_orders completed prior
+     * orders. Uses user_id when logged in, falls back to billing_email at
+     * checkout time for guest customers.
+     *
+     * Lookup is bounded ('paginate'=>false, 'limit'=>$min_orders+1) so we
+     * don't load the full order history just to count past 1-2 orders.
+     */
+    private static function customer_has_min_prior_orders($min_orders) {
+        if (!function_exists('wc_get_orders')) {
+            return false;
+        }
+        $args = [
+            'status' => ['completed', 'processing'],
+            'limit'  => $min_orders + 1, // bounded — we only need the count up to the threshold
+            'return' => 'ids',
+        ];
+
+        $user_id = get_current_user_id();
+        if ($user_id > 0) {
+            $args['customer_id'] = $user_id;
+        } else {
+            // Guest checkout: read billing_email from posted checkout fields.
+            // Cart calc fires on /winkelwagen/ too where there's no email yet,
+            // so this branch silently returns false until the user enters one.
+            $email = '';
+            if (isset($_POST['billing_email'])) {
+                $email = sanitize_email(wp_unslash($_POST['billing_email']));
+            } elseif (function_exists('WC') && WC()->customer) {
+                $email = (string) WC()->customer->get_billing_email();
+            }
+            if (!is_email($email)) {
+                return false;
+            }
+            $args['billing_email'] = $email;
+        }
+
+        $orders = wc_get_orders($args);
+        return is_array($orders) && count($orders) >= $min_orders;
     }
 
     /**
@@ -355,6 +428,40 @@ class OZ_Staffelkorting {
                     </tr>
                 </table>
 
+                <h2><?php esc_html_e('Trouwe-klant-korting', 'oz-variations-bcw'); ?></h2>
+                <p class="description">
+                    <?php esc_html_e('Extra korting voor terugkerende klanten. Past automatisch toe als de klant al een vorige bestelling heeft afgerond. Stapelt op de Staffelkorting + Kleurstalen-bonus.', 'oz-variations-bcw'); ?>
+                </p>
+                <?php
+                $rb = isset($rules['returning_bonus']) && is_array($rules['returning_bonus'])
+                    ? $rules['returning_bonus']
+                    : ['enabled' => false, 'pct' => 5, 'min_orders' => 1];
+                ?>
+                <table class="form-table" style="max-width:600px;">
+                    <tr>
+                        <th><label for="oz_sk_rb_enabled"><?php esc_html_e('Actief', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <label>
+                                <input type="checkbox" id="oz_sk_rb_enabled" name="returning_bonus[enabled]" value="1" <?php checked(!empty($rb['enabled'])); ?>>
+                                <?php esc_html_e('Trouwe-klant-korting toepassen', 'oz-variations-bcw'); ?>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="oz_sk_rb_pct"><?php esc_html_e('Korting (%)', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <input type="number" id="oz_sk_rb_pct" name="returning_bonus[pct]" value="<?php echo esc_attr($rb['pct'] ?? 5); ?>" step="0.1" min="0" max="50" style="width:120px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="oz_sk_rb_min"><?php esc_html_e('Vanaf welke order?', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <input type="number" id="oz_sk_rb_min" name="returning_bonus[min_orders]" value="<?php echo esc_attr($rb['min_orders'] ?? 1); ?>" step="1" min="1" max="10" style="width:120px;">
+                            <p class="description"><?php esc_html_e('Aantal eerder afgeronde bestellingen dat nodig is. 1 = vanaf de tweede bestelling, 2 = vanaf de derde, etc.', 'oz-variations-bcw'); ?></p>
+                        </td>
+                    </tr>
+                </table>
+
                 <?php submit_button(__('Opslaan', 'oz-variations-bcw')); ?>
             </form>
         </div>
@@ -424,10 +531,19 @@ class OZ_Staffelkorting {
             'window_days' => isset($raw_bonus['window_days']) ? max(1, min(365, intval($raw_bonus['window_days']))) : 30,
         ];
 
+        // Returning-customer bonus. Same bounding pattern.
+        $raw_rb = isset($_POST['returning_bonus']) && is_array($_POST['returning_bonus']) ? $_POST['returning_bonus'] : [];
+        $returning_bonus = [
+            'enabled'    => !empty($raw_rb['enabled']),
+            'pct'        => isset($raw_rb['pct']) ? max(0.0, min(50.0, floatval($raw_rb['pct']))) : 5.0,
+            'min_orders' => isset($raw_rb['min_orders']) ? max(1, min(10, intval($raw_rb['min_orders']))) : 1,
+        ];
+
         update_option(self::OPTION_KEY, [
-            'enabled'      => $enabled,
-            'tiers'        => $tiers,
-            'sample_bonus' => $bonus,
+            'enabled'         => $enabled,
+            'tiers'           => $tiers,
+            'sample_bonus'    => $bonus,
+            'returning_bonus' => $returning_bonus,
         ]);
 
         wp_safe_redirect(admin_url('admin.php?page=oz-bcw-staffelkorting&saved=1'));
