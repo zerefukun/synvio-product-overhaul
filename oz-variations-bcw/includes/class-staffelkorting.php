@@ -64,7 +64,23 @@ class OZ_Staffelkorting {
             'pct'        => 5,
             'min_orders' => 1, // 1 = "second order or later", 2 = "third order or later"
         ],
+        // Tool-bundle bonus (added 30/04/26): % off the TOOL subtotal when
+        // the cart also contains at least one configured-line product. The
+        // pallet ships anyway for the m² order, so the marginal shipping
+        // cost of bundled tools is effectively zero — Patrick can give
+        // discount on tools without eroding margin from extra shipping.
+        'tool_bundle_bonus' => [
+            'enabled' => false,
+            'pct'     => 10, // applied to tool subtotal only, not to mainline
+        ],
     ];
+
+    /**
+     * Product category id for tools (gereedschap). Used to identify cart
+     * items that aren't tagged with `oz_tool_size` (legacy / direct-add path)
+     * but should still count as tools for the bundle bonus.
+     */
+    const TOOL_CATEGORY_ID = 19;
 
     public static function init() {
         self::seed_defaults_if_missing();
@@ -193,6 +209,64 @@ class OZ_Staffelkorting {
                 }
             }
         }
+
+        // Tool-bundle bonus: only when cart has BOTH a configured-line product
+        // (oz_line set, validated above by $total_m2 > 0) AND at least one tool.
+        // The discount applies only to the tool subtotal — beton ciré stays at
+        // tier-discounted price. Margin-friendly because shipping on the
+        // mainline pallet absorbs the tool's marginal shipping cost.
+        $tb = isset($rules['tool_bundle_bonus']) && is_array($rules['tool_bundle_bonus'])
+            ? $rules['tool_bundle_bonus']
+            : self::$default_rules['tool_bundle_bonus'];
+
+        if (!empty($tb['enabled'])) {
+            $tb_pct = floatval($tb['pct'] ?? 0);
+            if ($tb_pct > 0) {
+                // $total_m2 > 0 already proves there's a mainline item in cart.
+                $tool_subtotal = self::compute_tool_subtotal($cart);
+                if ($tool_subtotal > 0) {
+                    $tb_amount = $tool_subtotal * ($tb_pct / 100);
+                    if ($tb_amount > 0) {
+                        $label = sprintf(
+                            __('Gereedschap-bundelkorting %s%%', 'oz-variations-bcw'),
+                            rtrim(rtrim(number_format($tb_pct, 1, ',', ''), '0'), ',')
+                        );
+                        $cart->add_fee($label, -$tb_amount, true);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Sums the price × quantity of all tool items in the cart. A tool is any
+     * cart item that either:
+     *   - has `oz_tool_size` cart_item_data set (added via BCW configurator's
+     *     tool picker), or
+     *   - is a product in the Gereedschap category (TOOL_CATEGORY_ID).
+     *
+     * The category fallback catches direct add-to-cart paths that don't go
+     * through the configurator.
+     */
+    private static function compute_tool_subtotal($cart) {
+        $sum = 0.0;
+        foreach ($cart->get_cart() as $cart_item) {
+            $is_tool = false;
+            if (!empty($cart_item['oz_tool_size'])) {
+                $is_tool = true;
+            } elseif (!empty($cart_item['product_id'])) {
+                if (has_term(self::TOOL_CATEGORY_ID, 'product_cat', intval($cart_item['product_id']))) {
+                    $is_tool = true;
+                }
+            }
+            if (!$is_tool) {
+                continue;
+            }
+            $qty = isset($cart_item['quantity']) ? floatval($cart_item['quantity']) : 0;
+            $price = isset($cart_item['data']) ? floatval($cart_item['data']->get_price()) : 0;
+            $sum += $price * $qty;
+        }
+        return $sum;
     }
 
     /**
@@ -428,6 +502,33 @@ class OZ_Staffelkorting {
                     </tr>
                 </table>
 
+                <h2><?php esc_html_e('Gereedschap-bundelkorting', 'oz-variations-bcw'); ?></h2>
+                <p class="description">
+                    <?php esc_html_e('Korting op gereedschap als de klant ook een beton ciré product (m²-item) in de cart heeft. De pallet gaat toch al voor de m²-bestelling, dus extra gereedschap kost geen extra verzending. Korting geldt alleen op het gereedschap-subtotaal, niet op de beton ciré.', 'oz-variations-bcw'); ?>
+                </p>
+                <?php
+                $tb = isset($rules['tool_bundle_bonus']) && is_array($rules['tool_bundle_bonus'])
+                    ? $rules['tool_bundle_bonus']
+                    : ['enabled' => false, 'pct' => 10];
+                ?>
+                <table class="form-table" style="max-width:600px;">
+                    <tr>
+                        <th><label for="oz_sk_tb_enabled"><?php esc_html_e('Actief', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <label>
+                                <input type="checkbox" id="oz_sk_tb_enabled" name="tool_bundle_bonus[enabled]" value="1" <?php checked(!empty($tb['enabled'])); ?>>
+                                <?php esc_html_e('Gereedschap-bundelkorting toepassen', 'oz-variations-bcw'); ?>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="oz_sk_tb_pct"><?php esc_html_e('Korting op tools (%)', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <input type="number" id="oz_sk_tb_pct" name="tool_bundle_bonus[pct]" value="<?php echo esc_attr($tb['pct'] ?? 10); ?>" step="0.1" min="0" max="50" style="width:120px;">
+                        </td>
+                    </tr>
+                </table>
+
                 <h2><?php esc_html_e('Trouwe-klant-korting', 'oz-variations-bcw'); ?></h2>
                 <p class="description">
                     <?php esc_html_e('Extra korting voor terugkerende klanten. Past automatisch toe als de klant al een vorige bestelling heeft afgerond. Stapelt op de Staffelkorting + Kleurstalen-bonus.', 'oz-variations-bcw'); ?>
@@ -539,11 +640,19 @@ class OZ_Staffelkorting {
             'min_orders' => isset($raw_rb['min_orders']) ? max(1, min(10, intval($raw_rb['min_orders']))) : 1,
         ];
 
+        // Tool-bundle bonus persistence.
+        $raw_tb = isset($_POST['tool_bundle_bonus']) && is_array($_POST['tool_bundle_bonus']) ? $_POST['tool_bundle_bonus'] : [];
+        $tool_bundle_bonus = [
+            'enabled' => !empty($raw_tb['enabled']),
+            'pct'     => isset($raw_tb['pct']) ? max(0.0, min(50.0, floatval($raw_tb['pct']))) : 10.0,
+        ];
+
         update_option(self::OPTION_KEY, [
-            'enabled'         => $enabled,
-            'tiers'           => $tiers,
-            'sample_bonus'    => $bonus,
-            'returning_bonus' => $returning_bonus,
+            'enabled'           => $enabled,
+            'tiers'             => $tiers,
+            'sample_bonus'      => $bonus,
+            'returning_bonus'   => $returning_bonus,
+            'tool_bundle_bonus' => $tool_bundle_bonus,
         ]);
 
         wp_safe_redirect(admin_url('admin.php?page=oz-bcw-staffelkorting&saved=1'));
