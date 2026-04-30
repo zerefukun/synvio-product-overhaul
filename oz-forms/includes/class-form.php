@@ -381,9 +381,11 @@ class Form {
 			// Multiselect: value is an array of option keys.
 			if ( $type === 'multiselect' ) {
 				$arr = is_array( $value ) ? $value : array();
-				$allowed = array_keys( $spec['options'] ?? array() );
+				// Stringify the allowed list — same numeric-key coercion issue
+				// as 'select'/'radio' below.
+				$allowed = array_map( 'strval', array_keys( $spec['options'] ?? array() ) );
 				$arr = array_values( array_filter( array_map( 'sanitize_text_field', $arr ), function ( $v ) use ( $allowed ) {
-					return in_array( $v, $allowed, true );
+					return in_array( (string) $v, $allowed, true );
 				} ) );
 				if ( $required && empty( $arr ) ) {
 					$errors[ $name ] = 'Maak minstens één keuze.';
@@ -426,8 +428,13 @@ class Form {
 					break;
 				case 'select':
 				case 'autocomplete':
-					$allowed = array_keys( $spec['options'] ?? array() );
-					if ( ! in_array( $value, $allowed, true ) ) {
+					// PHP converts numeric string array keys to int (e.g.
+					// array_keys(['1000'=>'…']) returns [1000] not ['1000']).
+					// The submitted form value is always a string. Stringify
+					// both sides so the strict in_array doesn't reject valid
+					// numeric-keyed palettes (RAL kleurstalen, etc.).
+					$allowed = array_map( 'strval', array_keys( $spec['options'] ?? array() ) );
+					if ( ! in_array( (string) $value, $allowed, true ) ) {
 						$errors[ $name ] = 'Maak een geldige keuze.';
 					}
 					break;
@@ -435,8 +442,9 @@ class Form {
 					$value = $value ? '1' : '';
 					break;
 				case 'radio':
-					$allowed = array_keys( $spec['options'] ?? array() );
-					if ( ! in_array( $value, $allowed, true ) ) {
+					// Same numeric-string-key issue as 'select' above.
+					$allowed = array_map( 'strval', array_keys( $spec['options'] ?? array() ) );
+					if ( ! in_array( (string) $value, $allowed, true ) ) {
 						$errors[ $name ] = 'Maak een geldige keuze.';
 					}
 					break;
