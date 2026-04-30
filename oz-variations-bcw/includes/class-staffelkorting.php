@@ -27,8 +27,21 @@ class OZ_Staffelkorting {
     const OPTION_KEY = 'oz_bcw_staffelkorting';
 
     /**
+     * Cookie set by oz-forms.js when a kleurstalen-* form is submitted.
+     * Value is the unix timestamp of submission. Same name is also used
+     * as a user_meta key for logged-in customers (see capture_kleurstalen_redemption).
+     */
+    const KLEURSTALEN_COOKIE = 'oz_kleurstalen_redeemed_at';
+    const KLEURSTALEN_USER_META = 'oz_kleurstalen_redeemed_at';
+
+    /**
      * Default rules — mirrors the 4 active rules in easy-woocommerce-discounts-pro
      * as of 2026-04-20. Seeded on first init if no option exists.
+     *
+     * Sample-redeemed bonus (added 30/04/26): when a customer submitted a
+     * kleurstalen form within `sample_bonus_window_days`, we add an extra
+     * percentage on the eligible subtotal as a separate cart fee. Closes the
+     * kleurstalen → buy loop so today's UX work earns its keep.
      */
     private static $default_rules = [
         'enabled' => true,
@@ -36,6 +49,11 @@ class OZ_Staffelkorting {
             ['threshold_m2' => 45, 'discount_pct' => 15],
             ['threshold_m2' => 60, 'discount_pct' => 20],
             ['threshold_m2' => 99, 'discount_pct' => 25],
+        ],
+        'sample_bonus' => [
+            'enabled'     => false, // off by default; Patrick toggles in admin
+            'pct'         => 5,
+            'window_days' => 30,
         ],
     ];
 
@@ -45,6 +63,11 @@ class OZ_Staffelkorting {
         add_action('woocommerce_cart_calculate_fees', [__CLASS__, 'apply_discount_fee'], 20);
         add_action('admin_menu', [__CLASS__, 'register_admin_page'], 20);
         add_action('admin_post_oz_bcw_save_staffelkorting', [__CLASS__, 'handle_save']);
+
+        // Capture kleurstalen redemptions for logged-in users — server-side
+        // mirror of the cookie set client-side by oz-forms.js. Logged-out
+        // users rely on the cookie alone.
+        add_action('oz_forms_submission_stored', [__CLASS__, 'capture_kleurstalen_redemption'], 10, 4);
     }
 
     private static function seed_defaults_if_missing() {
@@ -105,22 +128,94 @@ class OZ_Staffelkorting {
         }
 
         $tier = self::find_applicable_tier($rules['tiers'], $total_m2);
-        if (!$tier) {
-            return;
+        if ($tier) {
+            $discount_amount = $eligible_subtotal * ($tier['discount_pct'] / 100);
+            if ($discount_amount > 0) {
+                $label = sprintf(
+                    __('Staffelkorting %d%% (%sm²)', 'oz-variations-bcw'),
+                    intval($tier['discount_pct']),
+                    number_format($total_m2, 1, ',', '')
+                );
+                $cart->add_fee($label, -$discount_amount, true);
+            }
         }
 
-        $discount_amount = $eligible_subtotal * ($tier['discount_pct'] / 100);
-        if ($discount_amount <= 0) {
-            return;
+        // Sample-redeemed bonus: independent of the tier discount. Stacks on
+        // top so a customer who requested kleurstalen AND ordered 60m² gets
+        // both. Cache-safe: this fee only fires on the cart/checkout page,
+        // both of which are uncached. See memory/reference_cache_safety_for_pricing.md.
+        $bonus = isset($rules['sample_bonus']) && is_array($rules['sample_bonus'])
+            ? $rules['sample_bonus']
+            : self::$default_rules['sample_bonus'];
+
+        if (!empty($bonus['enabled']) && self::has_recent_kleurstalen_redemption($bonus['window_days'] ?? 30)) {
+            $bonus_pct = floatval($bonus['pct'] ?? 0);
+            if ($bonus_pct > 0) {
+                $bonus_amount = $eligible_subtotal * ($bonus_pct / 100);
+                if ($bonus_amount > 0) {
+                    $label = sprintf(
+                        __('Kleurstalen-bonus %s%%', 'oz-variations-bcw'),
+                        rtrim(rtrim(number_format($bonus_pct, 1, ',', ''), '0'), ',')
+                    );
+                    $cart->add_fee($label, -$bonus_amount, true);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns true when the current visitor submitted a kleurstalen form
+     * within $window_days. Two signals:
+     *   - cookie  oz_kleurstalen_redeemed_at  (set by oz-forms.js on success)
+     *   - user_meta oz_kleurstalen_redeemed_at  (set server-side for logged-in users)
+     *
+     * Logged-in user_meta wins if both exist (more durable across devices).
+     */
+    private static function has_recent_kleurstalen_redemption($window_days) {
+        $window_seconds = intval($window_days) * DAY_IN_SECONDS;
+        if ($window_seconds <= 0) {
+            return false;
+        }
+        $now = time();
+        $cutoff = $now - $window_seconds;
+
+        $ts = 0;
+
+        if (is_user_logged_in()) {
+            $meta = get_user_meta(get_current_user_id(), self::KLEURSTALEN_USER_META, true);
+            if ($meta) {
+                $ts = max($ts, intval($meta));
+            }
         }
 
-        $label = sprintf(
-            __('Staffelkorting %d%% (%sm²)', 'oz-variations-bcw'),
-            intval($tier['discount_pct']),
-            number_format($total_m2, 1, ',', '')
-        );
+        if (isset($_COOKIE[self::KLEURSTALEN_COOKIE])) {
+            $cookie_ts = intval($_COOKIE[self::KLEURSTALEN_COOKIE]);
+            if ($cookie_ts > 0) {
+                $ts = max($ts, $cookie_ts);
+            }
+        }
 
-        $cart->add_fee($label, -$discount_amount, true);
+        return $ts > $cutoff && $ts <= $now;
+    }
+
+    /**
+     * Hooked to oz_forms_submission_stored. When a kleurstalen-* form
+     * submission is stored AND the user is logged in, write the timestamp
+     * to user_meta so the bonus survives cookie loss / cross-device.
+     *
+     * @param string $form_id     Form schema id (e.g. 'kleurstalen-allinone')
+     * @param int    $post_id     oz_submission post id
+     * @param array  $data        Validated/sanitized fields
+     * @param array  $attachments Uploaded file paths
+     */
+    public static function capture_kleurstalen_redemption($form_id, $post_id, $data, $attachments) {
+        if (strpos((string) $form_id, 'kleurstalen-') !== 0) {
+            return;
+        }
+        if (!is_user_logged_in()) {
+            return;
+        }
+        update_user_meta(get_current_user_id(), self::KLEURSTALEN_USER_META, time());
     }
 
     /**
@@ -226,6 +321,40 @@ class OZ_Staffelkorting {
                 </table>
                 <p><button type="button" class="button" id="oz-sk-add"><?php esc_html_e('+ Staffel toevoegen', 'oz-variations-bcw'); ?></button></p>
 
+                <h2><?php esc_html_e('Kleurstalen-bonus', 'oz-variations-bcw'); ?></h2>
+                <p class="description">
+                    <?php esc_html_e('Extra korting voor klanten die een kleurstalen-formulier hebben ingestuurd. Past automatisch toe wanneer ze binnen het tijdvenster terugkomen om te bestellen. Stapelt op de Staffelkorting (cumulatief).', 'oz-variations-bcw'); ?>
+                </p>
+                <?php
+                $bonus = isset($rules['sample_bonus']) && is_array($rules['sample_bonus'])
+                    ? $rules['sample_bonus']
+                    : ['enabled' => false, 'pct' => 5, 'window_days' => 30];
+                ?>
+                <table class="form-table" style="max-width:600px;">
+                    <tr>
+                        <th><label for="oz_sk_bonus_enabled"><?php esc_html_e('Actief', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <label>
+                                <input type="checkbox" id="oz_sk_bonus_enabled" name="sample_bonus[enabled]" value="1" <?php checked(!empty($bonus['enabled'])); ?>>
+                                <?php esc_html_e('Kleurstalen-bonus toepassen', 'oz-variations-bcw'); ?>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="oz_sk_bonus_pct"><?php esc_html_e('Bonus (%)', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <input type="number" id="oz_sk_bonus_pct" name="sample_bonus[pct]" value="<?php echo esc_attr($bonus['pct'] ?? 5); ?>" step="0.1" min="0" max="50" style="width:120px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th><label for="oz_sk_bonus_window"><?php esc_html_e('Tijdvenster (dagen)', 'oz-variations-bcw'); ?></label></th>
+                        <td>
+                            <input type="number" id="oz_sk_bonus_window" name="sample_bonus[window_days]" value="<?php echo esc_attr($bonus['window_days'] ?? 30); ?>" step="1" min="1" max="365" style="width:120px;">
+                            <p class="description"><?php esc_html_e('Dagen na kleurstalen-aanvraag waarbinnen de bonus geldt.', 'oz-variations-bcw'); ?></p>
+                        </td>
+                    </tr>
+                </table>
+
                 <?php submit_button(__('Opslaan', 'oz-variations-bcw')); ?>
             </form>
         </div>
@@ -286,9 +415,19 @@ class OZ_Staffelkorting {
             return $a['threshold_m2'] <=> $b['threshold_m2'];
         });
 
+        // Sample-redeemed bonus persistence. Bounded ranges so a typo in the
+        // admin UI can't accidentally give 999% off or a 9999-day window.
+        $raw_bonus = isset($_POST['sample_bonus']) && is_array($_POST['sample_bonus']) ? $_POST['sample_bonus'] : [];
+        $bonus = [
+            'enabled'     => !empty($raw_bonus['enabled']),
+            'pct'         => isset($raw_bonus['pct']) ? max(0.0, min(50.0, floatval($raw_bonus['pct']))) : 5.0,
+            'window_days' => isset($raw_bonus['window_days']) ? max(1, min(365, intval($raw_bonus['window_days']))) : 30,
+        ];
+
         update_option(self::OPTION_KEY, [
-            'enabled' => $enabled,
-            'tiers'   => $tiers,
+            'enabled'      => $enabled,
+            'tiers'        => $tiers,
+            'sample_bonus' => $bonus,
         ]);
 
         wp_safe_redirect(admin_url('admin.php?page=oz-bcw-staffelkorting&saved=1'));

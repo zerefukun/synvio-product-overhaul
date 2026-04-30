@@ -282,6 +282,22 @@
 							value: 0,
 						} );
 					} catch ( e ) {}
+					// Kleurstalen redemption marker. Set a cookie so the
+					// cart-side bonus rule (OZ_Staffelkorting sample bonus)
+					// can apply automatically when this user reaches the cart
+					// within the redemption window. Server-side: a parallel
+					// user-meta write happens in oz-variations-bcw via the
+					// oz_forms_submission_stored hook for logged-in users.
+					try {
+						var fid = form.getAttribute( 'data-form-id' ) || '';
+						if ( fid.indexOf( 'kleurstalen-' ) === 0 ) {
+							var ts = Math.floor( Date.now() / 1000 );
+							// 30 days = 2592000s. Path=/ so it covers all pages.
+							// SameSite=Lax so it survives same-site navigation.
+							document.cookie = 'oz_kleurstalen_redeemed_at=' + ts +
+								'; max-age=2592000; path=/; SameSite=Lax';
+						}
+					} catch ( e ) {}
 					form.reset();
 					resetTurnstile( form );
 					return;
