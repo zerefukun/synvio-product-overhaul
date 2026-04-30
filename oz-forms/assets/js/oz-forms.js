@@ -79,6 +79,35 @@
 		node.textContent = msg || '';
 	}
 
+	/* On successful submit, replace the form's interactive body (progress
+	   bar, fieldsets, buttons) with a large "Bedankt!" panel so the user
+	   sees clearly that the submission landed. The original feedback was a
+	   tiny status box at the bottom that users were scrolling past. */
+	function showSuccessPanel( form, msg ) {
+		var heading = 'Bedankt!';
+		var body    = msg || 'We hebben je aanvraag ontvangen.';
+		var hideEls = form.querySelectorAll(
+			'.oz-form__progress, .oz-form__step, .oz-form__nav, .oz-form__turnstile, .oz-form__status'
+		);
+		hideEls.forEach( function ( el ) { el.hidden = true; } );
+
+		var panel = document.createElement( 'div' );
+		panel.className = 'oz-form__success-panel';
+		panel.setAttribute( 'role', 'status' );
+		panel.setAttribute( 'aria-live', 'polite' );
+		panel.innerHTML = ''
+			+ '<div class="oz-form__success-icon" aria-hidden="true">&#10003;</div>'
+			+ '<h2 class="oz-form__success-heading"></h2>'
+			+ '<p class="oz-form__success-body"></p>';
+		panel.querySelector( '.oz-form__success-heading' ).textContent = heading;
+		panel.querySelector( '.oz-form__success-body' ).textContent = body;
+		form.appendChild( panel );
+
+		// Make sure the panel is in view even if the user scrolled past the
+		// submit button before it rendered.
+		try { panel.scrollIntoView( { behavior: 'smooth', block: 'center' } ); } catch ( e ) {}
+	}
+
 	function clearFieldErrors( form ) {
 		form.querySelectorAll( '.oz-form__field' ).forEach( function ( f ) {
 			f.classList.remove( 'is-invalid' );
@@ -300,6 +329,11 @@
 					} catch ( e ) {}
 					form.reset();
 					resetTurnstile( form );
+					// Replace the form body with a big confirmation panel so
+					// the user sees clearly that the submission landed. Without
+					// this, the only feedback was a small status box at the
+					// bottom that users scrolled past.
+					showSuccessPanel( form, r.body.message );
 					return;
 				}
 				if ( r.body && r.body.errors ) { showFieldErrors( form, r.body.errors ); }
