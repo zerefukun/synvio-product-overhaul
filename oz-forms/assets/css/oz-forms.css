@@ -114,13 +114,23 @@
 	background: #fff7f7;
 }
 
-/* Honeypot — visually + functionally hidden but reachable enough that bots fill it. */
+/* Honeypot — visually + functionally hidden but reachable enough that bots fill it.
+   !important on every rule because LiteSpeed's "remove unused CSS" / theme overrides
+   can strip the off-screen positioning, leaking the field as a visible "Website" input.
+   pointer-events:none guarantees real users can't accidentally focus or type into it
+   even if some other rule (browser zoom, RTL, etc.) brings it back into view. */
 .oz-form__hp {
-	position: absolute;
-	left: -9999px;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
+	position: absolute !important;
+	left: -9999px !important;
+	top: -9999px !important;
+	width: 1px !important;
+	height: 1px !important;
+	overflow: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
 .oz-form__turnstile {
