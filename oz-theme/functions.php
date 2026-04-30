@@ -1601,3 +1601,30 @@ function oz_final_style_cleanup() {
     wp_dequeue_style('global-styles');
 }
 add_action('wp_print_styles', 'oz_final_style_cleanup', 9999);
+
+/* ================================================================
+   CHECKOUT FIELD OVERRIDES
+   Replaces ThemeHigh "Checkout Field Editor for WooCommerce" plugin.
+   Three behaviors that plugin used to manage on this site:
+     1. Phone field is required (WooCommerce default = optional).
+     2. Address line 1 placeholder text in Dutch.
+     3. Address line 2 placeholder text in Dutch (with "(optioneel)").
+   Labels themselves come from WooCommerce's Dutch translation, not here.
+   ================================================================ */
+function oz_customize_checkout_fields( $fields ) {
+    // Make the phone field required so Sendcloud has a contact number.
+    if ( isset( $fields['billing_phone'] ) ) {
+        $fields['billing_phone']['required'] = true;
+    }
+
+    // Dutch placeholders for the two address lines.
+    if ( isset( $fields['billing_address_1'] ) ) {
+        $fields['billing_address_1']['placeholder'] = 'Straatnaam en huisnummer';
+    }
+    if ( isset( $fields['billing_address_2'] ) ) {
+        $fields['billing_address_2']['placeholder'] = 'Appartement, suite, unit enz. (optioneel)';
+    }
+
+    return $fields;
+}
+add_filter( 'woocommerce_billing_fields', 'oz_customize_checkout_fields' );
