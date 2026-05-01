@@ -1081,6 +1081,131 @@
     return fullTitle.replace(re, "").trim();
   }
 
+  // src/js/color-drawer.js
+  function getColumnCount(list) {
+    var cs = window.getComputedStyle(list);
+    var cols = (cs.gridTemplateColumns || "").split(" ").filter(Boolean).length;
+    return cols > 0 ? cols : 5;
+  }
+  function setupColorDrawer() {
+    var list = document.querySelector(".oz-color-swatches");
+    if (!list) return;
+    if (list.dataset.drawerWired === "1") return;
+    var swatches = Array.prototype.slice.call(list.querySelectorAll(".oz-color-swatch"));
+    if (swatches.length < 6) return;
+    var cols = getColumnCount(list);
+    if (swatches.length <= cols * 2) return;
+    var visibleCount = Math.max(cols * 2 - 1, 5);
+    swatches.forEach(function(sw, i) {
+      if (i >= visibleCount) sw.classList.add("oz-swatch-collapsed");
+    });
+    var overflow = swatches.length - visibleCount;
+    var chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "oz-color-swatch oz-color-more-chip";
+    chip.setAttribute("aria-label", "Bekijk alle " + swatches.length + " kleuren");
+    chip.innerHTML = '<span class="oz-swatch-img oz-more-chip-img"><span class="oz-more-chip-count">+' + overflow + '</span></span><span class="oz-swatch-name">Bekijk alle</span>';
+    list.appendChild(chip);
+    var drawer = buildDrawer(swatches);
+    document.body.appendChild(drawer.root);
+    chip.addEventListener("click", function() {
+      openDrawer(drawer);
+    });
+    drawer.closeBtn.addEventListener("click", function() {
+      closeDrawer(drawer);
+    });
+    drawer.backdrop.addEventListener("click", function() {
+      closeDrawer(drawer);
+    });
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && drawer.root.classList.contains("open")) {
+        closeDrawer(drawer);
+      }
+    });
+    drawer.search.addEventListener("input", function() {
+      var term = drawer.search.value.trim().toLowerCase();
+      var anyVisible = false;
+      drawer.items.forEach(function(item) {
+        var name = item.dataset.colorName || "";
+        var match = !term || name.indexOf(term) !== -1;
+        item.style.display = match ? "" : "none";
+        if (match) anyVisible = true;
+      });
+      drawer.empty.style.display = anyVisible ? "none" : "block";
+    });
+    list.dataset.drawerWired = "1";
+  }
+  function buildDrawer(swatches) {
+    var root = document.createElement("div");
+    root.className = "oz-color-drawer";
+    root.setAttribute("role", "dialog");
+    root.setAttribute("aria-modal", "true");
+    root.setAttribute("aria-label", "Alle kleuren");
+    var backdrop = document.createElement("div");
+    backdrop.className = "oz-color-drawer-backdrop";
+    var panel = document.createElement("div");
+    panel.className = "oz-color-drawer-panel";
+    var header = document.createElement("div");
+    header.className = "oz-color-drawer-header";
+    var title = document.createElement("h2");
+    title.className = "oz-color-drawer-title";
+    title.textContent = "Alle kleuren (" + swatches.length + ")";
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "oz-color-drawer-close";
+    closeBtn.setAttribute("aria-label", "Sluiten");
+    closeBtn.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    var search = document.createElement("input");
+    search.type = "search";
+    search.className = "oz-color-drawer-search";
+    search.placeholder = "Zoek kleur (cement, blue, nude...)";
+    search.setAttribute("aria-label", "Zoek kleur");
+    var grid = document.createElement("div");
+    grid.className = "oz-color-drawer-grid";
+    var empty = document.createElement("div");
+    empty.className = "oz-color-drawer-empty";
+    empty.textContent = "Geen kleur gevonden.";
+    empty.style.display = "none";
+    var items = swatches.map(function(sw) {
+      var clone = sw.cloneNode(true);
+      clone.classList.remove("oz-swatch-collapsed");
+      var nameEl = clone.querySelector(".oz-swatch-name");
+      var name = nameEl ? nameEl.textContent.trim() : "";
+      clone.dataset.colorName = name.toLowerCase();
+      grid.appendChild(clone);
+      return clone;
+    });
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    panel.appendChild(header);
+    panel.appendChild(search);
+    panel.appendChild(grid);
+    panel.appendChild(empty);
+    root.appendChild(backdrop);
+    root.appendChild(panel);
+    return {
+      root,
+      panel,
+      closeBtn,
+      search,
+      grid,
+      items,
+      empty,
+      backdrop
+    };
+  }
+  function openDrawer(d) {
+    d.root.classList.add("open");
+    document.body.classList.add("oz-color-drawer-locked");
+    setTimeout(function() {
+      d.search.focus();
+    }, 80);
+  }
+  function closeDrawer(d) {
+    d.root.classList.remove("open");
+    document.body.classList.remove("oz-color-drawer-locked");
+  }
+
   // src/js/product-page.js
   if (!P) {
   } else {
@@ -2478,6 +2603,7 @@
       }
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
+      setupColorDrawer();
       restoreToolState();
       syncUI();
       document.addEventListener("click", handleClick);

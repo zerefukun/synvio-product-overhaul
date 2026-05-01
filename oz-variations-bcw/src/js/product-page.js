@@ -25,6 +25,7 @@ import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePri
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
 import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
+import { setupColorDrawer } from './color-drawer.js';
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
@@ -2206,6 +2207,10 @@ function init() {
 
   // Build tool section DOM (if product has tools)
   buildToolSectionV2("toolSection");
+
+  // Collapse swatch grid to 2 rows + add "Bekijk alle" chip / drawer.
+  // Cache-safe: pure client-side, clones existing server-rendered links.
+  setupColorDrawer();
 
   // Restore tool state from sessionStorage (e.g., after color switch)
   restoreToolState();
