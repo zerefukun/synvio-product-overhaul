@@ -77,6 +77,7 @@ class OZ_Analytics_Dashboard {
         $funnel   = OZ_Analytics_Reporter::funnel($range);
         $zm_stats = OZ_Analytics_Reporter::formula_toggle_stats($range);
         $colors   = OZ_Analytics_Reporter::top_values('oz_color_selected', 'oz_color', $range, 10);
+        $ab_tools = OZ_Analytics_Reporter::ab_test_tools_results($range);
         // Real tool/accessory sales from WooCommerce orders (all sources)
         $tool_sales = OZ_Analytics_Reporter::top_tool_sales($range, 10);
         // Cart drawer upsell adds (only products added via upsell section)
@@ -224,6 +225,62 @@ class OZ_Analytics_Dashboard {
             <div class="oz-panel oz-funnel" style="margin-bottom: 24px;">
                 <h3>Conversie Funnel</h3>
                 <?php self::render_funnel($funnel); ?>
+            </div>
+
+            <!-- A/B test: Gereedschap section visibility -->
+            <div class="oz-panel" style="margin-bottom: 24px;">
+                <h3>A/B test — Gereedschap sectie</h3>
+                <p class="oz-panel-subtitle">
+                    Variant A toont de Gereedschap-sectie op PDPs. Variant B verbergt hem. 50/50 split via cookie.
+                </p>
+                <?php if ($ab_tools['total_sessions'] === 0) : ?>
+                    <p style="color:#666;font-style:italic;">Nog geen data — wacht tot bezoekers de PDPs hebben bezocht na de deploy.</p>
+                <?php else : ?>
+                    <table class="widefat" style="margin-top:8px;">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Sessies</th>
+                                <th>Engagement<br><small>kleur gepickt %</small></th>
+                                <th>ATC %<br><small>headline metric</small></th>
+                                <th>Checkout %</th>
+                                <th>Totaal ATC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($ab_tools['variants'] as $v => $row) : ?>
+                                <tr>
+                                    <th style="font-weight:bold;">
+                                        Variant <?php echo esc_html($v); ?>
+                                        <small style="display:block;font-weight:normal;color:#666;">
+                                            <?php echo $v === 'A' ? 'Tools zichtbaar' : 'Tools verborgen'; ?>
+                                        </small>
+                                    </th>
+                                    <td><?php echo number_format_i18n($row['sessions']); ?></td>
+                                    <td><?php echo $row['engage_pct']; ?>%</td>
+                                    <td style="font-weight:bold;"><?php echo $row['conv_atc_pct']; ?>%</td>
+                                    <td><?php echo $row['conv_checkout_pct']; ?>%</td>
+                                    <td><?php echo number_format_i18n($row['atc_total']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <?php
+                    $lift = $ab_tools['lift_pct'];
+                    $lift_color = $lift > 0 ? '#1a7f37' : ($lift < 0 ? '#b32d2e' : '#666');
+                    $lift_text = $lift > 0
+                        ? sprintf('Variant B (zonder tools-sectie) presteert %s%% beter op ATC.', $lift)
+                        : ($lift < 0
+                            ? sprintf('Variant A (met tools-sectie) presteert %s%% beter op ATC.', abs($lift))
+                            : 'Beide varianten staan gelijk op ATC.');
+                    ?>
+                    <p style="margin-top:12px;color:<?php echo $lift_color; ?>;font-size:14px;">
+                        <strong>Lift:</strong> <?php echo esc_html($lift_text); ?>
+                    </p>
+                    <p style="color:#999;font-size:12px;margin-top:4px;">
+                        Statistische significantie vereist meestal 100+ ATC's per variant. Geef het 1-2 weken voordat je conclusies trekt.
+                    </p>
+                <?php endif; ?>
             </div>
 
             <!-- Zelf Mengen & Mixen monitor -->

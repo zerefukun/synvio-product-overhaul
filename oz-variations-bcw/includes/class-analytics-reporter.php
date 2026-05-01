@@ -724,6 +724,83 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * A/B test results for the Gereedschap section visibility test.
+     *
+     * Cookie `oz_ab_tools` (A or B) is set client-side by an inline script
+     * in the theme. Every analytics event written from a PDP or session-start
+     * carries `oz_ab_tools_variant` in its event_data JSON.
+     *
+     * Returns a per-variant breakdown of sessions, color picks, ATC, and
+     * checkout clicks so we can see whether hiding the tools section
+     * (variant B) helps or hurts conversion.
+     *
+     * Variants without recorded data simply show 0s — that's normal for
+     * the early days of the test before traffic accumulates.
+     */
+    public static function ab_test_tools_results($days) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        // JSON_EXTRACT returns "A" or "B" with quotes; JSON_UNQUOTE strips them.
+        // Both functions are available on MariaDB 10.2+ which BCW runs.
+        $variants = ['A', 'B'];
+        $out = [];
+        foreach ($variants as $v) {
+            $row = $wpdb->get_row($wpdb->prepare(
+                "SELECT
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_session_start' THEN session_id END) AS sessions,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_color_selected' THEN session_id END) AS color_pickers,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_add_to_cart' THEN session_id END) AS atc_sessions,
+                    SUM(CASE WHEN event_name = 'oz_add_to_cart' THEN 1 ELSE 0 END) AS atc_total,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_cart_checkout_clicked' THEN session_id END) AS checkout_sessions
+                 FROM {$table}
+                 WHERE created_at >= %s AND created_at < %s
+                   AND JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_ab_tools_variant')) = %s",
+                $since, $until, $v
+            ), ARRAY_A);
+
+            $sessions     = intval($row['sessions']);
+            $color_pickers = intval($row['color_pickers']);
+            $atc_sessions = intval($row['atc_sessions']);
+            $atc_total    = intval($row['atc_total']);
+            $checkout     = intval($row['checkout_sessions']);
+
+            $out[$v] = [
+                'variant'         => $v,
+                'sessions'        => $sessions,
+                'color_pickers'   => $color_pickers,
+                'atc_sessions'    => $atc_sessions,
+                'atc_total'       => $atc_total,
+                'checkout'        => $checkout,
+                // Conversion: % of sessions that ATC'd. ATC sessions / sessions × 100.
+                'conv_atc_pct'    => $sessions > 0 ? round(($atc_sessions / $sessions) * 100, 2) : 0,
+                // % of sessions that picked a color (engagement).
+                'engage_pct'      => $sessions > 0 ? round(($color_pickers / $sessions) * 100, 2) : 0,
+                // % of sessions that clicked checkout.
+                'conv_checkout_pct' => $sessions > 0 ? round(($checkout / $sessions) * 100, 2) : 0,
+            ];
+        }
+
+        // Lift: how much better B is vs A on the headline metric (ATC %).
+        // Positive = B converts better → hiding tools section helps.
+        // Negative = A converts better → keep showing tools.
+        $lift = 0;
+        if ($out['A']['conv_atc_pct'] > 0) {
+            $lift = round((($out['B']['conv_atc_pct'] - $out['A']['conv_atc_pct']) / $out['A']['conv_atc_pct']) * 100, 1);
+        }
+
+        return [
+            'variants' => $out,
+            'lift_pct' => $lift, // B vs A on ATC conversion %
+            // Total sessions across both variants — useful sanity check that
+            // the assignment is roughly 50/50.
+            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'],
+        ];
+    }
+
+    /**
      * Formula toggle stats: toggle clicks, ZM add-to-carts, and conversion rate.
      * Used by the dashboard ZM monitoring section.
      */
