@@ -1633,6 +1633,51 @@ function oz_final_style_cleanup() {
 add_action('wp_print_styles', 'oz_final_style_cleanup', 9999);
 
 /* ================================================================
+   A/B TEST — Gereedschap section visibility on PDPs (added 30/04/26)
+
+   Goal: 50% of visitors see the "Gereedschap" option group on PDPs,
+   50% don't. Patrick wants to measure whether the section helps or
+   hurts conversion.
+
+   Sticky cookie `oz_ab_tools` (A or B) with 30-day max-age. Same value
+   for the same visitor across pages and visits within the window.
+
+   Implementation: inline <script> + <style> in <head>, runs before paint
+   so there's no flicker. The CSS rule hides .oz-option-group[data-option="tools"]
+   for variant B. The hide also works on the bottom-sheet variant of the
+   section because the same data-attribute is reused there.
+
+   Cache-safety: the inline script + style are static across users, so
+   the cached HTML is the same for everyone. Per-user state lives only
+   in the cookie, read at JS runtime per browser. Same pattern as the
+   visitor-id (oz_vid) cookie that ships in cart-drawer.js.
+
+   Tracking: cart-drawer.js's oz_session_start payload now includes
+   `oz_ab_tools_variant`, and oz-product-page.js's beacon includes the
+   same on every PDP event. Patrick can SQL-join conversion-by-variant.
+   ================================================================ */
+function oz_ab_tools_test_assignment() {
+    if (is_admin()) return;
+    ?>
+<style id="oz-ab-tools-style">html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}</style>
+<script id="oz-ab-tools-script">
+(function(){
+    try {
+        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
+        var v = match ? match[1] : (Math.random() < 0.5 ? 'A' : 'B');
+        if (!match) {
+            // 30 days = 2592000s. SameSite=Lax so it survives same-site nav.
+            document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
+        }
+        document.documentElement.classList.add('oz-ab-tools-' + v.toLowerCase());
+    } catch (e) {}
+})();
+</script>
+    <?php
+}
+add_action('wp_head', 'oz_ab_tools_test_assignment', 1);
+
+/* ================================================================
    CHECKOUT FIELD OVERRIDES
    Replaces ThemeHigh "Checkout Field Editor for WooCommerce" plugin.
    Three behaviors that plugin used to manage on this site:
