@@ -1127,6 +1127,10 @@ function handleClick(e) {
   // Color swatch click — static swatches set state, normal swatches navigate
   var swatch = target.closest('.oz-color-swatch');
   if (swatch) {
+    // The "Bekijk alle" chip in the colors drawer wears .oz-color-swatch
+    // for grid alignment but is not an actual swatch — it has its own
+    // click handler. Bail before any navigation logic touches it.
+    if (swatch.classList.contains('oz-color-more-chip')) return;
     var colorName = swatch.getAttribute('data-color') || '';
     analytics.trackColorSelected(colorName);
 

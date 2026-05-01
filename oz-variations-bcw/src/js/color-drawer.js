@@ -74,7 +74,15 @@ export function setupColorDrawer() {
   var drawer = buildDrawer(swatches);
   document.body.appendChild(drawer.root);
 
-  chip.addEventListener('click', function () { openDrawer(drawer); });
+  chip.addEventListener('click', function (e) {
+    // The chip wears the .oz-color-swatch class so it sits in the grid
+    // cleanly, but the global delegate treats every .oz-color-swatch as
+    // a navigation target and would redirect to "/undefined". Stop the
+    // event before it reaches the document-level handler.
+    e.preventDefault();
+    e.stopPropagation();
+    openDrawer(drawer);
+  });
   drawer.closeBtn.addEventListener('click', function () { closeDrawer(drawer); });
   drawer.backdrop.addEventListener('click', function () { closeDrawer(drawer); });
 
