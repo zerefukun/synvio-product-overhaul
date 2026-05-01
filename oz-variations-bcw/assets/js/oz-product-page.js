@@ -418,13 +418,12 @@
   }
   function push(eventName, params) {
     window.dataLayer = window.dataLayer || [];
-    /* Tag every PDP analytics event with the A/B variant so conversion can be
-       split by variant later. Cookie set by inline script in oz-theme functions.php. */
     var abTools = "";
     try {
       var m = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
       if (m) abTools = m[1];
-    } catch (e) {}
+    } catch (e) {
+    }
     var payload = Object.assign({
       event: eventName,
       oz_product_id: P.productId,
@@ -681,44 +680,28 @@
       ));
     });
     section.appendChild(indList);
-
-    // A/B/C variant C: replace the inline mode buttons with a <select>
-    // dropdown. The buttons themselves stay in the DOM (CSS hides them via
-    // html.oz-ab-tools-c) so we can call their click() handlers when the
-    // dropdown changes. No new logic — same setToolMode() actions fire.
     if (document.documentElement.classList.contains("oz-ab-tools-c")) {
       buildToolModeDropdown(section);
     }
   }
-
-  /**
-   * Build a <select> dropdown for the tool mode that mirrors the 3 inline
-   * mode buttons. Inserts it before the existing .oz-tool-mode (which is
-   * hidden by CSS for variant C). Changing the dropdown clicks the matching
-   * button so all existing logic (price, validation, syncing) keeps working.
-   */
   function buildToolModeDropdown(section) {
     if (!P.toolConfig || !P.toolConfig.toolSet) return;
-    var existingDropdown = section.querySelector(".oz-tool-mode-dropdown");
-    if (existingDropdown) return; // idempotent
+    if (section.querySelector(".oz-tool-mode-dropdown")) return;
     var modeBtns = section.querySelectorAll(".oz-tool-mode-btn");
     if (!modeBtns.length) return;
-
     var setName = P.toolConfig.toolSet.name.replace("Gereedschapset ", "");
     var setPrice = fmt(P.toolConfig.toolSet.price);
-
     var wrap = document.createElement("div");
     wrap.className = "oz-tool-mode-dropdown";
     var label = document.createElement("label");
     label.className = "oz-tool-mode-dropdown-label";
     label.textContent = "Kies je gereedschap";
     wrap.appendChild(label);
-
     var select = document.createElement("select");
     select.className = "oz-tool-mode-select";
     var options = [
-      { mode: "none",       label: "Geen gereedschap" },
-      { mode: "set",        label: setName + " (+" + setPrice + ")" },
+      { mode: "none", label: "Geen gereedschap" },
+      { mode: "set", label: setName + " (+" + setPrice + ")" },
       { mode: "individual", label: "Zelf samenstellen" }
     ];
     options.forEach(function(o) {
@@ -728,12 +711,10 @@
       select.appendChild(opt);
     });
     select.addEventListener("change", function() {
-      // Click the matching mode button so existing handlers fire.
       var btn = section.querySelector('.oz-tool-mode-btn[data-mode="' + select.value + '"]');
       if (btn) btn.click();
     });
     wrap.appendChild(select);
-
     var modeContainer = section.querySelector(".oz-tool-mode");
     if (modeContainer && modeContainer.parentNode) {
       modeContainer.parentNode.insertBefore(wrap, modeContainer);

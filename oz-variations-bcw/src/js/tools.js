@@ -199,6 +199,64 @@ export function buildToolSectionV2(sectionId, rebuild) {
     ));
   });
   section.appendChild(indList);
+
+  // A/B/C variant C: build a <select> dropdown that mirrors the 3 mode
+  // buttons. The buttons themselves stay in the DOM but are hidden by CSS
+  // (html.oz-ab-tools-c .oz-tool-mode { display:none }), so we can call
+  // their click() handlers when the dropdown changes — same setToolMode
+  // actions fire, no new logic.
+  if (document.documentElement.classList.contains('oz-ab-tools-c')) {
+    buildToolModeDropdown(section);
+  }
+}
+
+/**
+ * Build a <select> dropdown for the tool mode that mirrors the 3 inline
+ * mode buttons. Inserts it before the existing .oz-tool-mode (which is
+ * hidden by CSS for variant C). Changing the dropdown clicks the matching
+ * button so all existing logic (price, validation, syncing) keeps working.
+ */
+function buildToolModeDropdown(section) {
+  if (!P.toolConfig || !P.toolConfig.toolSet) return;
+  if (section.querySelector('.oz-tool-mode-dropdown')) return; // idempotent
+  var modeBtns = section.querySelectorAll('.oz-tool-mode-btn');
+  if (!modeBtns.length) return;
+
+  var setName = P.toolConfig.toolSet.name.replace('Gereedschapset ', '');
+  var setPrice = fmt(P.toolConfig.toolSet.price);
+
+  var wrap = document.createElement('div');
+  wrap.className = 'oz-tool-mode-dropdown';
+  var label = document.createElement('label');
+  label.className = 'oz-tool-mode-dropdown-label';
+  label.textContent = 'Kies je gereedschap';
+  wrap.appendChild(label);
+
+  var select = document.createElement('select');
+  select.className = 'oz-tool-mode-select';
+  var options = [
+    { mode: 'none',       label: 'Geen gereedschap' },
+    { mode: 'set',        label: setName + ' (+' + setPrice + ')' },
+    { mode: 'individual', label: 'Zelf samenstellen' }
+  ];
+  options.forEach(function(o) {
+    var opt = document.createElement('option');
+    opt.value = o.mode;
+    opt.textContent = o.label;
+    select.appendChild(opt);
+  });
+  select.addEventListener('change', function() {
+    var btn = section.querySelector('.oz-tool-mode-btn[data-mode="' + select.value + '"]');
+    if (btn) btn.click();
+  });
+  wrap.appendChild(select);
+
+  var modeContainer = section.querySelector('.oz-tool-mode');
+  if (modeContainer && modeContainer.parentNode) {
+    modeContainer.parentNode.insertBefore(wrap, modeContainer);
+  } else {
+    section.insertBefore(wrap, section.firstChild);
+  }
 }
 
 /**

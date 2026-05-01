@@ -1797,46 +1797,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
-
-/* A/B/C variant C: dropdown alternative to mode buttons.
-   The <select> mirrors the 3 inline buttons (Geen / Set / Zelf samenstellen).
-   Hidden for variants A and B — only shows when html.oz-ab-tools-c is set
-   AND the JS has built the dropdown after buildToolSectionV2. */
-.oz-tool-mode-dropdown {
-  display: none;
-  margin-bottom: 12px;
-}
-html.oz-ab-tools-c .oz-tool-mode-dropdown {
-  display: block;
-}
-.oz-tool-mode-dropdown-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--oz-color-text, #333);
-  margin-bottom: 6px;
-}
-.oz-tool-mode-select {
-  width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  border: 1px solid var(--oz-color-border, #e5e5e3);
-  border-radius: 6px;
-  background: #fff;
-  color: var(--oz-color-text, #333);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 12px;
-  padding-right: 36px;
-}
-.oz-tool-mode-select:focus {
-  outline: 2px solid var(--oz-color-teal, #135350);
-  outline-offset: 1px;
-}
 .oz-product-page .oz-tool-mode-btn {
   flex: 1;
   min-width: 0;
@@ -2177,6 +2137,41 @@ html.oz-ab-tools-c .oz-tool-mode-dropdown {
 }
 .oz-upsell-skip:hover {
   color: var(--oz-text-primary);
+}
+.oz-tool-mode-dropdown {
+  display: none;
+  margin-bottom: 12px;
+}
+html.oz-ab-tools-c .oz-tool-mode-dropdown {
+  display: block;
+}
+.oz-tool-mode-dropdown-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-primary, #333);
+  margin-bottom: 6px;
+}
+.oz-tool-mode-select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid var(--oz-border, #e5e5e3);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--oz-text-primary, #333);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+  padding-right: 36px;
+}
+.oz-tool-mode-select:focus {
+  outline: 2px solid var(--oz-color-teal, #135350);
+  outline-offset: 1px;
 }
 
 /* src/css/sheet.css */

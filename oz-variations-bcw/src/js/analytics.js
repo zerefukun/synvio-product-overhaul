@@ -70,11 +70,20 @@ function beacon(eventName, payload) {
  */
 function push(eventName, params) {
   window.dataLayer = window.dataLayer || [];
+  // Tag every PDP analytics event with the A/B/C variant so conversion can
+  // be split per variant in oz_analytics_events. Cookie set by inline
+  // script in oz-theme functions.php.
+  var abTools = '';
+  try {
+    var m = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+    if (m) abTools = m[1];
+  } catch (e) {}
   var payload = Object.assign({
     event: eventName,
     oz_product_id: P.productId,
     oz_product_name: P.productName,
     oz_product_line: P.productLine || 'none',
+    oz_ab_tools_variant: abTools,
   }, params || {});
   window.dataLayer.push(payload);  // GA4 concern
   beacon(eventName, payload);       // Server logging concern
