@@ -1642,6 +1642,48 @@ details.oz-faq-item[open] .oz-faq-question::after {
   color: var(--oz-text-muted);
   font-size: 14px;
 }
+.oz-color-drawer-ral {
+  flex-shrink: 0;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--oz-border);
+  background: var(--oz-accent-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.oz-color-drawer-ral-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: var(--oz-text-primary);
+  line-height: 1.4;
+}
+.oz-color-drawer-ral-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--oz-accent);
+}
+.oz-color-drawer-ral-text span {
+  color: var(--oz-text-body);
+}
+.oz-color-drawer-ral-btn {
+  align-self: flex-start;
+  padding: 10px 18px;
+  border: 1.5px solid var(--oz-accent);
+  border-radius: 8px;
+  background: var(--oz-accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: "Raleway", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s var(--oz-ease), transform 0.2s var(--oz-ease);
+}
+.oz-color-drawer-ral-btn:hover {
+  background: #0f413e;
+  transform: translateY(-1px);
+}
 body.oz-color-drawer-locked {
   overflow: hidden;
 }

@@ -34,9 +34,15 @@ function getColumnCount(list) {
 
 /**
  * Wire up the chip + drawer for the given swatches list.
+ *
+ * Scope: Variant C only. Variants A and B keep the original full
+ * swatch grid (no collapse, no chip, no drawer) so the A/B/C test
+ * compares one isolated UX change at a time.
+ *
  * Idempotent: a `data-drawer-wired` flag on the list prevents double-wiring.
  */
 export function setupColorDrawer() {
+  if (!document.documentElement.classList.contains('oz-ab-tools-c')) return;
   var list = document.querySelector('.oz-color-swatches');
   if (!list) return;
   if (list.dataset.drawerWired === '1') return;
@@ -85,6 +91,27 @@ export function setupColorDrawer() {
   });
   drawer.closeBtn.addEventListener('click', function () { closeDrawer(drawer); });
   drawer.backdrop.addEventListener('click', function () { closeDrawer(drawer); });
+
+  // RAL/NCS CTA inside the drawer. We don't duplicate the input here
+  // (single source of truth for validation lives in product-page.js).
+  // Instead we close the drawer, flip the inline mode toggle to ral_ncs,
+  // and focus the existing input so the user lands on it directly.
+  if (drawer.ralBtn) {
+    drawer.ralBtn.addEventListener('click', function () {
+      closeDrawer(drawer);
+      var inlineRalBtn = document.querySelector('.oz-color-mode-btn[data-mode="ral_ncs"]');
+      if (inlineRalBtn) inlineRalBtn.click();
+      // Focus the input after the inline UI re-renders. setTimeout 0
+      // gives syncUI a tick to add the visible class.
+      setTimeout(function () {
+        var input = document.getElementById('customColorInput');
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+    });
+  }
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && drawer.root.classList.contains('open')) {
@@ -172,12 +199,34 @@ function buildDrawer(swatches) {
     return clone;
   });
 
+  // Build RAL/NCS CTA only when the page actually has the RAL/NCS mode
+  // toggle (some products are swatch-only). We detect by looking for the
+  // inline mode button and skip the section otherwise.
+  var ralBtn = null;
+  var ralSection = null;
+  if (document.querySelector('.oz-color-mode-btn[data-mode="ral_ncs"]')) {
+    ralSection = document.createElement('div');
+    ralSection.className = 'oz-color-drawer-ral';
+    ralSection.innerHTML =
+      '<div class="oz-color-drawer-ral-text">' +
+        '<strong>Eigen kleur op maat</strong>' +
+        '<span>Voer een RAL of NCS code in. Wij mengen elke kleurcode op maat.</span>' +
+      '</div>';
+
+    ralBtn = document.createElement('button');
+    ralBtn.type = 'button';
+    ralBtn.className = 'oz-color-drawer-ral-btn';
+    ralBtn.textContent = 'RAL / NCS code invoeren';
+    ralSection.appendChild(ralBtn);
+  }
+
   header.appendChild(title);
   header.appendChild(closeBtn);
   panel.appendChild(header);
   panel.appendChild(search);
   panel.appendChild(grid);
   panel.appendChild(empty);
+  if (ralSection) panel.appendChild(ralSection);
   root.appendChild(backdrop);
   root.appendChild(panel);
 
@@ -190,6 +239,7 @@ function buildDrawer(swatches) {
     items: items,
     empty: empty,
     backdrop: backdrop,
+    ralBtn: ralBtn,
   };
 }
 

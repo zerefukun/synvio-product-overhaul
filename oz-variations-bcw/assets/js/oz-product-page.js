@@ -1143,6 +1143,7 @@
     return cols > 0 ? cols : 5;
   }
   function setupColorDrawer() {
+    if (!document.documentElement.classList.contains("oz-ab-tools-c")) return;
     var list = document.querySelector(".oz-color-swatches");
     if (!list) return;
     if (list.dataset.drawerWired === "1") return;
@@ -1174,6 +1175,20 @@
     drawer.backdrop.addEventListener("click", function() {
       closeDrawer(drawer);
     });
+    if (drawer.ralBtn) {
+      drawer.ralBtn.addEventListener("click", function() {
+        closeDrawer(drawer);
+        var inlineRalBtn = document.querySelector('.oz-color-mode-btn[data-mode="ral_ncs"]');
+        if (inlineRalBtn) inlineRalBtn.click();
+        setTimeout(function() {
+          var input = document.getElementById("customColorInput");
+          if (input) {
+            input.focus();
+            input.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 50);
+      });
+    }
     document.addEventListener("keydown", function(e) {
       if (e.key === "Escape" && drawer.root.classList.contains("open")) {
         closeDrawer(drawer);
@@ -1232,12 +1247,25 @@
       grid.appendChild(clone);
       return clone;
     });
+    var ralBtn = null;
+    var ralSection = null;
+    if (document.querySelector('.oz-color-mode-btn[data-mode="ral_ncs"]')) {
+      ralSection = document.createElement("div");
+      ralSection.className = "oz-color-drawer-ral";
+      ralSection.innerHTML = '<div class="oz-color-drawer-ral-text"><strong>Eigen kleur op maat</strong><span>Voer een RAL of NCS code in. Wij mengen elke kleurcode op maat.</span></div>';
+      ralBtn = document.createElement("button");
+      ralBtn.type = "button";
+      ralBtn.className = "oz-color-drawer-ral-btn";
+      ralBtn.textContent = "RAL / NCS code invoeren";
+      ralSection.appendChild(ralBtn);
+    }
     header.appendChild(title);
     header.appendChild(closeBtn);
     panel.appendChild(header);
     panel.appendChild(search);
     panel.appendChild(grid);
     panel.appendChild(empty);
+    if (ralSection) panel.appendChild(ralSection);
     root.appendChild(backdrop);
     root.appendChild(panel);
     return {
@@ -1248,7 +1276,8 @@
       grid,
       items,
       empty,
-      backdrop
+      backdrop,
+      ralBtn
     };
   }
   function openDrawer(d) {
