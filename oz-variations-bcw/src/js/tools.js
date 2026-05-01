@@ -258,11 +258,8 @@ export function buildRuimteDropdown() {
     'selecteren we automatisch het juiste aantal PU-lagen + primer.' +
     '</div>';
 
-  var label = document.createElement('label');
-  label.className = 'oz-ruimte-dropdown-label';
-  label.textContent = 'Maak je keuze';
-  wrap.appendChild(label);
-
+  // No separate <label> — the .oz-option-header above + placeholder option
+  // in the <select> are enough. Two stacked labels was visual noise.
   var select = document.createElement('select');
   select.className = 'oz-ruimte-select';
   // Empty placeholder so user must actively pick — preselected is risky
@@ -316,10 +313,8 @@ function buildToolModeDropdown(section) {
 
   var wrap = document.createElement('div');
   wrap.className = 'oz-tool-mode-dropdown';
-  var label = document.createElement('label');
-  label.className = 'oz-tool-mode-dropdown-label';
-  label.textContent = 'Kies je gereedschap';
-  wrap.appendChild(label);
+  // The Gereedschap section already has its own .oz-option-header, no need
+  // for a second label above the select.
 
   var select = document.createElement('select');
   select.className = 'oz-tool-mode-select';

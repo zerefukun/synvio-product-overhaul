@@ -428,53 +428,55 @@ html.oz-ab-tools-c .oz-ruimte-dropdown {
   display: block;
 }
 
-/* Inline label above the select — small, semi-bold, low-key */
-.oz-tool-mode-dropdown-label,
-.oz-ruimte-dropdown-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--oz-text-muted, #666);
-  margin: 4px 0 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+/* The actual <select> — designed to look obviously like a dropdown.
+   Scoped under .oz-product-page + extra !importants because Flatsome's
+   form resets and theme overrides have higher specificity than plain
+   class selectors. Without !important the browser falls back to the
+   theme's default <select> styling (no border, no chevron, looks broken). */
+.oz-product-page .oz-tool-mode-select,
+.oz-product-page .oz-ruimte-select,
+select.oz-tool-mode-select,
+select.oz-ruimte-select {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 14px 44px 14px 16px !important;
+  margin: 4px 0 0 !important;
+  font-size: 15px !important;
+  font-family: 'Raleway', sans-serif !important;
+  font-weight: 500 !important;
+  border: 1.5px solid var(--oz-label-border, #d4d4d2) !important;
+  border-radius: 8px !important;
+  background-color: #fff !important;
+  color: var(--oz-text-primary, #333) !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  height: auto !important;
+  line-height: 1.3 !important;
+  /* Bigger, teal chevron so the dropdown affordance is unmistakable */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23135350'%3E%3Cpath d='M3 6l5 5 5-5z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 16px !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
 }
-
-/* The actual <select>. Designed to look obviously like a dropdown:
-   - thicker border than a button so the visual weight reads as input
-   - large chevron on the right with breathing room
-   - hover state makes the chevron and border pop */
-.oz-tool-mode-select,
-.oz-ruimte-select {
-  width: 100%;
-  padding: 14px 44px 14px 16px;
-  font-size: 15px;
-  font-family: 'Raleway', sans-serif;
-  border: 1.5px solid var(--oz-label-border, #d4d4d2);
-  border-radius: 8px;
-  background-color: #fff;
-  color: var(--oz-text-primary, #333);
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  /* Bigger, bolder chevron — 16px instead of 12px, in teal so it stands out */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23135350'%3E%3Cpath d='M3 6l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 16px;
-  transition: border-color 0.15s, box-shadow 0.15s;
+.oz-product-page .oz-tool-mode-select:hover,
+.oz-product-page .oz-ruimte-select:hover,
+select.oz-tool-mode-select:hover,
+select.oz-ruimte-select:hover {
+  border-color: var(--oz-accent, #135350) !important;
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.08) !important;
 }
-.oz-tool-mode-select:hover,
-.oz-ruimte-select:hover {
-  border-color: var(--oz-accent, #135350);
-  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.08);
-}
-.oz-tool-mode-select:focus,
-.oz-ruimte-select:focus {
-  outline: none;
-  border-color: var(--oz-accent, #135350);
-  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.18);
+.oz-product-page .oz-tool-mode-select:focus,
+.oz-product-page .oz-ruimte-select:focus,
+select.oz-tool-mode-select:focus,
+select.oz-ruimte-select:focus {
+  outline: none !important;
+  border-color: var(--oz-accent, #135350) !important;
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.18) !important;
 }
 .oz-tool-mode-select option:disabled,
 .oz-ruimte-select option:disabled {

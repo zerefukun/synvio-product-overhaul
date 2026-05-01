@@ -707,10 +707,6 @@
     wrap.className = "oz-option-group oz-ruimte-dropdown";
     wrap.setAttribute("data-option", "ruimte");
     wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen + primer.</div>';
-    var label = document.createElement("label");
-    label.className = "oz-ruimte-dropdown-label";
-    label.textContent = "Maak je keuze";
-    wrap.appendChild(label);
     var select = document.createElement("select");
     select.className = "oz-ruimte-select";
     var placeholder = document.createElement("option");
@@ -749,10 +745,6 @@
     var setPrice = fmt(P.toolConfig.toolSet.price);
     var wrap = document.createElement("div");
     wrap.className = "oz-tool-mode-dropdown";
-    var label = document.createElement("label");
-    label.className = "oz-tool-mode-dropdown-label";
-    label.textContent = "Kies je gereedschap";
-    wrap.appendChild(label);
     var select = document.createElement("select");
     select.className = "oz-tool-mode-select";
     var options = [
