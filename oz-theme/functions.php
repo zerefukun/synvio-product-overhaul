@@ -279,11 +279,14 @@ function oz_cart_drawer_enqueue() {
     );
 
     // JS
+    // Using cart-drawer.js (not .min.js) until we set up a real minify
+    // pipeline. The non-min file is the source of truth — manual edits to
+    // .min.js have drifted from .js previously.
     wp_enqueue_script(
         'oz-cart-drawer',
-        get_stylesheet_directory_uri() . '/js/cart-drawer.min.js',
+        get_stylesheet_directory_uri() . '/js/cart-drawer.js',
         ['oz-swiper-loader'],
-        filemtime(get_stylesheet_directory() . '/js/cart-drawer.min.js'),
+        filemtime(get_stylesheet_directory() . '/js/cart-drawer.js'),
         true
     );
 
@@ -434,6 +437,33 @@ function oz_cart_drawer_get() {
 }
 add_action('wp_ajax_oz_cart_drawer_get', 'oz_cart_drawer_get');
 add_action('wp_ajax_nopriv_oz_cart_drawer_get', 'oz_cart_drawer_get');
+
+/**
+ * AJAX: Return a fresh oz_cart_drawer nonce.
+ *
+ * The cart drawer's nonce is normally injected via wp_localize_script into
+ * the page HTML. LiteSpeed caches that HTML for some pages (homepage, blog
+ * posts, etc.) so the first user's nonce gets served to many others. Stale
+ * nonce → check_ajax_referer fails → drawer stays empty.
+ *
+ * This endpoint is intentionally nonce-LESS (it returns a nonce, it can't
+ * require one without a chicken-and-egg problem). Safety:
+ *   - Read-only, no side effects.
+ *   - Returns nothing else useful to an attacker — just a token tied to
+ *     the current session.
+ *   - WC actions (add/update/remove) still verify the returned nonce, so
+ *     forgery only enables fetching a token, not abusing it.
+ *
+ * Same defense pattern as the f489abc April PDP nonce-refresh fix.
+ */
+function oz_cart_drawer_refresh_nonce() {
+    wp_send_json_success([
+        'nonce'          => wp_create_nonce('oz_cart_drawer'),
+        'analyticsNonce' => wp_create_nonce('oz_analytics'),
+    ]);
+}
+add_action('wp_ajax_oz_cart_drawer_refresh_nonce', 'oz_cart_drawer_refresh_nonce');
+add_action('wp_ajax_nopriv_oz_cart_drawer_refresh_nonce', 'oz_cart_drawer_refresh_nonce');
 
 /**
  * AJAX: Update cart item quantity.

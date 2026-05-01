@@ -162,15 +162,59 @@
        ============================================ */
 
     /**
-     * Fetch full cart data from our custom endpoint.
-     * Updates S.items, S.upsells, S.subtotal, S.count.
+     * Refresh the cart-drawer nonce. Used when a request fails with 403
+     * (stale nonce — typically because the page HTML was served from
+     * LiteSpeed cache with a different user's nonce baked in).
+     *
+     * Same defense pattern as the f489abc PDP fix from April. Without this,
+     * users on cached pages (homepage, blog posts) see an empty cart drawer
+     * even when their session has items.
      */
-    function fetchCart(callback) {
+    function refreshNonce(callback) {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', ozCartDrawer.ajaxUrl, true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.onreadystatechange = function () {
             if (xhr.readyState !== 4) return;
+            if (xhr.status === 200) {
+                try {
+                    var resp = JSON.parse(xhr.responseText);
+                    if (resp && resp.success && resp.data && resp.data.nonce) {
+                        ozCartDrawer.nonce = resp.data.nonce;
+                        if (resp.data.analyticsNonce) {
+                            ozCartDrawer.analyticsNonce = resp.data.analyticsNonce;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Cart drawer: nonce refresh parse error', e);
+                }
+            }
+            if (callback) callback();
+        };
+        xhr.send('action=oz_cart_drawer_refresh_nonce');
+    }
+
+    /**
+     * Fetch full cart data from our custom endpoint.
+     * Updates S.items, S.upsells, S.subtotal, S.count.
+     *
+     * On a 403 (stale nonce from cached HTML), refresh the nonce once and
+     * retry. We only retry once — if the second call also fails, something
+     * else is wrong and we don't want an infinite loop.
+     */
+    function fetchCart(callback, _isRetry) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', ozCartDrawer.ajaxUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState !== 4) return;
+            // 403 from check_ajax_referer = stale nonce. Refresh and retry once.
+            if (xhr.status === 403 && !_isRetry) {
+                refreshNonce(function () {
+                    fetchCart(callback, true);
+                });
+                return;
+            }
             if (xhr.status === 200) {
                 try {
                     var resp = JSON.parse(xhr.responseText);
