@@ -724,6 +724,71 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * A/B test results for the Gereedschap section visibility test.
+     *
+     * Cookie `oz_ab_tools` (A or B) is set client-side by an inline script
+     * in the theme. Every analytics event written from a PDP or session-start
+     * carries `oz_ab_tools_variant` in its event_data JSON.
+     *
+     * Returns a per-variant breakdown of sessions, color picks, ATC, and
+     * checkout clicks so we can see whether hiding the tools section
+     * (variant B) helps or hurts conversion.
+     */
+    public static function ab_test_tools_results($days) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        // JSON_UNQUOTE(JSON_EXTRACT(...)) is supported on MariaDB 10.2+.
+        $variants = ['A', 'B'];
+        $out = [];
+        foreach ($variants as $v) {
+            $row = $wpdb->get_row($wpdb->prepare(
+                "SELECT
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_session_start' THEN session_id END) AS sessions,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_color_selected' THEN session_id END) AS color_pickers,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_add_to_cart' THEN session_id END) AS atc_sessions,
+                    SUM(CASE WHEN event_name = 'oz_add_to_cart' THEN 1 ELSE 0 END) AS atc_total,
+                    COUNT(DISTINCT CASE WHEN event_name = 'oz_cart_checkout_clicked' THEN session_id END) AS checkout_sessions
+                 FROM {$table}
+                 WHERE created_at >= %s AND created_at < %s
+                   AND JSON_UNQUOTE(JSON_EXTRACT(event_data, '$.oz_ab_tools_variant')) = %s",
+                $since, $until, $v
+            ), ARRAY_A);
+
+            $sessions     = intval($row['sessions']);
+            $color_pickers = intval($row['color_pickers']);
+            $atc_sessions = intval($row['atc_sessions']);
+            $atc_total    = intval($row['atc_total']);
+            $checkout     = intval($row['checkout_sessions']);
+
+            $out[$v] = [
+                'variant'         => $v,
+                'sessions'        => $sessions,
+                'color_pickers'   => $color_pickers,
+                'atc_sessions'    => $atc_sessions,
+                'atc_total'       => $atc_total,
+                'checkout'        => $checkout,
+                'conv_atc_pct'    => $sessions > 0 ? round(($atc_sessions / $sessions) * 100, 2) : 0,
+                'engage_pct'      => $sessions > 0 ? round(($color_pickers / $sessions) * 100, 2) : 0,
+                'conv_checkout_pct' => $sessions > 0 ? round(($checkout / $sessions) * 100, 2) : 0,
+            ];
+        }
+
+        $lift = 0;
+        if ($out['A']['conv_atc_pct'] > 0) {
+            $lift = round((($out['B']['conv_atc_pct'] - $out['A']['conv_atc_pct']) / $out['A']['conv_atc_pct']) * 100, 1);
+        }
+
+        return [
+            'variants'       => $out,
+            'lift_pct'       => $lift,
+            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'],
+        ];
+    }
+
+    /**
      * Formula toggle stats: toggle clicks, ZM add-to-carts, and conversion rate.
      * Used by the dashboard ZM monitoring section.
      */

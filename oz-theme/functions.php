@@ -1099,3 +1099,40 @@ function oz_remove_admin_styles_from_frontend() {
     wp_dequeue_style('popup-maker-block-library-style');
 }
 add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);
+
+/* ================================================================
+   A/B TEST — Gereedschap section visibility on PDPs (added 01/05/26)
+
+   50% of visitors see the "Gereedschap" option group on PDPs, 50% don't.
+   Sticky cookie oz_ab_tools (A or B) with 30-day max-age.
+
+   Inline <script> + <style> run before paint so there's no flicker.
+   CSS rule hides .oz-option-group[data-option="tools"] for variant B.
+
+   Cache-safety: the inline script + style are static, same for every
+   visitor. Per-user state lives only in the cookie, read at JS runtime.
+   Same pattern as the existing oz_vid visitor cookie. No Mar 19 risk.
+
+   Variant is tagged onto every analytics event (oz_session_start,
+   oz_color_selected, oz_add_to_cart, etc.) so conversion can be split
+   per variant in the BCW Analytics dashboard.
+   ================================================================ */
+function oz_ab_tools_test_assignment() {
+    if (is_admin()) return;
+    ?>
+<style id="oz-ab-tools-style">html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}</style>
+<script id="oz-ab-tools-script">
+(function(){
+    try {
+        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
+        var v = match ? match[1] : (Math.random() < 0.5 ? 'A' : 'B');
+        if (!match) {
+            document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
+        }
+        document.documentElement.classList.add('oz-ab-tools-' + v.toLowerCase());
+    } catch (e) {}
+})();
+</script>
+    <?php
+}
+add_action('wp_head', 'oz_ab_tools_test_assignment', 1);

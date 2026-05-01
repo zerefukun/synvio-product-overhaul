@@ -1200,6 +1200,15 @@
             }
         }
 
+        /* Read the A/B test variant from cookie. Set by oz_ab_tools_test_assignment
+           inline script in <head>. Tagging it on session_start lets us split
+           conversion-rate by variant in oz_analytics_events. */
+        var abTools = '';
+        try {
+            var abMatch = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
+            if (abMatch) abTools = abMatch[1];
+        } catch (e) {}
+
         /* Fire the session start event directly (not via beacon() which hardcodes source='cart') */
         var fd = new FormData();
         fd.append('action', 'oz_track_event');
@@ -1211,6 +1220,7 @@
             oz_landing_page:     window.location.pathname,
             oz_utm_campaign:     params.utm_campaign || '',
             oz_referrer:         ref ? ref.substring(0, 200) : '',
+            oz_ab_tools_variant: abTools,
         }));
         fd.append('source', 'session');
         navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
