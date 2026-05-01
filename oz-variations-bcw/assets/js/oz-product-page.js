@@ -1451,7 +1451,7 @@
       ];
       for (var h = 0; h < highlights.length; h++) {
         var spec = highlights[h];
-        var btns = document.querySelectorAll("[" + spec.attr + "]");
+        var btns = document.querySelectorAll("button[" + spec.attr + "]");
         for (var i = 0; i < btns.length; i++) {
           var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
           btns[i].classList.toggle("selected", val === spec.value);
@@ -2400,6 +2400,21 @@
         shakeButton();
         showCartError("Kies eerst een kleur om te bestellen.");
         return;
+      }
+      var ruimteDropdown = document.querySelector(".oz-ruimte-dropdown");
+      if (ruimteDropdown) {
+        var ruimteSelect = ruimteDropdown.querySelector(".oz-ruimte-select");
+        if (ruimteSelect && !ruimteSelect.value) {
+          smoothScrollTo(ruimteDropdown);
+          ruimteDropdown.classList.add("oz-highlight");
+          setTimeout(function() {
+            ruimteDropdown.classList.remove("oz-highlight");
+          }, 1500);
+          trackAddToCartError("ruimte not selected");
+          shakeButton();
+          showCartError("Kies eerst een ruimte.");
+          return;
+        }
       }
       var error = validateCartState(P, S);
       if (error) {

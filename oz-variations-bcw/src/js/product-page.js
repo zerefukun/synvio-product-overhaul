@@ -298,7 +298,10 @@ function renderOptionHighlights() {
 
   for (var h = 0; h < highlights.length; h++) {
     var spec = highlights[h];
-    var btns = document.querySelectorAll('[' + spec.attr + ']');
+    // Scope to buttons only. Variant C's <option> elements in the
+    // ruimte dropdown carry the same data-primer / data-pu attrs but
+    // shouldn't get the .selected button-state class.
+    var btns = document.querySelectorAll('button[' + spec.attr + ']');
     for (var i = 0; i < btns.length; i++) {
       var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
       btns[i].classList.toggle('selected', val === spec.value);
@@ -1738,6 +1741,24 @@ function addToCart() {
     shakeButton();
     showCartError('Kies eerst een kleur om te bestellen.');
     return;
+  }
+
+  // Variant C: the "Kies je ruimte" dropdown is the user's primer + PU choice.
+  // Without a pick, the cart silently submits whatever defaults sit underneath
+  // (often "Primer" + "2 lagen ADVIES"). Force an explicit choice so users
+  // don't accidentally pay for protection they didn't ask for.
+  var ruimteDropdown = document.querySelector('.oz-ruimte-dropdown');
+  if (ruimteDropdown) {
+    var ruimteSelect = ruimteDropdown.querySelector('.oz-ruimte-select');
+    if (ruimteSelect && !ruimteSelect.value) {
+      smoothScrollTo(ruimteDropdown);
+      ruimteDropdown.classList.add('oz-highlight');
+      setTimeout(function() { ruimteDropdown.classList.remove('oz-highlight'); }, 1500);
+      analytics.trackAddToCartError('ruimte not selected');
+      shakeButton();
+      showCartError('Kies eerst een ruimte.');
+      return;
+    }
   }
 
   // Pure validation — returns error string or null
