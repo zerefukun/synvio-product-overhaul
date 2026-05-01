@@ -1633,39 +1633,44 @@ function oz_final_style_cleanup() {
 add_action('wp_print_styles', 'oz_final_style_cleanup', 9999);
 
 /* ================================================================
-   A/B TEST — Gereedschap section visibility on PDPs (added 30/04/26)
+   A/B/C TEST — Gereedschap section on PDPs (extended 01/05/26)
 
-   Goal: 50% of visitors see the "Gereedschap" option group on PDPs,
-   50% don't. Patrick wants to measure whether the section helps or
-   hurts conversion.
+   Three variants, 33/33/33 split, 30-day sticky cookie:
+     A — control: inline mode buttons (current default)
+     B — section completely hidden
+     C — mode buttons replaced by a dropdown (Betonstunter-like)
 
-   Sticky cookie `oz_ab_tools` (A or B) with 30-day max-age. Same value
-   for the same visitor across pages and visits within the window.
+   Inline <script> + <style> run before paint so there's no flicker.
+     - Variant B hides .oz-option-group[data-option="tools"] via CSS.
+     - Variant C hides only the inline .oz-tool-mode buttons. JS in
+       oz-product-page.js builds a <select> dropdown that triggers the
+       same setToolMode() actions, so all logic stays the same.
 
-   Implementation: inline <script> + <style> in <head>, runs before paint
-   so there's no flicker. The CSS rule hides .oz-option-group[data-option="tools"]
-   for variant B. The hide also works on the bottom-sheet variant of the
-   section because the same data-attribute is reused there.
+   Cache-safety: the inline script + style are static across users.
+   Per-user state lives only in the cookie. Cart/checkout uncached.
 
-   Cache-safety: the inline script + style are static across users, so
-   the cached HTML is the same for everyone. Per-user state lives only
-   in the cookie, read at JS runtime per browser. Same pattern as the
-   visitor-id (oz_vid) cookie that ships in cart-drawer.js.
-
-   Tracking: cart-drawer.js's oz_session_start payload now includes
-   `oz_ab_tools_variant`, and oz-product-page.js's beacon includes the
-   same on every PDP event. Patrick can SQL-join conversion-by-variant.
+   Tracking: every PDP analytics event + oz_session_start carries
+   oz_ab_tools_variant. The BCW Analytics dashboard splits conversion
+   per A/B/C.
    ================================================================ */
 function oz_ab_tools_test_assignment() {
     if (is_admin()) return;
     ?>
-<style id="oz-ab-tools-style">html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}</style>
+<style id="oz-ab-tools-style">
+html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}
+html.oz-ab-tools-c .oz-option-group[data-option="tools"] .oz-tool-mode{display:none !important;}
+</style>
 <script id="oz-ab-tools-script">
 (function(){
     try {
-        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
-        var v = match ? match[1] : (Math.random() < 0.5 ? 'A' : 'B');
-        if (!match) {
+        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+        var v;
+        if (match) {
+            v = match[1];
+        } else {
+            // 33/33/33 split. Bucket boundaries at 1/3 and 2/3.
+            var r = Math.random();
+            v = r < 0.3333 ? 'A' : (r < 0.6666 ? 'B' : 'C');
             // 30 days = 2592000s. SameSite=Lax so it survives same-site nav.
             document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
         }

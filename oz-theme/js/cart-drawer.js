@@ -1215,7 +1215,7 @@
            conversion-rate by variant in oz_analytics_events. */
         var abTools = '';
         try {
-            var abMatch = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
+            var abMatch = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
             if (abMatch) abTools = abMatch[1];
         } catch (e) {}
 

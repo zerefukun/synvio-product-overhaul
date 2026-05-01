@@ -743,9 +743,10 @@ class OZ_Analytics_Reporter {
         $since = self::since_date($days);
         $until = self::until_date($days);
 
-        // JSON_EXTRACT returns "A" or "B" with quotes; JSON_UNQUOTE strips them.
+        // JSON_EXTRACT returns "A", "B" or "C" with quotes; JSON_UNQUOTE strips them.
         // Both functions are available on MariaDB 10.2+ which BCW runs.
-        $variants = ['A', 'B'];
+        // 3-variant extension (01/05/26): C = dropdown variant.
+        $variants = ['A', 'B', 'C'];
         $out = [];
         foreach ($variants as $v) {
             $row = $wpdb->get_row($wpdb->prepare(
@@ -783,20 +784,22 @@ class OZ_Analytics_Reporter {
             ];
         }
 
-        // Lift: how much better B is vs A on the headline metric (ATC %).
-        // Positive = B converts better → hiding tools section helps.
-        // Negative = A converts better → keep showing tools.
-        $lift = 0;
-        if ($out['A']['conv_atc_pct'] > 0) {
-            $lift = round((($out['B']['conv_atc_pct'] - $out['A']['conv_atc_pct']) / $out['A']['conv_atc_pct']) * 100, 1);
+        // Lift % per variant vs A (control) on the headline metric (ATC %).
+        // Positive = that variant converts better than control.
+        $base_pct = $out['A']['conv_atc_pct'];
+        $lifts = ['A' => 0, 'B' => 0, 'C' => 0];
+        if ($base_pct > 0) {
+            $lifts['B'] = round((($out['B']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
+            $lifts['C'] = round((($out['C']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
         }
 
         return [
             'variants' => $out,
-            'lift_pct' => $lift, // B vs A on ATC conversion %
-            // Total sessions across both variants — useful sanity check that
-            // the assignment is roughly 50/50.
-            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'],
+            'lifts'    => $lifts, // B and C lift vs A on ATC %
+            // Backward-compat: existing UI reads `lift_pct` (B vs A only).
+            'lift_pct' => $lifts['B'],
+            // Total sessions across all variants — sanity check the split.
+            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'] + $out['C']['sessions'],
         ];
     }
 
