@@ -25,6 +25,7 @@ import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePri
 import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2, buildRuimteDropdown } from './tools.js';
 import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
+import { setupColorDrawer } from './color-drawer.js';
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
@@ -2263,6 +2264,10 @@ function init() {
   // primer + PU choice (Betonstunter-style). Only does anything when
   // html.oz-ab-tools-c is set; no-op for variants A and B.
   buildRuimteDropdown();
+
+  // Collapse swatch grid to 2 rows + add "Bekijk alle" chip / drawer.
+  // Cache-safe: pure client-side, clones existing server-rendered links.
+  setupColorDrawer();
 
   // Restore tool state from sessionStorage (e.g., after color switch)
   restoreToolState();
