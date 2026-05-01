@@ -2286,8 +2286,8 @@ function init() {
   buildToolSectionV2("toolSection");
 
   // Variant C: build a single "Kies je ruimte" dropdown that combines
-  // primer + PU choice (Betonstunter-style). Only does anything when
-  // html.oz-ab-tools-c is set; no-op for variants A and B.
+  // primer + PU choice into one room-based pick. Only does anything
+  // when html.oz-ab-tools-c is set; no-op for variants A and B.
   buildRuimteDropdown();
 
   // Restore tool state from sessionStorage (e.g., after color switch)

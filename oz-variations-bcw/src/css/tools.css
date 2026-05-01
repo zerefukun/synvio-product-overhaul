@@ -403,7 +403,7 @@
   color: var(--oz-text-primary);
 }
 
-/* ═══ A/B/C variant C — Betonstunter-style dropdowns ═══════════════
+/* ═══ A/B/C variant C: ruimte + gereedschap dropdowns ═══════════════
    Variant C replaces the inline button rows with native <select> drop-
    downs that look obviously like dropdowns (clear chevron, hint text).
    - The "Kies je ruimte" dropdown also hides the underlying primer + pu

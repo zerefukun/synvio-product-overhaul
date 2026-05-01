@@ -212,11 +212,10 @@ export function buildToolSectionV2(sectionId, rebuild) {
 
 /**
  * Variant C: build a "Kies je ruimte" dropdown that combines the primer
- * and PU Toplaag sections into one room-based choice (Betonstunter
- * pattern). Hides the underlying primer + pu sections via CSS for
- * variant C and triggers the corresponding primer + PU buttons on
- * change. No new pricing logic — just a different UI control over the
- * same underlying state.
+ * and PU Toplaag sections into one room-based choice. Hides the
+ * underlying primer + pu sections via CSS for variant C and triggers
+ * the corresponding primer + PU buttons on change. No new pricing
+ * logic, just a different UI control over the same underlying state.
  *
  * Mapping (room → primer, pu_layers):
  *   Geen beschermlaag        → Geen primer, 0 PU

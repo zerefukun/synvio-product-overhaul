@@ -232,7 +232,7 @@ class OZ_Analytics_Dashboard {
             $variant_labels = [
                 'A' => 'Inline buttons (gepensioneerd)',
                 'B' => 'Sectie verborgen (controle)',
-                'C' => 'Dropdown (Betonstunter-stijl)',
+                'C' => 'Dropdown ruimte + gereedschap',
             ];
             ?>
             <div class="oz-panel" style="margin-bottom: 24px;">

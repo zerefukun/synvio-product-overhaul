@@ -2,9 +2,8 @@
  * Color Drawer
  *
  * Collapses the swatch grid to a 2-row tile and adds a "+X" chip that
- * opens a side drawer with all swatches plus a search filter. Inspired
- * by the Betonstunter pattern; styled in BCW look (teal accent, dashed
- * border, clean drawer slide-in).
+ * opens a side drawer with all swatches plus a search filter. Styled
+ * in BCW look (teal accent, dashed border, clean drawer slide-in).
  *
  * Why a separate module:
  *   - Single responsibility (one feature, one file).

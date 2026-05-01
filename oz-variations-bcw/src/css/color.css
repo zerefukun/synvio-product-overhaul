@@ -269,7 +269,7 @@
 }
 
 
-/* ─── Color drawer (Betonstunter pattern, BCW-themed) ───
+/* ─── Color drawer (BCW-themed) ───
  * Collapse the inline swatch grid to 2 rows. The last cell of row 2 is
  * a chip showing "+X" (number of hidden swatches). Clicking the chip
  * opens a side drawer with all swatches and a search filter. */
