@@ -741,7 +741,8 @@ class OZ_Analytics_Reporter {
         $until = self::until_date($days);
 
         // JSON_UNQUOTE(JSON_EXTRACT(...)) is supported on MariaDB 10.2+.
-        $variants = ['A', 'B'];
+        // 3-variant test: A=control inline, B=hidden, C=dropdown.
+        $variants = ['A', 'B', 'C'];
         $out = [];
         foreach ($variants as $v) {
             $row = $wpdb->get_row($wpdb->prepare(
@@ -776,15 +777,19 @@ class OZ_Analytics_Reporter {
             ];
         }
 
-        $lift = 0;
-        if ($out['A']['conv_atc_pct'] > 0) {
-            $lift = round((($out['B']['conv_atc_pct'] - $out['A']['conv_atc_pct']) / $out['A']['conv_atc_pct']) * 100, 1);
+        // Lift % per variant vs A (control) on the headline metric (ATC %).
+        $base_pct = $out['A']['conv_atc_pct'];
+        $lifts = ['A' => 0, 'B' => 0, 'C' => 0];
+        if ($base_pct > 0) {
+            $lifts['B'] = round((($out['B']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
+            $lifts['C'] = round((($out['C']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
         }
 
         return [
             'variants'       => $out,
-            'lift_pct'       => $lift,
-            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'],
+            'lifts'          => $lifts,
+            'lift_pct'       => $lifts['B'], // backward-compat
+            'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'] + $out['C']['sessions'],
         ];
     }
 

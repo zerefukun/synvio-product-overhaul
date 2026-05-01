@@ -227,11 +227,18 @@ class OZ_Analytics_Dashboard {
                 <?php self::render_funnel($funnel); ?>
             </div>
 
-            <!-- A/B test: Gereedschap section visibility -->
+            <!-- A/B/C test: Gereedschap section variants -->
+            <?php
+            $variant_labels = [
+                'A' => 'Inline buttons (controle)',
+                'B' => 'Sectie verborgen',
+                'C' => 'Dropdown (Betonstunter-stijl)',
+            ];
+            ?>
             <div class="oz-panel" style="margin-bottom: 24px;">
-                <h3>A/B test &mdash; Gereedschap sectie</h3>
+                <h3>A/B/C test &mdash; Gereedschap sectie</h3>
                 <p class="oz-panel-subtitle">
-                    Variant A toont de Gereedschap-sectie op PDPs. Variant B verbergt hem. 50/50 split via cookie.
+                    Drie varianten, 33/33/33 split via cookie. A = controle, B = sectie verborgen, C = dropdown.
                 </p>
                 <?php if ($ab_tools['total_sessions'] === 0) : ?>
                     <p style="color:#666;font-style:italic;">Nog geen data &mdash; wacht tot bezoekers de PDPs hebben bezocht na de deploy.</p>
@@ -244,41 +251,37 @@ class OZ_Analytics_Dashboard {
                                 <th>Engagement<br><small>kleur gepickt %</small></th>
                                 <th>ATC %<br><small>headline metric</small></th>
                                 <th>Checkout %</th>
+                                <th>Lift vs A</th>
                                 <th>Totaal ATC</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($ab_tools['variants'] as $v => $row) : ?>
+                            <?php foreach ($ab_tools['variants'] as $v => $row) :
+                                $lift_v = isset($ab_tools['lifts'][$v]) ? $ab_tools['lifts'][$v] : 0;
+                                $lift_color = $v === 'A' ? '#666' : ($lift_v > 0 ? '#1a7f37' : ($lift_v < 0 ? '#b32d2e' : '#666'));
+                                $lift_label = $v === 'A' ? 'baseline' : ($lift_v > 0 ? '+' . $lift_v . '%' : $lift_v . '%');
+                            ?>
                                 <tr>
                                     <th style="font-weight:bold;">
                                         Variant <?php echo esc_html($v); ?>
                                         <small style="display:block;font-weight:normal;color:#666;">
-                                            <?php echo $v === 'A' ? 'Tools zichtbaar' : 'Tools verborgen'; ?>
+                                            <?php echo esc_html($variant_labels[$v] ?? ''); ?>
                                         </small>
                                     </th>
                                     <td><?php echo number_format_i18n($row['sessions']); ?></td>
                                     <td><?php echo $row['engage_pct']; ?>%</td>
                                     <td style="font-weight:bold;"><?php echo $row['conv_atc_pct']; ?>%</td>
                                     <td><?php echo $row['conv_checkout_pct']; ?>%</td>
+                                    <td style="color:<?php echo $lift_color; ?>;font-weight:bold;">
+                                        <?php echo esc_html($lift_label); ?>
+                                    </td>
                                     <td><?php echo number_format_i18n($row['atc_total']); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                    <?php
-                    $lift = $ab_tools['lift_pct'];
-                    $lift_color = $lift > 0 ? '#1a7f37' : ($lift < 0 ? '#b32d2e' : '#666');
-                    $lift_text = $lift > 0
-                        ? sprintf('Variant B (zonder tools-sectie) presteert %s%% beter op ATC.', $lift)
-                        : ($lift < 0
-                            ? sprintf('Variant A (met tools-sectie) presteert %s%% beter op ATC.', abs($lift))
-                            : 'Beide varianten staan gelijk op ATC.');
-                    ?>
-                    <p style="margin-top:12px;color:<?php echo $lift_color; ?>;font-size:14px;">
-                        <strong>Lift:</strong> <?php echo esc_html($lift_text); ?>
-                    </p>
-                    <p style="color:#999;font-size:12px;margin-top:4px;">
-                        Statistische significantie vereist meestal 100+ ATC's per variant. Geef het 1-2 weken voordat je conclusies trekt.
+                    <p style="color:#999;font-size:12px;margin-top:8px;">
+                        Statistische significantie vereist meestal 100+ ATC's per variant. Geef het 1-2 weken voordat je conclusies trekt. Lift is vergeleken met A (controle).
                     </p>
                 <?php endif; ?>
             </div>

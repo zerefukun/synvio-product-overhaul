@@ -1120,13 +1120,21 @@ add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);
 function oz_ab_tools_test_assignment() {
     if (is_admin()) return;
     ?>
-<style id="oz-ab-tools-style">html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}</style>
+<style id="oz-ab-tools-style">
+html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}
+html.oz-ab-tools-c .oz-option-group[data-option="tools"] .oz-tool-mode{display:none !important;}
+</style>
 <script id="oz-ab-tools-script">
 (function(){
     try {
-        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=(A|B)/);
-        var v = match ? match[1] : (Math.random() < 0.5 ? 'A' : 'B');
-        if (!match) {
+        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+        var v;
+        if (match) {
+            v = match[1];
+        } else {
+            // 33/33/33 split. Bucket boundaries at 1/3 and 2/3.
+            var r = Math.random();
+            v = r < 0.3333 ? 'A' : (r < 0.6666 ? 'B' : 'C');
             document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
         }
         document.documentElement.classList.add('oz-ab-tools-' + v.toLowerCase());
