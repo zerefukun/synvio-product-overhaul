@@ -23,7 +23,7 @@
 
 import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
-import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
+import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2, buildRuimteDropdown } from './tools.js';
 import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
 import * as analytics from './analytics.js';
 
@@ -2258,6 +2258,11 @@ function init() {
 
   // Build tool section DOM (if product has tools)
   buildToolSectionV2("toolSection");
+
+  // Variant C: build a single "Kies je ruimte" dropdown that combines
+  // primer + PU choice (Betonstunter-style). Only does anything when
+  // html.oz-ab-tools-c is set; no-op for variants A and B.
+  buildRuimteDropdown();
 
   // Restore tool state from sessionStorage (e.g., after color switch)
   restoreToolState();

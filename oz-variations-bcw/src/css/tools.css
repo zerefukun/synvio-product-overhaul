@@ -403,41 +403,80 @@
   color: var(--oz-text-primary);
 }
 
-/* A/B/C variant C: dropdown alternative to mode buttons.
-   Hidden for variants A and B — only shows when html.oz-ab-tools-c is set
-   AND the JS has built the dropdown after buildToolSectionV2. */
-.oz-tool-mode-dropdown {
+/* ═══ A/B/C variant C — Betonstunter-style dropdowns ═══════════════
+   Variant C replaces the inline button rows with native <select> drop-
+   downs that look obviously like dropdowns (clear chevron, hint text).
+   - The "Kies je ruimte" dropdown also hides the underlying primer + pu
+     option groups since one room choice covers both.
+   - The "Kies je gereedschap" dropdown hides the inline mode buttons. */
+
+/* Hide the now-redundant primer + PU sections when variant C is active.
+   The combined "Kies je ruimte" dropdown drives them programmatically. */
+html.oz-ab-tools-c .oz-option-group[data-option="primer"],
+html.oz-ab-tools-c .oz-option-group[data-option="pu"] {
+  display: none !important;
+}
+
+/* Shared dropdown wrapper styling. The wrapper is hidden by default and
+   only shown when html.oz-ab-tools-c is set. */
+.oz-tool-mode-dropdown,
+.oz-ruimte-dropdown {
   display: none;
-  margin-bottom: 12px;
 }
-html.oz-ab-tools-c .oz-tool-mode-dropdown {
+html.oz-ab-tools-c .oz-tool-mode-dropdown,
+html.oz-ab-tools-c .oz-ruimte-dropdown {
   display: block;
 }
-.oz-tool-mode-dropdown-label {
+
+/* Inline label above the select — small, semi-bold, low-key */
+.oz-tool-mode-dropdown-label,
+.oz-ruimte-dropdown-label {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--oz-text-primary, #333);
-  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--oz-text-muted, #666);
+  margin: 4px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-.oz-tool-mode-select {
+
+/* The actual <select>. Designed to look obviously like a dropdown:
+   - thicker border than a button so the visual weight reads as input
+   - large chevron on the right with breathing room
+   - hover state makes the chevron and border pop */
+.oz-tool-mode-select,
+.oz-ruimte-select {
   width: 100%;
-  padding: 12px 14px;
+  padding: 14px 44px 14px 16px;
   font-size: 15px;
-  border: 1px solid var(--oz-border, #e5e5e3);
-  border-radius: 6px;
-  background: #fff;
+  font-family: 'Raleway', sans-serif;
+  border: 1.5px solid var(--oz-label-border, #d4d4d2);
+  border-radius: 8px;
+  background-color: #fff;
   color: var(--oz-text-primary, #333);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+  -moz-appearance: none;
+  /* Bigger, bolder chevron — 16px instead of 12px, in teal so it stands out */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23135350'%3E%3Cpath d='M3 6l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
-  background-size: 12px;
-  padding-right: 36px;
+  background-size: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.oz-tool-mode-select:focus {
-  outline: 2px solid var(--oz-color-teal, #135350);
-  outline-offset: 1px;
+.oz-tool-mode-select:hover,
+.oz-ruimte-select:hover {
+  border-color: var(--oz-accent, #135350);
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.08);
+}
+.oz-tool-mode-select:focus,
+.oz-ruimte-select:focus {
+  outline: none;
+  border-color: var(--oz-accent, #135350);
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.18);
+}
+.oz-tool-mode-select option:disabled,
+.oz-ruimte-select option:disabled {
+  color: #999;
 }

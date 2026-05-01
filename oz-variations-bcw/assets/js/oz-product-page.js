@@ -684,6 +684,62 @@
       buildToolModeDropdown(section);
     }
   }
+  function buildRuimteDropdown() {
+    if (!document.documentElement.classList.contains("oz-ab-tools-c")) return;
+    if (document.querySelector(".oz-ruimte-dropdown")) return;
+    var primerSection = document.querySelector('.oz-option-group[data-option="primer"]');
+    var puSection = document.querySelector('.oz-option-group[data-option="pu"]');
+    if (!primerSection || !puSection) return;
+    var rooms = [
+      { label: "Geen beschermlaag", primer: "Geen", pu: "0" },
+      { label: "Muur (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Hal / Gang (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Zolder (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Slaapkamer (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Keuken (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Badkamer (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Toilet / WC (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Vloer (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Meubel (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Trap (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" }
+    ];
+    var wrap = document.createElement("div");
+    wrap.className = "oz-option-group oz-ruimte-dropdown";
+    wrap.setAttribute("data-option", "ruimte");
+    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen + primer.</div>';
+    var label = document.createElement("label");
+    label.className = "oz-ruimte-dropdown-label";
+    label.textContent = "Maak je keuze";
+    wrap.appendChild(label);
+    var select = document.createElement("select");
+    select.className = "oz-ruimte-select";
+    var placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Maak je keuze...";
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    select.appendChild(placeholder);
+    rooms.forEach(function(r, i) {
+      var opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = r.label;
+      opt.dataset.primer = r.primer;
+      opt.dataset.pu = r.pu;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", function() {
+      var idx = parseInt(select.value, 10);
+      if (isNaN(idx)) return;
+      var r = rooms[idx];
+      if (!r) return;
+      var primerBtn = primerSection.querySelector('[data-primer="' + r.primer + '"]');
+      var puBtn = puSection.querySelector('[data-pu="' + r.pu + '"]');
+      if (primerBtn) primerBtn.click();
+      if (puBtn) puBtn.click();
+    });
+    wrap.appendChild(select);
+    primerSection.parentNode.insertBefore(wrap, primerSection);
+  }
   function buildToolModeDropdown(section) {
     if (!P.toolConfig || !P.toolConfig.toolSet) return;
     if (section.querySelector(".oz-tool-mode-dropdown")) return;
@@ -2514,6 +2570,7 @@
       }
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
+      buildRuimteDropdown();
       restoreToolState();
       syncUI();
       document.addEventListener("click", handleClick);
