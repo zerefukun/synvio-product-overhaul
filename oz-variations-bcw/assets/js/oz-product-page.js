@@ -1163,7 +1163,9 @@
     list.appendChild(chip);
     var drawer = buildDrawer(swatches);
     document.body.appendChild(drawer.root);
-    chip.addEventListener("click", function() {
+    chip.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
       openDrawer(drawer);
     });
     drawer.closeBtn.addEventListener("click", function() {
@@ -2024,6 +2026,7 @@
       }
       var swatch = target.closest(".oz-color-swatch");
       if (swatch) {
+        if (swatch.classList.contains("oz-color-more-chip")) return;
         var colorName = swatch.getAttribute("data-color") || "";
         trackColorSelected(colorName);
         if (swatch.hasAttribute("data-static")) {
