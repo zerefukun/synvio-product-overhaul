@@ -706,7 +706,7 @@
     var wrap = document.createElement("div");
     wrap.className = "oz-option-group oz-ruimte-dropdown";
     wrap.setAttribute("data-option", "ruimte");
-    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen + primer.</div>';
+    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <span class="oz-required-star" style="color:#e53e3e">*</span> <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen + primer.</div>';
     var select = document.createElement("select");
     select.className = "oz-ruimte-select";
     var placeholder = document.createElement("option");

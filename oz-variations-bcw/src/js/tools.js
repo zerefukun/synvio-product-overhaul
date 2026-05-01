@@ -252,6 +252,7 @@ export function buildRuimteDropdown() {
   wrap.setAttribute('data-option', 'ruimte');
   wrap.innerHTML =
     '<div class="oz-option-header">Kies je ruimte ' +
+    '<span class="oz-required-star" style="color:#e53e3e">*</span> ' +
     '<button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div>' +
     '<div class="oz-info-tooltip" id="ruimte-info">' +
     'Kies de ruimte waar je beton ciré aanbrengt. Op basis van slijtage en vocht ' +
