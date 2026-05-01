@@ -1101,13 +1101,22 @@ function oz_remove_admin_styles_from_frontend() {
 add_action('wp_enqueue_scripts', 'oz_remove_admin_styles_from_frontend', 9999);
 
 /* ================================================================
-   A/B TEST — Gereedschap section visibility on PDPs (added 01/05/26)
+   A/B TEST — Gereedschap UX (added 01/05/26, narrowed 02/05/26)
 
-   50% of visitors see the "Gereedschap" option group on PDPs, 50% don't.
-   Sticky cookie oz_ab_tools (A or B) with 30-day max-age.
+   Variant A (control: original UI) was retired on 02/05/26 because
+   the 3-way split was too slow to reach significance at our traffic
+   volume (~50-70 days/variant for 5k sessions). Test now compares
+   only the two new UIs head-to-head:
+
+     B = Gereedschap section hidden entirely
+     C = Dropdowns (Kies je ruimte + Gereedschap) + colors drawer
+
+   New visitors get a sticky cookie oz_ab_tools=B or =C (50/50, 30-day
+   max-age). Legacy A users are re-rolled into B or C on next pageview.
+   Legacy B and C users keep their existing assignment.
 
    Inline <script> + <style> run before paint so there's no flicker.
-   CSS rule hides .oz-option-group[data-option="tools"] for variant B.
+   CSS rules hide the relevant DOM per variant.
 
    Cache-safety: the inline script + style are static, same for every
    visitor. Per-user state lives only in the cookie, read at JS runtime.
@@ -1127,14 +1136,15 @@ html.oz-ab-tools-c .oz-option-group[data-option="tools"] .oz-tool-mode{display:n
 <script id="oz-ab-tools-script">
 (function(){
     try {
-        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+        // Match only B or C. Legacy A cookies fail this match and fall
+        // through to the 50/50 re-roll below — no separate migration step.
+        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([BC])/);
         var v;
         if (match) {
             v = match[1];
         } else {
-            // 33/33/33 split. Bucket boundaries at 1/3 and 2/3.
-            var r = Math.random();
-            v = r < 0.3333 ? 'A' : (r < 0.6666 ? 'B' : 'C');
+            // 50/50 B vs C. Single boundary at 0.5.
+            v = Math.random() < 0.5 ? 'B' : 'C';
             document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
         }
         document.documentElement.classList.add('oz-ab-tools-' + v.toLowerCase());
