@@ -227,23 +227,23 @@ class OZ_Analytics_Dashboard {
                 <?php self::render_funnel($funnel); ?>
             </div>
 
-            <!-- A/B/C test: Gereedschap section variants -->
+            <!-- A/B test: Gereedschap UX (variant A retired 02/05/26) -->
             <?php
             $variant_labels = [
-                'A' => 'Inline buttons (controle)',
-                'B' => 'Sectie verborgen',
+                'A' => 'Inline buttons (gepensioneerd)',
+                'B' => 'Sectie verborgen (controle)',
                 'C' => 'Dropdown (Betonstunter-stijl)',
             ];
             ?>
             <div class="oz-panel" style="margin-bottom: 24px;">
-                <h3>A/B/C test &mdash; Gereedschap sectie</h3>
+                <h3>A/B test &mdash; Gereedschap UX</h3>
                 <p class="oz-panel-subtitle">
-                    Drie varianten, 33/33/33 split via cookie. A = controle, B = sectie verborgen, C = dropdown.
+                    50/50 B vs C split. Variant A is gepensioneerd op 02/05/26 (te traag voor stat-sig bij ons volume) maar de historische data blijft hier zichtbaar voor referentie. B = nieuwe controle.
                 </p>
                 <?php if ($ab_tools['total_sessions'] === 0) : ?>
                     <p style="color:#666;font-style:italic;">Nog geen data &mdash; wacht tot bezoekers de PDPs hebben bezocht na de deploy.</p>
                 <?php else : ?>
-                    <table class="widefat" style="margin-top:8px;">
+                    <table class="widefat oz-ab-test-table" style="margin-top:8px;">
                         <thead>
                             <tr>
                                 <th></th>
@@ -251,17 +251,19 @@ class OZ_Analytics_Dashboard {
                                 <th>Engagement<br><small>kleur gepickt %</small></th>
                                 <th>ATC %<br><small>headline metric</small></th>
                                 <th>Checkout %</th>
-                                <th>Lift vs A</th>
+                                <th>Lift vs B</th>
                                 <th>Totaal ATC</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($ab_tools['variants'] as $v => $row) :
                                 $lift_v = isset($ab_tools['lifts'][$v]) ? $ab_tools['lifts'][$v] : 0;
-                                $lift_color = $v === 'A' ? '#666' : ($lift_v > 0 ? '#1a7f37' : ($lift_v < 0 ? '#b32d2e' : '#666'));
-                                $lift_label = $v === 'A' ? 'baseline' : ($lift_v > 0 ? '+' . $lift_v . '%' : $lift_v . '%');
+                                $lift_color = $v === 'B' ? '#666' : ($lift_v > 0 ? '#1a7f37' : ($lift_v < 0 ? '#b32d2e' : '#666'));
+                                $lift_label = $v === 'B' ? 'baseline' : ($lift_v > 0 ? '+' . $lift_v . '%' : $lift_v . '%');
+                                $is_retired = ($v === 'A');
+                                $row_class = $is_retired ? 'oz-ab-row-retired' : '';
                             ?>
-                                <tr>
+                                <tr class="<?php echo esc_attr($row_class); ?>">
                                     <th style="font-weight:bold;">
                                         Variant <?php echo esc_html($v); ?>
                                         <small style="display:block;font-weight:normal;color:#666;">
@@ -281,7 +283,7 @@ class OZ_Analytics_Dashboard {
                         </tbody>
                     </table>
                     <p style="color:#999;font-size:12px;margin-top:8px;">
-                        Statistische significantie vereist meestal 100+ ATC's per variant. Geef het 1-2 weken voordat je conclusies trekt. Lift is vergeleken met A (controle).
+                        Statistische significantie vereist meestal 100+ ATC's per variant. Geef het 1-2 weken voordat je conclusies trekt. Lift is vergeleken met B (controle sinds 02/05/26).
                     </p>
                 <?php endif; ?>
             </div>
@@ -1274,6 +1276,25 @@ class OZ_Analytics_Dashboard {
 
             /* ── Empty state ── */
             .oz-empty { color: #646970; font-style: italic; font-size: 13px; padding: 12px 0; }
+
+            /* ── A/B test: retired variant row ──
+               Variant A is gepensioneerd op 02/05/26. Historische data blijft
+               zichtbaar voor referentie maar de hele rij is uitgegrijsd en
+               niet selecteerbaar zodat het visueel duidelijk is dat deze
+               variant niet meer actief data verzamelt. */
+            .oz-ab-test-table .oz-ab-row-retired {
+                opacity: 0.45;
+                background: #f6f7f7;
+                color: #8c8f94;
+                pointer-events: none;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .oz-ab-test-table .oz-ab-row-retired th,
+            .oz-ab-test-table .oz-ab-row-retired td {
+                color: inherit;
+                cursor: not-allowed;
+            }
 
             /* ── Responsive ── */
             @media (max-width: 960px) {

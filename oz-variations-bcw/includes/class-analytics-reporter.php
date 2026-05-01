@@ -777,18 +777,21 @@ class OZ_Analytics_Reporter {
             ];
         }
 
-        // Lift % per variant vs A (control) on the headline metric (ATC %).
-        $base_pct = $out['A']['conv_atc_pct'];
+        // Lift % per variant vs B (control) on the headline metric (ATC %).
+        // Variant A was retired on 02/05/26 when the test narrowed to 50/50
+        // B vs C. Variant B is the new control because it kept its original
+        // probability and represents the simpler "section hidden" UX.
+        $base_pct = $out['B']['conv_atc_pct'];
         $lifts = ['A' => 0, 'B' => 0, 'C' => 0];
         if ($base_pct > 0) {
-            $lifts['B'] = round((($out['B']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
+            $lifts['A'] = round((($out['A']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
             $lifts['C'] = round((($out['C']['conv_atc_pct'] - $base_pct) / $base_pct) * 100, 1);
         }
 
         return [
             'variants'       => $out,
             'lifts'          => $lifts,
-            'lift_pct'       => $lifts['B'], // backward-compat
+            'lift_pct'       => $lifts['C'], // backward-compat (now C vs B)
             'total_sessions' => $out['A']['sessions'] + $out['B']['sessions'] + $out['C']['sessions'],
         ];
     }
