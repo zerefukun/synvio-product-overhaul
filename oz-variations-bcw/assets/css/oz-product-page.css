@@ -2198,6 +2198,9 @@ select.oz-ruimte-select:focus {
 .oz-ruimte-select option:disabled {
   color: #999;
 }
+html.oz-ab-tools-c .oz-tool-extras-wrap {
+  display: none !important;
+}
 
 /* src/css/sheet.css */
 .oz-sticky-bar {

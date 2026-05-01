@@ -825,6 +825,9 @@
           showNudge = hasIndividualRoller;
         }
       }
+      if (toolMode === "set" && document.documentElement.classList.contains("oz-ab-tools-c")) {
+        showNudge = false;
+      }
       nudgeEl.classList.toggle("visible", showNudge);
     }
     var indList = section.querySelector('[data-list-type="individual"]');

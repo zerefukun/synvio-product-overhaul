@@ -431,6 +431,12 @@ export function syncToolSectionV2(sectionId, toolMode, tools, extras, qty) {
         showNudge = hasIndividualRoller;
       }
     }
+    // Variant C: extras wrap is hidden via CSS when set mode is active.
+    // Without the extras UI, the nudge has no actionable outcome. It
+    // would just sit there permanently. Suppress it instead.
+    if (toolMode === 'set' && document.documentElement.classList.contains('oz-ab-tools-c')) {
+      showNudge = false;
+    }
     nudgeEl.classList.toggle('visible', showNudge);
   }
 

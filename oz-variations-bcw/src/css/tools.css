@@ -482,3 +482,12 @@ select.oz-ruimte-select:focus {
 .oz-ruimte-select option:disabled {
   color: #999;
 }
+
+/* Variant C: when "kant & klaar" is picked, the extra mini-options
+   (PU Roller, Verfbak, Tape, etc.) should not tag along. Patrick wants
+   the set selection lean. The smart nudge is also suppressed via JS in
+   syncToolSectionV2 because without the extras UI it would be
+   permanently visible with no way to act on it. */
+html.oz-ab-tools-c .oz-tool-extras-wrap {
+  display: none !important;
+}
