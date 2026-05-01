@@ -2269,15 +2269,16 @@ function init() {
   // html.oz-ab-tools-c is set; no-op for variants A and B.
   buildRuimteDropdown();
 
-  // Collapse swatch grid to 2 rows + add "Bekijk alle" chip / drawer.
-  // Cache-safe: pure client-side, clones existing server-rendered links.
-  setupColorDrawer();
-
   // Restore tool state from sessionStorage (e.g., after color switch)
   restoreToolState();
 
   // Initial render — set highlights and prices from defaults
   syncUI();
+
+  // Collapse swatch grid to 2 rows + add "Bekijk alle" chip / drawer.
+  // Runs AFTER syncUI() so the RAL/NCS mode buttons exist (renderColorMode
+  // builds them) and the drawer can include its RAL CTA. Variant C only.
+  setupColorDrawer();
 
   // Event delegation: all clicks on the page
   document.addEventListener('click', handleClick);

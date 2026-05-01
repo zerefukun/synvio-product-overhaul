@@ -2723,9 +2723,9 @@
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
       buildRuimteDropdown();
-      setupColorDrawer();
       restoreToolState();
       syncUI();
+      setupColorDrawer();
       document.addEventListener("click", handleClick);
       if (DOM.qtyInput) {
         DOM.qtyInput.addEventListener("input", handleQtyInput);
