@@ -139,32 +139,36 @@
 }
 
 /* ── Action button — orange CTA in normal state, accent teal on hover.
-   Two-tone pulse signals the click target without depending on icon
-   colour, which works for both the cart and + glyphs. */
+   !important is required across visual properties to win over Flatsome's
+   blanket button reset (same pattern as .oz-drawer-upsell-add in
+   cart-drawer.css). Two-tone signals the click target without depending
+   on icon colour, which works for both the cart and + glyphs. */
 
 .oz-fbt-action {
   position: absolute;
   bottom: 12px;
   right: 12px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--oz-cta);
-  color: var(--oz-cta-text, #fff);
-  border: none;
-  display: inline-flex;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: var(--oz-cta) !important;
+  color: var(--oz-cta-text, #fff) !important;
+  border: none !important;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  padding: 0 !important;
   cursor: pointer;
   z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
   transition:
     background 0.15s var(--oz-ease),
-    transform 0.15s var(--oz-ease);
+    transform 0.15s var(--oz-ease) !important;
 }
 
 .oz-fbt-action:hover {
-  background: var(--oz-accent);
+  background: var(--oz-accent) !important;
+  color: #fff !important;
   transform: scale(1.05);
 }
 
@@ -177,7 +181,7 @@
 }
 
 .oz-fbt-action.is-added {
-  background: var(--oz-accent);
+  background: var(--oz-accent) !important;
   pointer-events: none;
 }
 
@@ -275,17 +279,17 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: none;
-  background: var(--oz-bg-warm, #F5F4F0);
-  color: var(--oz-text-muted);
-  display: inline-flex;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  border: none !important;
+  background: var(--oz-bg-warm, #F5F4F0) !important;
+  color: var(--oz-text-muted) !important;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 0;
+  padding: 0 !important;
   transition: background 0.15s var(--oz-ease), color 0.15s var(--oz-ease);
 }
 
@@ -311,27 +315,28 @@
 
 /* Each pill is a one-shot add — click adds that size to cart,
  * card overlay closes itself, cart drawer opens via the existing
- * 'oz-added-to-cart' event. No separate Toevoegen button. */
+ * 'oz-added-to-cart' event. No separate Toevoegen button.
+ * !important is required to win over Flatsome's blanket button reset. */
 .oz-fbt-option {
   flex: 1 1 calc(50% - 3px);
   min-width: 0;
-  padding: 8px 6px;
-  border: 1.5px solid var(--oz-label-border, var(--oz-border));
-  border-radius: var(--oz-radius, 8px);
-  background: #fff;
-  color: var(--oz-text-body, var(--oz-text-primary));
-  font-family: var(--ff-body, 'Raleway', sans-serif);
-  font-size: 13px;
-  font-weight: 600;
+  padding: 8px 6px !important;
+  border: 1.5px solid var(--oz-label-border, var(--oz-border)) !important;
+  border-radius: var(--oz-radius, 8px) !important;
+  background: #fff !important;
+  color: var(--oz-text-body, var(--oz-text-primary)) !important;
+  font-family: var(--ff-body, 'Raleway', sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
   cursor: pointer;
-  transition: all 0.15s var(--oz-ease);
-  line-height: 1.2;
-  text-align: center;
+  transition: all 0.15s var(--oz-ease) !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
 }
 
 .oz-fbt-option:hover {
-  border-color: var(--oz-accent);
-  color: var(--oz-accent);
+  border-color: var(--oz-accent) !important;
+  color: var(--oz-accent) !important;
 }
 
 .oz-fbt-option.is-loading {
@@ -340,9 +345,9 @@
 }
 
 .oz-fbt-option.is-added {
-  background: var(--oz-accent);
-  color: var(--oz-accent-text, #fff);
-  border-color: var(--oz-accent);
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text, #fff) !important;
+  border-color: var(--oz-accent) !important;
 }
 
 /* ── Carousel nav buttons (positioned outside the swiper container) ── */
@@ -352,28 +357,28 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 4;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--oz-border);
-  background: #fff;
-  color: var(--oz-text-primary);
-  display: inline-flex;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--oz-border) !important;
+  background: #fff !important;
+  color: var(--oz-text-primary) !important;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
   transition:
     background 0.2s var(--oz-ease),
     color 0.2s var(--oz-ease),
-    transform 0.15s var(--oz-ease);
+    transform 0.15s var(--oz-ease) !important;
 }
 
 .oz-fbt-nav:hover {
-  background: var(--oz-accent);
-  color: var(--oz-accent-text, #fff);
-  border-color: var(--oz-accent);
+  background: var(--oz-accent) !important;
+  color: var(--oz-accent-text, #fff) !important;
+  border-color: var(--oz-accent) !important;
 }
 
 .oz-fbt-nav:active {
