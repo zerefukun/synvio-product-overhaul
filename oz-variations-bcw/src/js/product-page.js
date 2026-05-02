@@ -102,6 +102,11 @@ function displayColor(colorName) {
 function syncUI() {
   var prices = calculatePrices(P, S);
 
+  // Persist current state to sessionStorage (debounced) so a
+  // cart→checkout→bounce-back to PDP restores the user's options.
+  // No-op if persistPdpState isn't defined yet (early init).
+  if (typeof persistPdpState === 'function') persistPdpState();
+
   // Update price breakdown
   renderBreakdown(prices);
 
@@ -305,6 +310,19 @@ function renderOptionHighlights() {
     for (var i = 0; i < btns.length; i++) {
       var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
       btns[i].classList.toggle('selected', val === spec.value);
+    }
+  }
+
+  // Generic addon buttons (data-addon-key / data-addon-value). Click handler
+  // sets .selected imperatively, but a state restore from sessionStorage
+  // doesn't trigger that handler — sync the highlight here so restored
+  // addon picks render correctly.
+  if (S.addons) {
+    var addonBtns = document.querySelectorAll('button[data-addon-key]');
+    for (var a = 0; a < addonBtns.length; a++) {
+      var key = addonBtns[a].getAttribute('data-addon-key');
+      var val = addonBtns[a].getAttribute('data-addon-value');
+      addonBtns[a].classList.toggle('selected', S.addons[key] === val);
     }
   }
 }
@@ -1525,87 +1543,182 @@ function handleCustomColorInput(e) {
 }
 
 
-/* ═══ TOOL STATE PERSISTENCE (across color switches) ═══════ */
+/* ═══ PDP STATE PERSISTENCE ═══════════════════════════════════
+ *
+ * Cache-safe by construction: sessionStorage is per-tab, client-only.
+ * Nothing renders server-side. The cached PDP HTML is identical for all
+ * users; the JS reads/writes session state at runtime.
+ *
+ * Two scenarios this covers:
+ *   1. Color switch via full-page nav (variant data missing) — same line
+ *      shares state across colors so PU/primer/qty survive the swatch click.
+ *   2. Cart drawer → checkout → bounce-back to PDP — the whole reason this
+ *      exists. Marcel-style sessions where customers re-pick options after
+ *      every return navigation.
+ *
+ * Storage key is scoped by baseProductId (or productId) so different
+ * product lines don't cross-pollute. TTL of 30 min covers a reasonable
+ * checkout-and-back cycle without crossing into a separate buying intent.
+ *
+ * Save: debounced 200 ms after every state mutation. Also fires on
+ * `pagehide` for the case where debounce hasn't drained before unload.
+ */
 
-var TOOL_STATE_KEY = 'oz_bcw_tool_state';
+// Bump the v on schema changes so old saved state doesn't get applied with
+// keys we no longer support
+var PDP_STATE_KEY = 'oz_bcw_pdp_state_v2:' + (P.baseProductId || P.productId);
+var PDP_STATE_TTL = 30 * 60 * 1000;  // 30 minutes
+
+var _persistTimer = null;
 
 /**
- * Save tool-related state to sessionStorage before navigating to a new color.
- * Only saves tool mode, extras, and tools — not color/qty/product-specific state.
+ * Save persistable PDP state to sessionStorage. Debounced — call as often
+ * as you like, only the last call within 200 ms actually writes.
  */
-function saveToolState() {
-  try {
-    var data = {
-      toolMode: S.toolMode,
-      extras: S.extras,
-      tools: S.tools,
-      puLayers: S.puLayers,
-      primer: S.primer,
-      colorfresh: S.colorfresh,
-      toepassing: S.toepassing,
-      pakket: S.pakket,
-      qty: S.qty,
-      sheetOpen: S.sheetOpen,  // Preserve bottom sheet state across color switches
-      timestamp: Date.now(),
-    };
-    sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
-  } catch (e) {
-    // sessionStorage not available — silently ignore
-  }
+function persistPdpState() {
+  if (_persistTimer) clearTimeout(_persistTimer);
+  _persistTimer = setTimeout(function () {
+    _persistTimer = null;
+    try {
+      var data = {
+        ts: Date.now(),
+        toolMode: S.toolMode,
+        extras: S.extras,
+        tools: S.tools,
+        puLayers: S.puLayers,
+        primer: S.primer,
+        colorfresh: S.colorfresh,
+        toepassing: S.toepassing,
+        pakket: S.pakket,
+        qty: S.qty,
+        addons: S.addons,
+        selectedColor: S.selectedColor,
+        colorMode: S.colorMode,
+        customColor: S.customColor,
+        formulaMode: S.formulaMode,
+      };
+      sessionStorage.setItem(PDP_STATE_KEY, JSON.stringify(data));
+    } catch (e) {
+      // Safari private mode / quota exceeded — silently ignore. Persisting
+      // is nice-to-have, not critical to the cart flow.
+    }
+  }, 200);
 }
 
 /**
- * Restore tool state from sessionStorage on page load.
- * Only restores if saved within the last 60 seconds (i.e., from a color switch, not stale).
+ * Validate that an option value still exists in the current product config.
+ * If not (e.g. admin removed the option since the customer last visited),
+ * skip restoring it so we don't push the user into an invalid state.
  */
-function restoreToolState() {
-  try {
-    var raw = sessionStorage.getItem(TOOL_STATE_KEY);
-    if (!raw) return;
+function _isValidPuLayers(v) {
+  if (!P.puOptions) return false;
+  for (var i = 0; i < P.puOptions.length; i++) {
+    if (P.puOptions[i].layers == v) return true;  // loose for "0" === 0
+  }
+  return false;
+}
+function _isValidOptionLabel(options, label) {
+  if (!options || !label) return false;
+  for (var i = 0; i < options.length; i++) {
+    if (options[i].label === label) return true;
+  }
+  return false;
+}
+function _isValidAddon(groupKey, label) {
+  if (!P.addonGroups) return false;
+  for (var i = 0; i < P.addonGroups.length; i++) {
+    if (P.addonGroups[i].key === groupKey) {
+      return _isValidOptionLabel(P.addonGroups[i].options, label);
+    }
+  }
+  return false;
+}
 
-    // Clear it immediately so it doesn't persist across unrelated visits
-    sessionStorage.removeItem(TOOL_STATE_KEY);
+/**
+ * Restore PDP state from sessionStorage on page load. Validates each value
+ * against the current product config so a since-removed option doesn't get
+ * applied. Silent on any failure — a broken restore must never block the page.
+ */
+function restorePdpState() {
+  try {
+    var raw = sessionStorage.getItem(PDP_STATE_KEY);
+    if (!raw) return;
 
     var data = JSON.parse(raw);
 
-    // Only restore if saved less than 60 seconds ago (color switch)
-    if (Date.now() - data.timestamp > 60000) return;
+    // TTL — drop stale state. Crossing 30 min usually means a different
+    // buying intent, not a checkout-and-back loop.
+    if (!data.ts || Date.now() - data.ts > PDP_STATE_TTL) {
+      sessionStorage.removeItem(PDP_STATE_KEY);
+      return;
+    }
 
-    // Restore tool selections
-    if (data.toolMode) updateState({ toolMode: data.toolMode });
-    if (data.qty > 1) updateState({ qty: data.qty });
+    // Top-level options — validate against current product config
+    if (data.puLayers !== undefined && data.puLayers !== null && _isValidPuLayers(data.puLayers)) {
+      updateState({ puLayers: data.puLayers });
+    }
+    if (data.primer && _isValidOptionLabel(P.primerOptions, data.primer)) {
+      updateState({ primer: data.primer });
+    }
+    if (data.colorfresh && _isValidOptionLabel(P.colorfresh, data.colorfresh)) {
+      updateState({ colorfresh: data.colorfresh });
+    }
+    if (data.toepassing && _isValidOptionLabel(P.toepassing, data.toepassing)) {
+      updateState({ toepassing: data.toepassing });
+    }
+    if (data.pakket && _isValidOptionLabel(P.pakket, data.pakket)) {
+      updateState({ pakket: data.pakket });
+    }
+    if (data.qty && data.qty > 0 && data.qty <= 99) {
+      updateState({ qty: data.qty });
+      if (DOM.qtyInput) DOM.qtyInput.value = data.qty;
+    }
+    if (data.toolMode === 'set' || data.toolMode === 'individual' || data.toolMode === 'none') {
+      updateState({ toolMode: data.toolMode });
+    }
 
-    // Restore option selections (puLayers, primer, etc.)
-    if (data.puLayers !== undefined && data.puLayers !== null) updateState({ puLayers: data.puLayers });
-    if (data.primer) updateState({ primer: data.primer });
-    if (data.colorfresh) updateState({ colorfresh: data.colorfresh });
-    if (data.toepassing) updateState({ toepassing: data.toepassing });
-    if (data.pakket) updateState({ pakket: data.pakket });
+    // Generic addon groups — only apply still-valid selections
+    if (data.addons && S.addons) {
+      Object.keys(data.addons).forEach(function (key) {
+        if (_isValidAddon(key, data.addons[key])) {
+          S.addons[key] = data.addons[key];
+        }
+      });
+    }
 
-    // Restore nested tool/extra state — merge carefully
+    // Color mode + selection — applies for static-color products and RAL/NCS
+    if (data.colorMode === 'swatch' || data.colorMode === 'ral_ncs') {
+      updateState({ colorMode: data.colorMode });
+    }
+    if (data.customColor && data.colorMode === 'ral_ncs') {
+      updateState({ customColor: data.customColor });
+    }
+    if (data.selectedColor && P.hasStaticColors) {
+      updateState({ selectedColor: data.selectedColor });
+    }
+
+    // Tool/extra state — only restore ids that still exist in current config
     if (data.extras) {
-      Object.keys(data.extras).forEach(function(id) {
+      Object.keys(data.extras).forEach(function (id) {
         if (S.extras[id]) S.extras[id] = data.extras[id];
       });
     }
     if (data.tools) {
-      Object.keys(data.tools).forEach(function(id) {
+      Object.keys(data.tools).forEach(function (id) {
         if (S.tools[id]) S.tools[id] = data.tools[id];
       });
     }
-
-    // Update qty input to match restored state
-    if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
-
-    // Re-open bottom sheet if it was open during color switch
-    if (data.sheetOpen) {
-      // Small delay to let the DOM settle after init
-      setTimeout(function() { openSheet(); }, 100);
-    }
   } catch (e) {
-    // Parse error or sessionStorage unavailable — silently ignore
+    // Parse error / storage unavailable — never block the page on restore
+    try { sessionStorage.removeItem(PDP_STATE_KEY); } catch (e2) {}
   }
 }
+
+// Back-compat shims for the old function names (still called from a couple
+// of other code paths — keeping the old API points working avoids an
+// unrelated refactor).
+function saveToolState()   { persistPdpState(); }
+function restoreToolState() { restorePdpState(); }
 
 
 /* ═══ BOTTOM SHEET ══════════════════════════════════════════ */
@@ -1858,6 +1971,16 @@ function submitCart(isRetry) {
         // Show success feedback
         showCartSuccess(json.data);
 
+        // Server replaced an older configuration of the same product.
+        // Tell the user so they understand why the old line is gone — silent
+        // dedup would feel like a bug ("where's my other config?").
+        var replaced = (json.data && parseInt(json.data.replaced_count, 10)) || 0;
+        if (replaced > 0) {
+          showCartInfo(replaced === 1
+            ? 'Vorige configuratie van dit product vervangen door je nieuwe keuze.'
+            : 'Vorige configuraties van dit product vervangen door je nieuwe keuze.');
+        }
+
         // Notify cart drawer to open (custom event for our theme)
         document.dispatchEvent(new CustomEvent('oz-added-to-cart'));
 
@@ -1917,6 +2040,24 @@ function showCartError(msg) {
     cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
   }
   setTimeout(removeCartMsg, 4000);
+}
+
+/**
+ * Show informational message below the add-to-cart area. Used to surface
+ * silent server actions (like dedup-replacement) so the user understands
+ * why the cart looks different than they expect. Auto-hides after 6 s
+ * (longer than errors — this is non-blocking informational copy).
+ */
+function showCartInfo(msg) {
+  removeCartMsg();
+  var el = document.createElement('div');
+  el.className = 'oz-cart-msg oz-cart-info';
+  el.textContent = msg;
+  var cartRow = document.querySelector('.oz-cart-row');
+  if (cartRow && cartRow.parentNode) {
+    cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
+  }
+  setTimeout(removeCartMsg, 6000);
 }
 
 /**
@@ -2290,8 +2431,29 @@ function init() {
   // when html.oz-ab-tools-c is set; no-op for variants A and B.
   buildRuimteDropdown();
 
-  // Restore tool state from sessionStorage (e.g., after color switch)
-  restoreToolState();
+  // Restore PDP option state from sessionStorage. Covers two cases:
+  // (1) full-page color-swatch nav within the same line, (2) cart→checkout
+  // bounce-back where the user expects their PU/primer/qty/etc. preserved.
+  restorePdpState();
+
+  // Safety net: persist on pagehide too, in case the 200ms debounce hasn't
+  // drained yet when the user navigates away. pagehide fires reliably on
+  // every nav including bfcache; beforeunload is unreliable on mobile.
+  window.addEventListener('pagehide', function () {
+    // Bypass debounce — write synchronously
+    if (_persistTimer) { clearTimeout(_persistTimer); _persistTimer = null; }
+    try {
+      sessionStorage.setItem(PDP_STATE_KEY, JSON.stringify({
+        ts: Date.now(),
+        toolMode: S.toolMode, extras: S.extras, tools: S.tools,
+        puLayers: S.puLayers, primer: S.primer, colorfresh: S.colorfresh,
+        toepassing: S.toepassing, pakket: S.pakket, qty: S.qty,
+        addons: S.addons, selectedColor: S.selectedColor,
+        colorMode: S.colorMode, customColor: S.customColor,
+        formulaMode: S.formulaMode,
+      }));
+    } catch (e) {}
+  });
 
   // Initial render — set highlights and prices from defaults
   syncUI();

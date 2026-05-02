@@ -312,6 +312,18 @@
   margin-top: 8px;
 }
 
+/* Cart info message — non-blocking notice (e.g. "vorige config vervangen").
+   Distinct from .oz-cart-error so users don't read it as a problem. */
+.oz-cart-info {
+  color: #1a4f8f;
+  background: #eaf3fb;
+  border-left: 3px solid #2563eb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: var(--oz-text-sm);
+  margin-top: 8px;
+}
+
 
 /* ═══ PAYMENT METHODS ═════════════════════════════════════════ */
 

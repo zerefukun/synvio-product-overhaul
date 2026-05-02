@@ -128,12 +128,40 @@ class OZ_Ajax_Handlers {
             wp_send_json_error($error);
         }
 
+        // ═══ CONFIG-CHANGE DEDUP (cart pollution fix) ═══
+        // Snapshot existing cart lines for this product so we can tell after
+        // add_to_cart whether WC merged into an existing line (same config →
+        // qty incremented) or created a fresh one (different config → new key).
+        // Marcel-style sessions iterate the same product with different
+        // PU/primer picks; without dedup the cart fills with stale configs
+        // the customer has to manually clean up before checkout.
+        $pre_keys_for_product = [];
+        foreach (WC()->cart->get_cart() as $existing_key => $existing_item) {
+            if (intval($existing_item['product_id']) === $product_id) {
+                $pre_keys_for_product[$existing_key] = intval($existing_item['quantity']);
+            }
+        }
+
         // The cart item data is captured by OZ_Cart_Manager::capture_addon_data
         // via the woocommerce_add_cart_item_data filter. We just need to add to cart.
         $cart_key = WC()->cart->add_to_cart($product_id, $quantity);
 
         if (!$cart_key) {
             wp_send_json_error('Kon product niet toevoegen aan winkelmand.');
+        }
+
+        // If WC created a new line (returned key not in our snapshot), the
+        // user has changed config since the last add. Remove the stale lines
+        // so the cart shows only the latest configuration. Same-config ATC
+        // hits the merge path (returned key was in snapshot) — no dedup runs.
+        $replaced_count = 0;
+        if (!isset($pre_keys_for_product[$cart_key])) {
+            foreach ($pre_keys_for_product as $stale_key => $_) {
+                if ($stale_key === $cart_key) continue;  // belt-and-braces guard
+                if (WC()->cart->remove_cart_item($stale_key)) {
+                    $replaced_count++;
+                }
+            }
         }
 
         // ═══ TOOL PRODUCTS — add as separate cart items ═══
@@ -145,10 +173,11 @@ class OZ_Ajax_Handlers {
 
         // Return fresh cart data for the drawer
         wp_send_json_success([
-            'cart_key'   => $cart_key,
-            'cart_count' => WC()->cart->get_cart_contents_count(),
-            'subtotal'   => WC()->cart->get_cart_subtotal(),
-            'cart_total'  => WC()->cart->get_total('edit'),
+            'cart_key'       => $cart_key,
+            'cart_count'     => WC()->cart->get_cart_contents_count(),
+            'subtotal'       => WC()->cart->get_cart_subtotal(),
+            'cart_total'     => WC()->cart->get_total('edit'),
+            'replaced_count' => $replaced_count,
         ]);
     }
 }

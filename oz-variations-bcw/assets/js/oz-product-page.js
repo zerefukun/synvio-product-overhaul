@@ -1327,6 +1327,7 @@
       return colorName;
     }, syncUI = function() {
       var prices = calculatePrices(P, S);
+      if (typeof persistPdpState === "function") persistPdpState();
       renderBreakdown(prices);
       if (DOM.stickyPrice) DOM.stickyPrice.textContent = fmt(prices.total);
       if (DOM.stickyPriceMobile) DOM.stickyPriceMobile.textContent = fmt(prices.total);
@@ -1455,6 +1456,14 @@
         for (var i = 0; i < btns.length; i++) {
           var val = spec.parse ? spec.parse(btns[i].getAttribute(spec.attr)) : btns[i].getAttribute(spec.attr);
           btns[i].classList.toggle("selected", val === spec.value);
+        }
+      }
+      if (S.addons) {
+        var addonBtns = document.querySelectorAll("button[data-addon-key]");
+        for (var a = 0; a < addonBtns.length; a++) {
+          var key = addonBtns[a].getAttribute("data-addon-key");
+          var val = addonBtns[a].getAttribute("data-addon-value");
+          addonBtns[a].classList.toggle("selected", S.addons[key] === val);
         }
       }
     }, renderSelectedLabels = function() {
@@ -2279,39 +2288,99 @@
         }
       }
       syncUI();
-    }, saveToolState = function() {
-      try {
-        var data = {
-          toolMode: S.toolMode,
-          extras: S.extras,
-          tools: S.tools,
-          puLayers: S.puLayers,
-          primer: S.primer,
-          colorfresh: S.colorfresh,
-          toepassing: S.toepassing,
-          pakket: S.pakket,
-          qty: S.qty,
-          sheetOpen: S.sheetOpen,
-          // Preserve bottom sheet state across color switches
-          timestamp: Date.now()
-        };
-        sessionStorage.setItem(TOOL_STATE_KEY, JSON.stringify(data));
-      } catch (e) {
+    }, persistPdpState = function() {
+      if (_persistTimer) clearTimeout(_persistTimer);
+      _persistTimer = setTimeout(function() {
+        _persistTimer = null;
+        try {
+          var data = {
+            ts: Date.now(),
+            toolMode: S.toolMode,
+            extras: S.extras,
+            tools: S.tools,
+            puLayers: S.puLayers,
+            primer: S.primer,
+            colorfresh: S.colorfresh,
+            toepassing: S.toepassing,
+            pakket: S.pakket,
+            qty: S.qty,
+            addons: S.addons,
+            selectedColor: S.selectedColor,
+            colorMode: S.colorMode,
+            customColor: S.customColor,
+            formulaMode: S.formulaMode
+          };
+          sessionStorage.setItem(PDP_STATE_KEY, JSON.stringify(data));
+        } catch (e) {
+        }
+      }, 200);
+    }, _isValidPuLayers = function(v) {
+      if (!P.puOptions) return false;
+      for (var i = 0; i < P.puOptions.length; i++) {
+        if (P.puOptions[i].layers == v) return true;
       }
-    }, restoreToolState = function() {
+      return false;
+    }, _isValidOptionLabel = function(options, label) {
+      if (!options || !label) return false;
+      for (var i = 0; i < options.length; i++) {
+        if (options[i].label === label) return true;
+      }
+      return false;
+    }, _isValidAddon = function(groupKey, label) {
+      if (!P.addonGroups) return false;
+      for (var i = 0; i < P.addonGroups.length; i++) {
+        if (P.addonGroups[i].key === groupKey) {
+          return _isValidOptionLabel(P.addonGroups[i].options, label);
+        }
+      }
+      return false;
+    }, restorePdpState = function() {
       try {
-        var raw = sessionStorage.getItem(TOOL_STATE_KEY);
+        var raw = sessionStorage.getItem(PDP_STATE_KEY);
         if (!raw) return;
-        sessionStorage.removeItem(TOOL_STATE_KEY);
         var data = JSON.parse(raw);
-        if (Date.now() - data.timestamp > 6e4) return;
-        if (data.toolMode) updateState({ toolMode: data.toolMode });
-        if (data.qty > 1) updateState({ qty: data.qty });
-        if (data.puLayers !== void 0 && data.puLayers !== null) updateState({ puLayers: data.puLayers });
-        if (data.primer) updateState({ primer: data.primer });
-        if (data.colorfresh) updateState({ colorfresh: data.colorfresh });
-        if (data.toepassing) updateState({ toepassing: data.toepassing });
-        if (data.pakket) updateState({ pakket: data.pakket });
+        if (!data.ts || Date.now() - data.ts > PDP_STATE_TTL) {
+          sessionStorage.removeItem(PDP_STATE_KEY);
+          return;
+        }
+        if (data.puLayers !== void 0 && data.puLayers !== null && _isValidPuLayers(data.puLayers)) {
+          updateState({ puLayers: data.puLayers });
+        }
+        if (data.primer && _isValidOptionLabel(P.primerOptions, data.primer)) {
+          updateState({ primer: data.primer });
+        }
+        if (data.colorfresh && _isValidOptionLabel(P.colorfresh, data.colorfresh)) {
+          updateState({ colorfresh: data.colorfresh });
+        }
+        if (data.toepassing && _isValidOptionLabel(P.toepassing, data.toepassing)) {
+          updateState({ toepassing: data.toepassing });
+        }
+        if (data.pakket && _isValidOptionLabel(P.pakket, data.pakket)) {
+          updateState({ pakket: data.pakket });
+        }
+        if (data.qty && data.qty > 0 && data.qty <= 99) {
+          updateState({ qty: data.qty });
+          if (DOM.qtyInput) DOM.qtyInput.value = data.qty;
+        }
+        if (data.toolMode === "set" || data.toolMode === "individual" || data.toolMode === "none") {
+          updateState({ toolMode: data.toolMode });
+        }
+        if (data.addons && S.addons) {
+          Object.keys(data.addons).forEach(function(key) {
+            if (_isValidAddon(key, data.addons[key])) {
+              S.addons[key] = data.addons[key];
+            }
+          });
+        }
+        if (data.colorMode === "swatch" || data.colorMode === "ral_ncs") {
+          updateState({ colorMode: data.colorMode });
+        }
+        if (data.customColor && data.colorMode === "ral_ncs") {
+          updateState({ customColor: data.customColor });
+        }
+        if (data.selectedColor && P.hasStaticColors) {
+          updateState({ selectedColor: data.selectedColor });
+        }
         if (data.extras) {
           Object.keys(data.extras).forEach(function(id) {
             if (S.extras[id]) S.extras[id] = data.extras[id];
@@ -2322,14 +2391,16 @@
             if (S.tools[id]) S.tools[id] = data.tools[id];
           });
         }
-        if (DOM.qtyInput && data.qty > 1) DOM.qtyInput.value = data.qty;
-        if (data.sheetOpen) {
-          setTimeout(function() {
-            openSheet();
-          }, 100);
-        }
       } catch (e) {
+        try {
+          sessionStorage.removeItem(PDP_STATE_KEY);
+        } catch (e2) {
+        }
       }
+    }, saveToolState = function() {
+      persistPdpState();
+    }, restoreToolState = function() {
+      restorePdpState();
     }, openSheet = function() {
       if (!DOM.bottomSheet || !DOM.sheetOverlay || !DOM.optionsWidget) return;
       trackSheetOpened();
@@ -2479,6 +2550,10 @@
           trackAddToCart(calculatePrices(P, S));
           if (S.sheetOpen) closeSheet();
           showCartSuccess(json.data);
+          var replaced = json.data && parseInt(json.data.replaced_count, 10) || 0;
+          if (replaced > 0) {
+            showCartInfo(replaced === 1 ? "Vorige configuratie van dit product vervangen door je nieuwe keuze." : "Vorige configuraties van dit product vervangen door je nieuwe keuze.");
+          }
           document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
           if (typeof jQuery !== "undefined") {
             jQuery(document.body).trigger("wc_fragment_refresh");
@@ -2516,6 +2591,16 @@
         cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
       }
       setTimeout(removeCartMsg, 4e3);
+    }, showCartInfo = function(msg) {
+      removeCartMsg();
+      var el = document.createElement("div");
+      el.className = "oz-cart-msg oz-cart-info";
+      el.textContent = msg;
+      var cartRow = document.querySelector(".oz-cart-row");
+      if (cartRow && cartRow.parentNode) {
+        cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
+      }
+      setTimeout(removeCartMsg, 6e3);
     }, showCartSuccess = function(data) {
       removeCartMsg();
       if (DOM.addToCartBtn) {
@@ -2738,7 +2823,33 @@
       setToolSyncCallback(syncUI);
       buildToolSectionV2("toolSection");
       buildRuimteDropdown();
-      restoreToolState();
+      restorePdpState();
+      window.addEventListener("pagehide", function() {
+        if (_persistTimer) {
+          clearTimeout(_persistTimer);
+          _persistTimer = null;
+        }
+        try {
+          sessionStorage.setItem(PDP_STATE_KEY, JSON.stringify({
+            ts: Date.now(),
+            toolMode: S.toolMode,
+            extras: S.extras,
+            tools: S.tools,
+            puLayers: S.puLayers,
+            primer: S.primer,
+            colorfresh: S.colorfresh,
+            toepassing: S.toepassing,
+            pakket: S.pakket,
+            qty: S.qty,
+            addons: S.addons,
+            selectedColor: S.selectedColor,
+            colorMode: S.colorMode,
+            customColor: S.customColor,
+            formulaMode: S.formulaMode
+          }));
+        } catch (e) {
+        }
+      });
       syncUI();
       setupColorDrawer();
       document.addEventListener("click", handleClick);
@@ -2819,7 +2930,9 @@
     _preToggleGalleryHtml = "";
     _originalContent = null;
     window._ozToggleFormula = P.modeToggle ? toggleFormula : null;
-    TOOL_STATE_KEY = "oz_bcw_tool_state";
+    PDP_STATE_KEY = "oz_bcw_pdp_state_v2:" + (P.baseProductId || P.productId);
+    PDP_STATE_TTL = 30 * 60 * 1e3;
+    _persistTimer = null;
     _sheetScrollY = 0;
     window.adaptBreadcrumbColor = adaptBreadcrumbColor;
     lightbox = {
@@ -2937,7 +3050,9 @@
   var _preToggleMainImgSrc;
   var _preToggleGalleryHtml;
   var _originalContent;
-  var TOOL_STATE_KEY;
+  var PDP_STATE_KEY;
+  var PDP_STATE_TTL;
+  var _persistTimer;
   var _sheetScrollY;
   var lightbox;
 })();

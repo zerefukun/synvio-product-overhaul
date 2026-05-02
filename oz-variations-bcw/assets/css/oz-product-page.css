@@ -1940,6 +1940,15 @@ body.oz-color-drawer-locked {
   font-size: var(--oz-text-sm);
   margin-top: 8px;
 }
+.oz-cart-info {
+  color: #1a4f8f;
+  background: #eaf3fb;
+  border-left: 3px solid #2563eb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: var(--oz-text-sm);
+  margin-top: 8px;
+}
 .oz-payment-section {
   margin-bottom: 12px;
   display: flex;
