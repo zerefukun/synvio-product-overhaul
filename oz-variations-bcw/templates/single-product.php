@@ -857,6 +857,81 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php
   };
 
+  // ─── Frequently bought together carousel ───
+  // Auto-derived from real order history (time-decayed score). No admin
+  // curation. Skipped silently when there's not enough signal so we never
+  // render a half-empty row. Renders BEFORE the editorial showcase blocks.
+  $oz_fbt_ids = OZ_Frequently_Bought::get_for_product($product->get_id());
+  if (count($oz_fbt_ids) >= 4) {
+      // Pre-resolve product objects and skip any that fail to load (deleted,
+      // draft, out-of-stock, etc.) — keeps the template branchless below.
+      $oz_fbt_products = [];
+      foreach ($oz_fbt_ids as $oz_fbt_id) {
+          $oz_fbt_p = wc_get_product($oz_fbt_id);
+          if ($oz_fbt_p && $oz_fbt_p->is_visible() && $oz_fbt_p->is_in_stock()) {
+              $oz_fbt_products[] = $oz_fbt_p;
+          }
+      }
+      if (count($oz_fbt_products) >= 4) {
+          ?>
+          <section class="oz-fbt" data-reveal>
+            <div class="oz-fbt-inner">
+              <h2 class="oz-fbt-title">Vaak samen besteld</h2>
+              <div class="swiper oz-fbt-swiper">
+                <div class="swiper-wrapper">
+                  <?php foreach ($oz_fbt_products as $oz_fbt_p):
+                      $oz_fbt_id          = $oz_fbt_p->get_id();
+                      $oz_fbt_url         = $oz_fbt_p->get_permalink();
+                      $oz_fbt_img         = wp_get_attachment_image_url($oz_fbt_p->get_image_id(), 'woocommerce_thumbnail') ?: wc_placeholder_img_src('woocommerce_thumbnail');
+                      $oz_fbt_price_html  = $oz_fbt_p->get_price_html();
+                      $oz_fbt_has_options = $oz_fbt_p->is_type('variable');
+                  ?>
+                    <div class="swiper-slide">
+                      <article class="oz-fbt-card"
+                               data-product-id="<?php echo esc_attr($oz_fbt_id); ?>"
+                               data-has-options="<?php echo $oz_fbt_has_options ? '1' : '0'; ?>"
+                               data-product-url="<?php echo esc_url($oz_fbt_url); ?>">
+                        <a class="oz-fbt-card-link" href="<?php echo esc_url($oz_fbt_url); ?>" tabindex="-1" aria-hidden="true">
+                          <div class="oz-fbt-img">
+                            <img src="<?php echo esc_url($oz_fbt_img); ?>"
+                                 alt="<?php echo esc_attr($oz_fbt_p->get_name()); ?>"
+                                 loading="lazy" decoding="async" />
+                          </div>
+                        </a>
+                        <div class="oz-fbt-info">
+                          <a class="oz-fbt-name" href="<?php echo esc_url($oz_fbt_url); ?>"><?php echo esc_html($oz_fbt_p->get_name()); ?></a>
+                          <div class="oz-fbt-price"><?php echo wp_kses_post($oz_fbt_price_html); ?></div>
+                        </div>
+                        <button type="button"
+                                class="oz-fbt-add"
+                                aria-label="<?php echo $oz_fbt_has_options ? esc_attr__('Kies opties', 'oz-bcw') : esc_attr__('Toevoegen', 'oz-bcw'); ?>">
+                          <?php if ($oz_fbt_has_options): ?>
+                            <svg width="16" height="4" viewBox="0 0 16 4" fill="currentColor" aria-hidden="true">
+                              <circle cx="2" cy="2" r="2"/><circle cx="8" cy="2" r="2"/><circle cx="14" cy="2" r="2"/>
+                            </svg>
+                          <?php else: ?>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                              <path d="M7 2v10M2 7h10"/>
+                            </svg>
+                          <?php endif; ?>
+                        </button>
+                      </article>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+                <button type="button" class="oz-fbt-nav oz-fbt-prev" aria-label="<?php esc_attr_e('Vorige', 'oz-bcw'); ?>">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button type="button" class="oz-fbt-nav oz-fbt-next" aria-label="<?php esc_attr_e('Volgende', 'oz-bcw'); ?>">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+          <?php
+      }
+  }
+
   // Current line's showcase
   $self_sections = $resolve_showcase($line_key, $config);
   $render_showcase($self_sections, 'self');

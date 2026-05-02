@@ -154,12 +154,14 @@ class OZ_Frontend_Display {
             OZ_BCW_VERSION . '.' . filemtime($css_path)
         );
 
-        // Product page JS (vanilla, no jQuery dependency)
+        // Product page JS (vanilla, no jQuery dependency).
+        // Depends on oz-swiper-loader so the FBT carousel + USP ticker can
+        // call window.ozLoadSwiper without racing the loader script.
         $js_path = OZ_BCW_PLUGIN_DIR . 'assets/js/oz-product-page.js';
         wp_enqueue_script(
             'oz-product-page',
             OZ_BCW_PLUGIN_URL . 'assets/js/oz-product-page.js',
-            [],
+            ['oz-swiper-loader'],
             OZ_BCW_VERSION . '.' . filemtime($js_path),
             true // Load in footer
         );

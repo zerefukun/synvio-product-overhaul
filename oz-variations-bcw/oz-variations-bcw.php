@@ -122,6 +122,9 @@ class OZ_Variations_BCW {
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-collector.php';
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-reporter.php';
         require_once OZ_BCW_PLUGIN_DIR . 'includes/class-analytics-dashboard.php';
+
+        // Frequently bought together — auto-derived carousel (no admin curation)
+        require_once OZ_BCW_PLUGIN_DIR . 'includes/class-frequently-bought.php';
     }
 
     /**
@@ -152,6 +155,10 @@ class OZ_Variations_BCW {
         if (is_admin()) {
             OZ_Analytics_Dashboard::init();
         }
+
+        // Frequently bought together — registers the order-completion hook
+        // that invalidates carousel caches when new orders land.
+        OZ_Frequently_Bought::init();
 
         // DB version check — create analytics tables for existing installs
         // (new installs get it via activate(), but existing ones need this)

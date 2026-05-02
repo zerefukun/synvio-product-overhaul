@@ -1292,6 +1292,93 @@
     document.body.classList.remove("oz-color-drawer-locked");
   }
 
+  // src/js/frequently-bought.js
+  function initFrequentlyBought() {
+    var section = document.querySelector(".oz-fbt");
+    if (!section) return;
+    var swiperEl = section.querySelector(".oz-fbt-swiper");
+    var prevBtn = section.querySelector(".oz-fbt-prev");
+    var nextBtn = section.querySelector(".oz-fbt-next");
+    if (!swiperEl) return;
+    window.ozLoadSwiper(function() {
+      new Swiper(swiperEl, {
+        slidesPerView: 1.4,
+        spaceBetween: 12,
+        navigation: {
+          prevEl: prevBtn,
+          nextEl: nextBtn
+        },
+        breakpoints: {
+          480: { slidesPerView: 2.3, spaceBetween: 12 },
+          768: { slidesPerView: 3.3, spaceBetween: 16 },
+          1024: { slidesPerView: 4, spaceBetween: 20 },
+          1280: { slidesPerView: 5, spaceBetween: 20 }
+        }
+      });
+    });
+    section.addEventListener("click", function(e) {
+      var btn = e.target.closest(".oz-fbt-add");
+      if (!btn) return;
+      var card = btn.closest(".oz-fbt-card");
+      if (!card) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var hasOptions = card.dataset.hasOptions === "1";
+      var productId = parseInt(card.dataset.productId, 10);
+      var productUrl = card.dataset.productUrl || "";
+      if (hasOptions) {
+        if (productUrl) window.location.href = productUrl;
+        return;
+      }
+      if (!productId || btn.disabled) return;
+      btn.disabled = true;
+      var cfg = window.ozCartDrawer || {};
+      if (!cfg.ajaxUrl || !cfg.nonce) {
+        if (productUrl) window.location.href = productUrl;
+        btn.disabled = false;
+        return;
+      }
+      var body = "action=oz_cart_drawer_add&nonce=" + encodeURIComponent(cfg.nonce) + "&product_id=" + productId + "&qty=1";
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", cfg.ajaxUrl, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) return;
+        btn.disabled = false;
+        var ok = false;
+        try {
+          var json = JSON.parse(xhr.responseText);
+          ok = json && json.success;
+        } catch (err) {
+        }
+        if (!ok) {
+          btn.style.animation = "oz-fbt-shake 0.4s";
+          setTimeout(function() {
+            btn.style.animation = "";
+          }, 400);
+          return;
+        }
+        var originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
+        btn.classList.add("is-added");
+        document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
+        try {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({
+            event: "oz_fbt_added",
+            oz_product_id: productId
+          });
+        } catch (err) {
+        }
+        setTimeout(function() {
+          btn.innerHTML = originalHTML;
+          btn.classList.remove("is-added");
+        }, 1800);
+      };
+      xhr.send(body);
+    });
+  }
+
   // src/js/product-page.js
   if (!P) {
   } else {
@@ -2852,6 +2939,7 @@
       });
       syncUI();
       setupColorDrawer();
+      initFrequentlyBought();
       document.addEventListener("click", handleClick);
       if (DOM.qtyInput) {
         DOM.qtyInput.addEventListener("input", handleQtyInput);

@@ -26,6 +26,7 @@ import { DOM, cacheDom, show, hide } from './dom.js';
 import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2, buildRuimteDropdown } from './tools.js';
 import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
 import { setupColorDrawer } from './color-drawer.js';
+import { initFrequentlyBought } from './frequently-bought.js';
 import * as analytics from './analytics.js';
 
 // Guard: only run on pages with ozProduct data
@@ -2462,6 +2463,11 @@ function init() {
   // Runs AFTER syncUI() so the RAL/NCS mode buttons exist (renderColorMode
   // builds them) and the drawer can include its RAL CTA. Variant C only.
   setupColorDrawer();
+
+  // Frequently bought together carousel — no-op when the section isn't
+  // rendered (caller checks for .oz-fbt presence). Server only renders it
+  // when there's enough order signal, so most PDPs skip this branch entirely.
+  initFrequentlyBought();
 
   // Event delegation: all clicks on the page
   document.addEventListener('click', handleClick);

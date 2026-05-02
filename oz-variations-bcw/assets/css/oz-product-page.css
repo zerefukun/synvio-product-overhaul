@@ -2407,6 +2407,223 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   display: none !important;
 }
 
+/* src/css/frequently-bought.css */
+.oz-fbt {
+  padding: 48px 0;
+}
+.oz-fbt-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.oz-fbt-title {
+  font-family: var(--ff-heading, "DM Serif Display", serif);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--oz-text-primary);
+  margin: 0 0 24px;
+  letter-spacing: -0.01em;
+}
+.oz-fbt-swiper {
+  position: relative;
+  padding: 4px;
+  margin: -4px;
+}
+.oz-fbt-swiper .swiper-wrapper {
+  align-items: stretch;
+}
+.oz-fbt-swiper .swiper-slide {
+  height: auto;
+}
+.oz-fbt-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border: 1px solid var(--oz-border-light, var(--oz-border));
+  border-radius: var(--oz-radius, 8px);
+  overflow: hidden;
+  transition:
+    border-color 0.2s var(--oz-ease),
+    transform 0.2s var(--oz-ease),
+    box-shadow 0.2s var(--oz-ease);
+}
+.oz-fbt-card:hover {
+  border-color: var(--oz-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+.oz-fbt-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.oz-fbt-img {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--oz-bg-warm, #F5F4F0);
+  overflow: hidden;
+}
+.oz-fbt-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s var(--oz-ease);
+}
+.oz-fbt-card:hover .oz-fbt-img img {
+  transform: scale(1.03);
+}
+.oz-fbt-info {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px 56px;
+}
+.oz-fbt-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--ff-body, "Raleway", sans-serif);
+  font-size: var(--oz-text-sm);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--oz-text-primary);
+  text-decoration: none;
+  transition: color 0.15s var(--oz-ease);
+}
+.oz-fbt-name:hover {
+  color: var(--oz-accent);
+}
+.oz-fbt-price {
+  margin-top: 6px;
+  font-size: var(--oz-text-sm);
+  font-weight: 700;
+  color: var(--oz-text-primary);
+  line-height: 1.2;
+}
+.oz-fbt-price del {
+  color: var(--oz-text-muted);
+  font-weight: 500;
+  margin-right: 4px;
+}
+.oz-fbt-price ins {
+  text-decoration: none;
+}
+.oz-fbt-add {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  border: 1.5px solid var(--oz-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 0.15s var(--oz-ease),
+    color 0.15s var(--oz-ease),
+    transform 0.15s var(--oz-ease);
+}
+.oz-fbt-add:hover {
+  background: #fff;
+  color: var(--oz-accent);
+  transform: scale(1.05);
+}
+.oz-fbt-add:active {
+  transform: scale(0.95);
+}
+.oz-fbt-add svg {
+  display: block;
+}
+.oz-fbt-add.is-added {
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  pointer-events: none;
+}
+@keyframes oz-fbt-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+.oz-fbt-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--oz-border);
+  background: #fff;
+  color: var(--oz-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    background 0.2s var(--oz-ease),
+    color 0.2s var(--oz-ease),
+    transform 0.15s var(--oz-ease);
+}
+.oz-fbt-nav:hover {
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  border-color: var(--oz-accent);
+}
+.oz-fbt-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+.oz-fbt-nav.swiper-button-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.oz-fbt-prev {
+  left: -8px;
+}
+.oz-fbt-next {
+  right: -8px;
+}
+@media (hover: none) and (pointer: coarse) {
+  .oz-fbt-nav {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .oz-fbt {
+    padding: 32px 0;
+  }
+  .oz-fbt-inner {
+    padding: 0 16px;
+  }
+  .oz-fbt-title {
+    margin-bottom: 16px;
+  }
+  .oz-fbt-info {
+    padding: 10px 12px 52px;
+  }
+  .oz-fbt-add {
+    width: 32px;
+    height: 32px;
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
 /* src/css/sheet.css */
 .oz-sticky-bar {
   position: fixed;

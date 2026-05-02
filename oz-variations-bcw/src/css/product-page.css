@@ -28,6 +28,7 @@
 @import './color.css';
 @import './cart.css';
 @import './tools.css';
+@import './frequently-bought.css';
 
 /* 5. Mobile overlays */
 @import './sheet.css';
