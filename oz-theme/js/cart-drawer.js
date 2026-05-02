@@ -66,7 +66,19 @@
        ============================================ */
     function dlPush(eventName, params) {
         window.dataLayer = window.dataLayer || [];
-        var payload = Object.assign({ event: eventName }, params || {});
+        /* Stamp A/B test variant on every cart event so the analytics
+           dashboard's per-variant queries can see them. Mirrors the PDP
+           analytics push() helper. Without this, oz_cart_checkout_clicked
+           (and every other cart event) is invisible to variant filters. */
+        var abTools = '';
+        try {
+            var abMatch = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+            if (abMatch) abTools = abMatch[1];
+        } catch (e) {}
+        var payload = Object.assign({
+            event: eventName,
+            oz_ab_tools_variant: abTools,
+        }, params || {});
         window.dataLayer.push(payload);  // GA4 concern
         beacon(eventName, payload);       // Server logging concern
     }
