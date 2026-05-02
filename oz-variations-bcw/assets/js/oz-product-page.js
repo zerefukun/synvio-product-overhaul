@@ -692,21 +692,21 @@
     if (!primerSection || !puSection) return;
     var rooms = [
       { label: "Geen beschermlaag", primer: "Geen", pu: "0" },
-      { label: "Muur (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Hal / Gang (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Zolder (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Slaapkamer (1 laag PU + primer) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Keuken (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Badkamer (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Toilet / WC (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Vloer (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Meubel (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Trap (2 lagen PU + primer) +\u20AC16", primer: "Primer", pu: "2" }
+      { label: "Muur (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Hal / Gang (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Zolder (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Slaapkamer (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
+      { label: "Keuken (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Badkamer (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Toilet / WC (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Vloer (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Meubel (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
+      { label: "Trap (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" }
     ];
     var wrap = document.createElement("div");
     wrap.className = "oz-option-group oz-ruimte-dropdown";
     wrap.setAttribute("data-option", "ruimte");
-    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <span class="oz-required-star" style="color:#e53e3e">*</span> <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen + primer.</div>';
+    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <span class="oz-required-star" style="color:#e53e3e">*</span> <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen.</div>';
     var select = document.createElement("select");
     select.className = "oz-ruimte-select";
     var placeholder = document.createElement("option");

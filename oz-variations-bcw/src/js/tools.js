@@ -234,16 +234,16 @@ export function buildRuimteDropdown() {
 
   var rooms = [
     { label: 'Geen beschermlaag',                primer: 'Geen',   pu: '0' },
-    { label: 'Muur (1 laag PU + primer) +€8',    primer: 'Primer', pu: '1' },
-    { label: 'Hal / Gang (1 laag PU + primer) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Zolder (1 laag PU + primer) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Slaapkamer (1 laag PU + primer) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Keuken (2 lagen PU + primer) +€16',    primer: 'Primer', pu: '2' },
-    { label: 'Badkamer (2 lagen PU + primer) +€16',  primer: 'Primer', pu: '2' },
-    { label: 'Toilet / WC (2 lagen PU + primer) +€16', primer: 'Primer', pu: '2' },
-    { label: 'Vloer (2 lagen PU + primer) +€16',     primer: 'Primer', pu: '2' },
-    { label: 'Meubel (2 lagen PU + primer) +€16',    primer: 'Primer', pu: '2' },
-    { label: 'Trap (2 lagen PU + primer) +€16',      primer: 'Primer', pu: '2' },
+    { label: 'Muur (1 laag PU) +€8',    primer: 'Primer', pu: '1' },
+    { label: 'Hal / Gang (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
+    { label: 'Zolder (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
+    { label: 'Slaapkamer (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
+    { label: 'Keuken (2 lagen PU) +€16',    primer: 'Primer', pu: '2' },
+    { label: 'Badkamer (2 lagen PU) +€16',  primer: 'Primer', pu: '2' },
+    { label: 'Toilet / WC (2 lagen PU) +€16', primer: 'Primer', pu: '2' },
+    { label: 'Vloer (2 lagen PU) +€16',     primer: 'Primer', pu: '2' },
+    { label: 'Meubel (2 lagen PU) +€16',    primer: 'Primer', pu: '2' },
+    { label: 'Trap (2 lagen PU) +€16',      primer: 'Primer', pu: '2' },
   ];
 
   var wrap = document.createElement('div');
@@ -255,7 +255,7 @@ export function buildRuimteDropdown() {
     '<button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div>' +
     '<div class="oz-info-tooltip" id="ruimte-info">' +
     'Kies de ruimte waar je beton ciré aanbrengt. Op basis van slijtage en vocht ' +
-    'selecteren we automatisch het juiste aantal PU-lagen + primer.' +
+    'selecteren we automatisch het juiste aantal PU-lagen.' +
     '</div>';
 
   // No separate <label> — the .oz-option-header above + placeholder option
