@@ -2460,6 +2460,43 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
 .oz-fbt-swiper .swiper-slide {
   height: auto;
 }
+.oz-fbt-swiper:not(.swiper-initialized) {
+  overflow: hidden;
+}
+.oz-fbt-swiper:not(.swiper-initialized) .swiper-wrapper {
+  display: flex;
+  gap: 12px;
+}
+.oz-fbt-swiper:not(.swiper-initialized) .swiper-slide {
+  flex: 0 0 calc((100% - 0.4 * 12px) / 1.4);
+  min-width: 0;
+}
+@media (min-width: 480px) {
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-slide {
+    flex: 0 0 calc((100% - 1.3 * 12px) / 2.3);
+  }
+}
+@media (min-width: 768px) {
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-wrapper {
+    gap: 16px;
+  }
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-slide {
+    flex: 0 0 calc((100% - 2.3 * 16px) / 3.3);
+  }
+}
+@media (min-width: 1024px) {
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-wrapper {
+    gap: 20px;
+  }
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-slide {
+    flex: 0 0 calc((100% - 60px) / 4);
+  }
+}
+@media (min-width: 1280px) {
+  .oz-fbt-swiper:not(.swiper-initialized) .swiper-slide {
+    flex: 0 0 calc((100% - 80px) / 5);
+  }
+}
 .oz-fbt-card {
   display: flex;
   flex-direction: column;
