@@ -1,16 +1,17 @@
 /**
  * Frequently Bought Together — carousel under the PDP main grid.
  *
- * Card pattern follows the Gulcan Home reference:
- *   - Soft warm image area with the action button (cart for simple, +
- *     for grouped) sitting in the bottom-right corner OF THE IMAGE.
+ * Card pattern follows the Gulcan Home reference shared by Patrick:
+ *   - Action button (cart for simple, + for grouped) sits in the bottom-
+ *     right corner OF THE IMAGE.
  *   - Tiny uppercase category eyebrow above the product name.
  *   - Title in body weight, two-line clamp.
  *   - Price line below title; sale prices use WC's <del>/<ins> markup.
+ *   - For grouped products: clicking + reveals an inline overlay over
+ *     the BODY section only (image stays visible) with a "Kies uw optie:"
+ *     bold label and one tap-to-add pill per size.
  *
- * All visual decisions go through design tokens (--oz-accent, --oz-text-*,
- * --oz-bg-warm, --oz-border, --ff-heading, --ff-body, --oz-ease,
- * --oz-radius, --oz-text-sm). No hardcoded colours, no parallel scale.
+ * All visual decisions go through design tokens. No hardcoded colours.
  *
  * @package OZ_Variations_BCW
  * @since 2.3.0
@@ -20,7 +21,6 @@
 
 .oz-fbt {
   padding: 64px 0 56px;
-  background: var(--oz-bg-warm, #F5F4F0);
 }
 
 .oz-fbt-inner {
@@ -96,10 +96,8 @@
   height: 100%;
   background: transparent;
   border-radius: var(--oz-radius, 8px);
-  overflow: hidden;
-  transition:
-    transform 0.2s var(--oz-ease),
-    box-shadow 0.2s var(--oz-ease);
+  overflow: visible;
+  transition: transform 0.2s var(--oz-ease);
 }
 
 .oz-fbt-card:hover {
@@ -140,8 +138,10 @@
   transform: scale(1.03);
 }
 
-/* Action button — dark filled circle in bottom-right corner of the image.
- * Matches the Gulcan Home reference: dark color, white icon, no border. */
+/* ── Action button — orange CTA in normal state, accent teal on hover.
+   Two-tone pulse signals the click target without depending on icon
+   colour, which works for both the cart and + glyphs. */
+
 .oz-fbt-action {
   position: absolute;
   bottom: 12px;
@@ -149,8 +149,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--oz-text-primary);
-  color: #fff;
+  background: var(--oz-cta);
+  color: var(--oz-cta-text, #fff);
   border: none;
   display: inline-flex;
   align-items: center;
@@ -184,10 +184,12 @@
 /* ── Body (eyebrow + name + price) ────────────────────────────── */
 
 .oz-fbt-body {
+  position: relative;
   padding: 14px 4px 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-height: 96px;  /* keeps overlay area consistent across cards */
 }
 
 .oz-fbt-cat {
@@ -238,22 +240,25 @@
   text-decoration: none;
 }
 
-/* ── Inline option overlay (group cards only) ─────────────────── */
+/* ── Inline option overlay over the BODY section only ────────── */
 
-/* Slides in from the bottom of the image with a soft white veil + size pills.
- * Action button (the +) stays clickable above it. */
 .oz-fbt-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  /* Anchored to body top + sides; bottom is auto so the overlay can grow
+   * downward when the family has many sizes (e.g. PU Roller has 4). */
+  top: 0;
+  left: -4px;
+  right: -4px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 14px 12px 12px;
   display: flex;
   flex-direction: column;
-  padding: 16px 14px 14px;
+  gap: 10px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
+  transform: translateY(-6px);
   transition:
     opacity 0.2s var(--oz-ease),
     transform 0.2s var(--oz-ease);
@@ -266,19 +271,12 @@
   transform: translateY(0);
 }
 
-/* Hide the cart-area action button while overlay is open — overlay's own
- * Toevoegen CTA replaces it. Keeps focus on the choice. */
-.oz-fbt-card.is-open .oz-fbt-action {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .oz-fbt-overlay-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: none;
   background: var(--oz-bg-warm, #F5F4F0);
@@ -297,26 +295,27 @@
 }
 
 .oz-fbt-overlay-label {
-  margin: auto 0 12px;
   font-family: var(--ff-body, 'Raleway', sans-serif);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--oz-text-muted);
-  text-align: center;
+  color: var(--oz-text-primary);
+  letter-spacing: 0.02em;
+  padding-right: 22px;  /* leave room for the close button */
 }
 
 .oz-fbt-options {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  justify-content: center;
-  margin-bottom: 12px;
 }
 
+/* Each pill is a one-shot add — click adds that size to cart,
+ * card overlay closes itself, cart drawer opens via the existing
+ * 'oz-added-to-cart' event. No separate Toevoegen button. */
 .oz-fbt-option {
-  padding: 8px 14px;
+  flex: 1 1 calc(50% - 3px);
+  min-width: 0;
+  padding: 8px 6px;
   border: 1.5px solid var(--oz-label-border, var(--oz-border));
   border-radius: var(--oz-radius, 8px);
   background: #fff;
@@ -327,6 +326,7 @@
   cursor: pointer;
   transition: all 0.15s var(--oz-ease);
   line-height: 1.2;
+  text-align: center;
 }
 
 .oz-fbt-option:hover {
@@ -334,35 +334,15 @@
   color: var(--oz-accent);
 }
 
-.oz-fbt-option.is-selected {
+.oz-fbt-option.is-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.oz-fbt-option.is-added {
   background: var(--oz-accent);
   color: var(--oz-accent-text, #fff);
   border-color: var(--oz-accent);
-}
-
-.oz-fbt-overlay-cta {
-  margin-top: auto;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--oz-radius, 8px);
-  background: var(--oz-text-primary);
-  color: #fff;
-  font-family: var(--ff-body, 'Raleway', sans-serif);
-  font-size: var(--oz-text-sm);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: background 0.15s var(--oz-ease), opacity 0.15s var(--oz-ease);
-}
-
-.oz-fbt-overlay-cta:hover:not(:disabled) {
-  background: var(--oz-accent);
-}
-
-.oz-fbt-overlay-cta:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 /* ── Carousel nav buttons (positioned outside the swiper container) ── */
@@ -391,9 +371,9 @@
 }
 
 .oz-fbt-nav:hover {
-  background: var(--oz-text-primary);
-  color: #fff;
-  border-color: var(--oz-text-primary);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  border-color: var(--oz-accent);
 }
 
 .oz-fbt-nav:active {
@@ -405,18 +385,14 @@
   pointer-events: none;
 }
 
-/* Sit clearly OUTSIDE the carousel viewport, in the section padding gutter */
 .oz-fbt-prev { left: -56px; }
 .oz-fbt-next { right: -56px; }
 
-/* On narrower desktops where the section hits the viewport edge, pull the
- * arrows back inside slightly so they remain visible without clipping. */
 @media (max-width: 1440px) {
   .oz-fbt-prev { left: -20px; }
   .oz-fbt-next { right: -20px; }
 }
 
-/* Hide nav on touch devices — swipe is the natural gesture there */
 @media (hover: none) and (pointer: coarse) {
   .oz-fbt-nav { display: none; }
 }
@@ -439,9 +415,7 @@
     bottom: 10px;
     right: 10px;
   }
-  .oz-fbt-name {
-    font-size: 14px;
-  }
+  .oz-fbt-name,
   .oz-fbt-price {
     font-size: 14px;
   }

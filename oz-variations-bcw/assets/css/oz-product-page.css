@@ -2410,7 +2410,6 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
 /* src/css/frequently-bought.css */
 .oz-fbt {
   padding: 64px 0 56px;
-  background: var(--oz-bg-warm, #F5F4F0);
 }
 .oz-fbt-inner {
   max-width: 1320px;
@@ -2467,8 +2466,8 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   height: 100%;
   background: transparent;
   border-radius: var(--oz-radius, 8px);
-  overflow: hidden;
-  transition: transform 0.2s var(--oz-ease), box-shadow 0.2s var(--oz-ease);
+  overflow: visible;
+  transition: transform 0.2s var(--oz-ease);
 }
 .oz-fbt-card:hover {
   transform: translateY(-2px);
@@ -2507,8 +2506,8 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--oz-text-primary);
-  color: #fff;
+  background: var(--oz-cta);
+  color: var(--oz-cta-text, #fff);
   border: none;
   display: inline-flex;
   align-items: center;
@@ -2533,10 +2532,12 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   pointer-events: none;
 }
 .oz-fbt-body {
+  position: relative;
   padding: 14px 4px 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-height: 96px;
 }
 .oz-fbt-cat {
   font-family: var(--ff-body, "Raleway", sans-serif);
@@ -2582,16 +2583,19 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
 }
 .oz-fbt-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(255, 255, 255, 0.97);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  top: 0;
+  left: -4px;
+  right: -4px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  padding: 14px 12px 12px;
   display: flex;
   flex-direction: column;
-  padding: 16px 14px 14px;
+  gap: 10px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(8px);
+  transform: translateY(-6px);
   transition: opacity 0.2s var(--oz-ease), transform 0.2s var(--oz-ease);
   z-index: 3;
 }
@@ -2600,16 +2604,12 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   pointer-events: auto;
   transform: translateY(0);
 }
-.oz-fbt-card.is-open .oz-fbt-action {
-  opacity: 0;
-  pointer-events: none;
-}
 .oz-fbt-overlay-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: none;
   background: var(--oz-bg-warm, #F5F4F0);
@@ -2626,24 +2626,22 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   color: var(--oz-text-primary);
 }
 .oz-fbt-overlay-label {
-  margin: auto 0 12px;
   font-family: var(--ff-body, "Raleway", sans-serif);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--oz-text-muted);
-  text-align: center;
+  color: var(--oz-text-primary);
+  letter-spacing: 0.02em;
+  padding-right: 22px;
 }
 .oz-fbt-options {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  justify-content: center;
-  margin-bottom: 12px;
 }
 .oz-fbt-option {
-  padding: 8px 14px;
+  flex: 1 1 calc(50% - 3px);
+  min-width: 0;
+  padding: 8px 6px;
   border: 1.5px solid var(--oz-label-border, var(--oz-border));
   border-radius: var(--oz-radius, 8px);
   background: #fff;
@@ -2654,37 +2652,20 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
   cursor: pointer;
   transition: all 0.15s var(--oz-ease);
   line-height: 1.2;
+  text-align: center;
 }
 .oz-fbt-option:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
 }
-.oz-fbt-option.is-selected {
+.oz-fbt-option.is-loading {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.oz-fbt-option.is-added {
   background: var(--oz-accent);
   color: var(--oz-accent-text, #fff);
   border-color: var(--oz-accent);
-}
-.oz-fbt-overlay-cta {
-  margin-top: auto;
-  padding: 12px 16px;
-  border: none;
-  border-radius: var(--oz-radius, 8px);
-  background: var(--oz-text-primary);
-  color: #fff;
-  font-family: var(--ff-body, "Raleway", sans-serif);
-  font-size: var(--oz-text-sm);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: background 0.15s var(--oz-ease), opacity 0.15s var(--oz-ease);
-}
-.oz-fbt-overlay-cta:hover:not(:disabled) {
-  background: var(--oz-accent);
-}
-.oz-fbt-overlay-cta:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 .oz-fbt-nav {
   position: absolute;
@@ -2709,9 +2690,9 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
     transform 0.15s var(--oz-ease);
 }
 .oz-fbt-nav:hover {
-  background: var(--oz-text-primary);
-  color: #fff;
-  border-color: var(--oz-text-primary);
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  border-color: var(--oz-accent);
 }
 .oz-fbt-nav:active {
   transform: translateY(-50%) scale(0.95);
@@ -2755,9 +2736,7 @@ html.oz-ab-tools-c .oz-tool-extras-wrap {
     bottom: 10px;
     right: 10px;
   }
-  .oz-fbt-name {
-    font-size: 14px;
-  }
+  .oz-fbt-name,
   .oz-fbt-price {
     font-size: 14px;
   }

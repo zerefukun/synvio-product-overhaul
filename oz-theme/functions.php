@@ -663,6 +663,50 @@ add_action('wp_ajax_nopriv_oz_recently_viewed_get', 'oz_recently_viewed_get');
  * @param WC_Cart $cart
  * @return array
  */
+/**
+ * Sized product families: a "base" product ID and the size variants that
+ * exist as their own simple WC products. Used by the cart drawer upsells AND
+ * by the Frequently Bought Together carousel (oz-variations-bcw plugin).
+ *
+ * Single source of truth — keep this in sync as new sized products land.
+ *
+ * @return array<int, array{name: string, sizes: array<int, array{label: string, wcId: int, price: float}>}>
+ */
+function oz_bcw_get_sized_families() {
+    return [
+        11175 => [  // PU Roller — base ID triggers sized card
+            'name'  => 'PU Roller',
+            'sizes' => [
+                ['label' => '10cm', 'wcId' => 11175, 'price' => 2.50],
+                ['label' => '18cm', 'wcId' => 17360, 'price' => 9.95],
+                ['label' => '25cm', 'wcId' => 17361, 'price' => 12.95],
+                ['label' => '50cm', 'wcId' => 19705, 'price' => 17.50],
+            ],
+        ],
+        11164 => [  // Verfbak — base ID triggers sized card
+            'name'  => 'Verfbak',
+            'sizes' => [
+                ['label' => '10cm', 'wcId' => 11164, 'price' => 2.95],
+                ['label' => '18cm', 'wcId' => 28234, 'price' => 4.95],
+                ['label' => '32cm', 'wcId' => 28235, 'price' => 5.95],
+            ],
+        ],
+    ];
+}
+
+/**
+ * Reverse lookup: for any size variant's wcId, return the base product ID
+ * of its family. Returns null if the wcId is not part of any sized family.
+ */
+function oz_bcw_sized_family_base($wc_id) {
+    foreach (oz_bcw_get_sized_families() as $base => $family) {
+        foreach ($family['sizes'] as $sz) {
+            if ((int) $sz['wcId'] === (int) $wc_id) return (int) $base;
+        }
+    }
+    return null;
+}
+
 function oz_cart_drawer_get_upsells($cart) {
     // Project-completion rules: priority-ordered product IDs per line (8-12 items each).
     // The system walks down this list, skipping products already in cart,
@@ -798,29 +842,9 @@ function oz_cart_drawer_get_upsells($cart) {
         }
     }
 
-    // Sized product families: base product ID → all size variants.
-    // When a sized product appears as a candidate, we return a "sized" upsell card
-    // with all variant sizes so the customer can pick which size to add.
-    // These cards persist in the upsell section (customer may want multiple sizes).
-    $sized_families = [
-        11175 => [  // PU Roller — base ID triggers sized card
-            'name'  => 'PU Roller',
-            'sizes' => [
-                ['label' => '10cm', 'wcId' => 11175, 'price' => 2.50],
-                ['label' => '18cm', 'wcId' => 17360, 'price' => 9.95],
-                ['label' => '25cm', 'wcId' => 17361, 'price' => 12.95],
-                ['label' => '50cm', 'wcId' => 19705, 'price' => 17.50],
-            ],
-        ],
-        11164 => [  // Verfbak — base ID triggers sized card
-            'name'  => 'Verfbak',
-            'sizes' => [
-                ['label' => '10cm', 'wcId' => 11164, 'price' => 2.95],
-                ['label' => '18cm', 'wcId' => 28234, 'price' => 4.95],
-                ['label' => '32cm', 'wcId' => 28235, 'price' => 5.95],
-            ],
-        ],
-    ];
+    // Sized product families: source-of-truth lives in oz_bcw_get_sized_families()
+    // so the FBT carousel reuses the exact same data. See that function's header.
+    $sized_families = oz_bcw_get_sized_families();
 
     // Option families: same product ID but with addon meta (e.g. primer Ja/Nee).
     // Unlike sized families (different WC product IDs per pill), option families

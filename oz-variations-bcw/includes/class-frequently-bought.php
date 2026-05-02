@@ -45,8 +45,8 @@ class OZ_Frequently_Bought {
     /** Transient TTL — 24h keeps queries cheap, hook below invalidates on new order. */
     const CACHE_TTL = DAY_IN_SECONDS;
 
-    /** Transient key prefix. Bumped to v2 when the cache shape changes. */
-    const CACHE_PREFIX = 'oz_fbt_v2_';
+    /** Transient key prefix. Bump on every change to the cached payload shape. */
+    const CACHE_PREFIX = 'oz_fbt_v3_';
 
     /**
      * Init: register order-completion hook so cache stays in sync with reality.
@@ -107,120 +107,60 @@ class OZ_Frequently_Bought {
     }
 
     /**
-     * Strip a trailing size suffix from a product name to find its grouping key.
-     * Examples (input → output):
-     *   "Verfbak 18cm"                       → "Verfbak"
-     *   "Verfbak 32 cm"                      → "Verfbak"
-     *   "Pu roller 50 cm"                    → "Pu roller"
-     *   "PU roller 2 componenten 18 cm"      → "PU roller 2 componenten"
-     *   "Frans mes 25 cm"                    → "Frans mes"
-     *   "Beton Ciré 5m2"                     → "Beton Ciré"
-     *   "Stuco Paste"                        → "Stuco Paste"  (unchanged)
-     *
-     * Lower-cased + collapsed whitespace so cosmetic case/spacing differences
-     * across product names don't split a logical group.
-     */
-    private static function group_key_from_name($name) {
-        $name = (string) $name;
-        // Trim recognised size suffixes (cm, mm, ml, l, gr, kg, m2, m²).
-        $stripped = preg_replace(
-            '/\s+\d+\s*(cm|mm|ml|l|gr|kg|m2|m²)\b.*$/iu',
-            '',
-            $name
-        );
-        return strtolower(trim(preg_replace('/\s+/', ' ', $stripped)));
-    }
-
-    /**
-     * Detect a short human-readable size label from a product name.
-     *   "Verfbak 18cm"   → "18cm"
-     *   "Verfbak 32 cm"  → "32cm"
-     *   "Pu roller 50 cm" → "50cm"
-     *   "Verfbak"        → "" (no label)
-     */
-    public static function size_label_from_name($name) {
-        if (preg_match('/(\d+)\s*(cm|mm|ml|l|gr|kg|m2|m²)\b/iu', (string) $name, $m)) {
-            return $m[1] . strtolower($m[2]);
-        }
-        return '';
-    }
-
-    /**
      * Walk the ranked product IDs and consolidate size-variant siblings into
-     * "group" cards. Single products fall through as their own cards. Order
-     * follows the ranking — a group inherits the position of its first member.
+     * "group" cards based on the central oz_bcw_get_sized_families() map. Any
+     * trending ID that belongs to a sized family (whether base or sub-size)
+     * collapses into one group card with ALL the family's sizes — so a card
+     * shows the full set of pills even when only one variant happened to rank.
+     *
+     * Single products fall through as their own cards. Order follows the
+     * ranking — a group inherits the position of its first ranked member.
      *
      * Returns an array of cards:
      *   ['type' => 'single', 'product_id' => int]
-     *   ['type' => 'group',  'base_name' => string, 'variant_ids' => int[]]
+     *   ['type' => 'group',  'base_id' => int, 'name' => string,
+     *                         'sizes' => [['label'=>'10cm','wcId'=>11175,'price'=>2.50], …]]
      *
      * Stored in cache as plain arrays (no WC_Product objects), so cache stays
      * cheap to serialize and survives object cache flushes.
      */
     private static function group_into_cards($ids) {
-        // First pass: bucket by group key so we know which keys have ≥2 members.
-        $by_key   = [];      // key => [pid, pid, ...]
-        $key_seen = [];      // key => first index in $ids (preserves order)
+        $families = function_exists('oz_bcw_get_sized_families')
+            ? oz_bcw_get_sized_families()
+            : [];
 
-        foreach ($ids as $i => $pid) {
-            $p = wc_get_product($pid);
-            if (!$p) continue;
-            $key = self::group_key_from_name($p->get_name());
-            if (!isset($key_seen[$key])) $key_seen[$key] = $i;
-            $by_key[$key][] = (int) $pid;
+        // Reverse map: any size wcId → its family base ID.
+        $member_to_base = [];
+        foreach ($families as $base_id => $family) {
+            foreach ($family['sizes'] as $sz) {
+                $member_to_base[(int) $sz['wcId']] = (int) $base_id;
+            }
         }
 
-        // Second pass: emit cards in the original order, group only when ≥2
-        // members exist for that key. A single-member key always becomes a
-        // 'single' card so we don't add overlay UI for products that have no
-        // siblings to choose from.
-        $emitted = [];
-        $cards   = [];
+        $emitted_bases = [];
+        $cards         = [];
         foreach ($ids as $pid) {
-            $p = wc_get_product($pid);
-            if (!$p) continue;
-            $key = self::group_key_from_name($p->get_name());
-            if (isset($emitted[$key])) continue;
-            $emitted[$key] = true;
-
-            $members = $by_key[$key];
-            if (count($members) >= 2) {
+            $pid = (int) $pid;
+            // Does this product belong to a known sized family?
+            if (isset($member_to_base[$pid])) {
+                $base = $member_to_base[$pid];
+                if (isset($emitted_bases[$base])) continue;  // already shown earlier in the rank
+                $emitted_bases[$base] = true;
                 $cards[] = [
-                    'type'        => 'group',
-                    'base_name'   => self::pretty_base_name_for_key($key, $members),
-                    'variant_ids' => $members,
+                    'type'    => 'group',
+                    'base_id' => $base,
+                    'name'    => $families[$base]['name'],
+                    'sizes'   => $families[$base]['sizes'],
                 ];
-            } else {
-                $cards[] = [
-                    'type'       => 'single',
-                    'product_id' => (int) $members[0],
-                ];
+                continue;
             }
+            // No family → render as its own card.
+            $cards[] = [
+                'type'       => 'single',
+                'product_id' => $pid,
+            ];
         }
         return $cards;
-    }
-
-    /**
-     * Pick a clean display name for a group. Uses the SHORTEST member name
-     * stripped of its size suffix — that's usually the cleanest base label
-     * (e.g. "Verfbak" instead of "Verfbak Standaard 18cm Roze Variant").
-     */
-    private static function pretty_base_name_for_key($key, $member_ids) {
-        $best = '';
-        foreach ($member_ids as $mid) {
-            $p = wc_get_product($mid);
-            if (!$p) continue;
-            $candidate = preg_replace(
-                '/\s+\d+\s*(cm|mm|ml|l|gr|kg|m2|m²)\b.*$/iu',
-                '',
-                $p->get_name()
-            );
-            $candidate = trim(preg_replace('/\s+/', ' ', $candidate));
-            if ($best === '' || strlen($candidate) < strlen($best)) {
-                $best = $candidate;
-            }
-        }
-        return $best;
     }
 
     /**
