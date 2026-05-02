@@ -516,8 +516,9 @@ add_action('wp_ajax_nopriv_oz_cart_drawer_remove', 'oz_cart_drawer_remove');
 function oz_cart_drawer_add() {
     check_ajax_referer('oz_cart_drawer', 'nonce');
 
-    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
-    $qty        = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
+    $product_id   = isset($_POST['product_id'])   ? absint($_POST['product_id'])   : 0;
+    $variation_id = isset($_POST['variation_id']) ? absint($_POST['variation_id']) : 0;
+    $qty          = isset($_POST['qty']) ? absint($_POST['qty']) : 1;
     // Clamp qty to a sensible range — prevents "add 999999 to drain stock" abuse.
     $qty = max(1, min(99, $qty));
 
@@ -534,6 +535,29 @@ function oz_cart_drawer_add() {
         return;
     }
 
+    // Variable products require a chosen variation. Validate it belongs to
+    // this parent and is itself purchasable + in stock.
+    $variation_attributes = [];
+    if ($product->is_type('variable')) {
+        if (!$variation_id) {
+            wp_send_json_error('Missing variation');
+            return;
+        }
+        $variation = wc_get_product($variation_id);
+        if (!$variation || !$variation->is_type('variation') || $variation->get_parent_id() !== $product_id) {
+            wp_send_json_error('Invalid variation');
+            return;
+        }
+        if (!$variation->is_purchasable() || !$variation->is_in_stock()) {
+            wp_send_json_error('Variation not available');
+            return;
+        }
+        // WC needs the chosen variation attributes (attribute_pa_size etc.)
+        // alongside the variation_id so it stores the correct meta on the
+        // line item. get_variation_attributes() returns them in WC's format.
+        $variation_attributes = $variation->get_variation_attributes();
+    }
+
     // Optional cart item meta — used by option families (e.g. Stuco Paste with primer).
     // Only allow known meta keys to prevent arbitrary data injection.
     $allowed_meta_keys = ['oz_line', 'oz_primer'];
@@ -546,13 +570,14 @@ function oz_cart_drawer_add() {
 
     $cart = WC()->cart;
 
-    // Check if this product is already in the cart with matching meta.
+    // Check if this product is already in the cart with matching meta + variation.
     // Meta must match exactly — "Stuco Paste without primer" and "with primer"
     // are different line items because calculate_addon_prices() reads oz_primer.
     foreach ($cart->get_cart() as $cart_key => $cart_item) {
-        if ($cart_item['product_id'] !== $product_id || !empty($cart_item['variation_id'])) {
-            continue;
-        }
+        if ($cart_item['product_id'] !== $product_id) continue;
+        // Variation must match too: same product, same variation_id (or both 0)
+        $existing_var = isset($cart_item['variation_id']) ? (int) $cart_item['variation_id'] : 0;
+        if ($existing_var !== $variation_id) continue;
 
         // Compare meta: both must have same oz_line and oz_primer values
         $meta_match = true;
@@ -573,10 +598,10 @@ function oz_cart_drawer_add() {
         }
     }
 
-    // Product not in cart yet (or different meta) — add fresh.
-    // Pass cart_item_meta as 3rd-party data so WC stores it on the line item.
-    // This is picked up by calculate_addon_prices() for price adjustments.
-    $result = $cart->add_to_cart($product_id, $qty, 0, [], $cart_item_meta);
+    // Product not in cart yet (or different meta/variation) — add fresh.
+    // For variable products, pass variation_id + attributes so WC stores
+    // the correct line item. For simple products both are 0 / empty.
+    $result = $cart->add_to_cart($product_id, $qty, $variation_id, $variation_attributes, $cart_item_meta);
     if ($result) {
         wp_send_json_success(['cart_key' => $result]);
     } else {

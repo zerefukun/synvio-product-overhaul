@@ -1,13 +1,9 @@
 /**
  * Frequently Bought Together — carousel under the PDP main grid.
  *
- * Reuses the project's design tokens for every visual decision. No hardcoded
- * colours, no parallel typography scale, no custom spacing values.
- *
- * Tokens consumed: --oz-accent, --oz-accent-text, --oz-text-primary,
- *                  --oz-text-muted, --oz-bg-warm, --oz-border, --oz-border-light,
- *                  --oz-radius, --oz-ease, --oz-text-sm, --oz-text-base,
- *                  --ff-heading, --ff-body
+ * All visual decisions go through design tokens (--oz-accent, --oz-text-*,
+ * --oz-bg-warm, --oz-border, --ff-heading, --ff-body, --oz-ease,
+ * --oz-radius, --oz-text-sm). No hardcoded colours, no parallel scale.
  *
  * @package OZ_Variations_BCW
  * @since 2.3.0
@@ -16,7 +12,8 @@
 /* ── Section wrapper ──────────────────────────────────────────── */
 
 .oz-fbt {
-  padding: 48px 0;
+  padding: 64px 0 56px;
+  background: var(--oz-bg-warm, #F5F4F0);
 }
 
 .oz-fbt-inner {
@@ -25,26 +22,59 @@
   padding: 0 20px;
 }
 
+/* ── Header (eyebrow + title + sub) ───────────────────────────── */
+
+.oz-fbt-header {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.oz-fbt-eyebrow {
+  display: inline-block;
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--oz-accent);
+  margin-bottom: 10px;
+}
+
 .oz-fbt-title {
   font-family: var(--ff-heading, 'DM Serif Display', serif);
-  font-size: clamp(24px, 3vw, 32px);
+  font-size: clamp(26px, 3vw, 36px);
   font-weight: 400;
   color: var(--oz-text-primary);
-  margin: 0 0 24px;
+  margin: 0 0 8px;
   letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.oz-fbt-sub {
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 540px;
+}
+
+/* ── Stage (positioning context for nav buttons) ──────────────── */
+
+.oz-fbt-stage {
+  position: relative;
 }
 
 /* ── Swiper container ─────────────────────────────────────────── */
 
 .oz-fbt-swiper {
   position: relative;
-  /* Slight padding so hover-lift on cards isn't clipped */
-  padding: 4px;
-  margin: -4px;
+  /* Tiny padding so card hover-lift isn't clipped by Swiper's own overflow:hidden */
+  padding: 8px 4px;
+  margin: -8px -4px;
 }
 
 .oz-fbt-swiper .swiper-wrapper {
-  /* Ensure cards stretch to equal height in each row */
   align-items: stretch;
 }
 
@@ -81,7 +111,7 @@
   color: inherit;
 }
 
-/* Image: fixed square aspect, no layout shift while loading */
+/* Image: fixed square aspect, no layout shift */
 .oz-fbt-img {
   width: 100%;
   aspect-ratio: 1;
@@ -101,12 +131,10 @@
   transform: scale(1.03);
 }
 
-/* Info block: name + price. Bottom padding leaves room for the absolutely
- * positioned add button so it never overlaps the price. */
 .oz-fbt-info {
   flex: 1;
   min-width: 0;
-  padding: 12px 14px 56px;
+  padding: 12px 14px 56px;  /* bottom space for the absolute add button */
 }
 
 .oz-fbt-name {
@@ -135,7 +163,6 @@
   line-height: 1.2;
 }
 
-/* WC wraps "from" prices in <ins>/<del> — neutralize so it stays one line. */
 .oz-fbt-price del {
   color: var(--oz-text-muted);
   font-weight: 500;
@@ -183,29 +210,145 @@
   display: block;
 }
 
-/* Post-add success state (set by JS for ~1.5s after add-to-cart) */
 .oz-fbt-add.is-added {
   background: var(--oz-accent);
   color: var(--oz-accent-text, #fff);
   pointer-events: none;
 }
 
-/* Failure feedback — JS sets style.animation on the button when add fails */
-@keyframes oz-fbt-shake {
-  0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-3px); }
-  75%      { transform: translateX(3px); }
+/* ── Inline options overlay (variable products only) ──────────── */
+
+/* Card collapses image + info under a soft white veil; option pills
+ * + add CTA show in the middle. Toggled by JS adding .is-open. */
+.oz-fbt-overlay {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px 14px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition:
+    opacity 0.2s var(--oz-ease),
+    transform 0.2s var(--oz-ease);
+  z-index: 3;
 }
 
-/* ── Carousel nav buttons ─────────────────────────────────────── */
+.oz-fbt-card.is-open .oz-fbt-overlay {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.oz-fbt-overlay-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--oz-bg-warm, #F5F4F0);
+  color: var(--oz-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s var(--oz-ease), color 0.15s var(--oz-ease);
+}
+
+.oz-fbt-overlay-close:hover {
+  background: var(--oz-border);
+  color: var(--oz-text-primary);
+}
+
+.oz-fbt-overlay-inner {
+  margin: auto 0;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.oz-fbt-overlay-label {
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--oz-text-muted);
+  text-align: center;
+}
+
+.oz-fbt-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+.oz-fbt-option {
+  padding: 8px 12px;
+  border: 1.5px solid var(--oz-label-border, var(--oz-border));
+  border-radius: var(--oz-radius, 8px);
+  background: #fff;
+  color: var(--oz-text-body, var(--oz-text-primary));
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s var(--oz-ease);
+  line-height: 1.2;
+}
+
+.oz-fbt-option:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+}
+
+.oz-fbt-option.is-selected {
+  background: var(--oz-accent);
+  color: var(--oz-accent-text, #fff);
+  border-color: var(--oz-accent);
+}
+
+.oz-fbt-overlay-cta {
+  margin-top: 4px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--oz-radius, 8px);
+  background: var(--oz-cta, var(--oz-accent));
+  color: var(--oz-cta-text, #fff);
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: var(--oz-text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.15s var(--oz-ease), opacity 0.15s var(--oz-ease);
+}
+
+.oz-fbt-overlay-cta:hover:not(:disabled) {
+  background: var(--oz-cta-hover, var(--oz-accent));
+}
+
+.oz-fbt-overlay-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Carousel nav buttons (positioned outside the Swiper container) ── */
 
 .oz-fbt-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 2;
-  width: 40px;
-  height: 40px;
+  z-index: 4;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--oz-border);
   background: #fff;
@@ -215,7 +358,7 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition:
     background 0.2s var(--oz-ease),
     color 0.2s var(--oz-ease),
@@ -233,14 +376,22 @@
 }
 
 .oz-fbt-nav.swiper-button-disabled {
-  opacity: 0.35;
+  opacity: 0;
   pointer-events: none;
 }
 
-.oz-fbt-prev { left: -8px; }
-.oz-fbt-next { right: -8px; }
+/* Sit clearly OUTSIDE the carousel viewport, in the section padding gutter */
+.oz-fbt-prev { left: -56px; }
+.oz-fbt-next { right: -56px; }
 
-/* Hide nav on touch devices — swipe is the natural gesture there */
+/* On narrower desktops where the section hits the viewport edge, pull the
+ * arrows back inside slightly so they remain visible without clipping. */
+@media (max-width: 1440px) {
+  .oz-fbt-prev { left: -20px; }
+  .oz-fbt-next { right: -20px; }
+}
+
+/* Hide nav on touch devices — swipe is the natural gesture */
 @media (hover: none) and (pointer: coarse) {
   .oz-fbt-nav { display: none; }
 }
@@ -249,13 +400,13 @@
 
 @media (max-width: 600px) {
   .oz-fbt {
-    padding: 32px 0;
+    padding: 40px 0 32px;
   }
   .oz-fbt-inner {
     padding: 0 16px;
   }
-  .oz-fbt-title {
-    margin-bottom: 16px;
+  .oz-fbt-header {
+    margin-bottom: 20px;
   }
   .oz-fbt-info {
     padding: 10px 12px 52px;
@@ -266,4 +417,12 @@
     bottom: 10px;
     right: 10px;
   }
+}
+
+/* ── Failure feedback (JS sets style.animation on fail) ──────── */
+
+@keyframes oz-fbt-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-3px); }
+  75%      { transform: translateX(3px); }
 }

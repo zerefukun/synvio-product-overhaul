@@ -1317,28 +1317,104 @@
       });
     });
     section.addEventListener("click", function(e) {
-      var btn = e.target.closest(".oz-fbt-add");
-      if (!btn) return;
-      var card = btn.closest(".oz-fbt-card");
-      if (!card) return;
-      e.preventDefault();
-      e.stopPropagation();
-      var hasOptions = card.dataset.hasOptions === "1";
-      var productId = parseInt(card.dataset.productId, 10);
-      var productUrl = card.dataset.productUrl || "";
-      if (hasOptions) {
-        if (productUrl) window.location.href = productUrl;
+      var closeBtn = e.target.closest(".oz-fbt-overlay-close");
+      if (closeBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeBtn.closest(".oz-fbt-card").classList.remove("is-open");
         return;
       }
-      if (!productId || btn.disabled) return;
+      var optBtn = e.target.closest(".oz-fbt-option");
+      if (optBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        var card = optBtn.closest(".oz-fbt-card");
+        card.querySelectorAll(".oz-fbt-option").forEach(function(b) {
+          b.classList.remove("is-selected");
+        });
+        optBtn.classList.add("is-selected");
+        var cta = card.querySelector(".oz-fbt-overlay-cta");
+        if (cta) {
+          cta.disabled = false;
+          cta.dataset.variationId = optBtn.dataset.variationId;
+        }
+        return;
+      }
+      var ctaBtn = e.target.closest(".oz-fbt-overlay-cta");
+      if (ctaBtn && !ctaBtn.disabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        var ctaCard = ctaBtn.closest(".oz-fbt-card");
+        var ctaProductId = parseInt(ctaCard.dataset.productId, 10);
+        var ctaVariation = parseInt(ctaBtn.dataset.variationId, 10);
+        if (!ctaProductId || !ctaVariation) return;
+        sendAdd(ctaCard, ctaBtn, ctaProductId, ctaVariation, function() {
+          ctaCard.classList.remove("is-open");
+        });
+        return;
+      }
+      var addBtn = e.target.closest(".oz-fbt-add");
+      if (!addBtn) return;
+      var card2 = addBtn.closest(".oz-fbt-card");
+      if (!card2) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var hasOptions = card2.dataset.hasOptions === "1";
+      var productId = parseInt(card2.dataset.productId, 10);
+      if (hasOptions) {
+        buildOptionsIfNeeded(card2);
+        section.querySelectorAll(".oz-fbt-card.is-open").forEach(function(c) {
+          if (c !== card2) c.classList.remove("is-open");
+        });
+        card2.classList.toggle("is-open");
+        return;
+      }
+      if (!productId || addBtn.disabled) return;
+      sendAdd(card2, addBtn, productId, 0);
+    });
+    document.addEventListener("click", function(e) {
+      if (e.target.closest(".oz-fbt-card")) return;
+      section.querySelectorAll(".oz-fbt-card.is-open").forEach(function(c) {
+        c.classList.remove("is-open");
+      });
+    });
+    function buildOptionsIfNeeded(card) {
+      var box = card.querySelector(".oz-fbt-options");
+      if (!box || box.dataset.built === "1") return;
+      var raw = card.dataset.variations;
+      if (!raw) return;
+      var variations;
+      try {
+        variations = JSON.parse(raw);
+      } catch (_) {
+        return;
+      }
+      if (!variations || !variations.length) return;
+      var html = "";
+      for (var i = 0; i < variations.length; i++) {
+        var v = variations[i];
+        html += '<button type="button" class="oz-fbt-option" data-variation-id="' + v.id + '">' + escapeText(v.label) + "</button>";
+      }
+      box.innerHTML = html;
+      box.dataset.built = "1";
+    }
+    function escapeText(s) {
+      var d = document.createElement("div");
+      d.textContent = String(s == null ? "" : s);
+      return d.innerHTML;
+    }
+    function sendAdd(card, btn, productId, variationId, onSuccess) {
+      if (btn.disabled) return;
       btn.disabled = true;
       var cfg = window.ozCartDrawer || {};
       if (!cfg.ajaxUrl || !cfg.nonce) {
-        if (productUrl) window.location.href = productUrl;
+        var url = card.dataset.productUrl;
+        if (url) window.location.href = url;
         btn.disabled = false;
         return;
       }
       var body = "action=oz_cart_drawer_add&nonce=" + encodeURIComponent(cfg.nonce) + "&product_id=" + productId + "&qty=1";
+      if (variationId) body += "&variation_id=" + variationId;
       var xhr = new XMLHttpRequest();
       xhr.open("POST", cfg.ajaxUrl, true);
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -1349,7 +1425,7 @@
         try {
           var json = JSON.parse(xhr.responseText);
           ok = json && json.success;
-        } catch (err) {
+        } catch (_) {
         }
         if (!ok) {
           btn.style.animation = "oz-fbt-shake 0.4s";
@@ -1358,25 +1434,29 @@
           }, 400);
           return;
         }
-        var originalHTML = btn.innerHTML;
-        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
-        btn.classList.add("is-added");
+        if (btn.classList.contains("oz-fbt-add")) {
+          var originalHTML = btn.innerHTML;
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5l3 3 5-6"/></svg>';
+          btn.classList.add("is-added");
+          setTimeout(function() {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove("is-added");
+          }, 1800);
+        }
         document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
         try {
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push({
             event: "oz_fbt_added",
-            oz_product_id: productId
+            oz_product_id: productId,
+            oz_variation_id: variationId || 0
           });
-        } catch (err) {
+        } catch (_) {
         }
-        setTimeout(function() {
-          btn.innerHTML = originalHTML;
-          btn.classList.remove("is-added");
-        }, 1800);
+        if (onSuccess) onSuccess();
       };
       xhr.send(body);
-    });
+    }
   }
 
   // src/js/product-page.js
