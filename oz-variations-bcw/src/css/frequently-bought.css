@@ -1,6 +1,13 @@
 /**
  * Frequently Bought Together — carousel under the PDP main grid.
  *
+ * Card pattern follows the Gulcan Home reference:
+ *   - Soft warm image area with the action button (cart for simple, +
+ *     for grouped) sitting in the bottom-right corner OF THE IMAGE.
+ *   - Tiny uppercase category eyebrow above the product name.
+ *   - Title in body weight, two-line clamp.
+ *   - Price line below title; sale prices use WC's <del>/<ins> markup.
+ *
  * All visual decisions go through design tokens (--oz-accent, --oz-text-*,
  * --oz-bg-warm, --oz-border, --ff-heading, --ff-body, --oz-ease,
  * --oz-radius, --oz-text-sm). No hardcoded colours, no parallel scale.
@@ -26,7 +33,6 @@
 
 .oz-fbt-header {
   margin-bottom: 32px;
-  text-align: left;
 }
 
 .oz-fbt-eyebrow {
@@ -69,7 +75,7 @@
 
 .oz-fbt-swiper {
   position: relative;
-  /* Tiny padding so card hover-lift isn't clipped by Swiper's own overflow:hidden */
+  /* Tiny padding so card hover-lift isn't clipped by Swiper's overflow:hidden */
   padding: 8px 4px;
   margin: -8px -4px;
 }
@@ -85,24 +91,34 @@
 /* ── Card ─────────────────────────────────────────────────────── */
 
 .oz-fbt-card {
-  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
-  border: 1px solid var(--oz-border-light, var(--oz-border));
+  background: transparent;
   border-radius: var(--oz-radius, 8px);
   overflow: hidden;
   transition:
-    border-color 0.2s var(--oz-ease),
     transform 0.2s var(--oz-ease),
     box-shadow 0.2s var(--oz-ease);
 }
 
 .oz-fbt-card:hover {
-  border-color: var(--oz-accent);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Media: image with action button overlaid bottom-right ──── */
+
+.oz-fbt-media {
+  position: relative;
+  background: #fff;
+  border-radius: var(--oz-radius, 8px);
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 0.2s var(--oz-ease);
+}
+
+.oz-fbt-card:hover .oz-fbt-media {
+  border-color: var(--oz-border-light, var(--oz-border));
 }
 
 .oz-fbt-card-link {
@@ -111,30 +127,77 @@
   color: inherit;
 }
 
-/* Image: fixed square aspect, no layout shift */
 .oz-fbt-img {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
-  background: var(--oz-bg-warm, #F5F4F0);
-  overflow: hidden;
-}
-
-.oz-fbt-img img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  display: block;
+  background: var(--oz-bg-warm, #F5F4F0);
   transition: transform 0.3s var(--oz-ease);
 }
 
-.oz-fbt-card:hover .oz-fbt-img img {
+.oz-fbt-card:hover .oz-fbt-img {
   transform: scale(1.03);
 }
 
-.oz-fbt-info {
-  flex: 1;
-  min-width: 0;
-  padding: 12px 14px 56px;  /* bottom space for the absolute add button */
+/* Action button — dark filled circle in bottom-right corner of the image.
+ * Matches the Gulcan Home reference: dark color, white icon, no border. */
+.oz-fbt-action {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--oz-text-primary);
+  color: #fff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+  transition:
+    background 0.15s var(--oz-ease),
+    transform 0.15s var(--oz-ease);
+}
+
+.oz-fbt-action:hover {
+  background: var(--oz-accent);
+  transform: scale(1.05);
+}
+
+.oz-fbt-action:active {
+  transform: scale(0.95);
+}
+
+.oz-fbt-action svg {
+  display: block;
+}
+
+.oz-fbt-action.is-added {
+  background: var(--oz-accent);
+  pointer-events: none;
+}
+
+/* ── Body (eyebrow + name + price) ────────────────────────────── */
+
+.oz-fbt-body {
+  padding: 14px 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oz-fbt-cat {
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--oz-text-muted);
+  margin-bottom: 2px;
 }
 
 .oz-fbt-name {
@@ -143,9 +206,9 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-family: var(--ff-body, 'Raleway', sans-serif);
-  font-size: var(--oz-text-sm);
-  font-weight: 600;
-  line-height: 1.35;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
   color: var(--oz-text-primary);
   text-decoration: none;
   transition: color 0.15s var(--oz-ease);
@@ -156,8 +219,9 @@
 }
 
 .oz-fbt-price {
-  margin-top: 6px;
-  font-size: var(--oz-text-sm);
+  margin-top: 4px;
+  font-family: var(--ff-body, 'Raleway', sans-serif);
+  font-size: 15px;
   font-weight: 700;
   color: var(--oz-text-primary);
   line-height: 1.2;
@@ -166,64 +230,24 @@
 .oz-fbt-price del {
   color: var(--oz-text-muted);
   font-weight: 500;
-  margin-right: 4px;
+  margin-left: 6px;
+  font-size: 13px;
 }
 
 .oz-fbt-price ins {
   text-decoration: none;
 }
 
-/* ── Add / options button ─────────────────────────────────────── */
+/* ── Inline option overlay (group cards only) ─────────────────── */
 
-.oz-fbt-add {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--oz-accent);
-  color: var(--oz-accent-text, #fff);
-  border: 1.5px solid var(--oz-accent);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  transition:
-    background 0.15s var(--oz-ease),
-    color 0.15s var(--oz-ease),
-    transform 0.15s var(--oz-ease);
-}
-
-.oz-fbt-add:hover {
-  background: #fff;
-  color: var(--oz-accent);
-  transform: scale(1.05);
-}
-
-.oz-fbt-add:active {
-  transform: scale(0.95);
-}
-
-.oz-fbt-add svg {
-  display: block;
-}
-
-.oz-fbt-add.is-added {
-  background: var(--oz-accent);
-  color: var(--oz-accent-text, #fff);
-  pointer-events: none;
-}
-
-/* ── Inline options overlay (variable products only) ──────────── */
-
-/* Card collapses image + info under a soft white veil; option pills
- * + add CTA show in the middle. Toggled by JS adding .is-open. */
+/* Slides in from the bottom of the image with a soft white veil + size pills.
+ * Action button (the +) stays clickable above it. */
 .oz-fbt-overlay {
   position: absolute;
   inset: 0;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   padding: 16px 14px 14px;
@@ -242,12 +266,19 @@
   transform: translateY(0);
 }
 
+/* Hide the cart-area action button while overlay is open — overlay's own
+ * Toevoegen CTA replaces it. Keeps focus on the choice. */
+.oz-fbt-card.is-open .oz-fbt-action {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .oz-fbt-overlay-close {
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: none;
   background: var(--oz-bg-warm, #F5F4F0);
@@ -265,19 +296,12 @@
   color: var(--oz-text-primary);
 }
 
-.oz-fbt-overlay-inner {
-  margin: auto 0;
-  padding: 8px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .oz-fbt-overlay-label {
+  margin: auto 0 12px;
   font-family: var(--ff-body, 'Raleway', sans-serif);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--oz-text-muted);
   text-align: center;
@@ -288,16 +312,17 @@
   flex-wrap: wrap;
   gap: 6px;
   justify-content: center;
+  margin-bottom: 12px;
 }
 
 .oz-fbt-option {
-  padding: 8px 12px;
+  padding: 8px 14px;
   border: 1.5px solid var(--oz-label-border, var(--oz-border));
   border-radius: var(--oz-radius, 8px);
   background: #fff;
   color: var(--oz-text-body, var(--oz-text-primary));
   font-family: var(--ff-body, 'Raleway', sans-serif);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s var(--oz-ease);
@@ -316,12 +341,12 @@
 }
 
 .oz-fbt-overlay-cta {
-  margin-top: 4px;
-  padding: 10px 16px;
+  margin-top: auto;
+  padding: 12px 16px;
   border: none;
   border-radius: var(--oz-radius, 8px);
-  background: var(--oz-cta, var(--oz-accent));
-  color: var(--oz-cta-text, #fff);
+  background: var(--oz-text-primary);
+  color: #fff;
   font-family: var(--ff-body, 'Raleway', sans-serif);
   font-size: var(--oz-text-sm);
   font-weight: 700;
@@ -332,15 +357,15 @@
 }
 
 .oz-fbt-overlay-cta:hover:not(:disabled) {
-  background: var(--oz-cta-hover, var(--oz-accent));
+  background: var(--oz-accent);
 }
 
 .oz-fbt-overlay-cta:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
-/* ── Carousel nav buttons (positioned outside the Swiper container) ── */
+/* ── Carousel nav buttons (positioned outside the swiper container) ── */
 
 .oz-fbt-nav {
   position: absolute;
@@ -366,9 +391,9 @@
 }
 
 .oz-fbt-nav:hover {
-  background: var(--oz-accent);
-  color: var(--oz-accent-text, #fff);
-  border-color: var(--oz-accent);
+  background: var(--oz-text-primary);
+  color: #fff;
+  border-color: var(--oz-text-primary);
 }
 
 .oz-fbt-nav:active {
@@ -391,7 +416,7 @@
   .oz-fbt-next { right: -20px; }
 }
 
-/* Hide nav on touch devices — swipe is the natural gesture */
+/* Hide nav on touch devices — swipe is the natural gesture there */
 @media (hover: none) and (pointer: coarse) {
   .oz-fbt-nav { display: none; }
 }
@@ -408,14 +433,17 @@
   .oz-fbt-header {
     margin-bottom: 20px;
   }
-  .oz-fbt-info {
-    padding: 10px 12px 52px;
-  }
-  .oz-fbt-add {
-    width: 32px;
-    height: 32px;
+  .oz-fbt-action {
+    width: 36px;
+    height: 36px;
     bottom: 10px;
     right: 10px;
+  }
+  .oz-fbt-name {
+    font-size: 14px;
+  }
+  .oz-fbt-price {
+    font-size: 14px;
   }
 }
 

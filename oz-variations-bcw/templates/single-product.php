@@ -859,113 +859,146 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
   // ─── Frequently bought together carousel ───
   // Auto-derived from real order history (time-decayed score). No admin
-  // curation. Skipped silently when there's not enough signal so we never
-  // render a half-empty row. Renders BEFORE the editorial showcase blocks.
-  $oz_fbt_ids = OZ_Frequently_Bought::get_for_product($product->get_id());
-  if (count($oz_fbt_ids) >= 4) {
-      // Pre-resolve product objects and skip any that fail to load (deleted,
-      // draft, out-of-stock, etc.) — keeps the template branchless below.
-      $oz_fbt_products = [];
-      foreach ($oz_fbt_ids as $oz_fbt_id) {
-          $oz_fbt_p = wc_get_product($oz_fbt_id);
-          if ($oz_fbt_p && $oz_fbt_p->is_visible() && $oz_fbt_p->is_in_stock()) {
-              $oz_fbt_products[] = $oz_fbt_p;
-          }
-      }
-      if (count($oz_fbt_products) >= 4) {
-          ?>
-          <section class="oz-fbt" data-reveal>
-            <div class="oz-fbt-inner">
-              <header class="oz-fbt-header">
-                <span class="oz-fbt-eyebrow">Compleet maken</span>
-                <h2 class="oz-fbt-title">Vaak samen besteld</h2>
-                <p class="oz-fbt-sub">Op basis van wat onze klanten kochten bij dit product.</p>
-              </header>
-              <div class="oz-fbt-stage">
-              <div class="swiper oz-fbt-swiper">
-                <div class="swiper-wrapper">
-                  <?php foreach ($oz_fbt_products as $oz_fbt_p):
-                      $oz_fbt_id          = $oz_fbt_p->get_id();
-                      $oz_fbt_url         = $oz_fbt_p->get_permalink();
-                      $oz_fbt_img         = wp_get_attachment_image_url($oz_fbt_p->get_image_id(), 'woocommerce_thumbnail') ?: wc_placeholder_img_src('woocommerce_thumbnail');
-                      $oz_fbt_price_html  = $oz_fbt_p->get_price_html();
-                      $oz_fbt_has_options = $oz_fbt_p->is_type('variable');
+  // curation. Returns an array of cards: type=single (one product, cart icon
+  // → quick add) or type=group (several size siblings, + icon → overlay with
+  // size pills). Skipped silently when there's not enough signal.
+  $oz_fbt_cards = OZ_Frequently_Bought::get_for_product($product->get_id());
 
-                      // For variable products: pre-render variations as JSON
-                      // so the option overlay opens instantly without an extra
-                      // AJAX round-trip. Only purchasable + in-stock variations.
-                      $oz_fbt_variations = [];
-                      if ($oz_fbt_has_options) {
-                          foreach ($oz_fbt_p->get_available_variations() as $var) {
-                              if (empty($var['is_purchasable']) || empty($var['is_in_stock'])) continue;
-                              // Build a short, human-readable label from attribute values.
-                              $label_parts = [];
-                              foreach ($var['attributes'] as $attr_value) {
-                                  if ($attr_value !== '') $label_parts[] = $attr_value;
-                              }
-                              $oz_fbt_variations[] = [
-                                  'id'    => (int) $var['variation_id'],
-                                  'label' => implode(' / ', $label_parts) ?: __('Variant', 'oz-bcw'),
-                                  'price' => wp_strip_all_tags($var['price_html']),
-                                  'attr'  => $var['attributes'],
-                              ];
-                          }
-                      }
-                  ?>
-                    <div class="swiper-slide">
-                      <article class="oz-fbt-card<?php echo $oz_fbt_has_options ? ' oz-fbt-card--variable' : ''; ?>"
-                               data-product-id="<?php echo esc_attr($oz_fbt_id); ?>"
-                               data-has-options="<?php echo $oz_fbt_has_options ? '1' : '0'; ?>"
-                               data-product-url="<?php echo esc_url($oz_fbt_url); ?>"
-                               data-product-name="<?php echo esc_attr($oz_fbt_p->get_name()); ?>"
-                               <?php if ($oz_fbt_has_options): ?>data-variations="<?php echo esc_attr(wp_json_encode($oz_fbt_variations)); ?>"<?php endif; ?>>
-                        <a class="oz-fbt-card-link" href="<?php echo esc_url($oz_fbt_url); ?>" tabindex="-1" aria-hidden="true">
-                          <div class="oz-fbt-img">
-                            <img src="<?php echo esc_url($oz_fbt_img); ?>"
-                                 alt="<?php echo esc_attr($oz_fbt_p->get_name()); ?>"
-                                 loading="lazy" decoding="async" />
-                          </div>
+  // Resolve each card to its renderable shape, dropping any that lost their
+  // products (deleted / out of stock / unpublished) so the template can iterate
+  // without further branching.
+  $oz_fbt_render = [];
+  foreach ($oz_fbt_cards as $oz_card) {
+      if ($oz_card['type'] === 'single') {
+          $p = wc_get_product($oz_card['product_id']);
+          if (!$p || !$p->is_visible() || !$p->is_in_stock()) continue;
+          $oz_fbt_render[] = [
+              'has_options' => false,
+              'primary'     => $p,
+              'name'        => $p->get_name(),
+              'options'     => [],
+          ];
+      } else { // 'group'
+          $variants = [];
+          foreach ($oz_card['variant_ids'] as $vid) {
+              $vp = wc_get_product($vid);
+              if (!$vp || !$vp->is_visible() || !$vp->is_in_stock()) continue;
+              $variants[] = [
+                  'id'    => (int) $vid,
+                  'label' => OZ_Frequently_Bought::size_label_from_name($vp->get_name()) ?: __('Standaard', 'oz-bcw'),
+                  'price' => wp_strip_all_tags($vp->get_price_html()),
+                  'name'  => $vp->get_name(),
+              ];
+          }
+          if (count($variants) < 2) {
+              // Group collapsed below 2 after stock filter — fall back to a single card on whatever's left.
+              if (!empty($variants)) {
+                  $first = wc_get_product($variants[0]['id']);
+                  if ($first) {
+                      $oz_fbt_render[] = [
+                          'has_options' => false,
+                          'primary'     => $first,
+                          'name'        => $first->get_name(),
+                          'options'     => [],
+                      ];
+                  }
+              }
+              continue;
+          }
+          $primary = wc_get_product($variants[0]['id']);
+          $oz_fbt_render[] = [
+              'has_options' => true,
+              'primary'     => $primary,
+              'name'        => $oz_card['base_name'],
+              'options'     => $variants,
+          ];
+      }
+  }
+
+  if (count($oz_fbt_render) >= 4) {
+      ?>
+      <section class="oz-fbt" data-reveal>
+        <div class="oz-fbt-inner">
+          <header class="oz-fbt-header">
+            <span class="oz-fbt-eyebrow">Compleet maken</span>
+            <h2 class="oz-fbt-title">Vaak samen besteld</h2>
+            <p class="oz-fbt-sub">Op basis van wat onze klanten kochten bij dit product.</p>
+          </header>
+          <div class="oz-fbt-stage">
+            <div class="swiper oz-fbt-swiper">
+              <div class="swiper-wrapper">
+                <?php foreach ($oz_fbt_render as $oz_card_data):
+                    $p             = $oz_card_data['primary'];
+                    $is_group      = $oz_card_data['has_options'];
+                    $card_name     = $oz_card_data['name'];
+                    $card_url      = $p->get_permalink();
+                    $card_img      = wp_get_attachment_image_url($p->get_image_id(), 'woocommerce_thumbnail') ?: wc_placeholder_img_src('woocommerce_thumbnail');
+                    $card_price    = $p->get_price_html();
+                    // Eyebrow = first product category (excluding "main lines" we know are not visible here).
+                    $card_eyebrow  = '';
+                    $cat_terms     = get_the_terms($p->get_id(), 'product_cat');
+                    if ($cat_terms && !is_wp_error($cat_terms)) {
+                        // Prefer Gereedschap (19) or Losse Materialen (17) for clarity.
+                        foreach ($cat_terms as $t) {
+                            if (in_array((int) $t->term_id, [19, 17], true)) { $card_eyebrow = $t->name; break; }
+                        }
+                        if ($card_eyebrow === '') $card_eyebrow = $cat_terms[0]->name;
+                    }
+                ?>
+                  <div class="swiper-slide">
+                    <article class="oz-fbt-card<?php echo $is_group ? ' oz-fbt-card--has-options' : ''; ?>"
+                             data-product-id="<?php echo esc_attr($p->get_id()); ?>"
+                             data-has-options="<?php echo $is_group ? '1' : '0'; ?>"
+                             data-product-url="<?php echo esc_url($card_url); ?>"
+                             <?php if ($is_group): ?>data-variants="<?php echo esc_attr(wp_json_encode($oz_card_data['options'])); ?>"<?php endif; ?>>
+                      <div class="oz-fbt-media">
+                        <a class="oz-fbt-card-link" href="<?php echo esc_url($card_url); ?>" tabindex="-1" aria-hidden="true">
+                          <img class="oz-fbt-img"
+                               src="<?php echo esc_url($card_img); ?>"
+                               alt="<?php echo esc_attr($card_name); ?>"
+                               loading="lazy" decoding="async" />
                         </a>
-                        <div class="oz-fbt-info">
-                          <a class="oz-fbt-name" href="<?php echo esc_url($oz_fbt_url); ?>"><?php echo esc_html($oz_fbt_p->get_name()); ?></a>
-                          <div class="oz-fbt-price"><?php echo wp_kses_post($oz_fbt_price_html); ?></div>
-                        </div>
                         <button type="button"
-                                class="oz-fbt-add"
-                                aria-label="<?php echo $oz_fbt_has_options ? esc_attr__('Kies opties', 'oz-bcw') : esc_attr__('Toevoegen aan winkelwagen', 'oz-bcw'); ?>">
-                          <?php if ($oz_fbt_has_options): ?>
-                            <!-- Plus: opens inline options overlay -->
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                              <path d="M8 3v10M3 8h10"/>
+                                class="oz-fbt-action"
+                                aria-label="<?php echo $is_group ? esc_attr__('Kies opties', 'oz-bcw') : esc_attr__('Toevoegen aan winkelwagen', 'oz-bcw'); ?>">
+                          <?php if ($is_group): ?>
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                              <path d="M7 2v10M2 7h10"/>
                             </svg>
                           <?php else: ?>
-                            <!-- Cart icon: quick add (matches cart-drawer upsell icon) -->
+                            <!-- Cart icon — matches cart-drawer upsell icon -->
                             <svg width="16" height="16" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true">
                               <path d="M292.31-115.38q-25.31 0-42.66-17.35-17.34-17.35-17.34-42.65 0-25.31 17.34-42.66 17.35-17.34 42.66-17.34 25.31 0 42.65 17.34 17.35 17.35 17.35 42.66 0 25.3-17.35 42.65-17.34 17.35-42.65 17.35Zm375.38 0q-25.31 0-42.65-17.35-17.35-17.35-17.35-42.65 0-25.31 17.35-42.66 17.34-17.34 42.65-17.34t42.66 17.34q17.34 17.35 17.34 42.66 0 25.3-17.34 42.65-17.35 17.35-42.66 17.35ZM235.23-740 342-515.38h265.38q6.93 0 12.31-3.47 5.39-3.46 9.23-9.61l104.62-190q4.61-8.46.77-15-3.85-6.54-13.08-6.54h-486Zm-19.54-40h520.77q26.08 0 39.23 21.27 13.16 21.27 1.39 43.81l-114.31 208.3q-8.69 14.62-22.58 22.93-13.88 8.31-30.5 8.31H324l-48.62 89.23q-6.15 9.23-.38 20 5.77 10.77 17.31 10.77h435.38v40H292.31q-35 0-52.23-29.5-17.23-29.5-.85-59.27l60.15-107.23L152.31-820H80v-40h97.69l38 80ZM342-515.38h280-280Z"/>
                             </svg>
                           <?php endif; ?>
                         </button>
 
-                        <?php if ($oz_fbt_has_options): ?>
-                        <!-- Inline options overlay — hidden until the + button toggles .is-open on the card -->
+                        <?php if ($is_group): ?>
+                        <!-- Inline option overlay over the card body. Toggled by .is-open on the card. -->
                         <div class="oz-fbt-overlay" aria-hidden="true">
                           <button type="button" class="oz-fbt-overlay-close" aria-label="<?php esc_attr_e('Sluiten', 'oz-bcw'); ?>">
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 2l10 10M12 2L2 12"/></svg>
                           </button>
-                          <div class="oz-fbt-overlay-inner">
-                            <div class="oz-fbt-overlay-label"><?php esc_html_e('Kies een optie', 'oz-bcw'); ?></div>
-                            <div class="oz-fbt-options" role="radiogroup" aria-label="<?php esc_attr_e('Beschikbare opties', 'oz-bcw'); ?>"></div>
-                            <button type="button" class="oz-fbt-overlay-cta" disabled>
-                              <?php esc_html_e('Toevoegen', 'oz-bcw'); ?>
-                            </button>
-                          </div>
+                          <div class="oz-fbt-overlay-label"><?php esc_html_e('Kies maat', 'oz-bcw'); ?></div>
+                          <div class="oz-fbt-options" role="radiogroup" aria-label="<?php esc_attr_e('Beschikbare maten', 'oz-bcw'); ?>"></div>
+                          <button type="button" class="oz-fbt-overlay-cta" disabled>
+                            <?php esc_html_e('Toevoegen', 'oz-bcw'); ?>
+                          </button>
                         </div>
                         <?php endif; ?>
-                      </article>
-                    </div>
-                  <?php endforeach; ?>
-                </div>
-              </div><!-- /.oz-fbt-swiper -->
+                      </div>
+                      <div class="oz-fbt-body">
+                        <?php if ($card_eyebrow): ?>
+                          <span class="oz-fbt-cat"><?php echo esc_html($card_eyebrow); ?></span>
+                        <?php endif; ?>
+                        <a class="oz-fbt-name" href="<?php echo esc_url($card_url); ?>"><?php echo esc_html($card_name); ?></a>
+                        <div class="oz-fbt-price"><?php echo wp_kses_post($card_price); ?></div>
+                      </div>
+                    </article>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div><!-- /.oz-fbt-swiper -->
               <button type="button" class="oz-fbt-nav oz-fbt-prev" aria-label="<?php esc_attr_e('Vorige', 'oz-bcw'); ?>">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
@@ -974,9 +1007,8 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
               </button>
               </div><!-- /.oz-fbt-stage -->
             </div>
-          </section>
-          <?php
-      }
+      </section>
+      <?php
   }
 
   // Current line's showcase

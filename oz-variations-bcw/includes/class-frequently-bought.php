@@ -32,17 +32,21 @@ class OZ_Frequently_Bought {
     /** Carousel candidate categories. Anything outside these is filtered out. */
     const CANDIDATE_CATEGORY_IDS = [19, 17]; // Gereedschap + Losse Materialen
 
-    /** How many products to return at most. */
-    const LIMIT = 10;
+    /** How many product IDs to fetch from the SQL ranking. Slightly inflated
+     *  vs. card count because grouping consolidates multiple IDs into one card. */
+    const FETCH_LIMIT = 18;
 
-    /** Minimum unique candidates required before we render the carousel. */
+    /** Hard cap on cards rendered after grouping. */
+    const MAX_CARDS = 10;
+
+    /** Minimum cards required before we render the carousel. */
     const MIN_CARDS = 4;
 
     /** Transient TTL — 24h keeps queries cheap, hook below invalidates on new order. */
     const CACHE_TTL = DAY_IN_SECONDS;
 
-    /** Transient key prefix. */
-    const CACHE_PREFIX = 'oz_fbt_v1_';
+    /** Transient key prefix. Bumped to v2 when the cache shape changes. */
+    const CACHE_PREFIX = 'oz_fbt_v2_';
 
     /**
      * Init: register order-completion hook so cache stays in sync with reality.
@@ -81,18 +85,142 @@ class OZ_Frequently_Bought {
         // Keeps the carousel useful for new products / niche items with no order history.
         if (count($ids) < self::MIN_CARDS) {
             $globally_top = self::compute_global_fallback();
-            // Deduplicate while preserving product-specific order first
             $seen = array_flip($ids);
             foreach ($globally_top as $gid) {
                 if (!isset($seen[$gid]) && $gid !== $product_id) {
                     $ids[] = $gid;
-                    if (count($ids) >= self::LIMIT) break;
+                    if (count($ids) >= self::FETCH_LIMIT) break;
                 }
             }
         }
 
-        set_transient($cache_key, $ids, self::CACHE_TTL);
-        return $ids;
+        // Group size-variant siblings (e.g. "Verfbak 18cm" + "Verfbak 32cm" →
+        // one card with size pills) so the carousel doesn't show three near-
+        // identical products in a row.
+        $cards = self::group_into_cards($ids);
+
+        // Cap card count after grouping. Order is preserved from the trending rank.
+        $cards = array_slice($cards, 0, self::MAX_CARDS);
+
+        set_transient($cache_key, $cards, self::CACHE_TTL);
+        return $cards;
+    }
+
+    /**
+     * Strip a trailing size suffix from a product name to find its grouping key.
+     * Examples (input → output):
+     *   "Verfbak 18cm"                       → "Verfbak"
+     *   "Verfbak 32 cm"                      → "Verfbak"
+     *   "Pu roller 50 cm"                    → "Pu roller"
+     *   "PU roller 2 componenten 18 cm"      → "PU roller 2 componenten"
+     *   "Frans mes 25 cm"                    → "Frans mes"
+     *   "Beton Ciré 5m2"                     → "Beton Ciré"
+     *   "Stuco Paste"                        → "Stuco Paste"  (unchanged)
+     *
+     * Lower-cased + collapsed whitespace so cosmetic case/spacing differences
+     * across product names don't split a logical group.
+     */
+    private static function group_key_from_name($name) {
+        $name = (string) $name;
+        // Trim recognised size suffixes (cm, mm, ml, l, gr, kg, m2, m²).
+        $stripped = preg_replace(
+            '/\s+\d+\s*(cm|mm|ml|l|gr|kg|m2|m²)\b.*$/iu',
+            '',
+            $name
+        );
+        return strtolower(trim(preg_replace('/\s+/', ' ', $stripped)));
+    }
+
+    /**
+     * Detect a short human-readable size label from a product name.
+     *   "Verfbak 18cm"   → "18cm"
+     *   "Verfbak 32 cm"  → "32cm"
+     *   "Pu roller 50 cm" → "50cm"
+     *   "Verfbak"        → "" (no label)
+     */
+    public static function size_label_from_name($name) {
+        if (preg_match('/(\d+)\s*(cm|mm|ml|l|gr|kg|m2|m²)\b/iu', (string) $name, $m)) {
+            return $m[1] . strtolower($m[2]);
+        }
+        return '';
+    }
+
+    /**
+     * Walk the ranked product IDs and consolidate size-variant siblings into
+     * "group" cards. Single products fall through as their own cards. Order
+     * follows the ranking — a group inherits the position of its first member.
+     *
+     * Returns an array of cards:
+     *   ['type' => 'single', 'product_id' => int]
+     *   ['type' => 'group',  'base_name' => string, 'variant_ids' => int[]]
+     *
+     * Stored in cache as plain arrays (no WC_Product objects), so cache stays
+     * cheap to serialize and survives object cache flushes.
+     */
+    private static function group_into_cards($ids) {
+        // First pass: bucket by group key so we know which keys have ≥2 members.
+        $by_key   = [];      // key => [pid, pid, ...]
+        $key_seen = [];      // key => first index in $ids (preserves order)
+
+        foreach ($ids as $i => $pid) {
+            $p = wc_get_product($pid);
+            if (!$p) continue;
+            $key = self::group_key_from_name($p->get_name());
+            if (!isset($key_seen[$key])) $key_seen[$key] = $i;
+            $by_key[$key][] = (int) $pid;
+        }
+
+        // Second pass: emit cards in the original order, group only when ≥2
+        // members exist for that key. A single-member key always becomes a
+        // 'single' card so we don't add overlay UI for products that have no
+        // siblings to choose from.
+        $emitted = [];
+        $cards   = [];
+        foreach ($ids as $pid) {
+            $p = wc_get_product($pid);
+            if (!$p) continue;
+            $key = self::group_key_from_name($p->get_name());
+            if (isset($emitted[$key])) continue;
+            $emitted[$key] = true;
+
+            $members = $by_key[$key];
+            if (count($members) >= 2) {
+                $cards[] = [
+                    'type'        => 'group',
+                    'base_name'   => self::pretty_base_name_for_key($key, $members),
+                    'variant_ids' => $members,
+                ];
+            } else {
+                $cards[] = [
+                    'type'       => 'single',
+                    'product_id' => (int) $members[0],
+                ];
+            }
+        }
+        return $cards;
+    }
+
+    /**
+     * Pick a clean display name for a group. Uses the SHORTEST member name
+     * stripped of its size suffix — that's usually the cleanest base label
+     * (e.g. "Verfbak" instead of "Verfbak Standaard 18cm Roze Variant").
+     */
+    private static function pretty_base_name_for_key($key, $member_ids) {
+        $best = '';
+        foreach ($member_ids as $mid) {
+            $p = wc_get_product($mid);
+            if (!$p) continue;
+            $candidate = preg_replace(
+                '/\s+\d+\s*(cm|mm|ml|l|gr|kg|m2|m²)\b.*$/iu',
+                '',
+                $p->get_name()
+            );
+            $candidate = trim(preg_replace('/\s+/', ' ', $candidate));
+            if ($best === '' || strlen($candidate) < strlen($best)) {
+                $best = $candidate;
+            }
+        }
+        return $best;
     }
 
     /**
@@ -112,7 +240,7 @@ class OZ_Frequently_Bought {
         global $wpdb;
 
         $candidate_cats = implode(',', array_map('absint', self::CANDIDATE_CATEGORY_IDS));
-        $limit          = absint(self::LIMIT);
+        $limit          = absint(self::FETCH_LIMIT);
         $source_id      = absint($source_product_id);
 
         // Subquery selects orders that contain the source product (+ are in
@@ -175,7 +303,7 @@ class OZ_Frequently_Bought {
 
         global $wpdb;
         $candidate_cats = implode(',', array_map('absint', self::CANDIDATE_CATEGORY_IDS));
-        $limit          = absint(self::LIMIT);
+        $limit          = absint(self::FETCH_LIMIT);
 
         $sql = "
             SELECT candidate.product_id AS pid,
