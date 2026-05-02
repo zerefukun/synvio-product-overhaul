@@ -442,7 +442,10 @@
   overflow-y: auto;
   padding: 16px 20px 24px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  /* 2 columns max so each swatch image is large enough to read the
+   * texture/colour clearly. Drawer panel is min(440px, 100%) wide,
+   * so on desktop each cell ends up ~190px and on mobile ~50vw. */
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
