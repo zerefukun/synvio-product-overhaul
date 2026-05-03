@@ -123,16 +123,16 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 10px;
+  align-items: flex-start;
+  gap: 4px 18px;
   padding: 0;
   margin: 0;
 }
 
 .oz-short-desc li {
   display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  align-items: flex-start;
+  gap: 6px;
   padding: 0;
   background: transparent;
   border-radius: 0;
@@ -141,25 +141,19 @@
   color: var(--oz-text-body, var(--oz-text-primary));
   margin-bottom: 0;
   position: static;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-/* Subtle middle-dot divider between trust signals. Visually groups the
- * USPs as one inline row rather than three free-floating items. */
-.oz-short-desc li + li::before {
-  content: "·";
-  color: var(--oz-text-muted);
-  margin-right: 6px;
-  font-weight: 700;
-  display: inline-block;
-}
-
-/* Checkmark icon inline with the text */
+/* Checkmark icon inline with the text. Slight top offset so the icon
+ * visually centers with the first line cap-height when an item wraps
+ * to multiple lines (align-items: flex-start otherwise puts the icon
+ * dead-flush with the line-height box top, which reads as too-high). */
 .oz-short-desc li .oz-check-icon {
   flex-shrink: 0;
   width: 13px;
   height: 13px;
   color: var(--oz-accent);
+  margin-top: 4px;
 }
 
 /* Override any ::before from theme — hide when SVG icon is present */

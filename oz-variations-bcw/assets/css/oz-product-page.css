@@ -981,15 +981,15 @@ details.oz-faq-item[open] .oz-faq-question::after {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 10px;
+  align-items: flex-start;
+  gap: 4px 18px;
   padding: 0;
   margin: 0;
 }
 .oz-short-desc li {
   display: inline-flex;
-  align-items: center;
-  gap: 5px;
+  align-items: flex-start;
+  gap: 6px;
   padding: 0;
   background: transparent;
   border-radius: 0;
@@ -998,20 +998,14 @@ details.oz-faq-item[open] .oz-faq-question::after {
   color: var(--oz-text-body, var(--oz-text-primary));
   margin-bottom: 0;
   position: static;
-  line-height: 1.4;
-}
-.oz-short-desc li + li::before {
-  content: "\b7";
-  color: var(--oz-text-muted);
-  margin-right: 6px;
-  font-weight: 700;
-  display: inline-block;
+  line-height: 1.5;
 }
 .oz-short-desc li .oz-check-icon {
   flex-shrink: 0;
   width: 13px;
   height: 13px;
   color: var(--oz-accent);
+  margin-top: 4px;
 }
 .oz-short-desc li::before {
   content: none;
