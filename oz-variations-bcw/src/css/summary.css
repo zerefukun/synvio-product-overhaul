@@ -108,24 +108,23 @@
   margin-left: 4px;
 }
 
-/* Short description (horizontal pill chips with checkmark icons).
- * Hidden in A/B test variants B and C (the only live variants right now).
- * The PHP still renders the markup so we can re-enable per-variant by
- * dropping these rules; no template change needed. */
+/* Short description: inline trust-signal row.
+ * Originally chunky pill chips, but with 3 long sentence labels they
+ * stacked into 3 vertical rows and ate too much real estate. Stripped
+ * to inline checkmark+text separated by a subtle middle-dot. Wraps on
+ * narrow viewports, but on desktop the whole thing reads as one row.
+ * USP labels stay full strings in the DB so admins can keep editing
+ * them without losing detail. */
 .oz-short-desc {
   margin-bottom: 8px;
-}
-
-html.oz-ab-tools-b .oz-short-desc,
-html.oz-ab-tools-c .oz-short-desc {
-  display: none;
 }
 
 .oz-short-desc ul {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 4px 10px;
   padding: 0;
   margin: 0;
 }
@@ -133,23 +132,33 @@ html.oz-ab-tools-c .oz-short-desc {
 .oz-short-desc li {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  background: var(--oz-accent-light);
-  border-radius: 20px;
+  gap: 5px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
   font-size: var(--oz-text-sm);
   font-weight: 500;
-  color: var(--oz-accent);
+  color: var(--oz-text-body, var(--oz-text-primary));
   margin-bottom: 0;
   position: static;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
-/* Checkmark icon inside each pill */
+/* Subtle middle-dot divider between trust signals. Visually groups the
+ * USPs as one inline row rather than three free-floating items. */
+.oz-short-desc li + li::before {
+  content: "·";
+  color: var(--oz-text-muted);
+  margin-right: 6px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* Checkmark icon inline with the text */
 .oz-short-desc li .oz-check-icon {
   flex-shrink: 0;
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   color: var(--oz-accent);
 }
 
