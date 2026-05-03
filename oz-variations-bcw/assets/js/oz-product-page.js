@@ -2331,20 +2331,28 @@
       var wantsContain = thumb.getAttribute("data-fit") === "contain";
       DOM.mainImg.classList.toggle("oz-gallery-fit-contain", wantsContain);
       DOM.mainImg.classList.add("oz-fade");
-      setTimeout(function() {
-        var hadCrossorigin = DOM.mainImg.hasAttribute("crossorigin");
-        if (hadCrossorigin) DOM.mainImg.removeAttribute("crossorigin");
-        function clearFade() {
-          DOM.mainImg.classList.remove("oz-fade");
-          DOM.mainImg.classList.remove("error");
-          if (hadCrossorigin) DOM.mainImg.setAttribute("crossorigin", "anonymous");
-          var bc = document.querySelector(".oz-breadcrumb-overlay");
-          if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
-        }
-        DOM.mainImg.onload = clearFade;
-        DOM.mainImg.onerror = clearFade;
-        DOM.mainImg.src = newSrc;
-      }, 200);
+      function commitSwap() {
+        DOM.mainImg.classList.remove("oz-fade");
+        DOM.mainImg.classList.remove("error");
+        var bc = document.querySelector(".oz-breadcrumb-overlay");
+        if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
+      }
+      var preloader = new Image();
+      preloader.onload = function() {
+        setTimeout(function() {
+          DOM.mainImg.onload = commitSwap;
+          DOM.mainImg.onerror = commitSwap;
+          DOM.mainImg.src = newSrc;
+        }, 200);
+      };
+      preloader.onerror = function() {
+        setTimeout(function() {
+          DOM.mainImg.onload = commitSwap;
+          DOM.mainImg.onerror = commitSwap;
+          DOM.mainImg.src = newSrc;
+        }, 200);
+      };
+      preloader.src = newSrc;
     }, toggleInfoTooltip = function(btn) {
       var targetId = btn.getAttribute("data-info-target");
       if (!targetId) return;

@@ -282,41 +282,23 @@ class OZ_Product_Processor {
      * @param int $product_id
      * @return array
      */
-    /**
-     * Line-wide gallery prepends rendered into every variant's gallery.
-     * Currently only the Lavasteen PU explainer infographic — added with
-     * fit:'contain' so the wider-than-square asset stays readable.
-     *
-     * @param string|false $line_key
-     * @return array<int, array{thumb: string, full: string, fit?: string}>
-     */
-    private static function get_line_gallery_prepends($line_key) {
-        if ($line_key !== 'lavasteen') return [];
-
-        $explainer_id = (int) get_option('oz_lavasteen_pu_explainer_id', 0);
-        if (!$explainer_id || !get_post($explainer_id)) return [];
-
-        $thumb = wp_get_attachment_image_url($explainer_id, 'thumbnail');
-        $large = wp_get_attachment_image_url($explainer_id, 'large');
-        if (!$thumb || !$large) return [];
-
-        return [['thumb' => $thumb, 'full' => $large, 'fit' => 'contain']];
-    }
-
     public static function get_variant_display_data($product_id) {
         $variant_ids = get_post_meta($product_id, '_oz_variants', true);
         if (empty($variant_ids) || !is_array($variant_ids)) {
             return [];
         }
 
-        // Resolve any line-wide gallery prepends once. Currently used only by
-        // the Lavasteen PU explainer infographic — same image must appear on
-        // every colour variant via pushState too, so we bake it into the
-        // variant gallery payload here instead of patching the JS swap path.
-        $line_key       = class_exists('OZ_Product_Line_Config')
+        // Lavasteen PU explainer infographic is wider than square. Flag it
+        // with fit:'contain' so the pushState thumb-strip rebuild renders it
+        // without cropping. The image itself lives natively in each variant's
+        // _product_image_gallery meta (added via wp-cli), so we just need the
+        // ID here for the per-thumb fit detection below.
+        $line_key     = class_exists('OZ_Product_Line_Config')
             ? OZ_Product_Line_Config::detect(wc_get_product($product_id))
             : false;
-        $line_prepends  = self::get_line_gallery_prepends($line_key);
+        $explainer_id = ($line_key === 'lavasteen')
+            ? (int) get_option('oz_lavasteen_pu_explainer_id', 0)
+            : 0;
 
         $variants = [];
         foreach ($variant_ids as $vid) {
@@ -333,17 +315,18 @@ class OZ_Product_Processor {
             $image_id  = get_post_thumbnail_id($vid);
             $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'thumbnail') : '';
 
-            // Gallery images for pushState thumbnail strip rebuild.
-            // Line-wide prepends (Lavasteen PU explainer) go in first so the
-            // infographic appears at index 1 in the visible thumb row (after
-            // the main featured image). Variant's own gallery images follow.
-            $gallery = $line_prepends;
+            // Gallery payload for pushState thumbnail strip rebuild.
+            $gallery = [];
             foreach ($variant->get_gallery_image_ids() as $gid) {
                 $g_thumb = wp_get_attachment_image_url($gid, 'thumbnail');
                 $g_large = wp_get_attachment_image_url($gid, 'large');
-                if ($g_thumb && $g_large) {
-                    $gallery[] = ['thumb' => $g_thumb, 'full' => $g_large];
+                if (!$g_thumb || !$g_large) continue;
+
+                $entry = ['thumb' => $g_thumb, 'full' => $g_large];
+                if ($explainer_id && (int) $gid === $explainer_id) {
+                    $entry['fit'] = 'contain';
                 }
+                $gallery[] = $entry;
             }
 
             // ZM image for K&K→ZM toggle (old bucket photo without K&K branding)

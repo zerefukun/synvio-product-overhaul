@@ -1390,33 +1390,50 @@ function switchGalleryImage(thumb) {
   var wantsContain = thumb.getAttribute('data-fit') === 'contain';
   DOM.mainImg.classList.toggle('oz-gallery-fit-contain', wantsContain);
 
-  // Crossfade: fade out, swap src, fade in.
-  // crossorigin="anonymous" is needed by adaptBreadcrumbColor (canvas pixel
-  // read) but breaks loading of cross-origin AVIF/WebP variants (e.g. when
-  // LiteSpeed serves them without CORS headers). Strip the attribute for
-  // the swap, then put it back after load — the canvas read happens on the
-  // freshly-loaded image so the attribute is in place by then.
+  // Pre-load the new image into the browser cache via a detached Image()
+  // BEFORE swapping mainImg.src. Two wins:
+  //   1. Sidesteps LSCWP lazy-load's race-condition on mobile where setting
+  //      src on a #mainImg with data-lazyloaded="1" sometimes ended with
+  //      naturalWidth=0 and an invisible image until the user reloaded.
+  //   2. Lets us crossfade against an image that's guaranteed ready —
+  //      onload-from-cache fires synchronously, so the swap is instant.
+  //
+  // The detached Image() is fetched WITHOUT crossorigin so AVIF/WebP
+  // variants served without CORS headers don't fail. The visible mainImg
+  // keeps its crossorigin attribute (needed by adaptBreadcrumbColor's
+  // canvas read), and once src is set after the cache is warm the browser
+  // can serve from cache without a second network request.
   DOM.mainImg.classList.add('oz-fade');
-  setTimeout(function () {
-    var hadCrossorigin = DOM.mainImg.hasAttribute('crossorigin');
-    if (hadCrossorigin) DOM.mainImg.removeAttribute('crossorigin');
 
-    function clearFade() {
-      DOM.mainImg.classList.remove('oz-fade');
-      // LSCWP lazy-load adds an "error" class on failure; clear it so it
-      // doesn't stick to the image after a successful swap.
-      DOM.mainImg.classList.remove('error');
-      if (hadCrossorigin) DOM.mainImg.setAttribute('crossorigin', 'anonymous');
-      var bc = document.querySelector('.oz-breadcrumb-overlay');
-      if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
-    }
+  function commitSwap() {
+    DOM.mainImg.classList.remove('oz-fade');
+    // LSCWP lazy-load adds an "error" class on failure; clear it so it
+    // doesn't stick to the image after a successful swap.
+    DOM.mainImg.classList.remove('error');
+    var bc = document.querySelector('.oz-breadcrumb-overlay');
+    if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
+  }
 
-    // Always reveal the image — even on load error — so the user never
-    // sees a blank gallery. Browser shows broken-image fallback at worst.
-    DOM.mainImg.onload  = clearFade;
-    DOM.mainImg.onerror = clearFade;
-    DOM.mainImg.src = newSrc;
-  }, 200);
+  var preloader = new Image();
+  // Plain Image() (no crossorigin) avoids the CORS-fail seen on AVIF.
+  preloader.onload = function () {
+    // Wait out the fade-out before swapping src so the user sees a smooth
+    // crossfade rather than a flash.
+    setTimeout(function () {
+      DOM.mainImg.onload  = commitSwap;
+      DOM.mainImg.onerror = commitSwap;
+      DOM.mainImg.src = newSrc;
+    }, 200);
+  };
+  preloader.onerror = function () {
+    // Reveal anyway so the user never sees a blank square.
+    setTimeout(function () {
+      DOM.mainImg.onload  = commitSwap;
+      DOM.mainImg.onerror = commitSwap;
+      DOM.mainImg.src = newSrc;
+    }, 200);
+  };
+  preloader.src = newSrc;
 }
 
 /**

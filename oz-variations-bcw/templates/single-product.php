@@ -62,26 +62,13 @@ $main_image_url = $main_image_id ? wp_get_attachment_image_url($main_image_id, '
 $main_image_full = $main_image_id ? wp_get_attachment_image_url($main_image_id, 'full') : '';
 $gallery_ids    = $product->get_gallery_image_ids();
 
-// Lavasteen-specific PU-layers explainer infographic — injected as the 3rd
-// thumbnail in every Lavasteen PDP gallery (after the main product photo
-// and the first lifestyle shot) so customers see the room-vs-PU decision
-// aid (anti-slip vs UV protection) without it crowding the hero image.
-//
-// Applies to every Lavasteen color variant AND the base product.
-// Attachment stored once in WP media; the ID lives in wp_options so we can
-// swap the asset without code changes. No-op when unconfigured or deleted.
-if ($line_key === 'lavasteen') {
-    $oz_lava_explainer_id = (int) get_option('oz_lavasteen_pu_explainer_id', 0);
-    if ($oz_lava_explainer_id
-        && get_post($oz_lava_explainer_id)
-        && !in_array($oz_lava_explainer_id, $gallery_ids, true)) {
-        // Position 3 in the visible thumbs row = index 1 in the gallery
-        // array (the main product thumb is rendered separately at index 0).
-        // If the gallery has no items yet, append.
-        $insert_at = min(1, count($gallery_ids));
-        array_splice($gallery_ids, $insert_at, 0, [$oz_lava_explainer_id]);
-    }
-}
+// Lavasteen PU explainer infographic lives natively in each variant's
+// gallery (added via wp-cli to _product_image_gallery meta). We still
+// need the attachment ID here so the thumb loop below can flag it for
+// object-fit:contain (the asset is wider than square and would crop).
+$oz_lava_explainer_id = ($line_key === 'lavasteen')
+    ? (int) get_option('oz_lavasteen_pu_explainer_id', 0)
+    : 0;
 
 // Is this a base (main) product? Base products are not purchasable —
 // visitors must pick a color variant first.
@@ -127,12 +114,17 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <div class="oz-left-column">
 
       <div class="oz-product-gallery">
-        <!-- Main image -->
+        <!-- Main image. data-no-lazy stops LSCWP's lazy-load script from
+             swapping our src with its placeholder SVG. Gallery thumbs
+             swap mainImg.src directly via JS, and the lazy-load wrapper
+             was racing with that swap (mobile users saw an invisible
+             square until they reloaded the page). -->
         <div class="oz-gallery-main">
           <img id="mainImg"
                src="<?php echo esc_url($main_image_url); ?>"
                alt="<?php echo esc_attr($product_name); ?>"
                crossorigin="anonymous"
+               data-no-lazy="1"
                loading="eager">
         </div>
 
