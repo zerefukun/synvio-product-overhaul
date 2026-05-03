@@ -337,10 +337,19 @@ function oz_cart_drawer_get() {
         $item_pid = $product->get_id();
 
         // --- Display name ---
-        // Strip color suffix from product name (same logic as single-product.php).
-        // "Microcement Sand 2" with _oz_color "Sand 2" → "Microcement"
-        $display_name = $product->get_name();
-        $current_color = get_post_meta($item_pid, '_oz_color', true);
+        // Sized-family members (PU Roller, Verfbak, ...) use "Family (size)"
+        // so the customer sees which size they chose.
+        $display_name = oz_bcw_sized_family_display_name($item_pid);
+        if ($display_name) {
+            // Skip the colour-suffix stripping logic below — sized families
+            // aren't part of the colour pipeline.
+            $current_color = '';
+        } else {
+            // Strip color suffix from product name (same logic as single-product.php).
+            // "Microcement Sand 2" with _oz_color "Sand 2" → "Microcement"
+            $display_name = $product->get_name();
+            $current_color = get_post_meta($item_pid, '_oz_color', true);
+        }
         if ($current_color) {
             // Pattern 1: parenthesized color — "Beton Ciré Original (Stone White 1000)"
             $stripped = preg_replace('/\s*\([^)]+\)\s*$/', '', $display_name);
@@ -706,6 +715,40 @@ function oz_bcw_sized_family_base($wc_id) {
     }
     return null;
 }
+
+/**
+ * For products that belong to a sized family, return "Family name (size)"
+ * (e.g. "PU Roller (10cm)") so customers see the chosen size everywhere
+ * in the cart flow. Returns null when the product isn't part of a family
+ * — caller should fall back to whatever name they were going to use.
+ */
+function oz_bcw_sized_family_display_name($wc_id) {
+    $wc_id = (int) $wc_id;
+    foreach (oz_bcw_get_sized_families() as $base => $family) {
+        foreach ($family['sizes'] as $sz) {
+            if ((int) $sz['wcId'] === $wc_id) {
+                return $family['name'] . ' (' . $sz['label'] . ')';
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Filter standard WC cart / checkout / mini-cart line item names.
+ * Wraps the family display name in the existing <a> link if WC built one.
+ */
+add_filter('woocommerce_cart_item_name', function ($name, $cart_item, $cart_item_key) {
+    $pid = isset($cart_item['product_id']) ? (int) $cart_item['product_id'] : 0;
+    $display = oz_bcw_sized_family_display_name($pid);
+    if (!$display) return $name;
+
+    // If the original was a link, preserve it; otherwise return plain text.
+    if (preg_match('/<a\s[^>]*>.*?<\/a>/is', $name, $m)) {
+        return preg_replace('/>([^<]+)</', '>' . esc_html($display) . '<', $m[0]);
+    }
+    return esc_html($display);
+}, 20, 3);
 
 /**
  * Render the size-picker pills on a single-product PDP if the current
