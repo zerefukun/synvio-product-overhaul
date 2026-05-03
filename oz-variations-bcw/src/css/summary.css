@@ -108,9 +108,17 @@
   margin-left: 4px;
 }
 
-/* Short description — horizontal pill chips with checkmark icons */
+/* Short description (horizontal pill chips with checkmark icons).
+ * Hidden in A/B test variants B and C (the only live variants right now).
+ * The PHP still renders the markup so we can re-enable per-variant by
+ * dropping these rules; no template change needed. */
 .oz-short-desc {
   margin-bottom: 8px;
+}
+
+html.oz-ab-tools-b .oz-short-desc,
+html.oz-ab-tools-c .oz-short-desc {
+  display: none;
 }
 
 .oz-short-desc ul {

@@ -977,6 +977,10 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-short-desc {
   margin-bottom: 8px;
 }
+html.oz-ab-tools-b .oz-short-desc,
+html.oz-ab-tools-c .oz-short-desc {
+  display: none;
+}
 .oz-short-desc ul {
   list-style: none;
   display: flex;
