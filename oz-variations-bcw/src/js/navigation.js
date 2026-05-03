@@ -318,15 +318,25 @@ export function swapMainImage(fullImageUrl) {
 
 /**
  * Create a single gallery thumbnail element.
+ *
+ * @param {string} thumbSrc
+ * @param {string} fullSrc
+ * @param {number} index
+ * @param {boolean} selected
+ * @param {string=} fit  Optional 'contain' to keep wider-than-square assets
+ *                       (e.g. the Lavasteen PU explainer infographic) fully
+ *                       visible in both the thumb and the main image area.
  */
-export function createThumb(thumbSrc, fullSrc, index, selected) {
+export function createThumb(thumbSrc, fullSrc, index, selected, fit) {
   var div = document.createElement('div');
   div.className = 'oz-gallery-thumb' + (selected ? ' selected' : '');
   div.setAttribute('data-full-src', fullSrc);
   div.setAttribute('data-index', index);
+  if (fit === 'contain') div.setAttribute('data-fit', 'contain');
   var img = document.createElement('img');
   img.src = thumbSrc;
   img.alt = '';
+  if (fit === 'contain') img.className = 'oz-gallery-thumb-fit-contain';
   div.appendChild(img);
   return div;
 }
@@ -350,10 +360,13 @@ function rebuildGalleryThumbs(v) {
     container.appendChild(createThumb(v.image, v.fullImage, 0, true));
   }
 
-  // Gallery images
+  // Gallery images. Each entry may carry an optional fit hint
+  // (e.g. {thumb, full, fit: 'contain'}) which the explainer infographic
+  // uses so it stays readable when activated.
   var gallery = v.gallery || [];
   for (var i = 0; i < gallery.length; i++) {
-    container.appendChild(createThumb(gallery[i].thumb, gallery[i].full, i + 1, false));
+    var g = gallery[i];
+    container.appendChild(createThumb(g.thumb, g.full, i + 1, false, g.fit));
   }
 
   // Hide strip if only 1 or 0 images (no point showing a single thumb)

@@ -1082,14 +1082,16 @@
       DOM.mainImg.src = fullImageUrl;
     }, 200);
   }
-  function createThumb(thumbSrc, fullSrc, index, selected) {
+  function createThumb(thumbSrc, fullSrc, index, selected, fit) {
     var div = document.createElement("div");
     div.className = "oz-gallery-thumb" + (selected ? " selected" : "");
     div.setAttribute("data-full-src", fullSrc);
     div.setAttribute("data-index", index);
+    if (fit === "contain") div.setAttribute("data-fit", "contain");
     var img = document.createElement("img");
     img.src = thumbSrc;
     img.alt = "";
+    if (fit === "contain") img.className = "oz-gallery-thumb-fit-contain";
     div.appendChild(img);
     return div;
   }
@@ -1103,7 +1105,8 @@
     }
     var gallery = v.gallery || [];
     for (var i = 0; i < gallery.length; i++) {
-      container.appendChild(createThumb(gallery[i].thumb, gallery[i].full, i + 1, false));
+      var g = gallery[i];
+      container.appendChild(createThumb(g.thumb, g.full, i + 1, false, g.fit));
     }
     if (container.children.length <= 1) {
       container.style.display = "none";
