@@ -62,6 +62,27 @@ $main_image_url = $main_image_id ? wp_get_attachment_image_url($main_image_id, '
 $main_image_full = $main_image_id ? wp_get_attachment_image_url($main_image_id, 'full') : '';
 $gallery_ids    = $product->get_gallery_image_ids();
 
+// Lavasteen-specific PU-layers explainer infographic — injected as the 3rd
+// thumbnail in every Lavasteen PDP gallery (after the main product photo
+// and the first lifestyle shot) so customers see the room-vs-PU decision
+// aid (anti-slip vs UV protection) without it crowding the hero image.
+//
+// Applies to every Lavasteen color variant AND the base product.
+// Attachment stored once in WP media; the ID lives in wp_options so we can
+// swap the asset without code changes. No-op when unconfigured or deleted.
+if ($line_key === 'lavasteen') {
+    $oz_lava_explainer_id = (int) get_option('oz_lavasteen_pu_explainer_id', 0);
+    if ($oz_lava_explainer_id
+        && get_post($oz_lava_explainer_id)
+        && !in_array($oz_lava_explainer_id, $gallery_ids, true)) {
+        // Position 3 in the visible thumbs row = index 1 in the gallery
+        // array (the main product thumb is rendered separately at index 0).
+        // If the gallery has no items yet, append.
+        $insert_at = min(1, count($gallery_ids));
+        array_splice($gallery_ids, $insert_at, 0, [$oz_lava_explainer_id]);
+    }
+}
+
 // Is this a base (main) product? Base products are not purchasable —
 // visitors must pick a color variant first.
 $is_base = OZ_Product_Processor::is_base_product($product);
@@ -128,10 +149,15 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             $thumb = wp_get_attachment_image_url($gid, 'thumbnail');
             $large = wp_get_attachment_image_url($gid, 'large');
             if (!$thumb) continue;
+            // Wider-than-square assets (explainer infographic) need
+            // object-fit: contain so the whole graphic stays visible.
+            $is_explainer = (!empty($oz_lava_explainer_id) && (int) $gid === (int) $oz_lava_explainer_id);
+            $thumb_fit    = $is_explainer ? 'contain' : '';
           ?>
             <div class="oz-gallery-thumb"
-                 data-full-src="<?php echo esc_url($large); ?>">
-              <img src="<?php echo esc_url($thumb); ?>" alt="">
+                 data-full-src="<?php echo esc_url($large); ?>"
+                 <?php if ($thumb_fit): ?>data-fit="<?php echo esc_attr($thumb_fit); ?>"<?php endif; ?>>
+              <img src="<?php echo esc_url($thumb); ?>" alt="" <?php if ($thumb_fit): ?>class="oz-gallery-thumb-fit-contain"<?php endif; ?>>
             </div>
           <?php endforeach; ?>
         </div>

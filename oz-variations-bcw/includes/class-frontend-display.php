@@ -254,6 +254,7 @@ class OZ_Frontend_Display {
                 'colorfresh'    => OZ_Product_Line_Config::get_colorfresh_options($line_key),
                 'toepassing'    => OZ_Product_Line_Config::get_toepassing_options($line_key),
                 'pakket'        => OZ_Product_Line_Config::get_pakket_options($line_key),
+                'ruimteOptions' => OZ_Product_Line_Config::get_ruimte_options($line_key),
                 'hasRalNcs'     => (bool) $config['ral_ncs'],
                 'ralNcsOnly'    => (bool) $config['ral_ncs_only'],
                 'baseProductId' => OZ_Product_Line_Config::get_base_product_id($line_key),

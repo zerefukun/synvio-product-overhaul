@@ -690,23 +690,14 @@
     var primerSection = document.querySelector('.oz-option-group[data-option="primer"]');
     var puSection = document.querySelector('.oz-option-group[data-option="pu"]');
     if (!primerSection || !puSection) return;
-    var rooms = [
-      { label: "Geen beschermlaag", primer: "Geen", pu: "0" },
-      { label: "Muur (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Hal / Gang (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Zolder (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Slaapkamer (1 laag PU) +\u20AC8", primer: "Primer", pu: "1" },
-      { label: "Keuken (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Badkamer (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Toilet / WC (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Vloer (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Meubel (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" },
-      { label: "Trap (2 lagen PU) +\u20AC16", primer: "Primer", pu: "2" }
-    ];
+    var rooms = window.ozProduct && Array.isArray(window.ozProduct.ruimteOptions) ? window.ozProduct.ruimteOptions : [];
+    if (!rooms.length) return;
+    var lineKey = window.ozProduct && window.ozProduct.productLine || "";
+    var tooltipText = lineKey === "lavasteen" ? "Lavasteen is van zichzelf al waterdicht. De PU laag bepaalt de grip (badkamer = 1 laag voor anti-slip) en de UV-bescherming (lichte ruimtes met groot raam = 2-3 lagen om vergeling te voorkomen)." : "Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen.";
     var wrap = document.createElement("div");
     wrap.className = "oz-option-group oz-ruimte-dropdown";
     wrap.setAttribute("data-option", "ruimte");
-    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <span class="oz-required-star" style="color:#e53e3e">*</span> <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">Kies de ruimte waar je beton cir\xE9 aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen.</div>';
+    wrap.innerHTML = '<div class="oz-option-header">Kies je ruimte <span class="oz-required-star" style="color:#e53e3e">*</span> <button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div><div class="oz-info-tooltip" id="ruimte-info">' + tooltipText + "</div>";
     var select = document.createElement("select");
     select.className = "oz-ruimte-select";
     var placeholder = document.createElement("option");
@@ -2329,6 +2320,8 @@
         allThumbs[i].classList.remove("selected");
       }
       thumb.classList.add("selected");
+      var wantsContain = thumb.getAttribute("data-fit") === "contain";
+      DOM.mainImg.classList.toggle("oz-gallery-fit-contain", wantsContain);
       DOM.mainImg.classList.add("oz-fade");
       setTimeout(function() {
         DOM.mainImg.src = newSrc;

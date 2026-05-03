@@ -1383,6 +1383,13 @@ function switchGalleryImage(thumb) {
   }
   thumb.classList.add('selected');
 
+  // Some thumbnails (like the Lavasteen PU explainer infographic) are wider
+  // than square and need object-fit: contain to stay readable. Carry the
+  // marker via data-fit on the thumb so the swap logic can apply / clear
+  // the .oz-gallery-fit-contain class on the main image.
+  var wantsContain = thumb.getAttribute('data-fit') === 'contain';
+  DOM.mainImg.classList.toggle('oz-gallery-fit-contain', wantsContain);
+
   // Crossfade: fade out, swap src, fade in
   DOM.mainImg.classList.add('oz-fade');
   setTimeout(function () {

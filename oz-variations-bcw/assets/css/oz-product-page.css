@@ -288,6 +288,16 @@
   display: block;
   transition: opacity 0.2s var(--oz-ease), transform 0.8s var(--oz-ease);
 }
+.oz-gallery-main img.oz-gallery-fit-contain {
+  object-fit: contain;
+  background: var(--oz-bg-warm);
+}
+.oz-gallery-thumb img.oz-gallery-thumb-fit-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--oz-bg-warm);
+}
 .oz-gallery-main:hover img {
   transform: scale(1.02);
 }

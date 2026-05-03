@@ -25,9 +25,26 @@
 .oz-gallery-main img {
   width: 100%;
   height: 100%;
+  /* Default: cover (fills the square frame) — right for product photos.
+   * Wider/taller-than-square assets like the Lavasteen PU explainer use
+   * .oz-gallery-fit-contain to keep the whole graphic visible. */
   object-fit: cover;
   display: block;
   transition: opacity 0.2s var(--oz-ease), transform 0.8s var(--oz-ease);
+}
+
+.oz-gallery-main img.oz-gallery-fit-contain {
+  object-fit: contain;
+  background: var(--oz-bg-warm);
+}
+
+/* Thumb-level contain — keeps wider-than-square infographics readable
+ * even at thumbnail size. Pairs with .oz-gallery-thumb[data-fit="contain"]. */
+.oz-gallery-thumb img.oz-gallery-thumb-fit-contain {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--oz-bg-warm);
 }
 
 .oz-gallery-main:hover img {

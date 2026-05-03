@@ -217,10 +217,10 @@ export function buildToolSectionV2(sectionId, rebuild) {
  * the corresponding primer + PU buttons on change. No new pricing
  * logic, just a different UI control over the same underlying state.
  *
- * Mapping (room → primer, pu_layers):
- *   Geen beschermlaag        → Geen primer, 0 PU
- *   Slaapkamer/Hal/Gang/Zolder/Muur (laag verkeer, droog) → Primer, 1 PU
- *   Keuken/Badkamer/Toilet/Vloer/Trap/Meubel (hoog verkeer of vocht) → Primer, 2 PU
+ * Room → primer/PU mapping comes from PHP via window.ozProduct.ruimteOptions.
+ * That keeps line-specific advice (Beton Ciré PU = waterproofing vs.
+ * Lavasteen PU = anti-yellowing + grip) on the server side as the single
+ * source of truth.
  *
  * Idempotent — safe to call multiple times.
  */
@@ -232,19 +232,22 @@ export function buildRuimteDropdown() {
   var puSection = document.querySelector('.oz-option-group[data-option="pu"]');
   if (!primerSection || !puSection) return;
 
-  var rooms = [
-    { label: 'Geen beschermlaag',                primer: 'Geen',   pu: '0' },
-    { label: 'Muur (1 laag PU) +€8',    primer: 'Primer', pu: '1' },
-    { label: 'Hal / Gang (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Zolder (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Slaapkamer (1 laag PU) +€8',  primer: 'Primer', pu: '1' },
-    { label: 'Keuken (2 lagen PU) +€16',    primer: 'Primer', pu: '2' },
-    { label: 'Badkamer (2 lagen PU) +€16',  primer: 'Primer', pu: '2' },
-    { label: 'Toilet / WC (2 lagen PU) +€16', primer: 'Primer', pu: '2' },
-    { label: 'Vloer (2 lagen PU) +€16',     primer: 'Primer', pu: '2' },
-    { label: 'Meubel (2 lagen PU) +€16',    primer: 'Primer', pu: '2' },
-    { label: 'Trap (2 lagen PU) +€16',      primer: 'Primer', pu: '2' },
-  ];
+  // Localized rooms — PHP guarantees this is always populated (falls back
+  // to the default Beton Ciré set when the line has no specific entry).
+  var rooms = (window.ozProduct && Array.isArray(window.ozProduct.ruimteOptions))
+    ? window.ozProduct.ruimteOptions
+    : [];
+  if (!rooms.length) return;
+
+  // Tooltip copy depends on the line — Lavasteen's PU story is about UV +
+  // grip, not waterproofing.
+  var lineKey = (window.ozProduct && window.ozProduct.productLine) || '';
+  var tooltipText = (lineKey === 'lavasteen')
+    ? 'Lavasteen is van zichzelf al waterdicht. De PU laag bepaalt de grip ' +
+      '(badkamer = 1 laag voor anti-slip) en de UV-bescherming (lichte ' +
+      'ruimtes met groot raam = 2-3 lagen om vergeling te voorkomen).'
+    : 'Kies de ruimte waar je beton ciré aanbrengt. Op basis van slijtage en vocht ' +
+      'selecteren we automatisch het juiste aantal PU-lagen.';
 
   var wrap = document.createElement('div');
   wrap.className = 'oz-option-group oz-ruimte-dropdown';
@@ -253,10 +256,7 @@ export function buildRuimteDropdown() {
     '<div class="oz-option-header">Kies je ruimte ' +
     '<span class="oz-required-star" style="color:#e53e3e">*</span> ' +
     '<button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button></div>' +
-    '<div class="oz-info-tooltip" id="ruimte-info">' +
-    'Kies de ruimte waar je beton ciré aanbrengt. Op basis van slijtage en vocht ' +
-    'selecteren we automatisch het juiste aantal PU-lagen.' +
-    '</div>';
+    '<div class="oz-info-tooltip" id="ruimte-info">' + tooltipText + '</div>';
 
   // No separate <label> — the .oz-option-header above + placeholder option
   // in the <select> are enough. Two stacked labels was visual noise.

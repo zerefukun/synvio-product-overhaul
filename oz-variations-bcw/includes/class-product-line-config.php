@@ -565,6 +565,66 @@ class OZ_Product_Line_Config {
     ];
 
     /**
+     * Ruimte (room) options for the Variant C "Kies je ruimte" dropdown.
+     * Each row: ['label' => '…', 'primer' => 'Primer'|'Geen', 'pu' => '0'|'1'|'2'|'3']
+     *
+     * Different lines treat PU differently:
+     *   - Beton Ciré family: PU = waterproofing. Wet rooms need 2 layers.
+     *   - Lavasteen:         PU = UV protection (anti-yellowing) + grip
+     *                        balance. Bathroom = 1 layer (more grip), high-
+     *                        sun rooms = 2-3 layers (anti-discolouration).
+     *
+     * Falls back to the "default" key for any line that has no specific entry.
+     * The dropdown JS in tools.js reads this via window.ozProduct.ruimteOptions.
+     */
+    private static $ruimte_options = [
+        // Beton Ciré family (Original, All-in-One, Easyline, Microcement, Metallic)
+        // PU = waterproofing — wet rooms need more layers.
+        'default' => [
+            ['label' => 'Geen beschermlaag',                  'primer' => 'Geen',   'pu' => '0'],
+            ['label' => 'Muur (1 laag PU) +€8',               'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Hal / Gang (1 laag PU) +€8',         'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Zolder (1 laag PU) +€8',             'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Slaapkamer (1 laag PU) +€8',         'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Keuken (2 lagen PU) +€16',           'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Badkamer (2 lagen PU) +€16',         'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Toilet / WC (2 lagen PU) +€16',      'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Vloer (2 lagen PU) +€16',            'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Meubel (2 lagen PU) +€16',           'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Trap (2 lagen PU) +€16',             'primer' => 'Primer', 'pu' => '2'],
+        ],
+
+        // Lavasteen — already waterproof to the core. PU choice is driven by:
+        //   - Bathroom: 1 layer keeps the surface less smooth → better grip
+        //     when wet (slip safety).
+        //   - Sunlight exposure: more layers = more UV protection. Big-window
+        //     living rooms / verandas need 2-3 layers to prevent yellowing.
+        //   - High-traffic floors: 2 layers = smoother, easier to clean.
+        // Pricing per layer: 1=+€40, 2=+€80, 3=+€120 (per unit, see $pu_prices).
+        'lavasteen' => [
+            ['label' => 'Badkamer / Toilet (anti-slip, 1 laag) +€40',          'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Slaapkamer / Hal / Gang (1 laag) +€40',               'primer' => 'Primer', 'pu' => '1'],
+            ['label' => 'Keuken / Vloer intensief gebruik (2 lagen) +€80',     'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Woonkamer met groot raam (2 lagen) +€80',             'primer' => 'Primer', 'pu' => '2'],
+            ['label' => 'Veranda / direct zonlicht (3 lagen) +€120',           'primer' => 'Primer', 'pu' => '3'],
+        ],
+    ];
+
+    /**
+     * Returns the room/ruimte options for a given line key. Falls back to
+     * the 'default' set when the line has no specific entry.
+     *
+     * @param string $line_key
+     * @return array<int, array{label: string, primer: string, pu: string}>
+     */
+    public static function get_ruimte_options($line_key) {
+        if (!empty(self::$ruimte_options[$line_key])) {
+            return self::$ruimte_options[$line_key];
+        }
+        return self::$ruimte_options['default'];
+    }
+
+    /**
      * Colorfresh options (Original only).
      * [label, price, default]
      */
