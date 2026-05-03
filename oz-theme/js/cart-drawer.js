@@ -962,8 +962,13 @@
         S.loading = true;
         fetchCart(function () {
             syncUI();
-            /* Move focus into drawer after content loads */
-            if (R.drawerClose) R.drawerClose.focus();
+            /* Move focus into drawer after content loads. preventScroll
+             * keeps the page where the user was: the drawer slides in
+             * with a transform animation, so the close button is briefly
+             * outside the viewport when focus() fires. Without
+             * preventScroll the browser would scroll the page to bring
+             * the focused element into view (jumps to top on FBT add). */
+            if (R.drawerClose) R.drawerClose.focus({ preventScroll: true });
         });
         syncUI();
     }
@@ -979,9 +984,12 @@
         S.open = false;
         syncUI();
 
-        /* Restore focus to the element that opened the drawer */
+        /* Restore focus to the element that opened the drawer.
+         * preventScroll keeps the page in place if the user scrolled
+         * while the drawer was open (e.g. read product list, then
+         * closed drawer — don't yank them back to the trigger button). */
         if (_triggerEl && typeof _triggerEl.focus === 'function') {
-            _triggerEl.focus();
+            _triggerEl.focus({ preventScroll: true });
             _triggerEl = null;
         }
     }
