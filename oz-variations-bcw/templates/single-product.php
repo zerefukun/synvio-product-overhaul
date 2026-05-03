@@ -613,6 +613,12 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         endif;
         ?>
 
+      <!-- Size picker for sized-family members (PU Roller, Verfbak, …).
+           Renders nothing when the product isn't part of a family. -->
+      <?php if (function_exists('oz_bcw_render_pdp_size_pills')) {
+          oz_bcw_render_pdp_size_pills();
+      } ?>
+
       <!-- Price Breakdown -->
       <div class="oz-price-summary" id="priceSummary">
         <div class="oz-price-line" id="priceBaseLine">

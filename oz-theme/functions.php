@@ -707,6 +707,115 @@ function oz_bcw_sized_family_base($wc_id) {
     return null;
 }
 
+/**
+ * Render the size-picker pills on a single-product PDP if the current
+ * product is part of a sized family (PU Roller, Verfbak, …). Each pill
+ * is a link to its sibling product's PDP — full page nav, simplest model
+ * and reuses the existing per-product caching/SEO setup.
+ *
+ * Hooked at priority 25 on woocommerce_single_product_summary so it
+ * appears between the price (priority 10) and the add-to-cart button
+ * (priority 30). Works in BOTH the default WC summary and our custom
+ * plugin template (the plugin template invokes the same hook chain).
+ */
+function oz_bcw_render_pdp_size_pills() {
+    global $product;
+    if (!$product instanceof WC_Product) return;
+
+    $current_pid = (int) $product->get_id();
+    $base        = oz_bcw_sized_family_base($current_pid);
+    if (!$base) return;
+
+    $families = oz_bcw_get_sized_families();
+    if (empty($families[$base]['sizes'])) return;
+
+    $sizes = $families[$base]['sizes'];
+    if (count($sizes) < 2) return;
+
+    echo '<div class="oz-size-picker" role="group" aria-label="' . esc_attr__('Beschikbare maten', 'oz-bcw') . '">';
+    echo '<span class="oz-size-picker-label">' . esc_html__('Maat:', 'oz-bcw') . '</span>';
+    echo '<div class="oz-size-picker-pills">';
+    foreach ($sizes as $sz) {
+        $pid_int = (int) $sz['wcId'];
+        $sibling = wc_get_product($pid_int);
+        if (!$sibling || !$sibling->is_in_stock() || !$sibling->is_purchasable()) continue;
+
+        $is_active = ($pid_int === $current_pid);
+        $url       = $is_active ? '#' : get_permalink($pid_int);
+        $aria      = $is_active ? 'aria-current="true"' : '';
+        $cls       = 'oz-size-picker-pill' . ($is_active ? ' is-active' : '');
+
+        printf(
+            '<a class="%s" href="%s" %s>%s</a>',
+            esc_attr($cls),
+            esc_url($url),
+            $aria,
+            esc_html($sz['label'])
+        );
+    }
+    echo '</div></div>';
+}
+add_action('woocommerce_single_product_summary', 'oz_bcw_render_pdp_size_pills', 25);
+
+/**
+ * Inline CSS for the PDP size picker. Tiny enough to inline rather than
+ * shipping a separate file. Uses the same tokens the FBT carousel does so
+ * the look stays consistent across the PDP and the upsell carousel.
+ */
+function oz_bcw_size_picker_inline_css() {
+    if (!is_product()) return;
+    ?>
+    <style id="oz-size-picker-css">
+      .oz-size-picker {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 16px 0;
+        flex-wrap: wrap;
+      }
+      .oz-size-picker-label {
+        font-family: var(--ff-body, 'Raleway', sans-serif);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--oz-text-muted, #999);
+      }
+      .oz-size-picker-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .oz-size-picker-pill {
+        padding: 8px 14px !important;
+        border: 1.5px solid var(--oz-label-border, #E0DFDD) !important;
+        border-radius: var(--oz-radius, 8px) !important;
+        background: #fff !important;
+        color: var(--oz-text-body, #555) !important;
+        font-family: var(--ff-body, 'Raleway', sans-serif) !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        text-decoration: none !important;
+        text-align: center;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+      .oz-size-picker-pill:hover {
+        border-color: var(--oz-accent, #135350) !important;
+        color: var(--oz-accent, #135350) !important;
+      }
+      .oz-size-picker-pill.is-active {
+        background: var(--oz-accent, #135350) !important;
+        color: #fff !important;
+        border-color: var(--oz-accent, #135350) !important;
+        cursor: default;
+      }
+    </style>
+    <?php
+}
+add_action('wp_head', 'oz_bcw_size_picker_inline_css', 999);
+
 function oz_cart_drawer_get_upsells($cart) {
     // Project-completion rules: priority-ordered product IDs per line (8-12 items each).
     // The system walks down this list, skipping products already in cart,

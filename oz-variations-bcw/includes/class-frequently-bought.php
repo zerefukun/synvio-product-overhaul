@@ -42,11 +42,16 @@ class OZ_Frequently_Bought {
     /** Minimum cards required before we render the carousel. */
     const MIN_CARDS = 4;
 
+    /** Multiplier applied to the current-product (color-specific) score on
+     *  top of the line baseline. Keeps line trends stable while letting an
+     *  item with strong colour-specific affinity still bubble up. */
+    const COLOR_BOOST = 1.5;
+
     /** Transient TTL — 24h keeps queries cheap, hook below invalidates on new order. */
     const CACHE_TTL = DAY_IN_SECONDS;
 
     /** Transient key prefix. Bump on every change to the cached payload shape. */
-    const CACHE_PREFIX = 'oz_fbt_v3_';
+    const CACHE_PREFIX = 'oz_fbt_v4_';
 
     /**
      * Init: register order-completion hook so cache stays in sync with reality.
@@ -79,9 +84,28 @@ class OZ_Frequently_Bought {
             return $cached;
         }
 
-        $ids = self::compute($product_id);
+        // Smart blend:
+        //   1. LINE BASELINE — aggregate co-purchases across every product in
+        //      the same product line as $product_id. Catches the trend at the
+        //      whole-line level so a freshly viewed colour gets the line's
+        //      collective signal even with thin per-color order history.
+        //   2. COLOR-SPECIFIC BOOST — the current product's own co-purchase
+        //      counts get added on top with a weight, so an item that's
+        //      meaningfully more popular with THIS exact colour still bubbles
+        //      up (e.g. Colorfresh that pairs disproportionately with darker
+        //      colours pops higher when one of those colours is selected).
+        $line_ids   = self::resolve_line_product_ids($product_id);
+        $line_score = $line_ids ? self::compute_scored($line_ids, $product_id) : [];
+        $self_score = self::compute_scored([$product_id], $product_id);
 
-        // Fallback: not enough product-specific signal → top trending tools globally.
+        $blended = $line_score;
+        foreach ($self_score as $pid => $score) {
+            $blended[$pid] = ($blended[$pid] ?? 0) + (self::COLOR_BOOST * $score);
+        }
+        arsort($blended, SORT_NUMERIC);
+        $ids = array_slice(array_keys($blended), 0, self::FETCH_LIMIT);
+
+        // Fallback: not enough specific signal → top trending tools globally.
         // Keeps the carousel useful for new products / niche items with no order history.
         if (count($ids) < self::MIN_CARDS) {
             $globally_top = self::compute_global_fallback();
@@ -99,7 +123,7 @@ class OZ_Frequently_Bought {
         // identical products in a row.
         $cards = self::group_into_cards($ids);
 
-        // Cap card count after grouping. Order is preserved from the trending rank.
+        // Cap card count after grouping. Order is preserved from the blended rank.
         $cards = array_slice($cards, 0, self::MAX_CARDS);
 
         set_transient($cache_key, $cards, self::CACHE_TTL);
@@ -164,7 +188,49 @@ class OZ_Frequently_Bought {
     }
 
     /**
-     * Run the time-decayed co-purchase query for a single source product.
+     * Resolve the full list of product IDs in $product_id's product line.
+     * Falls back to [$product_id] when no line is detected (e.g. PDPs that
+     * aren't part of a configured Beton-Ciré line). The whole-line list lets
+     * the trending query aggregate across every colour at once.
+     *
+     * @param int $product_id
+     * @return int[]
+     */
+    private static function resolve_line_product_ids($product_id) {
+        if (!class_exists('OZ_Product_Line_Config')) return [$product_id];
+        $product = wc_get_product($product_id);
+        if (!$product) return [$product_id];
+
+        $line_key = OZ_Product_Line_Config::detect($product);
+        if (!$line_key) return [$product_id];
+
+        $config = OZ_Product_Line_Config::get_config($line_key);
+        if (empty($config['cats'])) return [$product_id];
+
+        // Pull all visible products in the line's categories. Cached per
+        // line key for 24h so we don't re-run the term query on every PDP load.
+        $cache_key = self::CACHE_PREFIX . 'line_pids_' . $line_key;
+        $cached    = get_transient($cache_key);
+        if (is_array($cached) && !empty($cached)) return $cached;
+
+        $ids = get_posts([
+            'post_type'      => 'product',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'fields'         => 'ids',
+            'tax_query'      => [[
+                'taxonomy' => 'product_cat',
+                'field'    => 'term_id',
+                'terms'    => array_map('absint', $config['cats']),
+            ]],
+        ]);
+        $ids = array_map('absint', $ids ?: [$product_id]);
+        set_transient($cache_key, $ids, self::CACHE_TTL);
+        return $ids;
+    }
+
+    /**
+     * Time-decayed co-purchase scoring.
      *
      * Decay formula: 1 / max(1, days_since_order / 30).
      *   - This month:         1.000
@@ -173,19 +239,24 @@ class OZ_Frequently_Bought {
      *   - 1 year ago:         0.083
      * So a tool bought once last week outranks a tool bought 5 times two years ago.
      *
-     * @param int $source_product_id
-     * @return int[]
+     * @param int[] $source_ids   Product IDs whose orders we treat as "the source".
+     *                            Pass the whole line for line-baseline ranking, or
+     *                            [$single_id] for colour-specific signal.
+     * @param int   $exclude_pid  Product id to remove from results (don't recommend
+     *                            the product the user is already viewing).
+     * @return array<int, float>  pid => score, sorted desc by score.
      */
-    private static function compute($source_product_id) {
+    private static function compute_scored(array $source_ids, $exclude_pid) {
         global $wpdb;
+        if (empty($source_ids)) return [];
 
         $candidate_cats = implode(',', array_map('absint', self::CANDIDATE_CATEGORY_IDS));
-        $limit          = absint(self::FETCH_LIMIT);
-        $source_id      = absint($source_product_id);
+        $source_csv     = implode(',', array_map('absint', $source_ids));
+        $exclude_pid    = absint($exclude_pid);
 
-        // Subquery selects orders that contain the source product (+ are in
-        // a real revenue state). Outer query joins back to find every other
-        // product in those orders, filters to whitelist categories, and scores.
+        // Pulling source orders by IN (...) lets us aggregate the whole line
+        // in a single query. The HAVING co_orders >= 2 guard stays — keeps
+        // single-occurrence noise out of the ranking.
         $sql = "
             SELECT candidate.product_id AS pid,
                    SUM( 1.0 / GREATEST(1, DATEDIFF(NOW(), o.post_date) / 30) ) AS score,
@@ -194,7 +265,7 @@ class OZ_Frequently_Bought {
             INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta src_om
                 ON src_om.order_item_id = src_oi.order_item_id
                 AND src_om.meta_key = '_product_id'
-                AND src_om.meta_value = %d
+                AND src_om.meta_value IN ({$source_csv})
             INNER JOIN {$wpdb->posts} o
                 ON o.ID = src_oi.order_id
                 AND o.post_type = 'shop_order'
@@ -214,17 +285,24 @@ class OZ_Frequently_Bought {
                 ON cp.ID = candidate.product_id
                 AND cp.post_status = 'publish'
             WHERE candidate.product_id != %d
+              AND candidate.product_id NOT IN ({$source_csv})
             GROUP BY candidate.product_id
             HAVING co_orders >= 2
             ORDER BY score DESC
             LIMIT %d
         ";
 
-        $results = $wpdb->get_col(
-            $wpdb->prepare($sql, $source_id, $source_id, $limit)
+        $rows = $wpdb->get_results(
+            $wpdb->prepare($sql, $exclude_pid, absint(self::FETCH_LIMIT) * 2),
+            ARRAY_A
         );
+        if (!$rows) return [];
 
-        return array_map('absint', $results ?: []);
+        $scored = [];
+        foreach ($rows as $r) {
+            $scored[(int) $r['pid']] = (float) $r['score'];
+        }
+        return $scored;
     }
 
     /**
