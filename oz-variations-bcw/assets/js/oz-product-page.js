@@ -1274,9 +1274,12 @@
       ralBtn
     };
   }
+  var _savedScrollY = 0;
   function openDrawer(d) {
-    d.root.classList.add("open");
+    _savedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     document.body.classList.add("oz-color-drawer-locked");
+    document.body.style.top = "-" + _savedScrollY + "px";
+    d.root.classList.add("open");
     setTimeout(function() {
       d.search.focus();
     }, 80);
@@ -1284,6 +1287,8 @@
   function closeDrawer(d) {
     d.root.classList.remove("open");
     document.body.classList.remove("oz-color-drawer-locked");
+    document.body.style.top = "";
+    window.scrollTo(0, _savedScrollY);
   }
 
   // src/js/frequently-bought.js
@@ -2327,12 +2332,18 @@
       DOM.mainImg.classList.toggle("oz-gallery-fit-contain", wantsContain);
       DOM.mainImg.classList.add("oz-fade");
       setTimeout(function() {
-        DOM.mainImg.src = newSrc;
-        DOM.mainImg.onload = function() {
+        var hadCrossorigin = DOM.mainImg.hasAttribute("crossorigin");
+        if (hadCrossorigin) DOM.mainImg.removeAttribute("crossorigin");
+        function clearFade() {
           DOM.mainImg.classList.remove("oz-fade");
+          DOM.mainImg.classList.remove("error");
+          if (hadCrossorigin) DOM.mainImg.setAttribute("crossorigin", "anonymous");
           var bc = document.querySelector(".oz-breadcrumb-overlay");
           if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
-        };
+        }
+        DOM.mainImg.onload = clearFade;
+        DOM.mainImg.onerror = clearFade;
+        DOM.mainImg.src = newSrc;
       }, 200);
     }, toggleInfoTooltip = function(btn) {
       var targetId = btn.getAttribute("data-info-target");

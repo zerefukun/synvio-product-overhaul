@@ -243,9 +243,20 @@ function buildDrawer(swatches) {
 }
 
 
+// Saved scroll position while the drawer is open. body switches to
+// position:fixed which would otherwise jump the page to the top.
+var _savedScrollY = 0;
+
 function openDrawer(d) {
-  d.root.classList.add('open');
+  // overflow:hidden alone doesn't stop touch-driven scroll bleed on iOS
+  // Safari and Android Chrome — the body still scrolls when the drawer's
+  // internal scroll hits its boundary. position:fixed pinned to the saved
+  // scroll position is the only reliable cross-browser lock.
+  _savedScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
   document.body.classList.add('oz-color-drawer-locked');
+  document.body.style.top = '-' + _savedScrollY + 'px';
+
+  d.root.classList.add('open');
   // Slight delay so the focus ring doesn't flash before the slide-in.
   setTimeout(function () { d.search.focus(); }, 80);
 }
@@ -254,4 +265,7 @@ function openDrawer(d) {
 function closeDrawer(d) {
   d.root.classList.remove('open');
   document.body.classList.remove('oz-color-drawer-locked');
+  document.body.style.top = '';
+  // Restore scroll without smooth-scroll animation.
+  window.scrollTo(0, _savedScrollY);
 }

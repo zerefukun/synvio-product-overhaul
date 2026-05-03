@@ -1390,16 +1390,32 @@ function switchGalleryImage(thumb) {
   var wantsContain = thumb.getAttribute('data-fit') === 'contain';
   DOM.mainImg.classList.toggle('oz-gallery-fit-contain', wantsContain);
 
-  // Crossfade: fade out, swap src, fade in
+  // Crossfade: fade out, swap src, fade in.
+  // crossorigin="anonymous" is needed by adaptBreadcrumbColor (canvas pixel
+  // read) but breaks loading of cross-origin AVIF/WebP variants (e.g. when
+  // LiteSpeed serves them without CORS headers). Strip the attribute for
+  // the swap, then put it back after load — the canvas read happens on the
+  // freshly-loaded image so the attribute is in place by then.
   DOM.mainImg.classList.add('oz-fade');
   setTimeout(function () {
-    DOM.mainImg.src = newSrc;
-    DOM.mainImg.onload = function () {
+    var hadCrossorigin = DOM.mainImg.hasAttribute('crossorigin');
+    if (hadCrossorigin) DOM.mainImg.removeAttribute('crossorigin');
+
+    function clearFade() {
       DOM.mainImg.classList.remove('oz-fade');
-      // Re-check breadcrumb contrast for the new image
+      // LSCWP lazy-load adds an "error" class on failure; clear it so it
+      // doesn't stick to the image after a successful swap.
+      DOM.mainImg.classList.remove('error');
+      if (hadCrossorigin) DOM.mainImg.setAttribute('crossorigin', 'anonymous');
       var bc = document.querySelector('.oz-breadcrumb-overlay');
       if (bc) adaptBreadcrumbColor(DOM.mainImg, bc);
-    };
+    }
+
+    // Always reveal the image — even on load error — so the user never
+    // sees a blank gallery. Browser shows broken-image fallback at worst.
+    DOM.mainImg.onload  = clearFade;
+    DOM.mainImg.onerror = clearFade;
+    DOM.mainImg.src = newSrc;
   }, 200);
 }
 

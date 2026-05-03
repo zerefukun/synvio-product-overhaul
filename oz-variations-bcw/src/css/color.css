@@ -512,7 +512,14 @@
   transform: translateY(-1px);
 }
 
-/* Body lock so background doesn't scroll while drawer is open. */
+/* Body lock so background doesn't scroll while drawer is open.
+ * position:fixed is required on top of overflow:hidden — iOS Safari and
+ * Android Chrome ignore overflow:hidden once the drawer's own scroll
+ * hits its boundary (rubber-band scroll bleed). The JS counterpart
+ * (openDrawer/closeDrawer) sets `top: -<scrollY>px` so the page doesn't
+ * jump to top when fixed is applied, and restores scroll on close. */
 body.oz-color-drawer-locked {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
 }

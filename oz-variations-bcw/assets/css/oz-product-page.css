@@ -1696,6 +1696,8 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 body.oz-color-drawer-locked {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 /* src/css/cart.css */
