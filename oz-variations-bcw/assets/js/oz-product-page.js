@@ -1409,6 +1409,13 @@
           }, 1800);
         }
         document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
+        if (typeof window.jQuery !== "undefined") {
+          try {
+            window.jQuery(document.body).trigger("wc_fragment_refresh");
+            window.jQuery(document.body).trigger("added_to_cart");
+          } catch (_) {
+          }
+        }
         try {
           window.dataLayer = window.dataLayer || [];
           window.dataLayer.push({

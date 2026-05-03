@@ -177,6 +177,19 @@ export function initFrequentlyBought() {
 
       document.dispatchEvent(new CustomEvent('oz-added-to-cart'));
 
+      // Tell Flatsome's header cart pill (count + total) to refresh.
+      // Our oz_cart_drawer_add endpoint bypasses WC's standard add-to-cart
+      // AJAX, so the wc-cart-fragments listener never fires automatically.
+      // wc_fragment_refresh re-fetches cart fragments and replaces matching
+      // DOM nodes (header-cart-link badge + price). added_to_cart is the
+      // event Flatsome's own helpers also hook into.
+      if (typeof window.jQuery !== 'undefined') {
+        try {
+          window.jQuery(document.body).trigger('wc_fragment_refresh');
+          window.jQuery(document.body).trigger('added_to_cart');
+        } catch (_) { /* swallow */ }
+      }
+
       try {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
