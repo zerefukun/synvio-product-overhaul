@@ -1292,6 +1292,41 @@
   }
 
   // src/js/frequently-bought.js
+  var _lastBeacon2 = "";
+  var _lastBeaconTime2 = 0;
+  function fbtBeacon(eventName, payload) {
+    var cfg = window.ozCartDrawer || {};
+    if (!cfg.ajaxUrl || !cfg.analyticsNonce) return;
+    var key = eventName + "|" + (payload.oz_card_product_id || payload.oz_product_id || "");
+    var now = Date.now();
+    if (key === _lastBeacon2 && now - _lastBeaconTime2 < 1500) return;
+    _lastBeacon2 = key;
+    _lastBeaconTime2 = now;
+    var fd = new FormData();
+    fd.append("action", "oz_track_event");
+    fd.append("nonce", cfg.analyticsNonce);
+    fd.append("event_name", eventName);
+    fd.append("event_data", JSON.stringify(payload));
+    fd.append("source", "product");
+    navigator.sendBeacon(cfg.ajaxUrl, fd);
+  }
+  function fbtPush(eventName, params) {
+    var abTools = "";
+    try {
+      var m = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+      if (m) abTools = m[1];
+    } catch (e) {
+    }
+    var pdpProductId = window.ozProduct && window.ozProduct.productId || 0;
+    var payload = Object.assign({
+      event: eventName,
+      oz_pdp_product_id: pdpProductId,
+      oz_ab_tools_variant: abTools
+    }, params || {});
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+    fbtBeacon(eventName, payload);
+  }
   function initFrequentlyBought() {
     var section = document.querySelector(".oz-fbt");
     if (!section) return;
@@ -1299,6 +1334,21 @@
     var prevBtn = section.querySelector(".oz-fbt-prev");
     var nextBtn = section.querySelector(".oz-fbt-next");
     if (!swiperEl) return;
+    var fbtShownFired = false;
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (fbtShownFired || !entry.isIntersecting) return;
+          fbtShownFired = true;
+          var cards = section.querySelectorAll(".oz-fbt-card");
+          fbtPush("oz_fbt_shown", { oz_card_count: cards.length });
+          io.disconnect();
+        });
+      }, { threshold: 0.4 });
+      io.observe(section);
+    } else {
+      fbtPush("oz_fbt_shown", { oz_card_count: section.querySelectorAll(".oz-fbt-card").length });
+    }
     window.ozLoadSwiper(function() {
       new Swiper(swiperEl, {
         slidesPerView: 1.4,
@@ -1327,7 +1377,13 @@
         var optCard = optBtn.closest(".oz-fbt-card");
         var pid = parseInt(optBtn.dataset.productId, 10);
         if (!pid) return;
-        sendAdd(optCard, optBtn, pid, function() {
+        var optCardPid = parseInt(optCard.dataset.productId, 10) || 0;
+        fbtPush("oz_fbt_size_selected", {
+          oz_card_product_id: optCardPid,
+          oz_product_id: pid,
+          oz_size_label: (optBtn.textContent || "").trim()
+        });
+        sendAdd(optCard, optBtn, pid, optCardPid, function() {
           optBtn.classList.add("is-added");
           setTimeout(function() {
             optCard.classList.remove("is-open");
@@ -1343,6 +1399,11 @@
       e.preventDefault();
       e.stopPropagation();
       var hasOptions = card.dataset.hasOptions === "1";
+      var cardPid = parseInt(card.dataset.productId, 10) || 0;
+      fbtPush("oz_fbt_card_clicked", {
+        oz_card_product_id: cardPid,
+        oz_card_type: hasOptions ? "sized" : "simple"
+      });
       if (hasOptions) {
         section.querySelectorAll(".oz-fbt-card.is-open").forEach(function(c) {
           if (c !== card) c.classList.remove("is-open");
@@ -1350,9 +1411,8 @@
         card.classList.toggle("is-open");
         return;
       }
-      var pid2 = parseInt(card.dataset.productId, 10);
-      if (!pid2 || addBtn.disabled) return;
-      sendAdd(card, addBtn, pid2);
+      if (!cardPid || addBtn.disabled) return;
+      sendAdd(card, addBtn, cardPid, cardPid);
     });
     document.addEventListener("click", function(e) {
       if (e.target.closest(".oz-fbt-card")) return;
@@ -1366,7 +1426,7 @@
         c.classList.remove("is-open");
       });
     });
-    function sendAdd(card, btn, productId, onSuccess) {
+    function sendAdd(card, btn, productId, cardProductId, onSuccess) {
       if (btn.disabled) return;
       btn.disabled = true;
       btn.classList.add("is-loading");
@@ -1416,14 +1476,10 @@
           } catch (_) {
           }
         }
-        try {
-          window.dataLayer = window.dataLayer || [];
-          window.dataLayer.push({
-            event: "oz_fbt_added",
-            oz_product_id: productId
-          });
-        } catch (_) {
-        }
+        fbtPush("oz_fbt_added", {
+          oz_product_id: productId,
+          oz_card_product_id: cardProductId || productId
+        });
         if (onSuccess) onSuccess();
       };
       xhr.send(body);

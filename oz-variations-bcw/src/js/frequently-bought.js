@@ -15,14 +15,73 @@
  * data-product-id is sent directly. Reuses oz_cart_drawer_add (no
  * variation_id needed).
  *
+ * Analytics events (oz_fbt_ prefix, all dual-pushed to GA4 dataLayer
+ * AND server beacon for the BCW dashboard upsell panel):
+ *   - oz_fbt_shown          (carousel scrolled into view, fires once)
+ *   - oz_fbt_card_clicked   (action button clicked — view intent)
+ *   - oz_fbt_size_selected  (size pill clicked on a sized-family card)
+ *   - oz_fbt_added          (add succeeded; oz_card_product_id is the
+ *                            card's product, oz_product_id is what
+ *                            actually went into the cart — same for
+ *                            simple products, different for sized)
+ *
  * Reuses:
  *   - window.ozLoadSwiper (no extra script tag)
  *   - oz_cart_drawer_add AJAX endpoint
+ *   - window.ozCartDrawer.analyticsNonce (oz_track_event nonce)
  *   - 'oz-added-to-cart' DOM event so the cart drawer opens itself
  *
  * @package OZ_Variations_BCW
  * @since 2.3.0
  */
+
+/* ═══ ANALYTICS ════════════════════════════════════════════════
+ * Mirror the cart-drawer.js / analytics.js pattern: dataLayer push
+ * for GA4/GTM, plus server beacon for the BCW dashboard. Dedup
+ * window of 1.5s prevents double-clicks polluting funnels. */
+var _lastBeacon = '';
+var _lastBeaconTime = 0;
+
+function fbtBeacon(eventName, payload) {
+  var cfg = window.ozCartDrawer || {};
+  if (!cfg.ajaxUrl || !cfg.analyticsNonce) return;
+
+  var key = eventName + '|' + (payload.oz_card_product_id || payload.oz_product_id || '');
+  var now = Date.now();
+  if (key === _lastBeacon && (now - _lastBeaconTime) < 1500) return;
+  _lastBeacon = key;
+  _lastBeaconTime = now;
+
+  var fd = new FormData();
+  fd.append('action', 'oz_track_event');
+  fd.append('nonce', cfg.analyticsNonce);
+  fd.append('event_name', eventName);
+  fd.append('event_data', JSON.stringify(payload));
+  fd.append('source', 'product');
+  navigator.sendBeacon(cfg.ajaxUrl, fd);
+}
+
+function fbtPush(eventName, params) {
+  // A/B variant tagging — mirrors the PDP analytics push() helper so
+  // the dashboard's per-variant queries can split FBT funnels by B/C.
+  var abTools = '';
+  try {
+    var m = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
+    if (m) abTools = m[1];
+  } catch (e) {}
+
+  var pdpProductId = (window.ozProduct && window.ozProduct.productId) || 0;
+
+  var payload = Object.assign({
+    event: eventName,
+    oz_pdp_product_id: pdpProductId,
+    oz_ab_tools_variant: abTools,
+  }, params || {});
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(payload);
+  fbtBeacon(eventName, payload);
+}
 
 export function initFrequentlyBought() {
   var section = document.querySelector('.oz-fbt');
@@ -32,6 +91,26 @@ export function initFrequentlyBought() {
   var prevBtn  = section.querySelector('.oz-fbt-prev');
   var nextBtn  = section.querySelector('.oz-fbt-next');
   if (!swiperEl) return;
+
+  // ── Track "shown" once when carousel scrolls into view ──────
+  // 0.4 threshold (40% visible) avoids firing when only the section
+  // header peeks above the fold during initial scroll.
+  var fbtShownFired = false;
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (fbtShownFired || !entry.isIntersecting) return;
+        fbtShownFired = true;
+        var cards = section.querySelectorAll('.oz-fbt-card');
+        fbtPush('oz_fbt_shown', { oz_card_count: cards.length });
+        io.disconnect();
+      });
+    }, { threshold: 0.4 });
+    io.observe(section);
+  } else {
+    // No IO: fire on init so we still get a baseline shown count
+    fbtPush('oz_fbt_shown', { oz_card_count: section.querySelectorAll('.oz-fbt-card').length });
+  }
 
   // ── Swiper init via shared loader ──────────────────────────
   // ozLoadSwiper is guaranteed by the WP enqueue dep on 'oz-swiper-loader'.
@@ -68,7 +147,15 @@ export function initFrequentlyBought() {
       var optCard = optBtn.closest('.oz-fbt-card');
       var pid = parseInt(optBtn.dataset.productId, 10);
       if (!pid) return;
-      sendAdd(optCard, optBtn, pid, function () {
+      var optCardPid = parseInt(optCard.dataset.productId, 10) || 0;
+      // Track size selection (separate funnel step from final add — lets
+      // us see "users who opened the overlay but never picked a size").
+      fbtPush('oz_fbt_size_selected', {
+        oz_card_product_id: optCardPid,
+        oz_product_id: pid,
+        oz_size_label: (optBtn.textContent || '').trim(),
+      });
+      sendAdd(optCard, optBtn, pid, optCardPid, function () {
         // Brief is-added pulse on the chosen pill, then close overlay.
         optBtn.classList.add('is-added');
         setTimeout(function () {
@@ -88,6 +175,16 @@ export function initFrequentlyBought() {
     e.stopPropagation();
 
     var hasOptions = card.dataset.hasOptions === '1';
+    var cardPid = parseInt(card.dataset.productId, 10) || 0;
+
+    // Track engagement (the click itself, before any add succeeds). For
+    // sized families this is "user wants to see the sizes" — for simple
+    // products it's "user clicked add". Together with oz_fbt_shown this
+    // gives a CTR for the carousel.
+    fbtPush('oz_fbt_card_clicked', {
+      oz_card_product_id: cardPid,
+      oz_card_type: hasOptions ? 'sized' : 'simple',
+    });
 
     if (hasOptions) {
       // Close any other open card first — only one overlay at a time.
@@ -99,9 +196,8 @@ export function initFrequentlyBought() {
     }
 
     // Simple product → quick add using the card's product_id
-    var pid2 = parseInt(card.dataset.productId, 10);
-    if (!pid2 || addBtn.disabled) return;
-    sendAdd(card, addBtn, pid2);
+    if (!cardPid || addBtn.disabled) return;
+    sendAdd(card, addBtn, cardPid, cardPid);
   });
 
   // Click outside an open card closes it
@@ -122,7 +218,7 @@ export function initFrequentlyBought() {
 
   // ── AJAX add ──────────────────────────────────────────────
 
-  function sendAdd(card, btn, productId, onSuccess) {
+  function sendAdd(card, btn, productId, cardProductId, onSuccess) {
     if (btn.disabled) return;
     btn.disabled = true;
     btn.classList.add('is-loading');
@@ -190,13 +286,15 @@ export function initFrequentlyBought() {
         } catch (_) { /* swallow */ }
       }
 
-      try {
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: 'oz_fbt_added',
-          oz_product_id: productId,
-        });
-      } catch (_) { /* swallow */ }
+      // Final funnel step. oz_card_product_id stays stable across the
+      // funnel (shown → click → size_selected → added) so the dashboard
+      // can attribute every step back to the same FBT card. For simple
+      // products the two IDs are equal; for sized families product_id
+      // is the chosen size variant while card_product_id is the family.
+      fbtPush('oz_fbt_added', {
+        oz_product_id: productId,
+        oz_card_product_id: cardProductId || productId,
+      });
 
       if (onSuccess) onSuccess();
     };

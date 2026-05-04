@@ -724,6 +724,120 @@ class OZ_Analytics_Reporter {
     }
 
     /**
+     * FBT carousel funnel (PDP upsell).
+     *
+     * Tracks the four steps in order:
+     *   shown          → carousel scrolled into view (>=40% visible)
+     *   card_clicked   → user clicked a card's action button (CTR signal)
+     *   size_selected  → for sized families: user picked a size pill
+     *   added          → server confirmed the cart add succeeded
+     *
+     * Click-through rate (clicked / shown) and add rate (added / shown) are
+     * the headline metrics for the dashboard. size_selected is shown to
+     * understand drop-off between opening the size overlay and committing.
+     *
+     * @param int|string $days  Range from analytics-reporter (number of days, "yesterday", etc.)
+     * @return array{shown:int, clicked:int, size_selected:int, added:int}
+     */
+    public static function fbt_funnel($days) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        $row = $wpdb->get_row($wpdb->prepare(
+            "SELECT
+                SUM(CASE WHEN event_name = 'oz_fbt_shown' THEN 1 ELSE 0 END)          AS shown,
+                SUM(CASE WHEN event_name = 'oz_fbt_card_clicked' THEN 1 ELSE 0 END)   AS clicked,
+                SUM(CASE WHEN event_name = 'oz_fbt_size_selected' THEN 1 ELSE 0 END)  AS size_selected,
+                SUM(CASE WHEN event_name = 'oz_fbt_added' THEN 1 ELSE 0 END)          AS added,
+                COUNT(DISTINCT CASE WHEN event_name = 'oz_fbt_shown' THEN session_id END)  AS sessions_shown,
+                COUNT(DISTINCT CASE WHEN event_name = 'oz_fbt_added' THEN session_id END)  AS sessions_added
+             FROM {$table}
+             WHERE created_at >= %s AND created_at < %s",
+            $since, $until
+        ), ARRAY_A);
+
+        return [
+            'shown'          => intval($row['shown']),
+            'clicked'        => intval($row['clicked']),
+            'size_selected'  => intval($row['size_selected']),
+            'added'          => intval($row['added']),
+            'sessions_shown' => intval($row['sessions_shown']),
+            'sessions_added' => intval($row['sessions_added']),
+        ];
+    }
+
+    /**
+     * Cart drawer upsell funnel.
+     *
+     * The drawer can only be a meaningful upsell surface when it's open, so
+     * "shown" = drawer opens (oz_cart_opened). added = oz_cart_upsell_added.
+     * size_selected = oz_cart_upsell_size_selected (sized PU Roller etc.) so
+     * we can see how often visitors who pick a size actually commit.
+     *
+     * @param int|string $days
+     * @return array{shown:int, size_selected:int, added:int, sessions_shown:int, sessions_added:int}
+     */
+    public static function cart_upsell_funnel($days) {
+        global $wpdb;
+        $table = OZ_Analytics_Store::table_name();
+        $since = self::since_date($days);
+        $until = self::until_date($days);
+
+        $row = $wpdb->get_row($wpdb->prepare(
+            "SELECT
+                SUM(CASE WHEN event_name = 'oz_cart_opened' THEN 1 ELSE 0 END)               AS shown,
+                SUM(CASE WHEN event_name = 'oz_cart_upsell_size_selected' THEN 1 ELSE 0 END) AS size_selected,
+                SUM(CASE WHEN event_name = 'oz_cart_upsell_added' THEN 1 ELSE 0 END)         AS added,
+                COUNT(DISTINCT CASE WHEN event_name = 'oz_cart_opened' THEN session_id END)       AS sessions_shown,
+                COUNT(DISTINCT CASE WHEN event_name = 'oz_cart_upsell_added' THEN session_id END) AS sessions_added
+             FROM {$table}
+             WHERE created_at >= %s AND created_at < %s",
+            $since, $until
+        ), ARRAY_A);
+
+        return [
+            'shown'          => intval($row['shown']),
+            'size_selected'  => intval($row['size_selected']),
+            'added'          => intval($row['added']),
+            'sessions_shown' => intval($row['sessions_shown']),
+            'sessions_added' => intval($row['sessions_added']),
+        ];
+    }
+
+    /**
+     * Top added products from upsells, looked up by attachment ID.
+     * Resolves IDs to product names so the dashboard shows readable rows.
+     *
+     * @param string $event_name  e.g. 'oz_fbt_added' or 'oz_cart_upsell_added'
+     * @param string $json_key    Which JSON key holds the product ID. For
+     *                            FBT use 'oz_card_product_id' (stable across
+     *                            simple+sized; size variant ID would split
+     *                            PU Roller into 4 rows). For cart drawer
+     *                            use 'oz_product_id'.
+     * @param int|string $days
+     * @param int $limit
+     * @return array<int, array{product_id:int, name:string, count:int}>
+     */
+    public static function upsell_top_products($event_name, $json_key, $days, $limit = 10) {
+        $rows = self::top_values($event_name, $json_key, $days, $limit);
+        $out = [];
+        foreach ($rows as $row) {
+            $pid = (int) $row['value'];
+            if (!$pid) continue;
+            $product = function_exists('wc_get_product') ? wc_get_product($pid) : null;
+            $name = $product ? $product->get_name() : ('#' . $pid);
+            $out[] = [
+                'product_id' => $pid,
+                'name'       => $name,
+                'count'      => (int) $row['count'],
+            ];
+        }
+        return $out;
+    }
+
+    /**
      * A/B test results for the Gereedschap section visibility test.
      *
      * Cookie `oz_ab_tools` (A or B) is set client-side by an inline script

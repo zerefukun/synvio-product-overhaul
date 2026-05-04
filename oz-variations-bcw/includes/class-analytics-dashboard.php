@@ -82,6 +82,15 @@ class OZ_Analytics_Dashboard {
         $tool_sales = OZ_Analytics_Reporter::top_tool_sales($range, 10);
         // Cart drawer upsell adds (only products added via upsell section)
         $cart_upsells = OZ_Analytics_Reporter::top_values('oz_cart_upsell_added', 'oz_upsell_name', $range, 10);
+
+        // Upsell funnels (PDP FBT carousel + cart drawer upsell). Powers the
+        // "Upsells" section. Each funnel returns shown/clicked/added counts;
+        // the top-products lookups give "what people actually added" so the
+        // panel can show readable product names rather than IDs.
+        $fbt_funnel        = OZ_Analytics_Reporter::fbt_funnel($range);
+        $fbt_top           = OZ_Analytics_Reporter::upsell_top_products('oz_fbt_added', 'oz_card_product_id', $range, 5);
+        $cart_upsell_funnel = OZ_Analytics_Reporter::cart_upsell_funnel($range);
+        $cart_upsell_top   = OZ_Analytics_Reporter::upsell_top_products('oz_cart_upsell_added', 'oz_product_id', $range, 5);
         $traffic  = OZ_Analytics_Reporter::traffic_sources($range);
         $landings = OZ_Analytics_Reporter::top_landing_pages($range, 10);
 
@@ -225,6 +234,29 @@ class OZ_Analytics_Dashboard {
             <div class="oz-panel oz-funnel" style="margin-bottom: 24px;">
                 <h3>Conversie Funnel</h3>
                 <?php self::render_funnel($funnel); ?>
+            </div>
+
+            <!-- ═══ Upsells (PDP carousel + cart drawer) ═══ -->
+            <div class="oz-section-title">
+                Upsells
+                <span class="oz-section-subtitle">
+                    Per surface: hoeveel mensen zien het, klikken erop, en voegen iets toe.
+                    Een derde paneel komt erbij wanneer de checkout-upsell live gaat.
+                </span>
+            </div>
+            <div class="oz-columns" style="margin-bottom: 24px;">
+                <div class="oz-panel">
+                    <h3>Upsell &mdash; Carousel op PDP</h3>
+                    <p class="oz-panel-subtitle">"Vaak samen besteld" onder het hoofdgrid.</p>
+                    <?php self::render_upsell_funnel($fbt_funnel, 'fbt'); ?>
+                    <?php self::render_upsell_top_list($fbt_top, 'Top toegevoegde producten'); ?>
+                </div>
+                <div class="oz-panel">
+                    <h3>Upsell &mdash; Cart drawer</h3>
+                    <p class="oz-panel-subtitle">Suggesties in de zijdrawer wanneer iemand de cart opent.</p>
+                    <?php self::render_upsell_funnel($cart_upsell_funnel, 'cart'); ?>
+                    <?php self::render_upsell_top_list($cart_upsell_top, 'Top toegevoegde producten'); ?>
+                </div>
             </div>
 
             <!-- A/B test: Gereedschap UX (variant A retired 02/05/26) -->
@@ -663,12 +695,18 @@ class OZ_Analytics_Dashboard {
         $b = $comparison['before'];
         $a = $comparison['after'];
 
+        // Note: "Upsell attach rate" was previously shown here as % of orders
+        // containing accessory/tool products. It was removed because there
+        // were NO upsell surfaces on the PDP before the overhaul, so the
+        // before/after comparison conflated organic accessory adds (pre) with
+        // upsell-driven adds (post). Use the dedicated "Upsells" section
+        // below for actual FBT/cart-drawer attribution. Items/order remains
+        // here as the cleanest single-number signal of upsell impact.
         $metrics = [
             ['label' => 'Omzet / dag',       'before' => '&euro;' . number_format($b['revenue_day'], 0, ',', '.'), 'after' => '&euro;' . number_format($a['revenue_day'], 0, ',', '.'), 'before_raw' => $b['revenue_day'], 'after_raw' => $a['revenue_day']],
             ['label' => 'Orders / dag',       'before' => $b['orders_day'],  'after' => $a['orders_day'],  'before_raw' => $b['orders_day'],  'after_raw' => $a['orders_day']],
             ['label' => 'Gem. orderwaarde',   'before' => '&euro;' . number_format($b['aov'], 2, ',', '.'), 'after' => '&euro;' . number_format($a['aov'], 2, ',', '.'), 'before_raw' => $b['aov'], 'after_raw' => $a['aov']],
             ['label' => 'Items per order',    'before' => $b['items_per_order'], 'after' => $a['items_per_order'], 'before_raw' => $b['items_per_order'], 'after_raw' => $a['items_per_order']],
-            ['label' => 'Upsell attach rate', 'before' => $b['upsell_rate'] . '%', 'after' => $a['upsell_rate'] . '%', 'before_raw' => $b['upsell_rate'], 'after_raw' => $a['upsell_rate']],
         ];
 
         echo '<div class="oz-panel oz-comparison">';
@@ -987,6 +1025,91 @@ class OZ_Analytics_Dashboard {
                 number_format($step['count'])
             );
         }
+    }
+
+    /**
+     * Render an upsell funnel: shown → clicked → size selected → added.
+     * Each row shows the absolute count and a percentage of "shown"
+     * (the conversion rate from impression to that step). The cart
+     * variant of the funnel has no clicked step (drawer-open IS the
+     * impression and cart upsell add is the next step), so render
+     * conditionally based on what's in the funnel array.
+     *
+     * @param array  $f       fbt_funnel() or cart_upsell_funnel() output
+     * @param string $variant 'fbt' or 'cart' — drives label wording
+     */
+    private static function render_upsell_funnel($f, $variant) {
+        $shown = max(1, (int) $f['shown']);
+
+        // Steps differ slightly per surface. Keep label wording specific
+        // so it's obvious which surface a row belongs to without context.
+        if ($variant === 'fbt') {
+            $steps = [
+                ['label' => 'Carousel zichtbaar',     'count' => (int) $f['shown']],
+                ['label' => 'Kaart geklikt',          'count' => (int) $f['clicked']],
+                ['label' => 'Maat gekozen',           'count' => (int) $f['size_selected']],
+                ['label' => 'Toegevoegd aan cart',    'count' => (int) $f['added']],
+            ];
+        } else {
+            $steps = [
+                ['label' => 'Drawer geopend',         'count' => (int) $f['shown']],
+                ['label' => 'Maat gekozen',           'count' => (int) $f['size_selected']],
+                ['label' => 'Toegevoegd aan cart',    'count' => (int) $f['added']],
+            ];
+        }
+
+        foreach ($steps as $step) {
+            $pct = round(($step['count'] / $shown) * 100);
+            printf(
+                '<div class="oz-bar-row">'
+                . '<span class="oz-bar-label">%s</span>'
+                . '<div class="oz-bar-track"><div class="oz-bar-fill" style="width:%d%%"></div></div>'
+                . '<span class="oz-bar-count">%s <small style="color:#888;">(%d%%)</small></span>'
+                . '</div>',
+                esc_html($step['label']),
+                min(100, $pct),
+                number_format($step['count']),
+                $pct
+            );
+        }
+
+        // Headline rate so the user doesn't have to math impressions vs adds.
+        $rate = $f['shown'] > 0 ? round(($f['added'] / $f['shown']) * 100, 2) : 0;
+        $sess_rate = $f['sessions_shown'] > 0 ? round(($f['sessions_added'] / $f['sessions_shown']) * 100, 2) : 0;
+        printf(
+            '<p style="margin-top:10px;font-size:13px;color:#444;">'
+            . '<strong>Add rate:</strong> %s%% per impressie &middot; '
+            . '<strong>Per sessie:</strong> %s%% (%s van %s sessies)'
+            . '</p>',
+            esc_html((string) $rate),
+            esc_html((string) $sess_rate),
+            number_format((int) $f['sessions_added']),
+            number_format((int) $f['sessions_shown'])
+        );
+    }
+
+    /**
+     * Render a list of "top added" upsell products (name + count).
+     * Empty state is silent rather than a placeholder row so the panel
+     * doesn't show stale-looking empty tables right after a deploy.
+     */
+    private static function render_upsell_top_list($rows, $title) {
+        if (empty($rows)) {
+            printf('<p style="margin-top:14px;color:#888;font-style:italic;">Nog geen %s &mdash; data komt zodra bezoekers iets toevoegen.</p>', esc_html(strtolower($title)));
+            return;
+        }
+        printf('<h4 style="margin:16px 0 6px;font-size:13px;color:#333;">%s</h4>', esc_html($title));
+        echo '<ul class="oz-top-list" style="list-style:none;margin:0;padding:0;">';
+        foreach ($rows as $row) {
+            printf(
+                '<li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">'
+                . '<span>%s</span><strong>%s</strong>'
+                . '</li>',
+                esc_html($row['name']),
+                number_format((int) $row['count'])
+            );
+        }
+        echo '</ul>';
     }
 
     /**

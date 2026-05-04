@@ -22,14 +22,14 @@ class OZ_Analytics_Collector {
     const CRON_HOOK = 'oz_analytics_daily_cleanup';
 
     /**
-     * Allowlist of valid event names (24 total).
+     * Allowlist of valid event names.
      * Any event not in this list is silently rejected.
      * Keeps the DB clean — only known events get stored.
      */
     private static $valid_events = [
         // Session tracking (1)
         'oz_session_start',
-        // Product page events (13)
+        // Product page events (14)
         'oz_color_selected',
         'oz_color_mode_changed',
         'oz_option_selected',
@@ -44,7 +44,12 @@ class OZ_Analytics_Collector {
         'oz_sheet_opened',
         'oz_gallery_image',
         'oz_formula_toggled',
-        // Cart drawer events (11)
+        // FBT carousel events (PDP upsell, 4)
+        'oz_fbt_shown',
+        'oz_fbt_card_clicked',
+        'oz_fbt_size_selected',
+        'oz_fbt_added',
+        // Cart drawer events (12)
         'oz_cart_opened',
         'oz_cart_closed',
         'oz_cart_qty_increased',
