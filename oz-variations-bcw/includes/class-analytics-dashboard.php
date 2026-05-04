@@ -74,6 +74,23 @@ class OZ_Analytics_Dashboard {
         $summary  = OZ_Analytics_Reporter::summary($range);
         $product  = OZ_Analytics_Reporter::by_source('product', $range);
         $cart     = OZ_Analytics_Reporter::by_source('cart', $range);
+
+        // Trim noise from the per-source bar charts:
+        //   oz_tool_toggled is a leftover from variant A (inline tool buttons)
+        //     that variant C's dropdown UX no longer surfaces meaningfully —
+        //     residual fires from "Zelf samenstellen" picks just clutter the
+        //     chart without giving an actionable signal.
+        //   oz_fbt_* and oz_cart_upsell_* both have their own dedicated
+        //     funnels in the "Upsells" section below, so showing them in the
+        //     bar charts too would double-count visually.
+        $hide_from_product_chart = ['oz_tool_toggled', 'oz_fbt_shown', 'oz_fbt_card_clicked', 'oz_fbt_size_selected', 'oz_fbt_added'];
+        $hide_from_cart_chart    = ['oz_cart_upsell_added', 'oz_cart_upsell_size_selected', 'oz_cart_upsell_option_selected'];
+        $product = array_values(array_filter($product, function ($r) use ($hide_from_product_chart) {
+            return !in_array($r['event_name'], $hide_from_product_chart, true);
+        }));
+        $cart = array_values(array_filter($cart, function ($r) use ($hide_from_cart_chart) {
+            return !in_array($r['event_name'], $hide_from_cart_chart, true);
+        }));
         $funnel   = OZ_Analytics_Reporter::funnel($range);
         $zm_stats = OZ_Analytics_Reporter::formula_toggle_stats($range);
         $ab_tools = OZ_Analytics_Reporter::ab_test_tools_results($range);
