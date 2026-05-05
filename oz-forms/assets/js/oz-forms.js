@@ -490,15 +490,21 @@
 			}
 		} );
 
-		// Hide bar when the form is in viewport (no need to duplicate progress).
+		// Show the bar only while a swatch grid is in viewport. As soon as the
+		// user scrolls away (back up to the form or down past the swatches),
+		// the bar hides. It has no purpose outside the picking section.
 		if ( 'IntersectionObserver' in window ) {
+			var inView = new Set();
 			var io = new IntersectionObserver( function ( entries ) {
 				entries.forEach( function ( e ) {
-					if ( e.isIntersecting ) { bar.suppress(); }
-					else { bar.unsuppress(); }
+					if ( e.isIntersecting ) { inView.add( e.target ); }
+					else { inView.delete( e.target ); }
 				} );
-			}, { threshold: 0.4 } );
-			io.observe( form );
+				if ( inView.size > 0 ) { bar.unsuppress(); }
+				else { bar.suppress(); }
+			}, { threshold: 0 } );
+			grids.forEach( function ( g ) { io.observe( g ); } );
+			bar.suppress(); // start hidden until a grid scrolls into view
 		}
 
 		refresh();
