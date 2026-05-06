@@ -663,16 +663,29 @@
 				}
 			}
 			countEl.textContent = picked + ' van 4';
-			if ( picked === 4 ) {
+			if ( picked === 0 ) {
+				// No picks yet: prompt the user to start picking instead of
+				// pushing them toward the form. Hiding the CTA prevents an
+				// accidental click from skipping the picking step entirely.
+				hintEl.textContent = 'Kies hieronder eerst een kleur';
+				ctaBtn.style.display = 'none';
+				ctaMode = 'scroll';
+				root.classList.add( 'is-empty' );
+				root.classList.remove( 'is-complete' );
+			} else if ( picked === 4 ) {
 				hintEl.textContent = 'Klaar!';
 				ctaBtn.textContent = 'Volgende →';
+				ctaBtn.style.display = '';
 				ctaMode = 'advance';
 				root.classList.add( 'is-complete' );
+				root.classList.remove( 'is-empty' );
 			} else {
 				hintEl.textContent = 'kleuren gekozen';
 				ctaBtn.textContent = 'Naar formulier ↑';
+				ctaBtn.style.display = '';
 				ctaMode = 'scroll';
 				root.classList.remove( 'is-complete' );
+				root.classList.remove( 'is-empty' );
 			}
 		}
 
