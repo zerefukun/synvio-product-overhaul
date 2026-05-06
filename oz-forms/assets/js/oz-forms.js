@@ -490,21 +490,24 @@
 			}
 		} );
 
-		// Show the bar only while a swatch grid is in viewport. As soon as the
-		// user scrolls away (back up to the form or down past the swatches),
-		// the bar hides. It has no purpose outside the picking section.
+		// Reveal the bar the first time any swatch grid enters the viewport.
+		// Once revealed it stays visible for the rest of the session, even if
+		// the user scrolls back up to the form or down past the grid.
 		if ( 'IntersectionObserver' in window ) {
-			var inView = new Set();
 			var io = new IntersectionObserver( function ( entries ) {
-				entries.forEach( function ( e ) {
-					if ( e.isIntersecting ) { inView.add( e.target ); }
-					else { inView.delete( e.target ); }
-				} );
-				if ( inView.size > 0 ) { bar.unsuppress(); }
-				else { bar.suppress(); }
+				for ( var i = 0; i < entries.length; i++ ) {
+					if ( entries[ i ].isIntersecting ) {
+						bar.reveal();
+						io.disconnect();
+						return;
+					}
+				}
 			}, { threshold: 0 } );
 			grids.forEach( function ( g ) { io.observe( g ); } );
-			bar.suppress(); // start hidden until a grid scrolls into view
+		} else {
+			// No IntersectionObserver support: reveal immediately so the bar
+			// is at least reachable. Rare in modern browsers but kept for safety.
+			bar.reveal();
 		}
 
 		refresh();
@@ -612,8 +615,10 @@
 	}
 
 	/* Sticky bottom bar showing 0/4..4/4 progress + CTA that scrolls the user
-	   back to the form (or fires "Volgende →" when complete). Hidden until the
-	   user has picked at least one swatch OR scrolled past the form. */
+	   back to the form (or fires "Volgende →" when complete). Hidden on page
+	   load until the user scrolls into the swatch grid for the first time.
+	   After that the bar stays visible regardless of scroll position or pick
+	   state, so progress is always within reach. */
 	function buildKleurBar() {
 		var root = document.createElement( 'div' );
 		root.className = 'oz-kleur-bar';
@@ -641,8 +646,9 @@
 		var ctaMode   = 'scroll'; // 'scroll' | 'advance'
 		var onScrollFn  = null;
 		var onAdvanceFn = null;
-		var hasPicked   = false;
-		var suppressed  = false;
+		// Sticky one-way flag. Flips to true the first time the user scrolls
+		// into the swatch grid, then never flips back, so the bar stays visible.
+		var reached    = false;
 
 		function update( vals ) {
 			var picked = 0;
@@ -670,14 +676,10 @@
 				ctaMode = 'scroll';
 				root.classList.remove( 'is-complete' );
 			}
-			if ( picked > 0 ) {
-				hasPicked = true;
-				render();
-			}
 		}
 
 		function render() {
-			if ( hasPicked && ! suppressed ) {
+			if ( reached ) {
 				root.classList.add( 'is-visible' );
 				root.setAttribute( 'aria-hidden', 'false' );
 			} else {
@@ -686,8 +688,12 @@
 			}
 		}
 
-		function suppress() { suppressed = true; render(); }
-		function unsuppress() { suppressed = false; render(); }
+		// Reveal the bar permanently. Idempotent so repeated calls are safe.
+		function reveal() {
+			if ( reached ) { return; }
+			reached = true;
+			render();
+		}
 
 		ctaBtn.addEventListener( 'click', function () {
 			if ( ctaMode === 'advance' && typeof onAdvanceFn === 'function' ) {
@@ -698,10 +704,9 @@
 		} );
 
 		return {
-			root: root,
-			update: update,
-			suppress: suppress,
-			unsuppress: unsuppress,
+			root:     root,
+			update:   update,
+			reveal:   reveal,
 			onScroll:  function ( fn ) { onScrollFn  = fn; },
 			onAdvance: function ( fn ) { onAdvanceFn = fn; },
 		};
