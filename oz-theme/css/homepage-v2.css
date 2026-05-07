@@ -890,6 +890,59 @@
   margin-bottom: 24px;
 }
 
+/* --- Info variant: used on ruimte page tail blocks where the right
+       half holds richer SEO content (h2 + intro + 2 lists + CTA) ---- */
+.oz-hp-split-stalen--info {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+.oz-hp-split-stalen--info h2 {
+  font-family: var(--ff-heading);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--teal);
+  margin: 8px 0 12px;
+  line-height: 1.2;
+}
+.oz-hp-split-stalen--info p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--teal-dark);
+  margin: 0 0 24px;
+  max-width: 460px;
+}
+.oz-hp-split-stalen--info h3 {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin: 0 0 8px;
+}
+.oz-hp-split-stalen--info ul {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.oz-hp-split-stalen--info li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--teal-dark);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(19, 83, 80, 0.1);
+}
+.oz-hp-split-stalen--info li:last-child {
+  border-bottom: 0;
+}
+.oz-hp-split-stalen--info ul + h3 {
+  margin-top: 8px;
+}
+.oz-hp-split-stalen--info .oz-hp-btn {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
 /* ================================================================
    S09 — VERGELIJKTABEL
    ================================================================ */
