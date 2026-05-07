@@ -31,7 +31,7 @@ $up = home_url( '/wp-content/uploads' );
 			<p class="oz-hp-hero-sub">Naadloze betonlook, zelf aangebracht.</p>
 			<p class="oz-hp-hero-desc">Voor in alle ruimtes: badkamer, toilet, vloer, muur &amp; trap. Kant-en-klare pasta in 50+ kleuren &mdash; bestel online of bezoek onze showroom in Den Haag.</p>
 			<div class="oz-hp-hero-ctas">
-				<a href="/ruimtes/" class="oz-hp-btn oz-hp-btn--teal">Meer informatie</a>
+				<a href="/ruimtes/" class="oz-hp-btn oz-hp-btn--teal">Bekijk per ruimte</a>
 				<a href="/kleurstalen/" class="oz-hp-btn oz-hp-btn--outline oz-hp-hero-cta-mobile">Gratis kleurstalen aanvragen</a>
 			</div>
 		</div>
@@ -152,7 +152,7 @@ $up = home_url( '/wp-content/uploads' );
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Badkamer</div>
 					<div class="oz-hp-ruimtes-card-desc">Waterdichte betonlook voor douche, wand en vloer. Schimmelwerend en makkelijk te onderhouden.</div>
-					<span class="oz-hp-ruimtes-card-cta">Meer informatie</span>
+					<span class="oz-hp-ruimtes-card-cta">Bekijk badkamer</span>
 				</div>
 			</a>
 			<a href="/ruimtes/beton-cire-keuken/" class="oz-hp-ruimtes-card">
@@ -160,7 +160,7 @@ $up = home_url( '/wp-content/uploads' );
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Keuken</div>
 					<div class="oz-hp-ruimtes-card-desc">Keukenbladen, aanrecht en spatschermen in naadloze betonlook. Waterbestendig en vlekvrij.</div>
-					<span class="oz-hp-ruimtes-card-cta">Meer informatie</span>
+					<span class="oz-hp-ruimtes-card-cta">Bekijk keuken</span>
 				</div>
 			</a>
 			<a href="/ruimtes/beton-cire-toilet/" class="oz-hp-ruimtes-card">
@@ -168,7 +168,7 @@ $up = home_url( '/wp-content/uploads' );
 				<div class="oz-hp-ruimtes-card-content">
 					<div class="oz-hp-ruimtes-card-name">Toilet</div>
 					<div class="oz-hp-ruimtes-card-desc">Van wastafel tot wand: een naadloze betonlook waar geen tegel of voeg aan te pas komt.</div>
-					<span class="oz-hp-ruimtes-card-cta">Meer informatie</span>
+					<span class="oz-hp-ruimtes-card-cta">Bekijk toilet</span>
 				</div>
 			</a>
 		</div>

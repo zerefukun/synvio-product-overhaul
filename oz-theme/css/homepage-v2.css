@@ -315,7 +315,8 @@
   font-weight: 500;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: rgba(255,255,255,.5);
+  /* Bumped from .5 to .85 so the text passes WCAG AA contrast on charcoal. */
+  color: rgba(255,255,255,.85);
 }
 
 .oz-hp-trust-dot {
