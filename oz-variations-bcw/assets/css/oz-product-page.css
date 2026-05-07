@@ -1630,7 +1630,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
   background: var(--oz-accent);
   color: var(--oz-accent-text);
 }
-.oz-custom-color-input {
+.oz-product-page .oz-custom-color-input {
   width: 100%;
   padding: 12px 16px;
   border: 1.5px solid var(--oz-label-border);
@@ -1642,15 +1642,15 @@ details.oz-faq-item[open] .oz-faq-question::after {
   transition: border-color 0.2s var(--oz-ease), box-shadow 0.2s var(--oz-ease);
   box-sizing: border-box;
 }
-.oz-custom-color-input:focus {
+.oz-product-page .oz-custom-color-input:focus {
   outline: none;
   border-color: var(--oz-accent);
   box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.1);
 }
-.oz-custom-color-input.invalid {
+.oz-product-page .oz-custom-color-input.invalid {
   border-color: var(--oz-error);
 }
-.oz-custom-color-input.valid {
+.oz-product-page .oz-custom-color-input.valid {
   border-color: var(--oz-accent);
 }
 .oz-custom-color-hint {

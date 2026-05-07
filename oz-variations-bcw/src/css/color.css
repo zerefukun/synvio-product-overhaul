@@ -139,8 +139,10 @@
   color: var(--oz-accent-text);
 }
 
-/* Custom color input */
-.oz-custom-color-input {
+/* Custom color input — qualified with .oz-product-page so it beats
+   the .oz-product-page input reset in reset.css (which has higher
+   specificity than a single class selector). */
+.oz-product-page .oz-custom-color-input {
   width: 100%;
   padding: 12px 16px;
   border: 1.5px solid var(--oz-label-border);
@@ -153,17 +155,17 @@
   box-sizing: border-box;
 }
 
-.oz-custom-color-input:focus {
+.oz-product-page .oz-custom-color-input:focus {
   outline: none;
   border-color: var(--oz-accent);
   box-shadow: 0 0 0 3px rgba(19,83,80,0.1);
 }
 
-.oz-custom-color-input.invalid {
+.oz-product-page .oz-custom-color-input.invalid {
   border-color: var(--oz-error);
 }
 
-.oz-custom-color-input.valid {
+.oz-product-page .oz-custom-color-input.valid {
   border-color: var(--oz-accent);
 }
 
