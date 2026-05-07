@@ -75,11 +75,13 @@ if ($has_options) {
     $toepassing_opts = OZ_Product_Line_Config::get_toepassing_options($line_key);
     $pakket_opts     = OZ_Product_Line_Config::get_pakket_options($line_key);
     $option_order    = OZ_Product_Line_Config::get_option_order($line_key);
+    $pu_info         = OZ_Product_Line_Config::get_pu_info($line_key);
     $has_ral_ncs     = !empty($config['ral_ncs']);
     $ral_ncs_only    = !empty($config['ral_ncs_only']);
     $variants        = OZ_Product_Processor::get_variant_display_data($product_id);
 } else {
     $pu_options = $primer_options = $colorfresh_opts = $toepassing_opts = $pakket_opts = false;
+    $pu_info = null;
     $option_order = [];
     $has_ral_ncs = $ral_ncs_only = false;
     $variants = [];
@@ -255,6 +257,56 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             </table>
           </div>
         </div>
+        <?php endif; ?>
+      </div>
+      <?php endif; ?>
+
+      <!-- Aanbreng & afwerking — explains PU layer choice per use case.
+           Configured-line products only; lines without PU return null. -->
+      <?php if ($has_options && $pu_info && !empty($pu_info['use_cases'])) : ?>
+      <div class="oz-product-info-section oz-pu-explainer" id="sectionPuExplainer">
+        <h2 class="oz-section-title">Aanbreng &amp; afwerking</h2>
+        <?php if (!empty($pu_info['intro'])) : ?>
+          <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
+        <?php endif; ?>
+
+        <?php if (!empty($pu_info['stack'])) : ?>
+        <div class="oz-pu-stack" aria-label="Opbouw van het oppervlak">
+          <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) : ?>
+            <div class="oz-pu-stack-row<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
+              <span class="oz-pu-stack-bar" aria-hidden="true"></span>
+              <div class="oz-pu-stack-text">
+                <strong><?php echo wp_kses_post($layer['name']); ?></strong>
+                <?php if (!empty($layer['meta'])) : ?>
+                  <span class="oz-pu-stack-meta"><?php echo wp_kses_post($layer['meta']); ?></span>
+                <?php endif; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+
+        <h3 class="oz-pu-cases-title">Hoeveel PU lagen heb je nodig?</h3>
+        <div class="oz-pu-cases">
+          <?php foreach ($pu_info['use_cases'] as $case) :
+            $case_layers = max(0, min(3, intval($case['layers']))); ?>
+            <div class="oz-pu-case">
+              <div class="oz-pu-case-head">
+                <span class="oz-pu-case-use"><?php echo esc_html($case['use']); ?></span>
+                <span class="oz-pu-case-pill"
+                      data-layers="<?php echo esc_attr($case_layers); ?>">
+                  <?php echo $case_layers === 0
+                      ? 'Geen PU'
+                      : esc_html($case_layers . ' laag' . ($case_layers > 1 ? 'en' : '')); ?>
+                </span>
+              </div>
+              <p class="oz-pu-case-note"><?php echo esc_html($case['note']); ?></p>
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <?php if (!empty($pu_info['note'])) : ?>
+          <p class="oz-pu-note"><?php echo wp_kses_post($pu_info['note']); ?></p>
         <?php endif; ?>
       </div>
       <?php endif; ?>

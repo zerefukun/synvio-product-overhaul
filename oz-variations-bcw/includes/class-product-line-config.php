@@ -129,6 +129,138 @@ class OZ_Product_Line_Config {
     ];
 
     /**
+     * Per-line "Aanbreng & afwerking" copy, rendered on the PDP under the
+     * configurator. Explains how many PU toplagen each line needs per
+     * use-case so a buyer on the product page does not have to dig through
+     * the configurator tooltip to find this out.
+     *
+     * Schema per line:
+     *   intro     => 1-2 sentence paragraph specific to this product line
+     *   stack     => array of layers from bottom up:
+     *                  ['name' => string, 'meta' => string, 'is_pu' => bool]
+     *   use_cases => array of [
+     *                  'use'    => label (e.g. 'Vloer woonkamer'),
+     *                  'layers' => recommended layer count (0-3),
+     *                  'note'   => short reason
+     *                ]
+     *   note      => optional extra paragraph (e.g. "1 laag PU is included")
+     */
+    private static $pu_info = [
+        'original' => [
+            'intro' => 'Beton Ciré Original is naadloos en mooi op zichzelf, maar zonder PU toplaag is het niet waterdicht en kwetsbaar voor vlekken. Hieronder zie je hoeveel lagen je per situatie nodig hebt.',
+            'stack' => [
+                ['name' => 'Ondergrond',          'meta' => 'Tegels, beton of stucwerk', 'is_pu' => false],
+                ['name' => 'Primer',              'meta' => 'Inbegrepen, 1 laag',         'is_pu' => false],
+                ['name' => '2x Beton Cir&eacute; Original', 'meta' => '1-2 mm op kleur',  'is_pu' => false],
+                ['name' => 'PU toplaag',          'meta' => 'Bescherming en finish',     'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand woon/slaapkamer', 'layers' => 1, 'note' => 'Optioneel; 1 laag voor makkelijker schoonmaken.'],
+                ['use' => 'Vloer woonkamer/hal',   'layers' => 2, 'note' => 'Slijtvast en vlekbestendig bij dagelijks gebruik.'],
+                ['use' => 'Badkamer of douche',    'layers' => 2, 'note' => 'Pas met 2 lagen PU is het oppervlak waterdicht.'],
+                ['use' => 'Aanrechtblad of meubel','layers' => 2, 'note' => 'Beschermt tegen vlekken, krassen en hitte.'],
+            ],
+        ],
+
+        'original-zm' => [
+            'intro' => 'Bij Zelf Mengen & Mixen wordt de pasta op locatie gemengd. De PU keuze hangt af van waar je het oppervlak gebruikt.',
+            'stack' => [
+                ['name' => 'Ondergrond',                   'meta' => 'Tegels, beton of stucwerk', 'is_pu' => false],
+                ['name' => 'Primer',                        'meta' => 'Standaard meegeleverd',      'is_pu' => false],
+                ['name' => '2x Beton Cir&eacute; (zelf gemengd)', 'meta' => '1-2 mm op kleur',     'is_pu' => false],
+                ['name' => 'PU toplaag',                    'meta' => 'Bescherming en finish',    'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand droog',         'layers' => 1, 'note' => 'Optioneel maar makkelijker schoon te maken.'],
+                ['use' => 'Vloer',              'layers' => 2, 'note' => 'Voor slijtvastheid bij dagelijks belopen.'],
+                ['use' => 'Natte cel / douche', 'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
+                ['use' => 'Aanrecht / meubel',  'layers' => 2, 'note' => 'Tegen vlekken en krassen.'],
+            ],
+        ],
+
+        'all-in-one' => [
+            'intro' => 'All-in-One is voorgemengd en kant-en-klaar. Net als Original is een PU toplaag nodig voor waterdichtheid en bescherming tegen slijtage.',
+            'stack' => [
+                ['name' => 'Ondergrond',                'meta' => 'Tegels, beton of stucwerk',  'is_pu' => false],
+                ['name' => 'Primer + Pre-seal',          'meta' => 'Inbegrepen in pakket',       'is_pu' => false],
+                ['name' => '2x All-in-One pasta',        'meta' => '~1 mm op kleur',             'is_pu' => false],
+                ['name' => 'PU toplaag',                 'meta' => 'Bescherming en finish',      'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Optioneel; verbetert wel het schoonmaken.'],
+                ['use' => 'Vloer woonkamer',      'layers' => 2, 'note' => 'Standaard voor slijtvastheid.'],
+                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
+                ['use' => 'Meubel of werkblad',   'layers' => 2, 'note' => 'Beschermt tegen vocht en krassen.'],
+            ],
+        ],
+
+        'easyline' => [
+            'intro' => 'Easyline pakket bevat standaard 1 laag PU. Voor natte ruimtes of vloeren bestel je een 2e laag bij; voor droge wanden kun je de PU er ook af halen.',
+            'stack' => [
+                ['name' => 'Ondergrond',           'meta' => 'Ook over bestaande tegels',    'is_pu' => false],
+                ['name' => 'Primer',               'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
+                ['name' => 'RAW + FINE laag',      'meta' => '2 lagen Easyline pasta',       'is_pu' => false],
+                ['name' => 'PU toplaag (1 standaard)', 'meta' => 'Bescherming en finish',     'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Standaard inbegrepen, geen extra kosten.'],
+                ['use' => 'Vloer of trap',        'layers' => 2, 'note' => 'Bestel 2 lagen voor slijtvastheid.'],
+                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Voor waterdichtheid in natte cel.'],
+                ['use' => 'Aanrecht of meubel',   'layers' => 2, 'note' => 'Beschermt tegen vlekken en krassen.'],
+            ],
+            'note' => 'Wil je geen PU? Kies dan "Geen PU" en je krijgt &euro;40 korting op het pakket.',
+        ],
+
+        'microcement' => [
+            'intro' => 'Microcement is een ultradunne laag (1-2 mm) die direct over je bestaande oppervlak gaat. De PU toplaag bepaalt of het waterdicht en krasvast wordt.',
+            'stack' => [
+                ['name' => 'Ondergrond',          'meta' => 'Tegels, beton, hout',         'is_pu' => false],
+                ['name' => 'Primer',              'meta' => 'Inbegrepen, 1 laag',           'is_pu' => false],
+                ['name' => '2x Microcement pasta', 'meta' => '1-2 mm op kleur',             'is_pu' => false],
+                ['name' => 'PU toplaag',           'meta' => 'Bescherming en finish',      'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Voldoende voor woonkamer of slaapkamer.'],
+                ['use' => 'Vloer of trap',        'layers' => 2, 'note' => 'Voor slijtvastheid bij dagelijks gebruik.'],
+                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
+                ['use' => 'Aanrecht of meubel',   'layers' => 2, 'note' => 'Beschermt tegen vocht en krassen.'],
+            ],
+        ],
+
+        'metallic' => [
+            'intro' => 'Metallic Velvet is gemaakt voor wanden en meubels. PU is hier optioneel; het maakt het oppervlak makkelijker schoon te maken maar dempt soms het glanseffect licht.',
+            'stack' => [
+                ['name' => 'Ondergrond',           'meta' => 'Vlakke wand of meubel',     'is_pu' => false],
+                ['name' => 'Primer',               'meta' => 'Optioneel (+&euro;5,99)',    'is_pu' => false],
+                ['name' => '2x Metallic Velvet',   'meta' => 'Op kleur, met spatel',       'is_pu' => false],
+                ['name' => 'PU toplaag',           'meta' => 'Optioneel',                   'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand woon/slaapkamer', 'layers' => 0, 'note' => 'Standaard zonder PU voor maximaal velvet effect.'],
+                ['use' => 'Wand met aanraking',   'layers' => 1, 'note' => 'Maakt schoonmaken makkelijker.'],
+                ['use' => 'Meubel of object',     'layers' => 2, 'note' => 'Tegen krassen en vlekken bij gebruik.'],
+                ['use' => 'Aanrechtblad',         'layers' => 2, 'note' => 'Niet primair geadviseerd; overweeg Original.'],
+            ],
+        ],
+
+        'lavasteen' => [
+            'intro' => 'Lavasteen is van zichzelf hard en waterdicht. 1 laag PU is standaard inbegrepen; voor zwaar belaste vloeren kun je een 2e laag bestellen.',
+            'stack' => [
+                ['name' => 'Ondergrond',          'meta' => 'Vlakke vloer of wand',         'is_pu' => false],
+                ['name' => 'Primer',              'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
+                ['name' => '2x Lavasteen pasta',  'meta' => 'Mineraal-gebonden',            'is_pu' => false],
+                ['name' => 'PU toplaag (1 standaard)', 'meta' => 'UV-bestendig',             'is_pu' => true],
+            ],
+            'use_cases' => [
+                ['use' => 'Wand',                 'layers' => 1, 'note' => 'Standaard inbegrepen.'],
+                ['use' => 'Vloer woonkamer',       'layers' => 1, 'note' => 'Voldoende voor regulier gebruik.'],
+                ['use' => 'Vloer hal/keuken',      'layers' => 2, 'note' => 'Extra slijtvastheid bij intensief belopen.'],
+                ['use' => 'Buiten / terras',       'layers' => 2, 'note' => 'UV-bestendig, beide lagen aanbevolen.'],
+            ],
+        ],
+    ];
+
+    /**
      * Product line definitions.
      *
      * Structure per line:
@@ -1117,6 +1249,20 @@ class OZ_Product_Line_Config {
             ];
         }
         return $options;
+    }
+
+    /**
+     * Per-line "Aanbreng & afwerking" copy for the PDP info section.
+     * Returns null when the line has no PU layers (PU info is N/A).
+     *
+     * @param string $line_key
+     * @return array|null  ['intro', 'stack', 'use_cases', 'note'?] or null
+     */
+    public static function get_pu_info($line_key) {
+        if (!isset(self::$pu_info[$line_key])) {
+            return null;
+        }
+        return self::$pu_info[$line_key];
     }
 
     /**

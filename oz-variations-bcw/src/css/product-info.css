@@ -539,3 +539,137 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-faq-answer p:last-child {
   margin-bottom: 0;
 }
+
+
+/* ─────────────────── Aanbreng & afwerking (PU explainer) ───────────────────
+   Per-line PU layer guidance shown on the PDP between specs/tabs and FAQ.
+   Layout: intro paragraph, layered stack diagram, and use-case grid where
+   each card maps a use case (vloer, badkamer, meubel) to a recommended
+   number of PU lagen. */
+
+.oz-pu-explainer .oz-pu-intro {
+  margin: 0 0 24px;
+  font-size: var(--oz-text-base);
+  line-height: 1.6;
+  color: var(--oz-text-body);
+  max-width: 720px;
+}
+
+/* ── Layered stack diagram ─────────────────────────────────────────── */
+.oz-pu-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 32px;
+  max-width: 520px;
+}
+.oz-pu-stack-row {
+  display: grid;
+  grid-template-columns: 6px 1fr;
+  gap: 12px;
+  align-items: stretch;
+  padding: 10px 14px 10px 0;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 6px;
+}
+.oz-pu-stack-row.is-pu {
+  background: rgba(19, 83, 80, 0.08);
+}
+.oz-pu-stack-bar {
+  display: block;
+  width: 6px;
+  background: var(--oz-border, #E5E5E3);
+  border-radius: 6px 0 0 6px;
+}
+.oz-pu-stack-row.is-pu .oz-pu-stack-bar {
+  background: var(--oz-accent, #135350);
+}
+.oz-pu-stack-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+}
+.oz-pu-stack-text strong {
+  font-size: var(--oz-text-base);
+  font-weight: 600;
+  color: var(--oz-text-primary, #2F2F2F);
+}
+.oz-pu-stack-meta {
+  font-size: var(--oz-text-xs);
+  color: var(--oz-text-muted, #6B6B6B);
+}
+
+/* ── Use-case grid ──────────────────────────────────────────────────── */
+.oz-pu-cases-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: var(--oz-text-lg);
+  font-weight: 400;
+  color: #555;
+  margin: 0 0 16px;
+}
+.oz-pu-cases {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.oz-pu-case {
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--oz-border-light, #EEE);
+  border-radius: 8px;
+}
+.oz-pu-case-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.oz-pu-case-use {
+  font-size: var(--oz-text-base);
+  font-weight: 600;
+  color: var(--oz-text-primary, #2F2F2F);
+}
+.oz-pu-case-pill {
+  font-size: var(--oz-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--oz-accent, #135350);
+  color: #fff;
+  white-space: nowrap;
+}
+.oz-pu-case-pill[data-layers="0"] {
+  background: var(--oz-bg-warm, #F5F4F0);
+  color: var(--oz-text-muted, #6B6B6B);
+}
+.oz-pu-case-pill[data-layers="1"] {
+  background: rgba(19, 83, 80, 0.55);
+}
+.oz-pu-case-note {
+  margin: 0;
+  font-size: var(--oz-text-sm);
+  line-height: 1.5;
+  color: var(--oz-text-body, #555);
+}
+
+.oz-pu-note {
+  margin: 20px 0 0;
+  padding: 12px 16px;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-left: 3px solid var(--oz-accent, #135350);
+  border-radius: 0 6px 6px 0;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body, #555);
+}
+
+@media (max-width: 600px) {
+  .oz-pu-cases {
+    grid-template-columns: 1fr;
+  }
+  .oz-pu-stack-row {
+    padding: 8px 12px 8px 0;
+  }
+}
