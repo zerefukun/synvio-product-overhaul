@@ -23,12 +23,23 @@
 }
 /* Trust-bar wrapper sits in a full-width wp:group; kill its own padding so
    only the .oz-hp-trust 14px vertical padding remains and the marquee runs
-   edge-to-edge with no gap above or below. */
+   edge-to-edge with no gap above or below. Gutenberg adds a
+   .wp-block-group__inner-container with the theme's content max-width which
+   would constrain the marquee — break that out so it spans the full viewport. */
 .oz-rp2-trust-wrap.wp-block-group {
   padding: 0 !important;
   margin: 0 !important;
 }
-.oz-rp2-trust-wrap .oz-hp-trust { width: 100%; }
+.oz-rp2-trust-wrap > .wp-block-group__inner-container {
+  max-width: none !important;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.oz-rp2-trust-wrap .oz-hp-trust {
+  width: 100%;
+  display: block;
+}
 
 /* ── S01 HERO offerte-card — sits inside the existing hero cover ── */
 .oz-rp2-hero-card {
