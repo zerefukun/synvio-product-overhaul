@@ -21,6 +21,14 @@
 .oz-ruimte .oz-hp-trust-track {
   animation: oz-hp-marquee 30s linear infinite;
 }
+/* Trust-bar wrapper sits in a full-width wp:group; kill its own padding so
+   only the .oz-hp-trust 14px vertical padding remains and the marquee runs
+   edge-to-edge with no gap above or below. */
+.oz-rp2-trust-wrap.wp-block-group {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.oz-rp2-trust-wrap .oz-hp-trust { width: 100%; }
 
 /* ── S01 HERO offerte-card — sits inside the existing hero cover ── */
 .oz-rp2-hero-card {
