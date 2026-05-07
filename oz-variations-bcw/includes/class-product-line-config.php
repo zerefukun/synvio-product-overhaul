@@ -149,10 +149,10 @@ class OZ_Product_Line_Config {
         'original' => [
             'intro' => 'Beton Ciré Original is naadloos en mooi op zichzelf, maar zonder PU toplaag is het niet waterdicht en kwetsbaar voor vlekken. Hieronder zie je hoeveel lagen je per situatie nodig hebt.',
             'stack' => [
-                ['name' => 'Ondergrond',          'meta' => 'Tegels, beton of stucwerk', 'is_pu' => false],
-                ['name' => 'Primer',              'meta' => 'Inbegrepen, 1 laag',         'is_pu' => false],
-                ['name' => '2x Beton Cir&eacute; Original', 'meta' => '1-2 mm op kleur',  'is_pu' => false],
-                ['name' => 'PU toplaag',          'meta' => 'Bescherming en finish',     'is_pu' => true],
+                ['name' => 'Ondergrond',                'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
+                ['name' => 'Primer',                    'meta' => '1 laag, inbegrepen',                  'is_pu' => false],
+                ['name' => 'Beton Cir&eacute; Original', 'meta' => '2 lagen (grof + fijn), 1-2 mm',     'is_pu' => false],
+                ['name' => 'PU toplaag',                'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand woon/slaapkamer', 'layers' => 1, 'note' => 'Optioneel; 1 laag voor makkelijker schoonmaken.'],
@@ -165,10 +165,10 @@ class OZ_Product_Line_Config {
         'original-zm' => [
             'intro' => 'Bij Zelf Mengen & Mixen wordt de pasta op locatie gemengd. De PU keuze hangt af van waar je het oppervlak gebruikt.',
             'stack' => [
-                ['name' => 'Ondergrond',                   'meta' => 'Tegels, beton of stucwerk', 'is_pu' => false],
-                ['name' => 'Primer',                        'meta' => 'Standaard meegeleverd',      'is_pu' => false],
-                ['name' => '2x Beton Cir&eacute; (zelf gemengd)', 'meta' => '1-2 mm op kleur',     'is_pu' => false],
-                ['name' => 'PU toplaag',                    'meta' => 'Bescherming en finish',    'is_pu' => true],
+                ['name' => 'Ondergrond',           'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
+                ['name' => 'Primer',               'meta' => 'Standaard meegeleverd',              'is_pu' => false],
+                ['name' => 'Beton Cir&eacute;',    'meta' => '2 lagen (zelf gemengd), 1-2 mm',     'is_pu' => false],
+                ['name' => 'PU toplaag',           'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand droog',         'layers' => 1, 'note' => 'Optioneel maar makkelijker schoon te maken.'],
@@ -181,10 +181,10 @@ class OZ_Product_Line_Config {
         'all-in-one' => [
             'intro' => 'All-in-One is voorgemengd en kant-en-klaar. Net als Original is een PU toplaag nodig voor waterdichtheid en bescherming tegen slijtage.',
             'stack' => [
-                ['name' => 'Ondergrond',                'meta' => 'Tegels, beton of stucwerk',  'is_pu' => false],
-                ['name' => 'Primer + Pre-seal',          'meta' => 'Inbegrepen in pakket',       'is_pu' => false],
-                ['name' => '2x All-in-One pasta',        'meta' => '~1 mm op kleur',             'is_pu' => false],
-                ['name' => 'PU toplaag',                 'meta' => 'Bescherming en finish',      'is_pu' => true],
+                ['name' => 'Ondergrond',         'meta' => 'Tegels, beton of stucwerk',  'is_pu' => false],
+                ['name' => 'Primer + Pre-seal',  'meta' => 'Inbegrepen in pakket',       'is_pu' => false],
+                ['name' => 'All-in-One pasta',   'meta' => '2 lagen, ~1 mm op kleur',    'is_pu' => false],
+                ['name' => 'PU toplaag',         'meta' => 'Bescherming en finish',      'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Optioneel; verbetert wel het schoonmaken.'],
@@ -197,10 +197,10 @@ class OZ_Product_Line_Config {
         'easyline' => [
             'intro' => 'Easyline pakket bevat standaard 1 laag PU. Voor natte ruimtes of vloeren bestel je een 2e laag bij; voor droge wanden kun je de PU er ook af halen.',
             'stack' => [
-                ['name' => 'Ondergrond',           'meta' => 'Ook over bestaande tegels',    'is_pu' => false],
-                ['name' => 'Primer',               'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
-                ['name' => 'RAW + FINE laag',      'meta' => '2 lagen Easyline pasta',       'is_pu' => false],
-                ['name' => 'PU toplaag (1 standaard)', 'meta' => 'Bescherming en finish',     'is_pu' => true],
+                ['name' => 'Ondergrond',         'meta' => 'Ook over bestaande tegels',  'is_pu' => false],
+                ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',        'is_pu' => false],
+                ['name' => 'Easyline pasta',     'meta' => '2 lagen (RAW + FINE)',        'is_pu' => false],
+                ['name' => 'PU toplaag',         'meta' => '1 laag standaard inbegrepen', 'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Standaard inbegrepen, geen extra kosten.'],
@@ -215,9 +215,9 @@ class OZ_Product_Line_Config {
             'intro' => 'Microcement is een ultradunne laag (1-2 mm) die direct over je bestaande oppervlak gaat. De PU toplaag bepaalt of het waterdicht en krasvast wordt.',
             'stack' => [
                 ['name' => 'Ondergrond',          'meta' => 'Tegels, beton, hout',         'is_pu' => false],
-                ['name' => 'Primer',              'meta' => 'Inbegrepen, 1 laag',           'is_pu' => false],
-                ['name' => '2x Microcement pasta', 'meta' => '1-2 mm op kleur',             'is_pu' => false],
-                ['name' => 'PU toplaag',           'meta' => 'Bescherming en finish',      'is_pu' => true],
+                ['name' => 'Primer',              'meta' => '1 laag, inbegrepen',           'is_pu' => false],
+                ['name' => 'Microcement pasta',   'meta' => '2 lagen, 1-2 mm op kleur',     'is_pu' => false],
+                ['name' => 'PU toplaag',          'meta' => 'Bescherming en finish',        'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Voldoende voor woonkamer of slaapkamer.'],
@@ -230,10 +230,10 @@ class OZ_Product_Line_Config {
         'metallic' => [
             'intro' => 'Metallic Velvet is gemaakt voor wanden en meubels. PU is hier optioneel; het maakt het oppervlak makkelijker schoon te maken maar dempt soms het glanseffect licht.',
             'stack' => [
-                ['name' => 'Ondergrond',           'meta' => 'Vlakke wand of meubel',     'is_pu' => false],
-                ['name' => 'Primer',               'meta' => 'Optioneel (+&euro;5,99)',    'is_pu' => false],
-                ['name' => '2x Metallic Velvet',   'meta' => 'Op kleur, met spatel',       'is_pu' => false],
-                ['name' => 'PU toplaag',           'meta' => 'Optioneel',                   'is_pu' => true],
+                ['name' => 'Ondergrond',         'meta' => 'Vlakke wand of meubel',     'is_pu' => false],
+                ['name' => 'Primer',             'meta' => 'Optioneel (+&euro;5,99)',    'is_pu' => false],
+                ['name' => 'Metallic Velvet',    'meta' => '2 lagen, op kleur met spatel', 'is_pu' => false],
+                ['name' => 'PU toplaag',         'meta' => 'Optioneel',                   'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand woon/slaapkamer', 'layers' => 0, 'note' => 'Standaard zonder PU voor maximaal velvet effect.'],
@@ -246,10 +246,10 @@ class OZ_Product_Line_Config {
         'lavasteen' => [
             'intro' => 'Lavasteen is van zichzelf hard en waterdicht. 1 laag PU is standaard inbegrepen; voor zwaar belaste vloeren kun je een 2e laag bestellen.',
             'stack' => [
-                ['name' => 'Ondergrond',          'meta' => 'Vlakke vloer of wand',         'is_pu' => false],
-                ['name' => 'Primer',              'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
-                ['name' => '2x Lavasteen pasta',  'meta' => 'Mineraal-gebonden',            'is_pu' => false],
-                ['name' => 'PU toplaag (1 standaard)', 'meta' => 'UV-bestendig',             'is_pu' => true],
+                ['name' => 'Ondergrond',         'meta' => 'Vlakke vloer of wand',         'is_pu' => false],
+                ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
+                ['name' => 'Lavasteen pasta',    'meta' => '2 lagen, mineraal-gebonden',    'is_pu' => false],
+                ['name' => 'PU toplaag',         'meta' => '1 laag standaard, UV-bestendig', 'is_pu' => true],
             ],
             'use_cases' => [
                 ['use' => 'Wand',                 'layers' => 1, 'note' => 'Standaard inbegrepen.'],
