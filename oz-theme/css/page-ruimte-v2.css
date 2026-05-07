@@ -216,6 +216,166 @@
   color: var(--oz-accent);
 }
 
+/* ── Kleurstalen-aanvragen HUB page ──
+   No hero. Top = side-by-side intro + Help-card. Below = 6 product
+   line cards in a 3x2 grid. Each card has color-grid img + content +
+   CTA to the per-line swatch picker. */
+.oz-rp2-ksh-top { background: var(--oz-bg-warm); }
+.oz-rp2-ksh-top-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 64px;
+  align-items: start;
+  max-width: var(--oz-max-w);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+.oz-rp2-ksh-top-text h1 {
+  margin: 0 0 16px;
+  font-family: var(--oz-ff-heading);
+  font-size: var(--oz-text-3xl);
+  line-height: 1.15;
+}
+.oz-rp2-ksh-top-text h1 em {
+  color: var(--oz-accent);
+  font-style: italic;
+}
+.oz-rp2-ksh-top-text p {
+  color: var(--oz-text-body);
+  font-size: var(--oz-text-base);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+.oz-rp2-ksh-usps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.oz-rp2-ksh-usps li {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  line-height: 1.4;
+}
+.oz-rp2-ksh-usps li strong {
+  display: block;
+  color: var(--oz-accent);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.oz-rp2-ksh-top-card {
+  background: #fff;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  padding: 24px;
+  align-self: start;
+}
+.oz-rp2-ksh-top-card-eyebrow {
+  font-weight: 600;
+  font-size: var(--oz-text-base);
+  color: var(--oz-text-primary);
+  margin-bottom: 8px;
+}
+.oz-rp2-ksh-top-card p {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.oz-rp2-ksh-top-card .oz-hp-btn { width: 100%; text-align: center; }
+
+/* 6-card grid */
+.oz-rp2-ksh-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: var(--oz-max-w-wide);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+.oz-rp2-ksh-card {
+  background: #fff;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.oz-rp2-ksh-card:hover {
+  border-color: var(--oz-accent);
+  box-shadow: var(--oz-shadow-md);
+  transform: translateY(-2px);
+}
+.oz-rp2-ksh-card-img {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+}
+.oz-rp2-ksh-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.oz-rp2-ksh-card-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.oz-rp2-ksh-card-body h3 {
+  font-size: var(--oz-text-xl);
+  margin: 0 0 4px;
+  color: var(--oz-text-primary);
+}
+.oz-rp2-ksh-card-subtitle {
+  font-family: var(--oz-ff-heading);
+  font-size: var(--oz-text-lg);
+  color: var(--oz-text-primary);
+  margin-bottom: 12px;
+}
+.oz-rp2-ksh-card-body p {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+.oz-rp2-ksh-card-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  flex: 1;
+}
+.oz-rp2-ksh-card-bullets li {
+  position: relative;
+  padding: 4px 0 4px 22px;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+}
+.oz-rp2-ksh-card-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--oz-accent);
+}
+.oz-rp2-ksh-card .oz-hp-btn { align-self: flex-start; }
+
+@media (max-width: 1000px) {
+  .oz-rp2-ksh-top-grid { grid-template-columns: 1fr; gap: 32px; }
+  .oz-rp2-ksh-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .oz-rp2-ksh-grid { grid-template-columns: 1fr; }
+}
+
 /* ── S12 separator divider — soft warm bar before the SEO long-form ── */
 .oz-rp2-deep-separator.wp-block-group {
   text-align: center;
@@ -240,44 +400,53 @@
 }
 
 /* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer") ──
-   These are existing SEO blocks that the original page authored as
-   white-text-on-image full-width covers. That visual fights with the
-   real S01 hero and is barely readable.
-
-   Strategy: visually de-cover them — hide the background image and
-   dim layer entirely, switch to a sand-card layout with dark text.
-   The h2/h3 keep their SEO content (text unchanged), only the visual
-   wrapper changes. ── */
+   Strategy: split-card layout — image fills the LEFT 50%, content sits
+   on a sand background on the RIGHT 50%. SEO content unchanged, only
+   the visual wrapper is inverted from full-cover to side-by-side.
+   Mirrors the homepage 'Zeker zijn van je kleur?' pattern. ── */
 .oz-ruimte .oz-section--cover {
   background: transparent !important;
   padding: 0 var(--oz-gap) !important;
 }
 .oz-ruimte .oz-section--cover .wp-block-cover {
-  /* Strip the cover treatment entirely */
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
   min-height: 0 !important;
   background: var(--oz-bg-warm) !important;
   border-radius: var(--oz-radius);
   margin: 0 auto;
-  max-width: var(--oz-max-w);
-  padding: 48px 40px !important;
+  max-width: var(--oz-max-w-wide);
+  padding: 0 !important;
   overflow: hidden;
 }
-.oz-ruimte .oz-section--cover .wp-block-cover__background,
-.oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+.oz-ruimte .oz-section--cover .wp-block-cover__background {
   display: none !important;
 }
-.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
-  max-width: 100%;
-  padding: 0;
-  width: 100%;
-  position: static !important;
+.oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+  position: relative !important;
+  display: block !important;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 360px;
+  object-fit: cover !important;
+  border-radius: 0 !important;
 }
-/* Override Gutenberg's white text classes — text on sand needs to be dark */
+.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+  grid-column: 2;
+  grid-row: 1;
+  max-width: 100%;
+  width: 100%;
+  padding: 48px !important;
+  position: static !important;
+  align-self: center;
+}
+/* Override Gutenberg white-text classes since text is now on sand */
 .oz-ruimte .oz-section--cover .has-white-color,
 .oz-ruimte .oz-section--cover h2,
-.oz-ruimte .oz-section--cover h3,
-.oz-ruimte .oz-section--cover p,
-.oz-ruimte .oz-section--cover li {
+.oz-ruimte .oz-section--cover h3 {
   color: var(--oz-text-primary) !important;
 }
 .oz-ruimte .oz-section--cover p,
@@ -291,7 +460,6 @@
 .oz-ruimte .oz-section--cover h3 {
   font-size: var(--oz-text-lg);
   margin: 24px 0 8px;
-  color: var(--oz-text-primary) !important;
 }
 .oz-ruimte .oz-section--cover p {
   line-height: 1.5;
@@ -299,7 +467,6 @@
 }
 .oz-ruimte .oz-section--cover a {
   color: var(--oz-accent) !important;
-  text-decoration: underline !important;
 }
 .oz-ruimte .oz-section--cover ul {
   padding-left: 0;
@@ -312,16 +479,28 @@
 .oz-ruimte .oz-section--cover ul li:last-child {
   border-bottom: 0;
 }
+/* Flatten the inner Gutenberg columns layout if the cover authors
+   used a 2-column grid inside the cover (e.g. heading-left + list-right).
+   With the image now taking column 1, the inner columns just stack
+   vertically inside column 2 of our split. */
 .oz-ruimte .oz-section--cover .wp-block-columns {
-  gap: 48px !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  margin: 0 !important;
 }
 @media (max-width: 768px) {
   .oz-ruimte .oz-section--cover .wp-block-cover {
-    padding: 32px 20px !important;
+    grid-template-columns: 1fr;
   }
-  .oz-ruimte .oz-section--cover .wp-block-columns {
-    flex-direction: column !important;
-    gap: 24px !important;
+  .oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+    min-height: 240px;
+    aspect-ratio: 16/9;
+    grid-row: 1;
+  }
+  .oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 32px 24px !important;
   }
 }
 
