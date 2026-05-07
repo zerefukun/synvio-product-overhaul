@@ -570,11 +570,10 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                   </div>
                   <div class="oz-info-tooltip" id="pu-info">
                     <?php if ($line_key === 'lavasteen') : ?>
-                      <p>De UV-vriendelijke PU topcoat heeft een vullend vermogen. Meerdere PU toplagen zorgen ervoor dat het oppervlakte makkelijker schoon te maken is.</p>
+                      De UV-vriendelijke PU topcoat heeft een vullend vermogen. Meerdere PU toplagen zorgen ervoor dat het oppervlakte makkelijker schoon te maken is.
                     <?php else : ?>
-                      <p>PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.</p>
+                      PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming. Bekijk de Aanbreng &amp; afwerking sectie hieronder voor de volledige uitleg.
                     <?php endif; ?>
-                    <a class="oz-info-tooltip-link" href="/pu-toplaag-gids/#lagen-keuze" target="_blank" rel="noopener">Lees de volledige PU gids &rarr;</a>
                   </div>
                   <div class="oz-option-labels">
                     <?php foreach ($pu_options as $opt) : ?>
@@ -887,25 +886,41 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
     <div class="oz-pu-explainer-inner">
       <header class="oz-pu-explainer-head">
         <span class="oz-pu-eyebrow">Aanbreng &amp; afwerking</span>
-        <h2 class="oz-pu-explainer-title">Hoeveel PU lagen heb <em>je nodig?</em></h2>
+        <h2 class="oz-pu-explainer-title">Hoe werkt <em>de opbouw?</em></h2>
         <?php if (!empty($pu_info['intro'])) : ?>
           <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
         <?php endif; ?>
-        <?php if (!empty($pu_info['how_it_works'])) : ?>
-          <p class="oz-pu-how"><?php echo wp_kses_post($pu_info['how_it_works']); ?></p>
-        <?php endif; ?>
+        <p class="oz-pu-intro-hint">Klik op een laag voor de details: ondergrond-vereisten, aanbreng-tips en welke keuzes je hebt.</p>
       </header>
 
       <div class="oz-pu-explainer-grid">
         <?php if (!empty($pu_info['stack'])) :
-          /* Stack illustration: each layer is a band inside one container.
-             We render top -> bottom (reverse the data which is bottom-up). */ ?>
+          /* Stack illustration: each layer is a <details> band so a click
+             expands per-layer guidance (substrate prep, primer purpose,
+             pasta application, PU layer choice). Top -> bottom order. */ ?>
         <div class="oz-pu-stack-wrap">
           <div class="oz-pu-stack-aside">
             <span class="oz-pu-stack-label">Opbouw</span>
           </div>
           <div class="oz-pu-stack" aria-label="Opbouw van het oppervlak">
-            <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) : ?>
+            <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) :
+              $has_details = !empty($layer['details']);
+              if ($has_details) : ?>
+              <details class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
+                <summary class="oz-pu-stack-summary">
+                  <div class="oz-pu-stack-band-text">
+                    <strong><?php echo wp_kses_post($layer['name']); ?></strong>
+                    <?php if (!empty($layer['meta'])) : ?>
+                      <span class="oz-pu-stack-meta"><?php echo wp_kses_post($layer['meta']); ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <span class="oz-pu-stack-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="oz-pu-stack-details">
+                  <?php echo wp_kses_post($layer['details']); ?>
+                </div>
+              </details>
+              <?php else : ?>
               <div class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
                 <div class="oz-pu-stack-band-text">
                   <strong><?php echo wp_kses_post($layer['name']); ?></strong>
@@ -914,7 +929,8 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                   <?php endif; ?>
                 </div>
               </div>
-            <?php endforeach; ?>
+              <?php endif;
+            endforeach; ?>
           </div>
         </div>
         <?php endif; ?>
@@ -950,11 +966,6 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php if (!empty($pu_info['note'])) : ?>
         <p class="oz-pu-note"><?php echo wp_kses_post($pu_info['note']); ?></p>
       <?php endif; ?>
-
-      <p class="oz-pu-guide-link">
-        Meer weten over hoe PU werkt, droogtijden en onderhoud?
-        <a href="/pu-toplaag-gids/">Bekijk de volledige PU gids &rarr;</a>
-      </p>
     </div>
   </section>
   <?php endif; ?>

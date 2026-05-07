@@ -955,7 +955,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-pu-stack-band {
   position: relative;
-  padding: 18px 22px;
   border-top: 1px solid var(--oz-border-light, #EEE);
   background: #FAFAF7;
 }
@@ -973,7 +972,10 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-pu-stack-band.is-pu::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
   background:
     repeating-linear-gradient(
       135deg,
@@ -983,11 +985,35 @@ details.oz-faq-item[open] .oz-faq-question::after {
       transparent 6px);
   pointer-events: none;
 }
+div.oz-pu-stack-band {
+  padding: 18px 22px;
+}
+.oz-pu-stack-band > .oz-pu-stack-summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  transition: background 0.15s var(--oz-ease);
+}
+.oz-pu-stack-band > .oz-pu-stack-summary::-webkit-details-marker {
+  display: none;
+}
+.oz-pu-stack-band > .oz-pu-stack-summary:hover {
+  background: rgba(19, 83, 80, 0.04);
+}
+.oz-pu-stack-band.is-pu > .oz-pu-stack-summary:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 .oz-pu-stack-band-text {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
 }
 .oz-pu-stack-band-text strong {
   font-size: var(--oz-text-base);
@@ -1005,14 +1031,98 @@ details.oz-faq-item[open] .oz-faq-question::after {
 .oz-pu-stack-band.is-pu .oz-pu-stack-meta {
   color: rgba(255, 255, 255, 0.78);
 }
-.oz-pu-how {
-  margin: 16px 0 0;
-  padding: 16px 20px;
-  background: var(--oz-bg-warm, #F5F4F0);
-  border-radius: 8px;
+.oz-pu-stack-toggle {
+  position: relative;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+.oz-pu-stack-toggle::before,
+.oz-pu-stack-toggle::after {
+  content: "";
+  position: absolute;
+  background: var(--oz-text-primary, #2F2F2F);
+  transition: transform 0.25s var(--oz-ease);
+}
+.oz-pu-stack-toggle::before {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.oz-pu-stack-toggle::after {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+}
+.oz-pu-stack-band.is-pu .oz-pu-stack-toggle::before,
+.oz-pu-stack-band.is-pu .oz-pu-stack-toggle::after {
+  background: #fff;
+}
+.oz-pu-stack-band[open] .oz-pu-stack-toggle::after {
+  transform: translateX(-50%) scaleY(0);
+}
+.oz-pu-stack-details {
+  padding: 4px 22px 22px 22px;
   font-size: var(--oz-text-sm);
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--oz-text-body, #555);
+  border-top: 1px dashed var(--oz-border, #E5E5E3);
+  margin: 0 0 0 0;
+  animation: oz-pu-stack-fade 0.25s var(--oz-ease);
+}
+.oz-pu-stack-band.is-pu .oz-pu-stack-details {
+  color: rgba(255, 255, 255, 0.92);
+  border-top-color: rgba(255, 255, 255, 0.2);
+}
+.oz-pu-stack-details p {
+  margin: 12px 0 0;
+}
+.oz-pu-stack-details p:first-child {
+  margin-top: 12px;
+}
+.oz-pu-stack-details ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+.oz-pu-stack-details li {
+  margin: 6px 0;
+}
+.oz-pu-stack-details strong {
+  color: var(--oz-text-primary, #2F2F2F);
+  font-weight: 700;
+}
+.oz-pu-stack-band.is-pu .oz-pu-stack-details strong {
+  color: #fff;
+}
+.oz-pu-stack-details em {
+  font-style: italic;
+  color: var(--oz-accent, #135350);
+}
+.oz-pu-stack-band.is-pu .oz-pu-stack-details em {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@keyframes oz-pu-stack-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.oz-pu-intro-hint {
+  margin: 12px 0 0;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted, #6B6B6B);
+  font-style: italic;
 }
 .oz-pu-tiers {
   list-style: none;
@@ -1156,8 +1266,14 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-pu-explainer-head {
     margin-bottom: 32px;
   }
-  .oz-pu-stack-band {
+  div.oz-pu-stack-band {
     padding: 14px 16px;
+  }
+  .oz-pu-stack-band > .oz-pu-stack-summary {
+    padding: 14px 16px;
+  }
+  .oz-pu-stack-details {
+    padding: 4px 16px 16px;
   }
   .oz-pu-tier.is-recommended {
     padding: 20px 18px 22px;
