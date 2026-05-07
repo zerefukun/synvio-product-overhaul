@@ -87,12 +87,33 @@
 }
 
 .oz-info-tooltip.visible {
-  max-height: 200px;
+  max-height: 240px;
   opacity: 1;
   padding: 14px 18px;
   margin-top: 10px;
   margin-bottom: 12px;
   border-width: 1px;
+}
+
+.oz-info-tooltip p {
+  margin: 0 0 8px;
+}
+.oz-info-tooltip p:last-child {
+  margin-bottom: 0;
+}
+.oz-product-page .oz-info-tooltip-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: var(--oz-text-sm);
+  font-weight: 600;
+  color: var(--oz-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--oz-accent);
+  padding-bottom: 1px;
+  transition: opacity 0.18s;
+}
+.oz-product-page .oz-info-tooltip-link:hover {
+  opacity: 0.78;
 }
 
 

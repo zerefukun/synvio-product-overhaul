@@ -804,6 +804,27 @@ details.oz-faq-item[open] .oz-faq-question::after {
   color: var(--oz-text-body, #555);
 }
 
+/* ── Link to the full PU guide page ────────────────────────────── */
+.oz-pu-guide-link {
+  margin: 32px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--oz-border-light, #EEE);
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted, #6B6B6B);
+}
+.oz-pu-guide-link a {
+  font-weight: 600;
+  color: var(--oz-accent, #135350);
+  text-decoration: none;
+  border-bottom: 1px solid var(--oz-accent, #135350);
+  padding-bottom: 1px;
+  margin-left: 4px;
+  transition: opacity 0.18s;
+}
+.oz-pu-guide-link a:hover {
+  opacity: 0.78;
+}
+
 @media (max-width: 900px) {
   .oz-pu-explainer-grid {
     grid-template-columns: 1fr;

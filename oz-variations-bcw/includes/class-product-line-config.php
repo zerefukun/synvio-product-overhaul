@@ -159,7 +159,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',                'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
                 ['name' => 'Primer',                    'meta' => '1 laag, inbegrepen',                  'is_pu' => false],
-                ['name' => 'Beton Cir&eacute; Original', 'meta' => '2 lagen (grof + fijn), 1-2 mm',     'is_pu' => false],
+                ['name' => 'Beton Cir&eacute; Original', 'meta' => '1-2 mm dikte, op kleur',           'is_pu' => false],
                 ['name' => 'PU toplaag',                'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
             'tiers' => [
@@ -191,7 +191,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',           'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
                 ['name' => 'Primer',               'meta' => 'Standaard meegeleverd',              'is_pu' => false],
-                ['name' => 'Beton Cir&eacute;',    'meta' => '2 lagen (zelf gemengd), 1-2 mm',     'is_pu' => false],
+                ['name' => 'Beton Cir&eacute;',    'meta' => '1-2 mm op kleur (zelf gemengd)',     'is_pu' => false],
                 ['name' => 'PU toplaag',           'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
             'tiers' => [
@@ -223,7 +223,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Tegels, beton of stucwerk',  'is_pu' => false],
                 ['name' => 'Primer + Pre-seal',  'meta' => 'Inbegrepen in pakket',       'is_pu' => false],
-                ['name' => 'All-in-One pasta',   'meta' => '2 lagen, ~1 mm op kleur',    'is_pu' => false],
+                ['name' => 'All-in-One pasta',   'meta' => '~1 mm dikte, op kleur',      'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => 'Bescherming en finish',      'is_pu' => true],
             ],
             'tiers' => [
@@ -255,7 +255,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Ook over bestaande tegels',  'is_pu' => false],
                 ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',        'is_pu' => false],
-                ['name' => 'Easyline pasta',     'meta' => '2 lagen (RAW + FINE)',        'is_pu' => false],
+                ['name' => 'Easyline pasta',     'meta' => 'RAW + FINE op kleur',         'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => '1 laag standaard inbegrepen', 'is_pu' => true],
             ],
             'tiers' => [
@@ -288,7 +288,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',          'meta' => 'Tegels, beton, hout',         'is_pu' => false],
                 ['name' => 'Primer',              'meta' => '1 laag, inbegrepen',           'is_pu' => false],
-                ['name' => 'Microcement pasta',   'meta' => '2 lagen, 1-2 mm op kleur',     'is_pu' => false],
+                ['name' => 'Microcement pasta',   'meta' => '1-2 mm dikte, op kleur',       'is_pu' => false],
                 ['name' => 'PU toplaag',          'meta' => 'Bescherming en finish',        'is_pu' => true],
             ],
             'tiers' => [
@@ -320,7 +320,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Vlakke wand of meubel',         'is_pu' => false],
                 ['name' => 'Primer',             'meta' => 'Optioneel (+&euro;5,99)',        'is_pu' => false],
-                ['name' => 'Metallic Velvet',    'meta' => '2 lagen, op kleur met spatel',   'is_pu' => false],
+                ['name' => 'Metallic Velvet',    'meta' => 'Op kleur, met spatel aangebracht', 'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => 'Optioneel',                       'is_pu' => true],
             ],
             'tiers' => [
@@ -353,7 +353,7 @@ class OZ_Product_Line_Config {
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Vlakke vloer of wand',         'is_pu' => false],
                 ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
-                ['name' => 'Lavasteen pasta',    'meta' => '2 lagen, mineraal-gebonden',    'is_pu' => false],
+                ['name' => 'Lavasteen pasta',    'meta' => 'Mineraal-gebonden, op kleur',   'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => '1 laag standaard, UV-bestendig', 'is_pu' => true],
             ],
             'tiers' => [

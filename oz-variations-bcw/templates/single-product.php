@@ -570,10 +570,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                   </div>
                   <div class="oz-info-tooltip" id="pu-info">
                     <?php if ($line_key === 'lavasteen') : ?>
-                      De UV-vriendelijke PU topcoat heeft een vullend vermogen. Meerdere PU toplagen zorgen ervoor dat het oppervlakte makkelijker schoon te maken is.
+                      <p>De UV-vriendelijke PU topcoat heeft een vullend vermogen. Meerdere PU toplagen zorgen ervoor dat het oppervlakte makkelijker schoon te maken is.</p>
                     <?php else : ?>
-                      PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.
+                      <p>PU coating beschermt het oppervlak tegen slijtage, vlekken en vocht. Meer lagen = meer bescherming.</p>
                     <?php endif; ?>
+                    <a class="oz-info-tooltip-link" href="/pu-toplaag-gids/#lagen-keuze" target="_blank" rel="noopener">Lees de volledige PU gids &rarr;</a>
                   </div>
                   <div class="oz-option-labels">
                     <?php foreach ($pu_options as $opt) : ?>
@@ -949,6 +950,11 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php if (!empty($pu_info['note'])) : ?>
         <p class="oz-pu-note"><?php echo wp_kses_post($pu_info['note']); ?></p>
       <?php endif; ?>
+
+      <p class="oz-pu-guide-link">
+        Meer weten over hoe PU werkt, droogtijden en onderhoud?
+        <a href="/pu-toplaag-gids/">Bekijk de volledige PU gids &rarr;</a>
+      </p>
     </div>
   </section>
   <?php endif; ?>

@@ -636,6 +636,23 @@ add_action('wp_enqueue_scripts', 'oz_ruimte_enqueue');
  * Enqueue the inspiratie slideshow script on /inspiratie/ only.
  * Depends on swiper-loader for the shared Swiper v11 CDN bundle.
  */
+/**
+ * Enqueue PU Toplaag gids styles when viewing the /pu-toplaag-gids/ page.
+ * Layered on top of homepage-v2.css so eyebrow/heading/btn classes still work.
+ */
+function oz_pu_gids_enqueue() {
+    if (is_admin()) return;
+    if (! is_page('pu-toplaag-gids')) return;
+
+    wp_enqueue_style(
+        'oz-page-pu-gids',
+        get_stylesheet_directory_uri() . '/css/page-pu-gids.css',
+        ['oz-homepage-v2'],
+        filemtime(get_stylesheet_directory() . '/css/page-pu-gids.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_pu_gids_enqueue');
+
 function oz_inspiratie_enqueue() {
     if (is_admin()) return;
     if (! is_page('inspiratie')) return;

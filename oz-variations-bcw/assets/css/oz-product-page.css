@@ -1118,6 +1118,25 @@ details.oz-faq-item[open] .oz-faq-question::after {
   font-size: var(--oz-text-sm);
   color: var(--oz-text-body, #555);
 }
+.oz-pu-guide-link {
+  margin: 32px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--oz-border-light, #EEE);
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-muted, #6B6B6B);
+}
+.oz-pu-guide-link a {
+  font-weight: 600;
+  color: var(--oz-accent, #135350);
+  text-decoration: none;
+  border-bottom: 1px solid var(--oz-accent, #135350);
+  padding-bottom: 1px;
+  margin-left: 4px;
+  transition: opacity 0.18s;
+}
+.oz-pu-guide-link a:hover {
+  opacity: 0.78;
+}
 @media (max-width: 900px) {
   .oz-pu-explainer-grid {
     grid-template-columns: 1fr;
@@ -1437,12 +1456,32 @@ details.oz-faq-item[open] .oz-faq-question::after {
     border-width 0.35s;
 }
 .oz-info-tooltip.visible {
-  max-height: 200px;
+  max-height: 240px;
   opacity: 1;
   padding: 14px 18px;
   margin-top: 10px;
   margin-bottom: 12px;
   border-width: 1px;
+}
+.oz-info-tooltip p {
+  margin: 0 0 8px;
+}
+.oz-info-tooltip p:last-child {
+  margin-bottom: 0;
+}
+.oz-product-page .oz-info-tooltip-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: var(--oz-text-sm);
+  font-weight: 600;
+  color: var(--oz-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--oz-accent);
+  padding-bottom: 1px;
+  transition: opacity 0.18s;
+}
+.oz-product-page .oz-info-tooltip-link:hover {
+  opacity: 0.78;
 }
 .oz-option-labels {
   display: flex;
