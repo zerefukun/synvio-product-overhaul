@@ -623,3 +623,133 @@
     font-size: var(--oz-text-sm);
   }
 }
+
+
+/* ───────────────────────── S06 Voor/Na slider ─────────────────────────
+   Drag the handle to compare before and after photos. Pure CSS layout,
+   small JS in oz-scripts.js drives the clip-path via CSS variable. */
+.oz-ruimte .oz-rp2-vn-wrap {
+  max-width: 960px;
+  margin: 32px auto 0;
+  padding: 0 var(--oz-gap, 20px);
+}
+.oz-ruimte .oz-rp2-vn-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--oz-bg-warm);
+  user-select: none;
+  touch-action: pan-y;
+  --vn-pos: 50%;
+}
+.oz-ruimte .oz-rp2-vn-slider img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.oz-ruimte .oz-rp2-vn-before-clip {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--vn-pos)) 0 0);
+  -webkit-clip-path: inset(0 calc(100% - var(--vn-pos)) 0 0);
+  pointer-events: none;
+}
+.oz-ruimte .oz-rp2-vn-label {
+  position: absolute;
+  top: 16px;
+  padding: 6px 12px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  pointer-events: none;
+  z-index: 2;
+}
+.oz-ruimte .oz-rp2-vn-label-voor {
+  left: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.oz-ruimte .oz-rp2-vn-label-na {
+  right: 16px;
+  background: var(--oz-accent);
+}
+.oz-ruimte .oz-rp2-vn-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--vn-pos);
+  width: 44px;
+  margin-left: -22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: ew-resize;
+  z-index: 3;
+  color: var(--oz-text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+.oz-ruimte .oz-rp2-vn-handle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transform: translateX(-50%);
+}
+.oz-ruimte .oz-rp2-vn-handle svg {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.oz-ruimte .oz-rp2-vn-handle:focus-visible svg {
+  outline: 2px solid var(--oz-accent);
+  outline-offset: 2px;
+}
+.oz-ruimte .oz-rp2-vn-quote {
+  margin: 24px auto 0;
+  max-width: 560px;
+  padding: 0 16px;
+  text-align: center;
+}
+.oz-ruimte .oz-rp2-vn-quote p {
+  font-style: italic;
+  font-size: var(--oz-text-base);
+  margin: 0 0 8px;
+  color: var(--oz-text-primary);
+}
+.oz-ruimte .oz-rp2-vn-quote cite {
+  font-size: var(--oz-text-xs);
+  font-weight: 600;
+  color: var(--oz-text-muted);
+  font-style: normal;
+}
+@media (max-width: 540px) {
+  .oz-ruimte .oz-rp2-vn-slider {
+    aspect-ratio: 4 / 5;
+  }
+  .oz-ruimte .oz-rp2-vn-label {
+    font-size: 10px;
+    padding: 5px 10px;
+    top: 12px;
+  }
+  .oz-ruimte .oz-rp2-vn-label-voor { left: 12px; }
+  .oz-ruimte .oz-rp2-vn-label-na   { right: 12px; }
+}

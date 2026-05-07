@@ -601,6 +601,15 @@ function oz_ruimte_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/page-ruimte-v2.css')
     );
 
+    // Drag-to-compare voor/na slider (S06). Lightweight, no deps.
+    wp_enqueue_script(
+        'oz-page-ruimte-v2',
+        get_stylesheet_directory_uri() . '/js/page-ruimte-v2.js',
+        [],
+        filemtime(get_stylesheet_directory() . '/js/page-ruimte-v2.js'),
+        true
+    );
+
     // Locatie/stucsoorten/ruimte pages embed home-style product cards
     // (oz-hp-section + oz-hp-pcard). Load the homepage stylesheet so those
     // .oz-hp-* classes resolve here. The CSS is namespaced so nothing else bleeds.
