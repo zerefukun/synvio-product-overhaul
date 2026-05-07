@@ -443,7 +443,7 @@ class OZ_Product_Line_Config {
         ],
 
         'lavasteen' => [
-            'intro' => 'Lavasteen is mineraal-gebonden en van zichzelf al <strong>tot in de kern waterdicht</strong>. Daarom is hier <strong>1 laag PU genoeg, zelfs voor de douchevloer</strong>. PU werkt op lavasteen vooral als anti-kras, UV-bescherming en vullende laag voor makkelijker schoonmaken.',
+            'intro' => 'Lavasteen is mineraal-gebonden en van zichzelf al <strong>tot in de kern waterdicht</strong>. Het aantal PU lagen bepaalt hier niet de waterdichtheid (die is er al), maar de <strong>textuur</strong>: van gritty grip in de douche tot glad voor de keuken.',
             'stack' => [
                 ['name' => 'Ondergrond',      'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
                 ['name' => 'Primer',          'meta' => 'Inbegrepen in pakket',               'is_pu' => false, 'kind' => 'primer', 'included' => true],
@@ -455,35 +455,35 @@ class OZ_Product_Line_Config {
                               .'<li>Volledig uitgehard is het oppervlak <strong>tot in de kern waterdicht</strong>. Geen waterdoorlating, ook zonder PU.</li>'
                               .'</ul>'
                               .'<p>Geschikt voor zware vloeren, trappen, hal, keuken, badkamer en zelfs buiten (met PU bescherming voor UV).</p>'],
-                ['name' => 'PU toplaag',      'meta' => 'UV-vriendelijke PU, 1 laag standaard', 'is_pu' => true, 'kind' => 'pu',
-                  'details' => '<p>Lavasteen krijgt een <strong>UV-vriendelijke PU</strong> mee. Anders dan bij Beton Cir&eacute;: hier is PU niet nodig voor waterdichtheid (lavasteen is dat al uit zichzelf). De PU heeft een <em>vullend vermogen</em> dat de open structuur van lavasteen dichter maakt zodat het oppervlak makkelijker schoon te maken is.</p>'
+                ['name' => 'PU toplaag',      'meta' => 'UV-vriendelijke PU, textuur per laag', 'is_pu' => true, 'kind' => 'pu',
+                  'details' => '<p>Lavasteen krijgt een <strong>UV-vriendelijke PU</strong> mee. Anders dan bij Beton Cir&eacute;: hier is PU niet nodig voor waterdichtheid (lavasteen is dat al uit zichzelf). Wat de PU lagen wel be&iuml;nvloeden is de <strong>textuur van het oppervlak</strong>.</p>'
                               .'<p><strong>Aantal lagen per situatie:</strong></p>'
                               .'<ul>'
-                              .'<li><strong>1 laag</strong>: standaard inbegrepen. Voldoende voor wand, vloer, hal, <em>zelfs voor de douchevloer</em>. Lavasteen is al waterdicht.</li>'
-                              .'<li><strong>2 lagen</strong>: keuken, horeca, intensief belopen vloeren. Vullend effect maakt schoonmaken makkelijker.</li>'
-                              .'<li><strong>3 lagen</strong>: buiten, terras, garage. Voor maximale UV- en weerbestendigheid.</li>'
+                              .'<li><strong>1 laag</strong>: laat een licht <em>gritty</em> oppervlak achter dat als anti-slip werkt. Ideaal voor de <strong>badkamer en douchevloer</strong>: meer grip onder de voet.</li>'
+                              .'<li><strong>2 lagen</strong>: voor <strong>buiten gebruik</strong>. Extra UV-bescherming tegen verkleuring en weersinvloeden bij terras of zon-blootgestelde plekken.</li>'
+                              .'<li><strong>3 lagen</strong>: vlakt de structuur verder af tot een <em>gladder</em> oppervlak. Aangewezen voor de <strong>keuken</strong> en plekken die je vaak schoonmaakt: gladder = minder vuil-aanhechting, makkelijker afnemen.</li>'
                               .'</ul>'
                               .'<p>Aanbrengen: 2K nylon roller, nat-in-nat, per sectie. <strong>24 uur droogtijd tussen lagen.</strong></p>'],
             ],
             'tiers' => [
                 [
                     'layers' => 1,
-                    'label'  => 'Standaard gebruik (inbegrepen)',
-                    'rooms'  => 'Wand, vloer woonkamer, hal, badkamer (zelfs douchevloer)',
-                    'why'    => 'Lavasteen is al waterdicht uit zichzelf. 1 laag PU is voldoende, ook voor natte cellen. Onze advies voor de meeste situaties.',
+                    'label'  => 'Badkamer en douche (inbegrepen)',
+                    'rooms'  => 'Wand, vloer, badkamer, douche, slaapkamer',
+                    'why'    => 'Gritty textuur die als anti-slip werkt. Meer grip onder je voet in de douche. Lavasteen is al waterdicht uit zichzelf, dus 1 laag is genoeg. Onze advies voor binnen-gebruik en natte cellen.',
                     'recommended' => true,
                 ],
                 [
                     'layers' => 2,
-                    'label'  => 'Intensief belopen',
-                    'rooms'  => 'Vloer keuken, hal, trap, winkel of horeca',
-                    'why'    => 'Vullend effect: dichter oppervlak, makkelijker schoon te maken bij dagelijks intensief gebruik.',
+                    'label'  => 'Buiten of UV-belast',
+                    'rooms'  => 'Terras, garage, ruimte met direct zonlicht',
+                    'why'    => 'Maximale UV- en weerbestendigheid. Voorkomt verkleuring bij blootstelling aan zon en weer.',
                 ],
                 [
                     'layers' => 3,
-                    'label'  => 'Buiten of UV-belast',
-                    'rooms'  => 'Terras, garage, ruimte met direct zonlicht',
-                    'why'    => 'Maximale UV- en weerbestendigheid bij blootstelling aan zon en weer.',
+                    'label'  => 'Keuken en vaak-schoonmaken',
+                    'rooms'  => 'Keuken vloer en werkblad, horeca, drukke commerci&euml;le ruimtes',
+                    'why'    => 'Vlakt de gritty structuur af tot een gladder oppervlak. Vuil hecht minder, schoonmaken gaat sneller. Aangewezen waar je vaak moet dweilen of vegen.',
                 ],
             ],
         ],
