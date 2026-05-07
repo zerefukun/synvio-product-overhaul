@@ -65,7 +65,9 @@
    Zero the outer wrapper so the inner drives spacing and we don't get bands
    of empty coloured padding between sections. */
 .oz-ruimte .oz-section:has(> .wp-block-group.oz-section),
-.oz-ruimte .oz-section:has(> .wp-block-group.oz-hp-section) {
+.oz-ruimte .oz-section:has(> .wp-block-group.oz-hp-section),
+.oz-ruimte .oz-section:has(> .wp-block-group[class*="oz-rp2-"]),
+.oz-ruimte .oz-section:has(> .oz-hp-trust) {
   padding: 0;
   background: transparent;
 }

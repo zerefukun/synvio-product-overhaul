@@ -7,6 +7,21 @@
    overlays, FAQ accordion indicators, pill-style links.
    ================================================================ */
 
+/* ── Reuse the homepage marquee on ruimte pages ──
+   homepage-v2.css scopes --charcoal/--white/etc. inside .oz-hp. On ruimte
+   pages we don't have that ancestor, so re-bind the variables it relies on
+   to the global oz-design-system tokens. Also start the marquee animation
+   directly (homepage-v2.js bootstraps it via .is-running on the home page;
+   on ruimte we just want it to run). */
+.oz-ruimte .oz-hp-trust {
+  --charcoal: var(--oz-text-primary);
+  --teal: var(--oz-accent);
+  --white: #fff;
+}
+.oz-ruimte .oz-hp-trust-track {
+  animation: oz-hp-marquee 30s linear infinite;
+}
+
 /* ── S01 HERO offerte-card — sits inside the existing hero cover ── */
 .oz-rp2-hero-card {
   background: rgba(20, 30, 40, .82);
@@ -171,6 +186,58 @@
 .oz-rp2-crosslink-pill:hover {
   border-color: var(--oz-accent);
   color: var(--oz-accent);
+}
+
+/* ── v2 SECTION PADDING — replace the outer .oz-section default that was
+       zeroed by oz-ruimte.css with the standard 56px / 88px rhythm. ── */
+.oz-rp2-toepassingen,
+.oz-rp2-producten,
+.oz-rp2-voordelen,
+.oz-rp2-faq,
+.oz-rp2-crosslinks,
+.oz-rp2-deep-separator {
+  padding: 56px var(--oz-gap, 20px);
+}
+@media (min-width: 768px) {
+  .oz-rp2-toepassingen,
+  .oz-rp2-producten,
+  .oz-rp2-voordelen,
+  .oz-rp2-faq,
+  .oz-rp2-crosslinks,
+  .oz-rp2-deep-separator {
+    padding: 88px var(--oz-gap, 20px);
+  }
+}
+
+/* Section backgrounds tuned per role */
+.oz-rp2-producten { background: var(--oz-bg-warm); }
+.oz-rp2-faq      { background: var(--oz-bg-subtle); }
+.oz-rp2-crosslinks { background: var(--oz-bg-warm); }
+
+/* Section content max-width matches global container */
+.oz-rp2-toepassingen > *,
+.oz-rp2-producten > *,
+.oz-rp2-voordelen > *,
+.oz-rp2-faq > *,
+.oz-rp2-crosslinks > *,
+.oz-rp2-deep-separator > * {
+  max-width: var(--oz-max-w-wide, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Existing wp:cover blocks in the SEO tail get a softer treatment ──
+   They were originally styled like sub-heros which competes with the
+   real S01. Constrain their height and tighten typography. */
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
+  min-height: 320px !important;
+  border-radius: var(--oz-radius);
+}
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h2 {
+  font-size: var(--oz-text-2xl);
+}
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h3 {
+  font-size: var(--oz-text-lg);
 }
 
 /* ── S12 SEPARATOR — visual divide before SEO tail ── */
