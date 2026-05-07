@@ -504,55 +504,97 @@
   }
 }
 
-/* ── Toepassingen 4-card grid: convert to horizontal carousel on tablet/mobile ── */
-.oz-rp2-toepassingen-grid {
-  /* Inline style sets grid; we override on small screens */
-}
+/* ── Mobile / tablet grid responsive overrides ──
+   The migrate script outputs inline-style grids (repeat(4,1fr) etc.)
+   which beat stylesheet rules unless we use !important and target the
+   inline style attribute via the value-substring selector. Use
+   descendant selectors (no `>`) so intermediate Gutenberg wrappers
+   (wp-block-group__inner-container) don't break matching. */
+
+/* 4-card grid (Toepassingen, Inspiratie) → 2-card horizontal carousel on tablet/mobile */
 @media (max-width: 900px) {
-  /* Find the grid by inline style declaration via attribute selector. */
-  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] {
+  .oz-ruimte div[style*="repeat(4,1fr)"],
+  .oz-ruimte div[style*="repeat(4, 1fr)"] {
     display: flex !important;
     grid-template-columns: none !important;
     overflow-x: auto !important;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 20px;
+    padding-bottom: 16px;
+    gap: 12px !important;
   }
-  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > * {
-    flex: 0 0 calc((100% - 16px) / 2);
+  .oz-ruimte div[style*="repeat(4,1fr)"] > *,
+  .oz-ruimte div[style*="repeat(4, 1fr)"] > * {
+    flex: 0 0 calc((100% - 12px) / 2) !important;
     scroll-snap-align: start;
+    width: calc((100% - 12px) / 2);
   }
-  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > a.oz-rp2-toepassing-card {
+  .oz-ruimte div[style*="repeat(4,1fr)"] > a.oz-rp2-toepassing-card {
     aspect-ratio: 4/5;
   }
 }
 @media (max-width: 540px) {
-  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > * {
-    flex: 0 0 70%;
+  .oz-ruimte div[style*="repeat(4,1fr)"] > *,
+  .oz-ruimte div[style*="repeat(4, 1fr)"] > * {
+    flex: 0 0 78% !important;
+    width: 78%;
   }
 }
 
-/* ── Voordelen 2-col card: stack on mobile so the list is readable ── */
+/* 2-col grid (Voor/Na, Voordelen, Doe-het-zelf) → 1-col stack on mobile */
 @media (max-width: 800px) {
-  .oz-hp-section--dark > div[style*="grid-template-columns:1fr 1fr"],
-  .oz-hp-section--dark > div[style*="grid-template-columns: 1fr 1fr"] {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-}
-
-/* ── CTA-blok 3-up: stack on mobile ── */
-@media (max-width: 800px) {
-  .oz-hp-section--teal-mist > div[style*="repeat(3,1fr)"] {
+  .oz-ruimte div[style*="grid-template-columns:1fr 1fr"],
+  .oz-ruimte div[style*="grid-template-columns: 1fr 1fr"],
+  .oz-ruimte div[style*="repeat(2,1fr)"],
+  .oz-ruimte div[style*="repeat(2, 1fr)"] {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
 }
 
-/* ── Doe-het-zelf 2-col cards: stack on mobile ── */
-@media (max-width: 600px) {
-  .oz-hp-section--sand div[style*="grid-template-columns:repeat(2,1fr)"] {
+/* 3-col grid (CTA-blok) → 1-col stack on mobile */
+@media (max-width: 800px) {
+  .oz-ruimte div[style*="repeat(3,1fr)"],
+  .oz-ruimte div[style*="repeat(3, 1fr)"] {
     grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* Hero columns: stack on mobile so offerte-card sits below the H1 instead of next to it */
+@media (max-width: 768px) {
+  .oz-rp2-hero .wp-block-columns {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .oz-rp2-hero .wp-block-column {
+    width: 100% !important;
+    flex-basis: auto !important;
+  }
+  .oz-rp2-hero h1 { font-size: var(--oz-text-2xl) !important; }
+  .oz-rp2-hero-card { padding: 20px !important; }
+}
+
+/* Hero offerte-card mobile cleanup */
+@media (max-width: 768px) {
+  .oz-rp2-hero .wp-block-cover__inner-container { padding: 0 16px !important; }
+  .oz-rp2-hero-card h3 { font-size: var(--oz-text-lg) !important; }
+}
+
+/* Section header padding on mobile (oz-hp-section-header has 0 16px) */
+@media (max-width: 600px) {
+  .oz-ruimte .oz-hp-section .oz-hp-section-header {
+    padding: 0 var(--oz-gap) !important;
+  }
+  .oz-ruimte .oz-hp-section h2 {
+    font-size: var(--oz-text-xl) !important;
+  }
+}
+
+/* Section padding: prevent oz-hp-section's 80px top/bottom from feeling huge on mobile */
+@media (max-width: 600px) {
+  .oz-ruimte .oz-hp-section {
+    padding: 48px 0 !important;
   }
 }
 
