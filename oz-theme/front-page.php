@@ -13,7 +13,8 @@
 get_header();
 do_action( 'oz_before_content' );
 
-$up = home_url( '/wp-content/uploads' );
+$up    = home_url( '/wp-content/uploads' );
+$theme = get_stylesheet_directory_uri();
 ?>
 
 <div id="content" class="oz-hp" role="main">
@@ -235,11 +236,11 @@ $up = home_url( '/wp-content/uploads' );
 	</div>
 	<div class="oz-hp-ba-grid">
 		<div class="oz-hp-ba-card">
-			<img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=600&q=80" alt="Voor: kale tegelvloer" loading="lazy">
+			<img src="<?php echo esc_url( "$theme/img/before-after/brouwers-keuken-voor.webp" ); ?>" alt="Keuken voor de Beton Ciré-renovatie, eiland in onafgewerkte staat" loading="lazy" decoding="async">
 			<span class="oz-hp-ba-label oz-hp-ba-label--before">Voor</span>
 		</div>
 		<div class="oz-hp-ba-card">
-			<img src="https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=600&q=80" alt="Na: naadloze betonlook" loading="lazy">
+			<img src="<?php echo esc_url( "$theme/img/before-after/brouwers-keuken-na.webp" ); ?>" alt="Dezelfde keuken na de Beton Ciré-renovatie, naadloos eiland in Sea Kale" loading="lazy" decoding="async">
 			<span class="oz-hp-ba-label oz-hp-ba-label--after">Na</span>
 		</div>
 	</div>
