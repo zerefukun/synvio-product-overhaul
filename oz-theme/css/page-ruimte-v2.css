@@ -182,17 +182,10 @@
   flex: 1;
 }
 
-.oz-rp2-kpkt-card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.oz-rp2-kpkt-price {
-  font-family: var(--oz-ff-heading);
-  font-size: var(--oz-text-xl);
-  color: var(--oz-text-primary);
-  font-weight: 600;
+.oz-rp2-kpkt-cta {
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 @media (max-width: 1100px) {
