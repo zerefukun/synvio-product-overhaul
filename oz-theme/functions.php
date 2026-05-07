@@ -592,6 +592,15 @@ function oz_ruimte_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/oz-ruimte.css')
     );
 
+    // Page Ruimte v2 — conversion-focused top sections + preserved SEO tail.
+    // Native Gutenberg blocks underneath so SEO editor stays in control.
+    wp_enqueue_style(
+        'oz-page-ruimte-v2',
+        get_stylesheet_directory_uri() . '/css/page-ruimte-v2.css',
+        ['oz-ruimte'],
+        filemtime(get_stylesheet_directory() . '/css/page-ruimte-v2.css')
+    );
+
     // Locatie/stucsoorten/ruimte pages embed home-style product cards
     // (oz-hp-section + oz-hp-pcard). Load the homepage stylesheet so those
     // .oz-hp-* classes resolve here. The CSS is namespaced so nothing else bleeds.
