@@ -878,9 +878,10 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
   ?>
 
   <?php /* Aanbreng & afwerking — full-width section below showcase.
-          Stack diagram is a single layered illustration; use cases are
-          clean rows with visual dot indicators. */ ?>
-  <?php if ($has_options && $pu_info && !empty($pu_info['use_cases'])) : ?>
+          Stack on the left explains the build-up. Tiers on the right
+          explain how the PU layer count maps to use level (light /
+          standard / wet) and the why behind each. */ ?>
+  <?php if ($has_options && $pu_info && !empty($pu_info['tiers'])) : ?>
   <section class="oz-pu-explainer-section" id="sectionPuExplainer">
     <div class="oz-pu-explainer-inner">
       <header class="oz-pu-explainer-head">
@@ -888,6 +889,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <h2 class="oz-pu-explainer-title">Hoeveel PU lagen heb <em>je nodig?</em></h2>
         <?php if (!empty($pu_info['intro'])) : ?>
           <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
+        <?php endif; ?>
+        <?php if (!empty($pu_info['how_it_works'])) : ?>
+          <p class="oz-pu-how"><?php echo wp_kses_post($pu_info['how_it_works']); ?></p>
         <?php endif; ?>
       </header>
 
@@ -914,25 +918,32 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
         <?php endif; ?>
 
-        <ul class="oz-pu-cases">
-          <?php foreach ($pu_info['use_cases'] as $case) :
-            $case_layers = max(0, min(3, intval($case['layers']))); ?>
-            <li class="oz-pu-case">
-              <div class="oz-pu-case-row">
-                <span class="oz-pu-case-use"><?php echo esc_html($case['use']); ?></span>
-                <span class="oz-pu-case-dots" data-layers="<?php echo esc_attr($case_layers); ?>" aria-hidden="true">
+        <ol class="oz-pu-tiers">
+          <?php foreach ($pu_info['tiers'] as $tier) :
+            $tier_layers = max(0, min(3, intval($tier['layers'])));
+            $is_recommended = !empty($tier['recommended']);
+            $count_label = $tier_layers === 0
+                ? 'Geen PU'
+                : ($tier_layers === 1 ? '1 laag' : ($tier_layers . ' lagen'));
+            ?>
+            <li class="oz-pu-tier<?php echo $is_recommended ? ' is-recommended' : ''; ?>">
+              <div class="oz-pu-tier-head">
+                <span class="oz-pu-tier-dots" data-layers="<?php echo esc_attr($tier_layers); ?>" aria-hidden="true">
                   <i></i><i></i><i></i>
                 </span>
-                <span class="oz-pu-case-count">
-                  <?php echo $case_layers === 0
-                      ? 'Geen PU'
-                      : ($case_layers === 1 ? '1 laag' : esc_html($case_layers . ' lagen')); ?>
-                </span>
+                <span class="oz-pu-tier-count"><?php echo esc_html($count_label); ?></span>
+                <?php if ($is_recommended) : ?>
+                  <span class="oz-pu-tier-badge">Onze advies</span>
+                <?php endif; ?>
               </div>
-              <p class="oz-pu-case-note"><?php echo esc_html($case['note']); ?></p>
+              <h3 class="oz-pu-tier-label"><?php echo wp_kses_post($tier['label']); ?></h3>
+              <?php if (!empty($tier['rooms'])) : ?>
+                <p class="oz-pu-tier-rooms"><?php echo wp_kses_post($tier['rooms']); ?></p>
+              <?php endif; ?>
+              <p class="oz-pu-tier-why"><?php echo wp_kses_post($tier['why']); ?></p>
             </li>
           <?php endforeach; ?>
-        </ul>
+        </ol>
       </div>
 
       <?php if (!empty($pu_info['note'])) : ?>

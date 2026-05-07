@@ -130,132 +130,252 @@ class OZ_Product_Line_Config {
 
     /**
      * Per-line "Aanbreng & afwerking" copy, rendered on the PDP under the
-     * configurator. Explains how many PU toplagen each line needs per
-     * use-case so a buyer on the product page does not have to dig through
-     * the configurator tooltip to find this out.
+     * configurator. Explains the PU mechanism, the layered build-up, and
+     * which tier of PU layers a buyer should pick based on water/wear
+     * exposure (not per room — the rule is the same across rooms with
+     * the same exposure).
      *
      * Schema per line:
-     *   intro     => 1-2 sentence paragraph specific to this product line
-     *   stack     => array of layers from bottom up:
-     *                  ['name' => string, 'meta' => string, 'is_pu' => bool]
-     *   use_cases => array of [
-     *                  'use'    => label (e.g. 'Vloer woonkamer'),
-     *                  'layers' => recommended layer count (0-3),
-     *                  'note'   => short reason
-     *                ]
-     *   note      => optional extra paragraph (e.g. "1 laag PU is included")
+     *   intro        => 1-2 sentence opener specific to this product line
+     *   how_it_works => sentence explaining what each PU layer adds, so
+     *                   the buyer understands the mechanism not just the
+     *                   recommendation
+     *   stack        => bottom-up array of layers:
+     *                     ['name' => string, 'meta' => string, 'is_pu' => bool]
+     *   tiers        => 3 ordered tiers from light to heavy exposure:
+     *                     [
+     *                       'layers'      => recommended count (0-3),
+     *                       'label'       => tier name (e.g. "Natte cellen"),
+     *                       'rooms'       => which rooms fall in this tier,
+     *                       'why'         => why this many lagen,
+     *                       'recommended' => true on the default-advice tier
+     *                     ]
+     *   note         => optional extra paragraph (e.g. "1 laag included")
      */
     private static $pu_info = [
         'original' => [
-            'intro' => 'Beton Ciré Original is naadloos en mooi op zichzelf, maar zonder PU toplaag is het niet waterdicht en kwetsbaar voor vlekken. Hieronder zie je hoeveel lagen je per situatie nodig hebt.',
+            'intro' => 'Beton Cir&eacute; Original is naadloos en mooi op zichzelf, maar zonder PU toplaag is het niet waterdicht en kwetsbaar voor vlekken. Hoeveel lagen je nodig hebt hangt af van hoe veel water en slijtage het oppervlak krijgt.',
+            'how_it_works' => 'PU is een transparante beschermlaag die op de Beton Cir&eacute; wordt aangebracht. Elke laag bindt aan de vorige: meer lagen betekent meer waterdichtheid en krasvastheid. Een laag is ongeveer 30 micron dik en niet zichtbaar in de finish.',
             'stack' => [
                 ['name' => 'Ondergrond',                'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
                 ['name' => 'Primer',                    'meta' => '1 laag, inbegrepen',                  'is_pu' => false],
                 ['name' => 'Beton Cir&eacute; Original', 'meta' => '2 lagen (grof + fijn), 1-2 mm',     'is_pu' => false],
                 ['name' => 'PU toplaag',                'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand woon/slaapkamer', 'layers' => 1, 'note' => 'Optioneel; 1 laag voor makkelijker schoonmaken.'],
-                ['use' => 'Vloer woonkamer/hal',   'layers' => 2, 'note' => 'Slijtvast en vlekbestendig bij dagelijks gebruik.'],
-                ['use' => 'Badkamer of douche',    'layers' => 2, 'note' => 'Pas met 2 lagen PU is het oppervlak waterdicht.'],
-                ['use' => 'Aanrechtblad of meubel','layers' => 2, 'note' => 'Beschermt tegen vlekken, krassen en hitte.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoorwand',
+                    'why'    => 'Beschermt tegen lichte vlekken bij minimale aanraking en geen waterbelasting. Optioneel.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, keukenwerkblad, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik. Onze aanbeveling voor de meeste situaties.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna, kelder',
+                    'why'    => 'Volledig waterdicht bij aanhoudende en directe waterbelasting. Vereist voor douchewanden en -vloeren.',
+                ],
             ],
         ],
 
         'original-zm' => [
-            'intro' => 'Bij Zelf Mengen & Mixen wordt de pasta op locatie gemengd. De PU keuze hangt af van waar je het oppervlak gebruikt.',
+            'intro' => 'Bij Zelf Mengen & Mixen wordt de pasta op locatie gemengd. De PU keuze volgt dezelfde regel als Original.',
+            'how_it_works' => 'PU is een transparante beschermlaag die op de Beton Cir&eacute; wordt aangebracht. Elke laag bindt aan de vorige: meer lagen betekent meer waterdichtheid en krasvastheid.',
             'stack' => [
                 ['name' => 'Ondergrond',           'meta' => 'Tegels, beton of stucwerk',          'is_pu' => false],
                 ['name' => 'Primer',               'meta' => 'Standaard meegeleverd',              'is_pu' => false],
                 ['name' => 'Beton Cir&eacute;',    'meta' => '2 lagen (zelf gemengd), 1-2 mm',     'is_pu' => false],
                 ['name' => 'PU toplaag',           'meta' => 'Bescherming en finish',              'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand droog',         'layers' => 1, 'note' => 'Optioneel maar makkelijker schoon te maken.'],
-                ['use' => 'Vloer',              'layers' => 2, 'note' => 'Voor slijtvastheid bij dagelijks belopen.'],
-                ['use' => 'Natte cel / douche', 'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
-                ['use' => 'Aanrecht / meubel',  'layers' => 2, 'note' => 'Tegen vlekken en krassen.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer, kantoor, droge wand',
+                    'why'    => 'Voldoende voor minimale slijtage en geen water.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard gebruik',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel',
+                    'why'    => 'Vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, kelder',
+                    'why'    => 'Volledig waterdicht bij directe waterbelasting.',
+                ],
             ],
         ],
 
         'all-in-one' => [
             'intro' => 'All-in-One is voorgemengd en kant-en-klaar. Net als Original is een PU toplaag nodig voor waterdichtheid en bescherming tegen slijtage.',
+            'how_it_works' => 'PU is de transparante beschermlaag die boven op de pasta wordt aangebracht. Elke extra laag verhoogt de waterdichtheid en krasvastheid; voor douche en badkamer zijn 3 lagen nodig.',
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Tegels, beton of stucwerk',  'is_pu' => false],
                 ['name' => 'Primer + Pre-seal',  'meta' => 'Inbegrepen in pakket',       'is_pu' => false],
                 ['name' => 'All-in-One pasta',   'meta' => '2 lagen, ~1 mm op kleur',    'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => 'Bescherming en finish',      'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Optioneel; verbetert wel het schoonmaken.'],
-                ['use' => 'Vloer woonkamer',      'layers' => 2, 'note' => 'Standaard voor slijtvastheid.'],
-                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
-                ['use' => 'Meubel of werkblad',   'layers' => 2, 'note' => 'Beschermt tegen vocht en krassen.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoor',
+                    'why'    => 'Voldoende voor minimale slijtage zonder waterbelasting.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel, werkblad',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe en aanhoudende waterbelasting.',
+                ],
             ],
         ],
 
         'easyline' => [
-            'intro' => 'Easyline pakket bevat standaard 1 laag PU. Voor natte ruimtes of vloeren bestel je een 2e laag bij; voor droge wanden kun je de PU er ook af halen.',
+            'intro' => 'Easyline pakket bevat standaard 1 laag PU. Voor woonruimtes bestel je 2 lagen, voor douche en badkamer 3 lagen.',
+            'how_it_works' => 'PU is de transparante beschermlaag boven op de Easyline pasta. Elke extra laag verhoogt de waterdichtheid en de krasvastheid. Voor natte cellen zijn 3 lagen nodig om bij directe waterbelasting waterdicht te blijven.',
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Ook over bestaande tegels',  'is_pu' => false],
                 ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',        'is_pu' => false],
                 ['name' => 'Easyline pasta',     'meta' => '2 lagen (RAW + FINE)',        'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => '1 laag standaard inbegrepen', 'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Standaard inbegrepen, geen extra kosten.'],
-                ['use' => 'Vloer of trap',        'layers' => 2, 'note' => 'Bestel 2 lagen voor slijtvastheid.'],
-                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Voor waterdichtheid in natte cel.'],
-                ['use' => 'Aanrecht of meubel',   'layers' => 2, 'note' => 'Beschermt tegen vlekken en krassen.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming (standaard inbegrepen)',
+                    'rooms'  => 'Slaapkamer wand, kantoorwand',
+                    'why'    => 'Standaard PU laag in het pakket. Voldoende voor droge ruimtes zonder slijtage.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, keuken-werkblad, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe waterbelasting.',
+                ],
             ],
-            'note' => 'Wil je geen PU? Kies dan "Geen PU" en je krijgt &euro;40 korting op het pakket.',
+            'note' => 'Wil je geen PU op je Easyline pakket? Kies dan "Geen PU" en je krijgt &euro;40 korting.',
         ],
 
         'microcement' => [
-            'intro' => 'Microcement is een ultradunne laag (1-2 mm) die direct over je bestaande oppervlak gaat. De PU toplaag bepaalt of het waterdicht en krasvast wordt.',
+            'intro' => 'Microcement is een ultradunne laag (1-2 mm) die direct over je bestaande oppervlak gaat. De PU toplaag bepaalt of het oppervlak vlekkenbestendig, krasvast of waterdicht wordt.',
+            'how_it_works' => 'PU is de transparante beschermlaag boven op de microcement. Elke laag voegt waterdichtheid en krasvastheid toe; in een natte cel zijn 3 lagen nodig om volledig waterdicht te zijn.',
             'stack' => [
                 ['name' => 'Ondergrond',          'meta' => 'Tegels, beton, hout',         'is_pu' => false],
                 ['name' => 'Primer',              'meta' => '1 laag, inbegrepen',           'is_pu' => false],
                 ['name' => 'Microcement pasta',   'meta' => '2 lagen, 1-2 mm op kleur',     'is_pu' => false],
                 ['name' => 'PU toplaag',          'meta' => 'Bescherming en finish',        'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand droog',          'layers' => 1, 'note' => 'Voldoende voor woonkamer of slaapkamer.'],
-                ['use' => 'Vloer of trap',        'layers' => 2, 'note' => 'Voor slijtvastheid bij dagelijks gebruik.'],
-                ['use' => 'Badkamer of douche',   'layers' => 2, 'note' => 'Vereist voor waterdichtheid.'],
-                ['use' => 'Aanrecht of meubel',   'layers' => 2, 'note' => 'Beschermt tegen vocht en krassen.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoor',
+                    'why'    => 'Voldoende voor minimale slijtage zonder waterbelasting.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe en aanhoudende waterbelasting.',
+                ],
             ],
         ],
 
         'metallic' => [
-            'intro' => 'Metallic Velvet is gemaakt voor wanden en meubels. PU is hier optioneel; het maakt het oppervlak makkelijker schoon te maken maar dempt soms het glanseffect licht.',
+            'intro' => 'Metallic Velvet is primair gemaakt voor wanden en decoratieve meubels. De velvet glans komt het mooist tot zijn recht zonder PU; voor intensiever gebruik kun je 1 of 2 lagen toevoegen.',
+            'how_it_works' => 'Een PU laag dempt het velvet effect een fractie maar maakt het oppervlak schoonmaakbaar en krasvast. Voor pure decoratie (wand zonder aanraking) blijft Metallic standaard zonder PU; voor meubels en objecten met dagelijks gebruik wel.',
             'stack' => [
-                ['name' => 'Ondergrond',         'meta' => 'Vlakke wand of meubel',     'is_pu' => false],
-                ['name' => 'Primer',             'meta' => 'Optioneel (+&euro;5,99)',    'is_pu' => false],
-                ['name' => 'Metallic Velvet',    'meta' => '2 lagen, op kleur met spatel', 'is_pu' => false],
-                ['name' => 'PU toplaag',         'meta' => 'Optioneel',                   'is_pu' => true],
+                ['name' => 'Ondergrond',         'meta' => 'Vlakke wand of meubel',         'is_pu' => false],
+                ['name' => 'Primer',             'meta' => 'Optioneel (+&euro;5,99)',        'is_pu' => false],
+                ['name' => 'Metallic Velvet',    'meta' => '2 lagen, op kleur met spatel',   'is_pu' => false],
+                ['name' => 'PU toplaag',         'meta' => 'Optioneel',                       'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand woon/slaapkamer', 'layers' => 0, 'note' => 'Standaard zonder PU voor maximaal velvet effect.'],
-                ['use' => 'Wand met aanraking',   'layers' => 1, 'note' => 'Maakt schoonmaken makkelijker.'],
-                ['use' => 'Meubel of object',     'layers' => 2, 'note' => 'Tegen krassen en vlekken bij gebruik.'],
-                ['use' => 'Aanrechtblad',         'layers' => 2, 'note' => 'Niet primair geadviseerd; overweeg Original.'],
+            'tiers' => [
+                [
+                    'layers' => 0,
+                    'label'  => 'Pure decoratie (standaard)',
+                    'rooms'  => 'Wand woon/slaapkamer zonder aanraking',
+                    'why'    => 'Maximaal velvet glanseffect; geen PU nodig zonder waterbelasting.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 1,
+                    'label'  => 'Wand met aanraking',
+                    'rooms'  => 'Hal, gangwand, kinderwand',
+                    'why'    => 'Maakt het oppervlak afneembaar bij regelmatig contact.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Meubel of object',
+                    'rooms'  => 'Tafelblad, kast, decoratief object',
+                    'why'    => 'Krasvast en vlekbestendig bij dagelijks gebruik.',
+                ],
             ],
+            'note' => 'Voor aanrecht of natte cellen adviseren wij Beton Cir&eacute; Original of Microcement; Metallic Velvet is niet bedoeld voor blijvende waterbelasting.',
         ],
 
         'lavasteen' => [
-            'intro' => 'Lavasteen is van zichzelf hard en waterdicht. 1 laag PU is standaard inbegrepen; voor zwaar belaste vloeren kun je een 2e laag bestellen.',
+            'intro' => 'Lavasteen is van zichzelf al hard en tot in de kern waterdicht. De PU laag voegt UV-bestendigheid en krasvastheid toe.',
+            'how_it_works' => 'Het mineraal in lavasteen is van nature waterdicht; PU werkt hier vooral als anti-kras en UV-bescherming, niet als waterbarriere. Eerste laag is standaard inbegrepen, een tweede laag is voor zwaar belaste of UV-blootgestelde oppervlakken.',
             'stack' => [
                 ['name' => 'Ondergrond',         'meta' => 'Vlakke vloer of wand',         'is_pu' => false],
                 ['name' => 'Primer',             'meta' => 'Inbegrepen in pakket',          'is_pu' => false],
                 ['name' => 'Lavasteen pasta',    'meta' => '2 lagen, mineraal-gebonden',    'is_pu' => false],
                 ['name' => 'PU toplaag',         'meta' => '1 laag standaard, UV-bestendig', 'is_pu' => true],
             ],
-            'use_cases' => [
-                ['use' => 'Wand',                 'layers' => 1, 'note' => 'Standaard inbegrepen.'],
-                ['use' => 'Vloer woonkamer',       'layers' => 1, 'note' => 'Voldoende voor regulier gebruik.'],
-                ['use' => 'Vloer hal/keuken',      'layers' => 2, 'note' => 'Extra slijtvastheid bij intensief belopen.'],
-                ['use' => 'Buiten / terras',       'layers' => 2, 'note' => 'UV-bestendig, beide lagen aanbevolen.'],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Standaard binnen-gebruik (inbegrepen)',
+                    'rooms'  => 'Wand, woonkamer-vloer, hal',
+                    'why'    => 'Voldoende voor regulier gebruik. Lavasteen is van zichzelf al waterdicht.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Intensief belast',
+                    'rooms'  => 'Vloer keuken, trap, winkel of horeca',
+                    'why'    => 'Extra slijtvastheid bij dagelijks intensief belopen.',
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Buiten of UV-belast',
+                    'rooms'  => 'Terras, garage, ramen-zone',
+                    'why'    => 'Maximale UV- en weerbestendigheid bij buiten- of zon-blootstelling.',
+                ],
             ],
         ],
     ];

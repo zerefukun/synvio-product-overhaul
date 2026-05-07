@@ -684,70 +684,110 @@ details.oz-faq-item[open] .oz-faq-question::after {
   color: rgba(255, 255, 255, 0.78);
 }
 
-/* ── Use-case row list ──────────────────────────────────────────────
-   No card boxes. Clean rows with hairline dividers, layer-count dots
-   in the middle, count label on the right, reason underneath. */
-.oz-pu-cases {
+/* ── How it works (extra explanation paragraph) ─────────────────── */
+.oz-pu-how {
+  margin: 16px 0 0;
+  padding: 16px 20px;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 8px;
+  font-size: var(--oz-text-sm);
+  line-height: 1.6;
+  color: var(--oz-text-body, #555);
+}
+
+/* ── Tier list ───────────────────────────────────────────────────────
+   3 ordered tiers from light to heavy use. Each tier shows: layer-count
+   dots + count label + optional 'Onze advies' badge, then a tier label
+   (e.g. 'Standaard woonruimte'), the rooms that fall under it, and the
+   reason why. Hairline divider between tiers; recommended tier gets a
+   subtle teal background to draw the eye. */
+.oz-pu-tiers {
   list-style: none;
   margin: 0;
   padding: 0;
+  counter-reset: oz-pu-tier;
 }
-.oz-pu-case {
-  padding: 18px 0 20px;
+.oz-pu-tier {
+  position: relative;
+  padding: 24px 0 26px;
   border-top: 1px solid var(--oz-border-light, #EEE);
 }
-.oz-pu-case:first-child {
+.oz-pu-tier:first-child {
   border-top: 0;
   padding-top: 0;
 }
-.oz-pu-case-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 16px;
+.oz-pu-tier.is-recommended {
+  margin: 8px 0;
+  padding: 24px 24px 26px;
+  background: linear-gradient(180deg, rgba(19,83,80,0.05), rgba(19,83,80,0.02));
+  border: 1px solid rgba(19, 83, 80, 0.18);
+  border-radius: 12px;
+}
+.oz-pu-tier.is-recommended + .oz-pu-tier {
+  border-top: 0;
+}
+.oz-pu-tier-head {
+  display: flex;
   align-items: center;
-  margin-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
-.oz-pu-case-use {
-  font-size: var(--oz-text-base);
-  font-weight: 600;
-  color: var(--oz-text-primary, #2F2F2F);
-  letter-spacing: -0.005em;
-}
-.oz-pu-case-dots {
+.oz-pu-tier-dots {
   display: inline-flex;
   gap: 6px;
 }
-.oz-pu-case-dots i {
+.oz-pu-tier-dots i {
   display: block;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
   border: 1px solid var(--oz-border, #E5E5E3);
   background: #fff;
   font-style: normal;
 }
-.oz-pu-case-dots[data-layers="1"] i:nth-child(1),
-.oz-pu-case-dots[data-layers="2"] i:nth-child(-n+2),
-.oz-pu-case-dots[data-layers="3"] i {
+.oz-pu-tier-dots[data-layers="1"] i:nth-child(1),
+.oz-pu-tier-dots[data-layers="2"] i:nth-child(-n+2),
+.oz-pu-tier-dots[data-layers="3"] i {
   background: var(--oz-accent, #135350);
   border-color: var(--oz-accent, #135350);
 }
-.oz-pu-case-count {
+.oz-pu-tier-count {
   font-size: var(--oz-text-xs);
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--oz-text-muted, #6B6B6B);
-  min-width: 72px;
-  text-align: right;
-}
-.oz-pu-case:has(.oz-pu-case-dots[data-layers="2"]) .oz-pu-case-count,
-.oz-pu-case:has(.oz-pu-case-dots[data-layers="3"]) .oz-pu-case-count {
   color: var(--oz-accent, #135350);
 }
-.oz-pu-case-note {
+.oz-pu-tier-dots[data-layers="0"] + .oz-pu-tier-count {
+  color: var(--oz-text-muted, #6B6B6B);
+}
+.oz-pu-tier-badge {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--oz-accent, #135350);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.oz-pu-tier-label {
+  margin: 0 0 6px;
+  font-family: 'Raleway', sans-serif;
+  font-size: var(--oz-text-base, 16px);
+  font-weight: 700;
+  color: var(--oz-text-primary, #2F2F2F);
+  letter-spacing: -0.005em;
+}
+.oz-pu-tier-rooms {
+  margin: 0 0 8px;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body, #555);
+  font-weight: 500;
+}
+.oz-pu-tier-why {
   margin: 0;
-  padding-right: 88px;
   font-size: var(--oz-text-sm);
   line-height: 1.55;
   color: var(--oz-text-muted, #6B6B6B);
@@ -786,17 +826,17 @@ details.oz-faq-item[open] .oz-faq-question::after {
   .oz-pu-stack-band {
     padding: 14px 16px;
   }
-  .oz-pu-case-row {
-    grid-template-columns: 1fr auto;
+  .oz-pu-tier.is-recommended {
+    padding: 20px 18px 22px;
   }
-  .oz-pu-case-count {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    text-align: left;
-    min-width: 0;
-    margin-top: 6px;
+  .oz-pu-tier-head {
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  .oz-pu-case-note {
-    padding-right: 0;
+  .oz-pu-tier-badge {
+    margin-left: 0;
+    flex-basis: 100%;
+    align-self: flex-start;
+    width: max-content;
   }
 }
