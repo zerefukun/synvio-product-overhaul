@@ -755,8 +755,9 @@
 .oz-hp-ba-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  max-width: 800px;
+  gap: 12px;
+  /* Bumped from 800px so the photos feel impactful on large screens too. */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--gap);
 }
