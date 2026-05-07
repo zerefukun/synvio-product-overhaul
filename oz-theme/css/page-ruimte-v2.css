@@ -1,31 +1,50 @@
 /* ================================================================
-   PAGE RUIMTE v2 — minimal additions on top of oz-ruimte.css
-   Reuses: .oz-section padding, .oz-eyebrow, .oz-hp-trust marquee,
-           global h1-h6 typography (oz-design-system.css),
-           design tokens (--oz-*).
-   Adds only what truly cannot be inherited: dark surfaces, photo
-   overlays, FAQ accordion indicators, pill-style links.
+   PAGE RUIMTE v2 — minimal additions
+   Reuses everything: oz-hp-section + variants, oz-hp-section-header,
+   oz-hp-eyebrow, oz-hp-heading, oz-hp-faq-*, oz-hp-trust marquee,
+   oz-hp-pcard, design tokens (--oz-*), global h1-h6 typography.
+
+   This file ONLY adds rules for v2-unique components that don't exist
+   on the homepage:
+     - hero offerte-card (S01 overlay panel)
+     - toepassing-card (image-with-overlay link card)
+     - crosslink pill (S09)
+     - deep-separator divider (S12)
+
+   Plus a few small reuse-bridges:
+     - re-bind --charcoal to oz-text-primary so the marquee renders
+     - kill the trust wrapper's padding so the marquee runs edge-to-edge
    ================================================================ */
 
-/* ── Reuse the homepage marquee on ruimte pages ──
-   homepage-v2.css scopes --charcoal/--white/etc. inside .oz-hp. On ruimte
-   pages we don't have that ancestor, so re-bind the variables it relies on
-   to the global oz-design-system tokens. Also start the marquee animation
-   directly (homepage-v2.js bootstraps it via .is-running on the home page;
-   on ruimte we just want it to run). */
-.oz-ruimte .oz-hp-trust {
+/* ── Reuse homepage CSS on ruimte pages — re-bind .oz-hp-scoped tokens
+   The homepage CSS scopes --sand, --charcoal, --teal, --white, --stone,
+   --teal-mist, --max-w, --gap inside .oz-hp. On ruimte pages we don't
+   have that ancestor, so the homepage components (oz-hp-section--sand,
+   oz-hp-trust, oz-hp-pcard) render with undefined backgrounds.
+
+   Re-bind every .oz-hp-* element on ruimte to the global oz-design-system
+   tokens so all variants render correctly. */
+.oz-ruimte [class*="oz-hp-"] {
+  --sand: var(--oz-bg-warm);
   --charcoal: var(--oz-text-primary);
   --teal: var(--oz-accent);
+  --teal-mist: var(--oz-accent-light);
+  --stone: var(--oz-border);
   --white: #fff;
+  --text: var(--oz-text-body);
+  --text-light: var(--oz-text-muted);
+  --max-w: var(--oz-max-w-wide);
+  --gap: var(--oz-gap);
 }
 .oz-ruimte .oz-hp-trust-track {
   animation: oz-hp-marquee 30s linear infinite;
 }
-/* Trust-bar wrapper sits in a full-width wp:group; kill its own padding so
-   only the .oz-hp-trust 14px vertical padding remains and the marquee runs
-   edge-to-edge with no gap above or below. Gutenberg adds a
-   .wp-block-group__inner-container with the theme's content max-width which
-   would constrain the marquee — break that out so it spans the full viewport. */
+
+/* Trust-bar wrapper sits in a full-width wp:group; kill its own padding
+   so only the .oz-hp-trust 14px own padding remains. Gutenberg adds a
+   .wp-block-group__inner-container with the theme's content max-width
+   which would constrain the marquee — break that out so it spans the
+   full viewport. */
 .oz-rp2-trust-wrap.wp-block-group {
   padding: 0 !important;
   margin: 0 !important;
@@ -36,12 +55,10 @@
   margin: 0 !important;
   padding: 0 !important;
 }
-.oz-rp2-trust-wrap .oz-hp-trust {
-  width: 100%;
-  display: block;
-}
+.oz-rp2-trust-wrap .oz-hp-trust { width: 100%; display: block; }
 
-/* ── S01 HERO offerte-card — sits inside the existing hero cover ── */
+/* ── S01 hero offerte-card — sits inside the existing wp:cover hero
+   alongside the hero text. No staff photo (per Patrick's request). ── */
 .oz-rp2-hero-card {
   background: rgba(20, 30, 40, .82);
   backdrop-filter: blur(8px);
@@ -49,25 +66,17 @@
   padding: 32px 28px;
   color: #FFF;
 }
-.oz-rp2-hero-card .oz-rp2-card-eyebrow {
-  color: rgba(255,255,255,.7);
-  margin: 0 0 8px;
-}
+.oz-rp2-hero-card .oz-rp2-card-eyebrow { color: rgba(255,255,255,.7); margin: 0 0 8px; }
 .oz-rp2-hero-card h3,
 .oz-rp2-hero-card p,
-.oz-rp2-hero-card ol li {
-  color: rgba(255,255,255,.92);
-}
-.oz-rp2-hero-card ol {
-  padding-left: 18px;
-  margin: 12px 0 20px;
-}
+.oz-rp2-hero-card ol li { color: rgba(255,255,255,.92); }
+.oz-rp2-hero-card ol { padding-left: 18px; margin: 12px 0 20px; }
 .oz-rp2-hero-card .wp-block-button .wp-block-button__link {
   width: 100%;
   text-align: center;
 }
 
-/* ── S03 TOEPASSINGEN — image cards with bottom gradient overlay ── */
+/* ── S03 toepassing-cards — image with bottom-gradient overlay ── */
 .oz-rp2-toepassing-card {
   position: relative;
   display: block;
@@ -101,95 +110,10 @@
   z-index: 2;
   color: #FFF;
 }
-.oz-rp2-toepassing-card-content h3 {
-  margin: 0 0 4px;
-  color: #FFF;
-}
-.oz-rp2-toepassing-card-content p {
-  margin: 0;
-  color: rgba(255,255,255,.92);
-}
-@media (max-width: 900px) {
-  .oz-rp2-toepassingen-grid { grid-template-columns: repeat(2, 1fr) !important; }
-}
+.oz-rp2-toepassing-card-content h3 { margin: 0 0 4px; color: #FFF; }
+.oz-rp2-toepassing-card-content p { margin: 0; color: rgba(255,255,255,.92); }
 
-/* ── S07 VOORDELEN — dark card with checkmark list, no face photo ── */
-.oz-rp2-voordelen.wp-block-group {
-  background: var(--oz-text-primary);
-  color: #FFF;
-}
-.oz-rp2-voordelen-eyebrow {
-  color: var(--oz-accent-light);
-  margin: 0 0 12px;
-}
-.oz-rp2-voordelen-header h2,
-.oz-rp2-voordelen-header p {
-  color: #FFF;
-}
-.oz-rp2-voordelen-header p {
-  color: rgba(255,255,255,.8);
-}
-.oz-rp2-voordelen-list ul {
-  padding: 0;
-  margin: 0;
-}
-.oz-rp2-voordelen-list li {
-  position: relative;
-  padding: 10px 0 10px 32px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  color: rgba(255,255,255,.92);
-}
-.oz-rp2-voordelen-list li:last-child { border-bottom: 0; }
-.oz-rp2-voordelen-list li::before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  top: 10px;
-  color: var(--oz-accent-light);
-  font-weight: 700;
-}
-
-/* ── S08 FAQ — Yoast FAQ block + plus indicator ──
-   The Yoast block renders <strong class="schema-faq-question"> + <p
-   class="schema-faq-answer">. Style as accordion-like rows. */
-.oz-rp2-faq-list {
-  max-width: 800px;
-  margin: 0 auto;
-}
-.oz-rp2-faq-list .schema-faq-section {
-  border-bottom: 1px solid var(--oz-border);
-  padding: 16px 0;
-}
-.oz-rp2-faq-list .schema-faq-question {
-  display: block;
-  font-family: var(--oz-ff-heading);
-  font-size: var(--oz-text-lg);
-  cursor: pointer;
-  padding: 8px 36px 8px 0;
-  position: relative;
-  color: var(--oz-text-primary);
-}
-.oz-rp2-faq-list .schema-faq-question::after {
-  content: "+";
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: var(--oz-text-xl);
-  color: var(--oz-accent);
-}
-.oz-rp2-faq-list .schema-faq-answer {
-  margin-top: 12px;
-  color: var(--oz-text-body);
-}
-
-/* ── S09 CROSSLINKS — pill tags ── */
-.oz-rp2-crosslinks-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-}
+/* ── S09 crosslinks — pill tag ── */
 .oz-rp2-crosslink-pill {
   display: inline-flex;
   align-items: center;
@@ -207,50 +131,45 @@
   color: var(--oz-accent);
 }
 
-/* ── v2 SECTION PADDING — replace the outer .oz-section default that was
-       zeroed by oz-ruimte.css with the standard 56px / 88px rhythm. ── */
-.oz-rp2-toepassingen,
-.oz-rp2-producten,
-.oz-rp2-voordelen,
-.oz-rp2-faq,
-.oz-rp2-crosslinks,
-.oz-rp2-deep-separator {
-  padding: 56px var(--oz-gap, 20px);
+/* ── S12 separator divider — soft warm bar before the SEO long-form ── */
+.oz-rp2-deep-separator.wp-block-group {
+  text-align: center;
+  padding: 64px 24px;
+  background: var(--oz-bg-warm);
+  border-top: 1px solid var(--oz-border);
+  border-bottom: 1px solid var(--oz-border);
 }
-@media (min-width: 768px) {
-  .oz-rp2-toepassingen,
-  .oz-rp2-producten,
-  .oz-rp2-voordelen,
-  .oz-rp2-faq,
-  .oz-rp2-crosslinks,
-  .oz-rp2-deep-separator {
-    padding: 88px var(--oz-gap, 20px);
-  }
+.oz-rp2-deep-separator h2 {
+  color: var(--oz-text-primary);
+  margin: 0 0 8px;
+  font-size: var(--oz-text-2xl);
 }
-
-/* Section backgrounds tuned per role */
-.oz-rp2-producten { background: var(--oz-bg-warm); }
-.oz-rp2-faq      { background: var(--oz-bg-subtle); }
-.oz-rp2-crosslinks { background: var(--oz-bg-warm); }
-
-/* Section content max-width matches global container */
-.oz-rp2-toepassingen > *,
-.oz-rp2-producten > *,
-.oz-rp2-voordelen > *,
-.oz-rp2-faq > *,
-.oz-rp2-crosslinks > *,
-.oz-rp2-deep-separator > * {
-  max-width: var(--oz-max-w-wide, 1400px);
-  margin-left: auto;
-  margin-right: auto;
+.oz-rp2-deep-separator::after {
+  content: "Onze diepere uitleg, kosten, voordelen en stap-voor-stap aanbreng-handleiding voor wie alles wil weten.";
+  display: block;
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--oz-text-body);
+  font-size: var(--oz-text-base);
+  line-height: 1.5;
 }
 
-/* ── Existing wp:cover blocks in the SEO tail get a softer treatment ──
-   They were originally styled like sub-heros which competes with the
-   real S01. Constrain their height and tighten typography. */
+/* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer")
+   are the existing SEO content — they were originally styled like
+   sub-heros which competes with the real S01. Soften them: cap the
+   height, give them a card-like radius and inset, and pull the body
+   inside a constrained reading-width column so they read as info
+   panels rather than banners. ── */
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
-  min-height: 320px !important;
+  min-height: 260px !important;
+  max-height: 480px;
   border-radius: var(--oz-radius);
+  margin: 0 auto;
+  max-width: var(--oz-max-w-wide);
+}
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-cover__inner-container {
+  max-width: var(--oz-max-w);
+  padding: 0 var(--oz-gap);
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h2 {
   font-size: var(--oz-text-2xl);
@@ -258,24 +177,14 @@
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h3 {
   font-size: var(--oz-text-lg);
 }
-
-/* ── S12 SEPARATOR — visual divide before SEO tail ── */
-.oz-rp2-deep-separator { text-align: center; }
-.oz-rp2-deep-separator h2 {
-  color: var(--oz-text-muted);
-  margin: 0;
-  position: relative;
-  display: inline-block;
-  padding: 0 24px;
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul {
+  padding-left: 0;
 }
-.oz-rp2-deep-separator h2::before,
-.oz-rp2-deep-separator h2::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 60px;
-  height: 1px;
-  background: var(--oz-border);
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li {
+  list-style: none;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,.15);
 }
-.oz-rp2-deep-separator h2::before { right: 100%; }
-.oz-rp2-deep-separator h2::after  { left: 100%; }
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li:last-child {
+  border-bottom: 0;
+}
