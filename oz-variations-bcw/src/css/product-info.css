@@ -542,17 +542,53 @@ details.oz-faq-item[open] .oz-faq-question::after {
 
 
 /* ─────────────────── Aanbreng & afwerking (PU explainer) ───────────────────
-   Per-line PU layer guidance shown on the PDP between specs/tabs and FAQ.
-   Layout: intro paragraph, layered stack diagram, and use-case grid where
-   each card maps a use case (vloer, badkamer, meubel) to a recommended
-   number of PU lagen. */
+   Full-width section rendered AFTER the showcase blocks. Per-line PU layer
+   guidance with a layered stack diagram on the left and a use-case grid
+   on the right. */
 
-.oz-pu-explainer .oz-pu-intro {
-  margin: 0 0 24px;
+.oz-pu-explainer-section {
+  /* Break out of page container to go full-width (mirrors .oz-showcase) */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  background: #fff;
+  padding: 64px 0 72px;
+  border-top: 1px solid var(--oz-border-light, #EEE);
+}
+.oz-pu-explainer-inner {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.oz-pu-explainer-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: var(--oz-text-2xl, 32px);
+  font-weight: 400;
+  color: var(--oz-text-primary, #2F2F2F);
+  margin: 0 0 12px;
+  letter-spacing: 0.2px;
+}
+.oz-pu-intro {
+  margin: 0 0 36px;
   font-size: var(--oz-text-base);
   line-height: 1.6;
-  color: var(--oz-text-body);
+  color: var(--oz-text-body, #555);
   max-width: 720px;
+}
+
+/* Two-column grid: stack diagram + use cases side by side on desktop */
+.oz-pu-explainer-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 380px) 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.oz-pu-subtitle {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: var(--oz-text-lg);
+  font-weight: 400;
+  color: #555;
+  margin: 0 0 16px;
 }
 
 /* ── Layered stack diagram ─────────────────────────────────────────── */
@@ -560,15 +596,13 @@ details.oz-faq-item[open] .oz-faq-question::after {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin: 0 0 32px;
-  max-width: 520px;
 }
 .oz-pu-stack-row {
   display: grid;
   grid-template-columns: 6px 1fr;
   gap: 12px;
   align-items: stretch;
-  padding: 10px 14px 10px 0;
+  padding: 12px 14px 12px 0;
   background: var(--oz-bg-warm, #F5F4F0);
   border-radius: 6px;
 }
@@ -601,13 +635,6 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 
 /* ── Use-case grid ──────────────────────────────────────────────────── */
-.oz-pu-cases-title {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: var(--oz-text-lg);
-  font-weight: 400;
-  color: #555;
-  margin: 0 0 16px;
-}
 .oz-pu-cases {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -615,7 +642,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 .oz-pu-case {
   padding: 16px;
-  background: #fff;
+  background: var(--oz-bg-warm, #F5F4F0);
   border: 1px solid var(--oz-border-light, #EEE);
   border-radius: 8px;
 }
@@ -642,8 +669,9 @@ details.oz-faq-item[open] .oz-faq-question::after {
   white-space: nowrap;
 }
 .oz-pu-case-pill[data-layers="0"] {
-  background: var(--oz-bg-warm, #F5F4F0);
+  background: #fff;
   color: var(--oz-text-muted, #6B6B6B);
+  border: 1px solid var(--oz-border, #E5E5E3);
 }
 .oz-pu-case-pill[data-layers="1"] {
   background: rgba(19, 83, 80, 0.55);
@@ -656,7 +684,7 @@ details.oz-faq-item[open] .oz-faq-question::after {
 }
 
 .oz-pu-note {
-  margin: 20px 0 0;
+  margin: 28px 0 0;
   padding: 12px 16px;
   background: var(--oz-bg-warm, #F5F4F0);
   border-left: 3px solid var(--oz-accent, #135350);
@@ -665,11 +693,20 @@ details.oz-faq-item[open] .oz-faq-question::after {
   color: var(--oz-text-body, #555);
 }
 
+@media (max-width: 900px) {
+  .oz-pu-explainer-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
 @media (max-width: 600px) {
+  .oz-pu-explainer-section {
+    padding: 48px 0 56px;
+  }
   .oz-pu-cases {
     grid-template-columns: 1fr;
   }
   .oz-pu-stack-row {
-    padding: 8px 12px 8px 0;
+    padding: 10px 12px 10px 0;
   }
 }
