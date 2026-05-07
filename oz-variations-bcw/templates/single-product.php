@@ -297,7 +297,7 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
                       data-layers="<?php echo esc_attr($case_layers); ?>">
                   <?php echo $case_layers === 0
                       ? 'Geen PU'
-                      : esc_html($case_layers . ' laag' . ($case_layers > 1 ? 'en' : '')); ?>
+                      : ($case_layers === 1 ? '1 laag' : esc_html($case_layers . ' lagen')); ?>
                 </span>
               </div>
               <p class="oz-pu-case-note"><?php echo esc_html($case['note']); ?></p>
