@@ -240,56 +240,86 @@
 }
 
 /* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer") ──
-   Original styling: full-width hero-like cover with white text on a
-   light/textured image — unreadable. Replace with a darker overlay so
-   text contrasts properly + tighter card-style box. */
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
-  min-height: 280px !important;
-  max-height: none;
+   These are existing SEO blocks that the original page authored as
+   white-text-on-image full-width covers. That visual fights with the
+   real S01 hero and is barely readable.
+
+   Strategy: visually de-cover them — hide the background image and
+   dim layer entirely, switch to a sand-card layout with dark text.
+   The h2/h3 keep their SEO content (text unchanged), only the visual
+   wrapper changes. ── */
+.oz-ruimte .oz-section--cover {
+  background: transparent !important;
+  padding: 0 var(--oz-gap) !important;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover {
+  /* Strip the cover treatment entirely */
+  min-height: 0 !important;
+  background: var(--oz-bg-warm) !important;
   border-radius: var(--oz-radius);
   margin: 0 auto;
-  max-width: var(--oz-max-w-wide);
-  padding: 48px 32px !important;
-}
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-cover__background {
-  background: rgba(15, 25, 30, .72) !important;
-  opacity: 1 !important;
-}
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-cover__inner-container {
   max-width: var(--oz-max-w);
+  padding: 48px 40px !important;
+  overflow: hidden;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover__background,
+.oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+  display: none !important;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+  max-width: 100%;
   padding: 0;
   width: 100%;
+  position: static !important;
 }
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h2 {
+/* Override Gutenberg's white text classes — text on sand needs to be dark */
+.oz-ruimte .oz-section--cover .has-white-color,
+.oz-ruimte .oz-section--cover h2,
+.oz-ruimte .oz-section--cover h3,
+.oz-ruimte .oz-section--cover p,
+.oz-ruimte .oz-section--cover li {
+  color: var(--oz-text-primary) !important;
+}
+.oz-ruimte .oz-section--cover p,
+.oz-ruimte .oz-section--cover li {
+  color: var(--oz-text-body) !important;
+}
+.oz-ruimte .oz-section--cover h2 {
   font-size: var(--oz-text-2xl);
   margin-bottom: 12px;
 }
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h3 {
+.oz-ruimte .oz-section--cover h3 {
   font-size: var(--oz-text-lg);
-  margin: 16px 0 8px;
+  margin: 24px 0 8px;
+  color: var(--oz-text-primary) !important;
 }
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) p,
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) li {
-  font-size: var(--oz-text-base);
+.oz-ruimte .oz-section--cover p {
   line-height: 1.5;
+  margin-bottom: 12px;
 }
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul {
+.oz-ruimte .oz-section--cover a {
+  color: var(--oz-accent) !important;
+  text-decoration: underline !important;
+}
+.oz-ruimte .oz-section--cover ul {
   padding-left: 0;
-}
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li {
   list-style: none;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,.18);
 }
-.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li:last-child {
+.oz-ruimte .oz-section--cover ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--oz-border);
+}
+.oz-ruimte .oz-section--cover ul li:last-child {
   border-bottom: 0;
 }
+.oz-ruimte .oz-section--cover .wp-block-columns {
+  gap: 48px !important;
+}
 @media (max-width: 768px) {
-  .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
+  .oz-ruimte .oz-section--cover .wp-block-cover {
     padding: 32px 20px !important;
-    min-height: auto !important;
   }
-  .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-columns {
+  .oz-ruimte .oz-section--cover .wp-block-columns {
     flex-direction: column !important;
     gap: 24px !important;
   }
