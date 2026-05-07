@@ -906,7 +906,9 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
             <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) :
               $has_details = !empty($layer['details']);
               if ($has_details) : ?>
-              <details class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
+              <details
+                class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>"
+                name="oz-pu-stack-<?php echo esc_attr($product_id); ?>">
                 <summary class="oz-pu-stack-summary">
                   <div class="oz-pu-stack-band-text">
                     <strong><?php echo wp_kses_post($layer['name']); ?></strong>
@@ -967,6 +969,27 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         <p class="oz-pu-note"><?php echo wp_kses_post($pu_info['note']); ?></p>
       <?php endif; ?>
     </div>
+
+    <?php /* Fallback for older browsers where the native name="" mutex on
+            <details> isn't supported yet. Native browsers run this too but
+            it's a no-op since other bands close before this fires. */ ?>
+    <script>
+    (function () {
+      var bands = document.querySelectorAll('#sectionPuExplainer .oz-pu-stack-band[name]');
+      if (!bands.length) return;
+      bands.forEach(function (band) {
+        band.addEventListener('toggle', function () {
+          if (!band.open) return;
+          var name = band.getAttribute('name');
+          bands.forEach(function (other) {
+            if (other !== band && other.getAttribute('name') === name && other.open) {
+              other.open = false;
+            }
+          });
+        });
+      });
+    })();
+    </script>
   </section>
   <?php endif; ?>
 
