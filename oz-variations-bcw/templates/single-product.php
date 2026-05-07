@@ -878,25 +878,31 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
   ?>
 
   <?php /* Aanbreng & afwerking — full-width section below showcase.
-          Explains PU layer choice per use case. Configured-line products
-          only; lines without PU return null. */ ?>
+          Stack diagram is a single layered illustration; use cases are
+          clean rows with visual dot indicators. */ ?>
   <?php if ($has_options && $pu_info && !empty($pu_info['use_cases'])) : ?>
   <section class="oz-pu-explainer-section" id="sectionPuExplainer">
     <div class="oz-pu-explainer-inner">
-      <h2 class="oz-pu-explainer-title">Aanbreng &amp; afwerking</h2>
-      <?php if (!empty($pu_info['intro'])) : ?>
-        <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
-      <?php endif; ?>
+      <header class="oz-pu-explainer-head">
+        <span class="oz-pu-eyebrow">Aanbreng &amp; afwerking</span>
+        <h2 class="oz-pu-explainer-title">Hoeveel PU lagen heb <em>je nodig?</em></h2>
+        <?php if (!empty($pu_info['intro'])) : ?>
+          <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
+        <?php endif; ?>
+      </header>
 
       <div class="oz-pu-explainer-grid">
-        <?php if (!empty($pu_info['stack'])) : ?>
+        <?php if (!empty($pu_info['stack'])) :
+          /* Stack illustration: each layer is a band inside one container.
+             We render top -> bottom (reverse the data which is bottom-up). */ ?>
         <div class="oz-pu-stack-wrap">
-          <h3 class="oz-pu-subtitle">Opbouw van het oppervlak</h3>
+          <div class="oz-pu-stack-aside">
+            <span class="oz-pu-stack-label">Opbouw</span>
+          </div>
           <div class="oz-pu-stack" aria-label="Opbouw van het oppervlak">
             <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) : ?>
-              <div class="oz-pu-stack-row<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
-                <span class="oz-pu-stack-bar" aria-hidden="true"></span>
-                <div class="oz-pu-stack-text">
+              <div class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
+                <div class="oz-pu-stack-band-text">
                   <strong><?php echo wp_kses_post($layer['name']); ?></strong>
                   <?php if (!empty($layer['meta'])) : ?>
                     <span class="oz-pu-stack-meta"><?php echo wp_kses_post($layer['meta']); ?></span>
@@ -908,26 +914,25 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
         </div>
         <?php endif; ?>
 
-        <div class="oz-pu-cases-wrap">
-          <h3 class="oz-pu-subtitle">Hoeveel PU lagen heb je nodig?</h3>
-          <div class="oz-pu-cases">
-            <?php foreach ($pu_info['use_cases'] as $case) :
-              $case_layers = max(0, min(3, intval($case['layers']))); ?>
-              <div class="oz-pu-case">
-                <div class="oz-pu-case-head">
-                  <span class="oz-pu-case-use"><?php echo esc_html($case['use']); ?></span>
-                  <span class="oz-pu-case-pill"
-                        data-layers="<?php echo esc_attr($case_layers); ?>">
-                    <?php echo $case_layers === 0
-                        ? 'Geen PU'
-                        : ($case_layers === 1 ? '1 laag' : esc_html($case_layers . ' lagen')); ?>
-                  </span>
-                </div>
-                <p class="oz-pu-case-note"><?php echo esc_html($case['note']); ?></p>
+        <ul class="oz-pu-cases">
+          <?php foreach ($pu_info['use_cases'] as $case) :
+            $case_layers = max(0, min(3, intval($case['layers']))); ?>
+            <li class="oz-pu-case">
+              <div class="oz-pu-case-row">
+                <span class="oz-pu-case-use"><?php echo esc_html($case['use']); ?></span>
+                <span class="oz-pu-case-dots" data-layers="<?php echo esc_attr($case_layers); ?>" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <span class="oz-pu-case-count">
+                  <?php echo $case_layers === 0
+                      ? 'Geen PU'
+                      : ($case_layers === 1 ? '1 laag' : esc_html($case_layers . ' lagen')); ?>
+                </span>
               </div>
-            <?php endforeach; ?>
-          </div>
-        </div>
+              <p class="oz-pu-case-note"><?php echo esc_html($case['note']); ?></p>
+            </li>
+          <?php endforeach; ?>
+        </ul>
       </div>
 
       <?php if (!empty($pu_info['note'])) : ?>
