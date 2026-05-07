@@ -239,37 +239,136 @@
   line-height: 1.5;
 }
 
-/* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer")
-   are the existing SEO content — they were originally styled like
-   sub-heros which competes with the real S01. Soften them: cap the
-   height, give them a card-like radius and inset, and pull the body
-   inside a constrained reading-width column so they read as info
-   panels rather than banners. ── */
+/* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer") ──
+   Original styling: full-width hero-like cover with white text on a
+   light/textured image — unreadable. Replace with a darker overlay so
+   text contrasts properly + tighter card-style box. */
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
-  min-height: 260px !important;
-  max-height: 480px;
+  min-height: 280px !important;
+  max-height: none;
   border-radius: var(--oz-radius);
   margin: 0 auto;
   max-width: var(--oz-max-w-wide);
+  padding: 48px 32px !important;
+}
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-cover__background {
+  background: rgba(15, 25, 30, .72) !important;
+  opacity: 1 !important;
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-cover__inner-container {
   max-width: var(--oz-max-w);
-  padding: 0 var(--oz-gap);
+  padding: 0;
+  width: 100%;
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h2 {
   font-size: var(--oz-text-2xl);
+  margin-bottom: 12px;
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) h3 {
   font-size: var(--oz-text-lg);
+  margin: 16px 0 8px;
+}
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) p,
+.oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) li {
+  font-size: var(--oz-text-base);
+  line-height: 1.5;
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul {
   padding-left: 0;
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li {
   list-style: none;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255,255,255,.15);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.18);
 }
 .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) ul li:last-child {
   border-bottom: 0;
+}
+@media (max-width: 768px) {
+  .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) {
+    padding: 32px 20px !important;
+    min-height: auto !important;
+  }
+  .oz-ruimte .oz-section .wp-block-cover:not(.oz-rp2-hero) .wp-block-columns {
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+}
+
+/* ── Toepassingen 4-card grid: convert to horizontal carousel on tablet/mobile ── */
+.oz-rp2-toepassingen-grid {
+  /* Inline style sets grid; we override on small screens */
+}
+@media (max-width: 900px) {
+  /* Find the grid by inline style declaration via attribute selector. */
+  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 20px;
+  }
+  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > * {
+    flex: 0 0 calc((100% - 16px) / 2);
+    scroll-snap-align: start;
+  }
+  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > a.oz-rp2-toepassing-card {
+    aspect-ratio: 4/5;
+  }
+}
+@media (max-width: 540px) {
+  div[class*="oz-rp2"] > div[style*="repeat(4,1fr)"] > * {
+    flex: 0 0 70%;
+  }
+}
+
+/* ── Voordelen 2-col card: stack on mobile so the list is readable ── */
+@media (max-width: 800px) {
+  .oz-hp-section--dark > div[style*="grid-template-columns:1fr 1fr"],
+  .oz-hp-section--dark > div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* ── CTA-blok 3-up: stack on mobile ── */
+@media (max-width: 800px) {
+  .oz-hp-section--teal-mist > div[style*="repeat(3,1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* ── Doe-het-zelf 2-col cards: stack on mobile ── */
+@media (max-width: 600px) {
+  .oz-hp-section--sand div[style*="grid-template-columns:repeat(2,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Prijs-tabel: proper padding so 4 m² isn't glued to the left border ── */
+.oz-ruimte .oz-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.oz-ruimte .oz-section table th,
+.oz-ruimte .oz-section table td {
+  padding: 14px 18px !important;
+  text-align: left;
+  border-bottom: 1px solid var(--oz-border);
+}
+.oz-ruimte .oz-section table th {
+  background: var(--oz-bg-warm);
+  font-weight: 600;
+}
+.oz-ruimte .oz-section table tr:last-child td {
+  border-bottom: 0;
+}
+@media (max-width: 600px) {
+  .oz-ruimte .oz-section table th,
+  .oz-ruimte .oz-section table td {
+    padding: 10px 12px !important;
+    font-size: var(--oz-text-sm);
+  }
 }
