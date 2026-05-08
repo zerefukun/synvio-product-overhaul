@@ -221,21 +221,22 @@
    Hotspot card — popover shown when hotspot is clicked.
    Anchored above the dot on desktop, slides up from bottom on mobile.
    ────────────────────────────────────────────── */
+/* Card is position: fixed so it escapes the carousel track's overflow clipping.
+   JS sets top/left on open based on the hotspot's getBoundingClientRect(). */
 .oz-hotspot-card {
   display: none;
-  position: absolute;
-  bottom: calc(100% + 14px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
   width: 280px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   padding: 12px;
-  z-index: 5;
+  z-index: 50;
   align-items: flex-start;
   gap: 12px;
   text-align: left;
+  /* JS positions via top/left; transform centers horizontally */
+  transform: translateX(-50%);
 }
 .oz-hotspot-card.is-open {
   display: flex;
@@ -359,21 +360,18 @@
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Mobile: card spans the slide width and snaps to bottom */
+/* Mobile: card spans the viewport and pins to the bottom regardless of
+   hotspot position — JS-set top/left are overridden here. */
 @media (max-width: 600px) {
-  .oz-hotspot-card,
-  .oz-hotspot-card.is-below {
-    position: fixed;
-    left: 16px;
+  .oz-hotspot-card.is-open {
+    left: 16px !important;
     right: 16px;
     bottom: 16px;
-    top: auto;
+    top: auto !important;
     width: auto;
     transform: none;
     animation: oz-hotspot-card-in-mobile 0.2s ease-out both;
   }
-  .oz-hotspot-card::after,
-  .oz-hotspot-card.is-below::after { display: none; }
   @keyframes oz-hotspot-card-in-mobile {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }

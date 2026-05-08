@@ -18,18 +18,36 @@
 			const card = wrap.querySelector( '.oz-hotspot-card' );
 			if ( ! btn || ! card ) return; // No card = no resolved product, fall through
 
+			function positionCard() {
+				const hsRect = btn.getBoundingClientRect();
+				const cardW  = 280;
+				const cardH  = card.offsetHeight || 100; // approx if not yet rendered
+				const above  = hsRect.top > cardH + 30;
+				const cx     = hsRect.left + hsRect.width / 2;
+				// Clamp horizontal so the card stays in the viewport
+				const halfW  = cardW / 2;
+				const minCx  = halfW + 8;
+				const maxCx  = window.innerWidth - halfW - 8;
+				const clampedCx = Math.max( minCx, Math.min( maxCx, cx ) );
+				card.style.left = clampedCx + 'px';
+				if ( above ) {
+					card.style.top    = ( hsRect.top - cardH - 14 ) + 'px';
+					card.classList.remove( 'is-below' );
+				} else {
+					card.style.top    = ( hsRect.bottom + 14 ) + 'px';
+					card.classList.add( 'is-below' );
+				}
+			}
+
 			btn.addEventListener( 'click', function ( ev ) {
 				ev.stopPropagation();
 				const isOpen = card.classList.contains( 'is-open' );
 				closeAll( root );
 				if ( isOpen ) return;
-				// Decide above/below based on hotspot Y within the slide
-				const slide = wrap.closest( '.oz-hotspot-carousel__slide' );
-				const slideRect = slide ? slide.getBoundingClientRect() : null;
-				const hsRect    = wrap.getBoundingClientRect();
-				const yPercent  = slideRect ? ( ( hsRect.top - slideRect.top ) / slideRect.height ) : 0.5;
-				card.classList.toggle( 'is-below', yPercent < 0.45 );
 				card.classList.add( 'is-open' );
+				positionCard();
+				// Re-position after the show animation reveals the real height
+				requestAnimationFrame( positionCard );
 				btn.setAttribute( 'aria-expanded', 'true' );
 			} );
 
@@ -58,13 +76,18 @@
 
 		initHotspotCards( root );
 
-		// Close cards on outside click + ESC
+		// Close cards on outside click, ESC, scroll, or carousel scroll
+		// (because position:fixed cards would otherwise stay glued to the
+		// viewport while the hotspot they belong to scrolled away).
 		document.addEventListener( 'click', function ( ev ) {
 			if ( ! root.contains( ev.target ) ) closeAll( root );
 		} );
 		document.addEventListener( 'keydown', function ( ev ) {
 			if ( ev.key === 'Escape' ) closeAll( root );
 		} );
+		track.addEventListener( 'scroll', function () { closeAll( root ); }, { passive: true } );
+		window.addEventListener( 'scroll', function () { closeAll( root ); }, { passive: true } );
+		window.addEventListener( 'resize', function () { closeAll( root ); }, { passive: true } );
 
 		const slides   = Array.from( track.querySelectorAll( '.oz-hotspot-carousel__slide' ) );
 		const dots     = Array.from( root.querySelectorAll( '.oz-hotspot-carousel__dot' ) );
