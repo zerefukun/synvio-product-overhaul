@@ -319,6 +319,12 @@
 	.oz-form__field--w-quarter {
 		grid-column: span 12;
 	}
+	/* Postcode + huisnummer stay paired on mobile — short inputs that fit
+	 * comfortably side-by-side, and matching the NL checkout muscle memory. */
+	.oz-form__field--postcode,
+	.oz-form__field--huisnummer {
+		grid-column: span 6;
+	}
 }
 
 .oz-form__step[hidden] {
