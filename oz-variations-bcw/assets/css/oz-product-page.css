@@ -1201,11 +1201,14 @@ div.oz-pu-stack-band {
 }
 .oz-pu-tier-label {
   margin: 0 0 6px;
-  font-family: "Raleway", sans-serif;
-  font-size: var(--oz-text-base, 16px);
-  font-weight: 700;
+  font-family:
+    "DM Serif Display",
+    Georgia,
+    serif;
+  font-size: 17px;
+  font-weight: 400;
   color: var(--oz-text-primary, #2F2F2F);
-  letter-spacing: -0.005em;
+  line-height: 1.25;
 }
 .oz-pu-tier-rooms {
   margin: 0 0 8px;
