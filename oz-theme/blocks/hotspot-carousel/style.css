@@ -18,6 +18,12 @@
   color: var(--oz-text-primary, #1a1a1a);
 }
 
+/* Viewport wraps the track so the prev/next buttons can sit on its left/right
+   edges (absolute) without scrolling along with the slides. */
+.oz-hotspot-carousel__viewport {
+  position: relative;
+}
+
 /* Horizontal scroll-snap track. Each slide takes ~70% viewport on mobile, ~45%
    on tablet, ~33% on desktop so 2-3 are visible at once. */
 .oz-hotspot-carousel__track {
@@ -27,7 +33,68 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   padding: 4px 16px 16px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+.oz-hotspot-carousel__track::-webkit-scrollbar { display: none; }
+
+/* Prev / next buttons — circular, sit on the viewport edges. Hidden on
+   touch devices (no hover surface, swipe is the natural input). */
+.oz-hotspot-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--oz-border, #E5E5E3);
+  background: white;
+  color: var(--oz-text-primary, #1a1a1a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+}
+.oz-hotspot-carousel__nav:hover {
+  background: var(--oz-bg-warm, #F5F4F0);
+  transform: translateY(-50%) scale(1.05);
+}
+.oz-hotspot-carousel__nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.oz-hotspot-carousel__nav--prev { left: 4px; }
+.oz-hotspot-carousel__nav--next { right: 4px; }
+
+@media (hover: none) and (pointer: coarse) {
+  .oz-hotspot-carousel__nav { display: none; }
+}
+
+/* Pagination dots */
+.oz-hotspot-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.oz-hotspot-carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: var(--oz-border, #E5E5E3);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.oz-hotspot-carousel__dot:hover {
+  background: var(--oz-text-muted, #6B6B6B);
+}
+.oz-hotspot-carousel__dot.is-active {
+  background: var(--oz-accent, #135350);
+  transform: scale(1.3);
 }
 
 .oz-hotspot-carousel__slide {

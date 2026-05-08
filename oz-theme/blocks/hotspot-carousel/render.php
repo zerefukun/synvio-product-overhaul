@@ -38,7 +38,14 @@ $wrap = get_block_wrapper_attributes( array(
 		</header>
 	<?php endif; ?>
 
-	<div class="oz-hotspot-carousel__track" data-hotspot-carousel>
+	<div class="oz-hotspot-carousel__viewport" data-hotspot-carousel>
+		<button type="button" class="oz-hotspot-carousel__nav oz-hotspot-carousel__nav--prev" aria-label="<?php esc_attr_e( 'Vorige', 'oz-theme' ); ?>" data-direction="prev">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+		</button>
+		<button type="button" class="oz-hotspot-carousel__nav oz-hotspot-carousel__nav--next" aria-label="<?php esc_attr_e( 'Volgende', 'oz-theme' ); ?>" data-direction="next">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+		</button>
+		<div class="oz-hotspot-carousel__track">
 		<?php foreach ( $projects as $i => $project ) :
 			$p_title  = isset( $project['title'] )    ? (string) $project['title']    : '';
 			$p_imgUrl = isset( $project['imageUrl'] ) ? (string) $project['imageUrl'] : '';
@@ -83,6 +90,16 @@ $wrap = get_block_wrapper_attributes( array(
 					<figcaption class="oz-hotspot-carousel__caption"><?php echo esc_html( $p_title ); ?></figcaption>
 				<?php endif; ?>
 			</figure>
+		<?php endforeach; ?>
+		</div>
+	</div>
+	<div class="oz-hotspot-carousel__dots" role="tablist">
+		<?php foreach ( $projects as $i => $p ) : ?>
+			<button type="button" class="oz-hotspot-carousel__dot<?php echo $i === 0 ? ' is-active' : ''; ?>"
+			        data-dot-index="<?php echo (int) $i; ?>"
+			        role="tab"
+			        aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>"
+			        aria-label="<?php printf( esc_attr__( 'Ga naar slide %d', 'oz-theme' ), $i + 1 ); ?>"></button>
 		<?php endforeach; ?>
 	</div>
 </section>
