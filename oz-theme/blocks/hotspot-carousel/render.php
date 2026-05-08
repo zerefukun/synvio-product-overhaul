@@ -63,7 +63,11 @@ $wrap = get_block_wrapper_attributes( array(
 					     alt="<?php echo esc_attr( $p_title ?: __( 'Inspiratie project', 'oz-theme' ) ); ?>"
 					     loading="lazy">
 
-					<?php foreach ( $hotspots as $j => $hs ) :
+					<?php
+					// First pass: render hotspot BUTTONS positioned at x/y.
+					// Cards are rendered separately below, centered in the stage,
+					// linked by data-hotspot-target / data-hotspot-id pairs.
+					foreach ( $hotspots as $j => $hs ) :
 						$hx     = isset( $hs['x'] )          ? (float)  $hs['x']          : 50.0;
 						$hy     = isset( $hs['y'] )          ? (float)  $hs['y']          : 50.0;
 						$hlabel = isset( $hs['label'] )      ? (string) $hs['label']      : '';
@@ -73,56 +77,65 @@ $wrap = get_block_wrapper_attributes( array(
 							$hurl = get_permalink( $hpid );
 						}
 						if ( ! $hurl ) continue;
+						$hs_id = 'hs-' . $i . '-' . $j;
+					?>
+						<button type="button" class="oz-hotspot"
+						        data-hotspot-target="<?php echo esc_attr( $hs_id ); ?>"
+						        style="left:<?php echo esc_attr( $hx ); ?>%;top:<?php echo esc_attr( $hy ); ?>%;"
+						        aria-label="<?php echo esc_attr( $hlabel ?: __( 'Bekijk product', 'oz-theme' ) ); ?>"
+						        aria-expanded="false">
+							<svg class="oz-hotspot__icon" aria-hidden="true" focusable="false" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+								<path d="m46.69 10.34-10.55.07-25.8 25.8 17.45 17.45 25.8-25.8.07-10.55-6.97-6.97z"/>
+								<circle cx="43.95" cy="20.05" r="3.53" fill="currentColor"/>
+								<path d="M14.4 32.15 31.85 49.6"/>
+							</svg>
+						</button>
+					<?php endforeach; ?>
 
-						// Try to resolve URL → WC product so we can render a preview card.
-						// Falls back to a plain link if the URL doesn't map to a product
-						// (external link, archived product, etc.).
+					<?php
+					// Second pass: render cards as siblings of the image, all centered
+					// in the stage via CSS. JS toggles .is-open on the matched card
+					// when its sibling hotspot button is clicked.
+					foreach ( $hotspots as $j => $hs ) :
+						$hlabel = isset( $hs['label'] )      ? (string) $hs['label']      : '';
+						$hpid   = isset( $hs['productId'] )  ? (int)    $hs['productId']  : 0;
+						$hurl   = isset( $hs['productUrl'] ) ? (string) $hs['productUrl'] : '';
+						if ( ! $hurl && $hpid ) {
+							$hurl = get_permalink( $hpid );
+						}
+						if ( ! $hurl ) continue;
 						$resolved_pid = $hpid ?: ( function_exists( 'url_to_postid' ) ? url_to_postid( $hurl ) : 0 );
 						$resolved_product = ( $resolved_pid && function_exists( 'wc_get_product' ) ) ? wc_get_product( $resolved_pid ) : null;
+						if ( ! $resolved_product ) continue;
+						$hs_id    = 'hs-' . $i . '-' . $j;
+						$pimg_id  = $resolved_product->get_image_id();
+						$pimg_url = $pimg_id ? wp_get_attachment_image_url( $pimg_id, 'medium' ) : wc_placeholder_img_src( 'medium' );
+						$pname    = $resolved_product->get_name();
+						$pprice   = $resolved_product->get_price_html();
+						$purl     = get_permalink( $resolved_product->get_id() );
+						$pcats    = wp_get_post_terms( $resolved_product->get_id(), 'product_cat', array( 'fields' => 'names' ) );
+						$peyebrow = $hlabel ?: ( ! empty( $pcats ) && ! is_wp_error( $pcats ) ? strtoupper( $pcats[0] ) : '' );
 					?>
-						<div class="oz-hotspot-wrap" style="left:<?php echo esc_attr( $hx ); ?>%;top:<?php echo esc_attr( $hy ); ?>%;">
-							<button type="button" class="oz-hotspot"
-							        data-hotspot-index="<?php echo (int) $j; ?>"
-							        <?php if ( $resolved_product ) : ?>data-has-card="1"<?php endif; ?>
-							        aria-label="<?php echo esc_attr( $hlabel ?: __( 'Bekijk product', 'oz-theme' ) ); ?>"
-							        aria-expanded="false">
-								<svg class="oz-hotspot__icon" aria-hidden="true" focusable="false" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
-									<path d="m46.69 10.34-10.55.07-25.8 25.8 17.45 17.45 25.8-25.8.07-10.55-6.97-6.97z"/>
-									<circle cx="43.95" cy="20.05" r="3.53" fill="currentColor"/>
-									<path d="M14.4 32.15 31.85 49.6"/>
-								</svg>
+						<div class="oz-hotspot-card"
+						     data-hotspot-id="<?php echo esc_attr( $hs_id ); ?>"
+						     role="dialog" aria-modal="false" aria-label="<?php echo esc_attr( $pname ); ?>">
+							<button type="button" class="oz-hotspot-card__close" aria-label="<?php esc_attr_e( 'Sluiten', 'oz-theme' ); ?>">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
 							</button>
-
-							<?php if ( $resolved_product ) :
-								$pimg_id  = $resolved_product->get_image_id();
-								$pimg_url = $pimg_id ? wp_get_attachment_image_url( $pimg_id, 'medium' ) : wc_placeholder_img_src( 'medium' );
-								$pname    = $resolved_product->get_name();
-								$pprice   = $resolved_product->get_price_html();
-								$purl     = get_permalink( $resolved_product->get_id() );
-								// First product category as eyebrow (e.g. "MICROCEMENT")
-								$pcats    = wp_get_post_terms( $resolved_product->get_id(), 'product_cat', array( 'fields' => 'names' ) );
-								$peyebrow = $hlabel ?: ( ! empty( $pcats ) && ! is_wp_error( $pcats ) ? strtoupper( $pcats[0] ) : '' );
-							?>
-								<div class="oz-hotspot-card" role="dialog" aria-modal="false" aria-label="<?php echo esc_attr( $pname ); ?>" hidden>
-									<button type="button" class="oz-hotspot-card__close" aria-label="<?php esc_attr_e( 'Sluiten', 'oz-theme' ); ?>">
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-									</button>
-									<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__image-link">
-										<div class="oz-hotspot-card__image">
-											<img src="<?php echo esc_url( $pimg_url ); ?>" alt="<?php echo esc_attr( $pname ); ?>" loading="lazy">
-										</div>
-									</a>
-									<div class="oz-hotspot-card__body">
-										<?php if ( $peyebrow ) : ?>
-											<div class="oz-hotspot-card__eyebrow"><?php echo esc_html( $peyebrow ); ?></div>
-										<?php endif; ?>
-										<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__title-link">
-											<div class="oz-hotspot-card__title"><?php echo esc_html( $pname ); ?></div>
-										</a>
-										<div class="oz-hotspot-card__price"><?php echo wp_kses_post( $pprice ); ?></div>
-									</div>
+							<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__image-link">
+								<div class="oz-hotspot-card__image">
+									<img src="<?php echo esc_url( $pimg_url ); ?>" alt="<?php echo esc_attr( $pname ); ?>" loading="lazy">
 								</div>
-							<?php endif; ?>
+							</a>
+							<div class="oz-hotspot-card__body">
+								<?php if ( $peyebrow ) : ?>
+									<div class="oz-hotspot-card__eyebrow"><?php echo esc_html( $peyebrow ); ?></div>
+								<?php endif; ?>
+								<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__title-link">
+									<div class="oz-hotspot-card__title"><?php echo esc_html( $pname ); ?></div>
+								</a>
+								<div class="oz-hotspot-card__price"><?php echo wp_kses_post( $pprice ); ?></div>
+							</div>
 						</div>
 					<?php endforeach; ?>
 				</div>

@@ -2,12 +2,11 @@
  * oz/hotspot-carousel — frontend interactions.
  *
  * Modeled on gulcanhome's pattern:
- * - Hotspot click → opens its product card in the CENTER of the slide.
- *   Cards are always centered, never anchored to the hotspot, so we
- *   never run into edge-clipping issues.
+ * - Hotspot click → opens its product card in the CENTER of the slide stage.
+ *   Buttons + cards are siblings under the image-wrap; JS pairs them by
+ *   data-hotspot-target ↔ data-hotspot-id. Card centers via CSS.
  * - One card open at a time per carousel.
  * - Outside click, ESC, slide change, scroll → all close any open card.
- * - Carousel: prev/next arrows, pagination dots, IO-driven sync.
  *
  * No deps. ~2KB.
  */
@@ -22,10 +21,10 @@
 	}
 
 	function initHotspotCards( root ) {
-		root.querySelectorAll( '.oz-hotspot-wrap' ).forEach( function ( wrap ) {
-			const btn  = wrap.querySelector( '.oz-hotspot' );
-			const card = wrap.querySelector( '.oz-hotspot-card' );
-			if ( ! btn || ! card ) return;
+		root.querySelectorAll( '.oz-hotspot[data-hotspot-target]' ).forEach( function ( btn ) {
+			const targetId = btn.getAttribute( 'data-hotspot-target' );
+			const card = root.querySelector( '.oz-hotspot-card[data-hotspot-id="' + targetId + '"]' );
+			if ( ! card ) return;
 
 			btn.addEventListener( 'click', function ( ev ) {
 				ev.preventDefault();
@@ -37,17 +36,17 @@
 					btn.setAttribute( 'aria-expanded', 'true' );
 				}
 			} );
+		} );
 
-			const closeBtn = card.querySelector( '.oz-hotspot-card__close' );
-			if ( closeBtn ) {
-				closeBtn.addEventListener( 'click', function ( ev ) {
-					ev.preventDefault();
-					ev.stopPropagation();
-					card.classList.remove( 'is-open' );
-					btn.setAttribute( 'aria-expanded', 'false' );
-				} );
-			}
+		root.querySelectorAll( '.oz-hotspot-card__close' ).forEach( function ( closeBtn ) {
+			closeBtn.addEventListener( 'click', function ( ev ) {
+				ev.preventDefault();
+				ev.stopPropagation();
+				closeAllCards( root );
+			} );
+		} );
 
+		root.querySelectorAll( '.oz-hotspot-card' ).forEach( function ( card ) {
 			card.addEventListener( 'click', function ( ev ) { ev.stopPropagation(); } );
 		} );
 	}
@@ -111,7 +110,6 @@
 		slides.forEach( function ( s ) { io.observe( s ); } );
 		setActive( 0 );
 
-		// Close any open card whenever the carousel scrolls (slide change)
 		track.addEventListener( 'scroll', function () { closeAllCards( root ); }, { passive: true } );
 	}
 
@@ -119,7 +117,6 @@
 		initHotspotCards( root );
 		initCarousel( root );
 
-		// Outside-click + ESC dismiss
 		document.addEventListener( 'click', function ( ev ) {
 			if ( ! root.contains( ev.target ) ) closeAllCards( root );
 		} );
