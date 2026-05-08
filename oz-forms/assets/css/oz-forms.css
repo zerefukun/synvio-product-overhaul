@@ -1105,42 +1105,38 @@ html.oz-kleur-lb-open {
  * When the user moves past step 1, the four picked colors render as
  * read-only thumbnails inside step 1's progress <li>. Image source is
  * the page's swatch grid (cloned via JS). No delete affordance: this
- * is a recap, not an editor. */
+ * is a recap, not an editor. Image thumbs carry no caption (the image
+ * IS the cue, with title attribute for hover); only code-only fallback
+ * chips render their value as text. */
 .oz-form__progress-thumbs {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: 8px;
-	margin-top: 10px;
-	padding-top: 10px;
-	border-top: 1px solid rgba(0, 0, 0, 0.08);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 8px;
 }
 .oz-form__progress-thumb {
 	margin: 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 4px;
 }
 .oz-form__progress-thumb img {
 	display: block;
-	width: 100%;
-	max-width: 64px;
-	aspect-ratio: 1 / 1;
+	width: 32px;
+	height: 32px;
 	object-fit: cover;
-	border-radius: 4px;
+	border-radius: 3px;
 	background: rgba(0, 0, 0, 0.05);
 }
 .oz-form__progress-thumb--code {
-	min-height: 64px;
+	min-width: 32px;
+	min-height: 32px;
+	display: flex;
+	align-items: center;
 	justify-content: center;
 	background: rgba(0, 0, 0, 0.04);
-	border-radius: 4px;
-	padding: 6px 4px;
+	border-radius: 3px;
+	padding: 0 6px;
 }
-.oz-form__progress-thumb figcaption {
+.oz-form__progress-thumb--code figcaption {
 	font-size: 11px;
-	line-height: 1.2;
-	text-align: center;
+	line-height: 1.1;
 	color: rgba(0, 0, 0, 0.65);
-	word-break: break-word;
 }

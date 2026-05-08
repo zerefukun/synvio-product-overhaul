@@ -191,6 +191,7 @@
 			);
 			var fig = document.createElement( 'figure' );
 			fig.className = 'oz-form__progress-thumb';
+			fig.title = val;
 			if ( src ) {
 				var img = document.createElement( 'img' );
 				img.src = src.currentSrc || src.src;
@@ -198,12 +199,13 @@
 				img.loading = 'lazy';
 				fig.appendChild( img );
 			} else {
-				// Fallback: a plain chip showing the code, no image.
+				// Fallback: a plain chip showing the code, no image. Caption
+				// stays so the user can still see what they picked.
 				fig.classList.add( 'oz-form__progress-thumb--code' );
+				var cap = document.createElement( 'figcaption' );
+				cap.textContent = val;
+				fig.appendChild( cap );
 			}
-			var cap = document.createElement( 'figcaption' );
-			cap.textContent = val;
-			fig.appendChild( cap );
 			wrap.appendChild( fig );
 		} );
 		return wrap;
