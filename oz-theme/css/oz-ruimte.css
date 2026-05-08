@@ -72,6 +72,20 @@
   background: transparent;
 }
 
+/* Full-bleed exception for the ruimte tail split block.
+   Other .oz-hp-section wrappers center content in a 1100px inner-container
+   with 80px section padding (good for heading-card sections). The tail
+   split block (image left, info card right) is meant to bleed edge-to-edge,
+   so we strip both the inner-container constraint and the section padding
+   only on this one variant. */
+.oz-ruimte .oz-rp2-tail-split-wrap.wp-block-group {
+  padding: 0;
+}
+.oz-ruimte .oz-rp2-tail-split-wrap > .wp-block-group__inner-container {
+  max-width: none;
+  padding: 0;
+}
+
 /* Neutralize first/last child vertical margins inside sections so the section
    padding is the sole authority for inter-section spacing. WP core sets
    margin-bottom: 28px on .wp-block-columns and similar blocks, which would
