@@ -1759,6 +1759,22 @@ function oz_customize_checkout_fields( $fields ) {
 add_filter( 'woocommerce_billing_fields', 'oz_customize_checkout_fields' );
 
 /**
+ * Register custom Gutenberg blocks shipped with the theme.
+ *
+ * Each block lives in oz-theme/blocks/<name>/ and uses block.json metadata.
+ * register_block_type() with a path discovers block.json automatically and
+ * wires up editorScript / style / render based on its file:./ paths.
+ */
+function oz_register_theme_blocks() {
+	$blocks_dir = get_stylesheet_directory() . '/blocks';
+	if ( ! is_dir( $blocks_dir ) ) return;
+	foreach ( glob( $blocks_dir . '/*/block.json' ) as $block_json ) {
+		register_block_type( dirname( $block_json ) );
+	}
+}
+add_action( 'init', 'oz_register_theme_blocks' );
+
+/**
  * Render the "Veilig betalen" payment-icons strip.
  *
  * Static SVGs from oz-theme/img/payment-icons/. Decoupled from Mollie

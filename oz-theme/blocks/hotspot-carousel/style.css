@@ -1,0 +1,139 @@
+/* Frontend styles for oz/hotspot-carousel — loaded on both editor and front. */
+
+.oz-hotspot-carousel {
+  margin: 0;
+  padding: 0;
+}
+
+.oz-hotspot-carousel__header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.oz-hotspot-carousel__title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 400;
+  margin: 8px 0 0;
+  color: var(--oz-text-primary, #1a1a1a);
+}
+
+/* Horizontal scroll-snap track. Each slide takes ~70% viewport on mobile, ~45%
+   on tablet, ~33% on desktop so 2-3 are visible at once. */
+.oz-hotspot-carousel__track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 16px 16px;
+  scrollbar-width: thin;
+}
+
+.oz-hotspot-carousel__slide {
+  flex: 0 0 70%;
+  scroll-snap-align: start;
+  margin: 0;
+}
+
+@media (min-width: 700px) {
+  .oz-hotspot-carousel__slide { flex-basis: 45%; }
+}
+@media (min-width: 1100px) {
+  .oz-hotspot-carousel__slide { flex-basis: 32%; }
+}
+
+.oz-hotspot-carousel__image-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--oz-bg-warm, #f5f4f0);
+  aspect-ratio: 4 / 5;
+}
+
+.oz-hotspot-carousel__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.oz-hotspot-carousel__caption {
+  margin: 12px 4px 0;
+  font-size: 14px;
+  color: var(--oz-text-body, #555);
+  text-align: center;
+}
+
+/* ── Hotspot dot ── */
+.oz-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  text-decoration: none;
+  z-index: 2;
+}
+
+.oz-hotspot__dot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--oz-accent, #135350);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  position: relative;
+  transition: transform 0.15s ease;
+}
+
+.oz-hotspot__dot::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: var(--oz-accent, #135350);
+}
+
+.oz-hotspot:hover .oz-hotspot__dot,
+.oz-hotspot:focus-visible .oz-hotspot__dot {
+  transform: scale(1.15);
+}
+
+/* Pulsing ring to draw attention */
+.oz-hotspot__dot::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--oz-accent, #135350);
+  opacity: 0.6;
+  animation: oz-hotspot-pulse 2s ease-out infinite;
+}
+
+@keyframes oz-hotspot-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* Tooltip on hover */
+.oz-hotspot__tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--oz-text-primary, #1a1a1a);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.oz-hotspot:hover .oz-hotspot__tooltip,
+.oz-hotspot:focus-visible .oz-hotspot__tooltip {
+  opacity: 1;
+}
