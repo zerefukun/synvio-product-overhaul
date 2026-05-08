@@ -1465,6 +1465,58 @@ div.oz-pu-stack-band {
 .oz-product-short-desc li::before {
   content: none;
 }
+.oz-bundle-swatcher {
+  margin: 12px 0 16px;
+}
+.oz-bundle-swatcher-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--oz-text-muted, #6B6B6B);
+  margin-bottom: 10px;
+}
+.oz-bundle-swatcher-track {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.oz-bundle-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 64px;
+  text-decoration: none;
+  padding: 4px;
+  border: 1.5px solid transparent;
+  border-radius: 6px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.oz-bundle-swatch:hover {
+  border-color: var(--oz-border, #E5E5E3);
+  transform: translateY(-1px);
+}
+.oz-bundle-swatch.selected {
+  border-color: var(--oz-accent, #135350);
+}
+.oz-bundle-swatch img {
+  width: 100%;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+.oz-bundle-swatch-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--oz-text-body, #555);
+  text-align: center;
+  line-height: 1.2;
+}
+.oz-bundle-swatch.selected .oz-bundle-swatch-label {
+  color: var(--oz-accent, #135350);
+}
 @media (max-width: 900px) {
   .oz-short-desc {
     margin-bottom: 6px;
@@ -2024,9 +2076,12 @@ div.oz-pu-stack-band {
 }
 .oz-color-drawer-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  font-family: "Raleway", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  font-family:
+    "DM Serif Display",
+    Georgia,
+    serif;
   color: var(--oz-text-primary);
   line-height: 1.3;
 }
