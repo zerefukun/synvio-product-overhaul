@@ -112,10 +112,12 @@
 
 .oz-hotspot-carousel__image-wrap {
   position: relative;
-  overflow: hidden;
-  border-radius: 8px;
+  /* overflow visible so hotspot cards can extend beyond the image bounds.
+     Border-radius is applied to the <img> directly to keep the rounded look. */
+  overflow: visible;
   background: var(--oz-bg-warm, #f5f4f0);
   aspect-ratio: 4 / 5;
+  border-radius: 8px;
 }
 
 .oz-hotspot-carousel__image {
@@ -123,6 +125,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 8px;
 }
 
 .oz-hotspot-carousel__caption {
