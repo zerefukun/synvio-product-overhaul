@@ -160,6 +160,9 @@ $site_name = get_bloginfo( 'name' );
 	}
 	</script>
 
+	<!-- Payment icons strip — sitewide, replaces Flatsome's flatsome_footer_payment_icons -->
+	<?php if ( function_exists( 'oz_payment_icons_strip' ) ) oz_payment_icons_strip( 'footer' ); ?>
+
 	<!-- Bottom bar -->
 	<div class="oz-footer__bottom">
 		<p class="oz-footer__co2">Ons bedrijf is CO<sub>2</sub> neutraal en we recyclen zo veel mogelijk.</p>

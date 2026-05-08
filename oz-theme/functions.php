@@ -1757,3 +1757,39 @@ function oz_customize_checkout_fields( $fields ) {
     return $fields;
 }
 add_filter( 'woocommerce_billing_fields', 'oz_customize_checkout_fields' );
+
+/**
+ * Render the "Veilig betalen" payment-icons strip.
+ *
+ * Static SVGs from oz-theme/img/payment-icons/. Decoupled from Mollie
+ * plugin status so the strip works in the footer (where WC context may
+ * not exist) and on staging (where Mollie isn't configured).
+ *
+ * @param string $variant 'pdp' (price-summary inline) or 'footer' (centered footer strip)
+ */
+function oz_payment_icons_strip( $variant = 'footer' ) {
+    $icons = array(
+        'ideal'          => 'iDEAL',
+        'creditcards'    => 'Creditcard',
+        'paypal'         => 'PayPal',
+        'applepay'       => 'Apple Pay',
+        'bancontact'     => 'Bancontact',
+        'klarnapaylater' => 'Klarna',
+    );
+    $base = get_stylesheet_directory_uri() . '/img/payment-icons/';
+    $cls  = 'oz-payment-section oz-payment-section--' . esc_attr( $variant );
+    ?>
+    <div class="<?php echo $cls; ?>">
+      <div class="oz-payment-label">Veilig betalen</div>
+      <div class="oz-payment-methods">
+        <?php foreach ( $icons as $slug => $alt ) : ?>
+          <div class="oz-payment-icon">
+            <img src="<?php echo esc_url( $base . $slug . '.svg' ); ?>"
+                 alt="<?php echo esc_attr( $alt ); ?>"
+                 width="38" height="24" loading="lazy">
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php
+}
