@@ -11,27 +11,87 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Beton Ciré Original codes 1000-1063 with their human-readable color names.
+ * Same underlying set is used twice: once as Kant & Klaar (label = "Stone White 1000")
+ * and once as Zelf Mengen (label = bare code "1000", name surfaces only on the swatch grid).
+ */
+$original_codes = array(
+	'1000' => 'Stone White',
+	'1001' => 'France Grey',
+	'1002' => 'France Grey Mid',
+	'1003' => 'France Grey Dark',
+	'1004' => 'Elephant Skin',
+	'1005' => 'Earth Stone',
+	'1006' => 'Tin Grey',
+	'1007' => 'Smoke Black',
+	'1008' => 'Jack Black',
+	'1010' => 'Azul Blue',
+	'1011' => 'Sky Blue',
+	'1014' => 'Lavendel',
+	'1015' => 'Powder Skin',
+	'1016' => 'Peach Blossom Light',
+	'1017' => 'Peach Blossom Dark',
+	'1018' => 'Nude',
+	'1020' => 'Ashes Of Rose',
+	'1021' => 'Taupe Dark',
+	'1025' => 'Almond',
+	'1026' => 'Camel',
+	'1027' => 'Army Grey',
+	'1028' => 'Antique White',
+	'1029' => 'Havanna Yellow',
+	'1030' => 'Sunday',
+	'1031' => 'Sahara Dust',
+	'1032' => 'Goldzand',
+	'1033' => 'Old Romance',
+	'1034' => 'Deep Earth',
+	'1035' => 'China Clay',
+	'1036' => 'Nutmeg',
+	'1037' => 'Dusty Rose',
+	'1038' => 'Soft Taupe',
+	'1040' => 'Island Stone Light',
+	'1041' => 'Island Stone Deep',
+	'1042' => 'Island Stone Dark',
+	'1043' => 'Old Linnen',
+	'1044' => 'Dried Clay',
+	'1045' => 'Pebble Stone',
+	'1046' => 'Taupe Light',
+	'1048' => 'Pepper',
+	'1049' => 'Silky Grey',
+	'1050' => 'Silver Clay',
+	'1051' => 'Shabby Clay',
+	'1052' => 'Urban Grey',
+	'1053' => 'Storm Grey',
+	'1054' => 'Telegrey',
+	'1060' => 'Greyish',
+	'1061' => 'Pistache Soft Green',
+	'1062' => 'Shadow Green',
+	'1063' => 'Mud Green',
+);
+
+$original_kk = array();
+foreach ( $original_codes as $code => $name ) {
+	// Kant & Klaar dropdown shows "Stone White 1000" (matches the product drawer).
+	$label = $name . ' ' . $code;
+	$original_kk[ $label ] = $label;
+}
+
+$original_zm = array();
+foreach ( $original_codes as $code => $name ) {
+	// Zelf Mengen dropdown shows the code only — the swatch grid carries the name
+	// underneath each chip, so the customer still has the matching context visually.
+	$original_zm[ $code ] = $code;
+}
+
 return array(
 
-	/* RAL Classic 1000-series — preserves the exact range CF7 form 1418 had. */
-	'ral' => array_combine(
-		array(
-			'1000','1001','1002','1003','1004','1005','1006','1007','1008','1010',
-			'1011','1014','1015','1016','1017','1018','1020','1021','1025','1026',
-			'1027','1028','1029','1030','1031','1032','1033','1034','1035','1036',
-			'1037','1038','1040','1041','1042','1043','1044','1045','1046','1048',
-			'1049','1050','1051','1052','1053','1054','1060','1061','1062','1063',
-		),
-		array(
-			'RAL 1000','RAL 1001','RAL 1002','RAL 1003','RAL 1004','RAL 1005','RAL 1006','RAL 1007','RAL 1008','RAL 1010',
-			'RAL 1011','RAL 1014','RAL 1015','RAL 1016','RAL 1017','RAL 1018','RAL 1020','RAL 1021','RAL 1025','RAL 1026',
-			'RAL 1027','RAL 1028','RAL 1029','RAL 1030','RAL 1031','RAL 1032','RAL 1033','RAL 1034','RAL 1035','RAL 1036',
-			'RAL 1037','RAL 1038','RAL 1040','RAL 1041','RAL 1042','RAL 1043','RAL 1044','RAL 1045','RAL 1046','RAL 1048',
-			'RAL 1049','RAL 1050','RAL 1051','RAL 1052','RAL 1053','RAL 1054','RAL 1060','RAL 1061','RAL 1062','RAL 1063',
-		)
-	),
+	/* Beton Ciré Original — Kant & Klaar (named first, code suffix). */
+	'original-kk' => $original_kk,
 
-	/* All-In-One palette — also used by Betonlook Verf (CF7 25532). */
+	/* Beton Ciré Original — Zelf Mengen / Mixen pigment line (code only in dropdown). */
+	'original-zelfmengen' => $original_zm,
+
+	/* All-In-One palette — also used by Betonlook Verf. */
 	'allinone' => array_combine(
 		array(
 			'Atmos','Base grey','Basil','Bellbird','Bit of green','Bricks','Camouflage','Canyon','Cloudy','Coconut grove',

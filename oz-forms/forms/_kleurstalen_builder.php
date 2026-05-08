@@ -1,7 +1,7 @@
 <?php
 /**
- * Builder for the 5 kleurstalen schemas. They share the exact same shape,
- * only the title, product name, and color palette differ.
+ * Builder for the kleurstalen schemas. They share the exact same shape, only
+ * the title, product name, and color palette differ.
  *
  * Each kleurstalen-*.php file does:
  *   $build = include __DIR__ . '/_kleurstalen_builder.php';
@@ -48,7 +48,7 @@ return function ( array $cfg ) use ( $palettes ) {
 			$name = trim( ( $data['voornaam'] ?? '' ) . ' ' . ( $data['achternaam'] ?? '' ) );
 			return sprintf( '[Kleurstalen %s] Aanvraag van %s', $product, $name ?: 'iemand' );
 		},
-		'reply_subject' => 'Bedankt voor je kleurstalen-aanvraag — Beton Ciré Webshop',
+		'reply_subject' => 'Bedankt voor je kleurstalen-aanvraag - Beton Ciré Webshop',
 		'reply_body'    => function ( $data ) use ( $product ) {
 			$name = $data['voornaam'] ?? '';
 			return '<p>Hi ' . esc_html( $name ) . ',</p>'
@@ -67,8 +67,9 @@ return function ( array $cfg ) use ( $palettes ) {
 			array(
 				'title'  => 'Jouw gegevens',
 				'fields' => array(
-					'voornaam', 'achternaam', 'bedrijfsnaam', 'email',
-					'aanbrengen', 'verwachting', 'gevonden',
+					'voornaam', 'achternaam', 'bedrijfsnaam', 'email', 'telefoon',
+					'straatnaam', 'huisnummer', 'postcode', 'woonplaats', 'land',
+					'aanbrengen', 'verwachting', 'gevonden', 'opt_in',
 				),
 			),
 		),
@@ -83,6 +84,13 @@ return function ( array $cfg ) use ( $palettes ) {
 			'achternaam'   => array( 'label' => 'Achternaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw achternaam' ),
 			'bedrijfsnaam' => array( 'label' => 'Bedrijfsnaam', 'type' => 'text', 'required' => false, 'maxlength' => 120, 'placeholder' => 'Uw bedrijfsnaam (optioneel)' ),
 			'email'        => array( 'label' => 'E-mailadres', 'type' => 'email', 'required' => true, 'maxlength' => 150, 'placeholder' => 'Uw e-mailadres' ),
+			'telefoon'     => array( 'label' => 'Telefoonnummer', 'type' => 'tel', 'required' => false, 'maxlength' => 30, 'placeholder' => 'Uw telefoonnummer (optioneel)' ),
+
+			'straatnaam'   => array( 'label' => 'Straatnaam', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw straatnaam' ),
+			'huisnummer'   => array( 'label' => 'Huisnummer', 'type' => 'text', 'required' => true, 'maxlength' => 20, 'placeholder' => 'Bijv. 12 of 12-A' ),
+			'postcode'     => array( 'label' => 'Postcode', 'type' => 'text', 'required' => true, 'maxlength' => 12, 'placeholder' => 'Bijv. 1234 AB' ),
+			'woonplaats'   => array( 'label' => 'Woonplaats', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw woonplaats' ),
+			'land'         => array( 'label' => 'Land', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Nederland' ),
 
 			'aanbrengen' => array(
 				'label'    => 'Waar wil je het aanbrengen?',
@@ -97,14 +105,19 @@ return function ( array $cfg ) use ( $palettes ) {
 				'required' => false,
 				'rows'     => 3,
 				'maxlength' => 1000,
-				'placeholder' => 'Geef je verwachtingen aan…',
+				'placeholder' => 'Geef je verwachtingen aan...',
 			),
 			'gevonden' => array(
 				'label'    => 'Hoe heb je ons gevonden?',
 				'type'     => 'text',
 				'required' => true,
 				'maxlength' => 200,
-				'placeholder' => 'Google, Instagram, via via…',
+				'placeholder' => 'Google, Instagram, via via...',
+			),
+			'opt_in' => array(
+				'label'    => 'Ik wil graag e-mails ontvangen over updates, aanbiedingen en kortingen.',
+				'type'     => 'checkbox',
+				'required' => false,
 			),
 		),
 	);
