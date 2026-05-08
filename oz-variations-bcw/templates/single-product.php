@@ -365,15 +365,27 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       // kleurstalen-pakket-*). Shows other themed bundles as thumbnails for
       // cross-navigation. Excludes the legacy 'kleurenpakket' deposit product.
       if (strpos($product->get_slug(), 'kleurstalen-pakket-') === 0) :
+          // Sibling themed bundles: same category + slug starts with kleurstalen-pakket-.
+          // post_name__like isn't a real WP_Query arg, so we filter slugs in PHP.
           $sibling_query = new WP_Query([
-              'post_type'       => 'product',
-              'posts_per_page'  => -1,
-              'post__not_in'    => [$product_id],
-              'post_name__like' => 'kleurstalen-pakket-',
-              'orderby'         => 'menu_order title',
-              'order'           => 'ASC',
-              'no_found_rows'   => true,
+              'post_type'      => 'product',
+              'posts_per_page' => -1,
+              'post__not_in'   => [$product_id],
+              'tax_query'      => [[
+                  'taxonomy' => 'product_cat',
+                  'field'    => 'slug',
+                  'terms'    => 'kleurenpakket',
+              ]],
+              'orderby'        => 'menu_order title',
+              'order'          => 'ASC',
+              'no_found_rows'  => true,
           ]);
+          // Drop any post whose slug doesn't match the themed-bundle pattern.
+          $sibling_query->posts = array_values(array_filter(
+              $sibling_query->posts,
+              function ($p) { return strpos($p->post_name, 'kleurstalen-pakket-') === 0; }
+          ));
+          $sibling_query->post_count = count($sibling_query->posts);
           // Theme extractor: pulls "Cement" from "...Kant & Klaar: Cement" or full title fallback.
           $extract_theme = function($title) {
               return preg_match('/:\s*([^()]+?)\s*(\(|$)/', $title, $m) ? trim($m[1]) : $title;
