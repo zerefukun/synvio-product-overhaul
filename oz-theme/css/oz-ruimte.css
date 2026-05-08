@@ -78,12 +78,13 @@
    split block (image left, info card right) is meant to bleed edge-to-edge,
    so we strip both the inner-container constraint and the section padding
    only on this one variant. */
-.oz-ruimte .oz-rp2-tail-split-wrap.wp-block-group {
+.oz-ruimte .wp-block-group.oz-rp2-tail-split-wrap {
   padding: 0;
 }
-.oz-ruimte .oz-rp2-tail-split-wrap > .wp-block-group__inner-container {
+.oz-ruimte .wp-block-group.oz-rp2-tail-split-wrap > .wp-block-group__inner-container {
   max-width: none;
   padding: 0;
+  display: contents;
 }
 
 /* Neutralize first/last child vertical margins inside sections so the section
@@ -1353,6 +1354,18 @@
 
 .oz-ruimte .oz-kleur-grid--lg .oz-kleur-swatch img {
   aspect-ratio: 5 / 4;
+}
+
+/* Mobile: force exactly 2 columns with smaller gap.
+   Default minmax(180px, 1fr) needs 376px (2*180 + 16 gap) which doesn't fit
+   in a 390px iPhone viewport minus container padding — would fall back to 1
+   column. Explicit repeat(2, 1fr) keeps the pair-up consistent across all
+   small screens (320–599px). Gap reduced so each cell stays large enough. */
+@media (max-width: 599px) {
+  .oz-ruimte .oz-kleur-grid--lg {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
 
 /* ================================================================
