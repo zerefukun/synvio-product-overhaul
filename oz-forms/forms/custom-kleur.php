@@ -32,10 +32,11 @@ return array(
 		'telefoon'   => array( 'label' => 'Telefoonnummer', 'type' => 'tel', 'required' => false, 'maxlength' => 30, 'placeholder' => 'Uw telefoonnummer (optioneel)', 'width' => 'half' ),
 
 		'product' => array(
-			'label'    => 'Voor welk product wil je de custom kleur?',
-			'type'     => 'radio',
-			'required' => true,
-			'options'  => array(
+			'label'       => 'Voor welk product wil je de custom kleur?',
+			'type'        => 'select',
+			'required'    => true,
+			'placeholder' => 'Selecteer een product',
+			'options'     => array(
 				'Original'                  => 'Beton Ciré Original',
 				'Easyline & All-In-One'     => 'Beton Ciré Easyline & All-In-One',
 				'Metallic Stuc Velvet'      => 'Metallic Stuc Velvet',
@@ -46,10 +47,11 @@ return array(
 		),
 
 		'kleur_type' => array(
-			'label'    => 'Hoe wil je de kleur opgeven?',
-			'type'     => 'radio',
-			'required' => true,
-			'options'  => array(
+			'label'       => 'Hoe wil je de kleur opgeven?',
+			'type'        => 'select',
+			'required'    => true,
+			'placeholder' => 'Kies een type',
+			'options'     => array(
 				'RAL'         => 'RAL-code',
 				'NCS'         => 'NCS-code',
 				'Pantone'     => 'Pantone-code',
