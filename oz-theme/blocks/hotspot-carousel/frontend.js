@@ -20,7 +20,7 @@
 
 			btn.addEventListener( 'click', function ( ev ) {
 				ev.stopPropagation();
-				const isOpen = ! card.hidden;
+				const isOpen = card.classList.contains( 'is-open' );
 				closeAll( root );
 				if ( isOpen ) return;
 				// Decide above/below based on hotspot Y within the slide
@@ -29,7 +29,7 @@
 				const hsRect    = wrap.getBoundingClientRect();
 				const yPercent  = slideRect ? ( ( hsRect.top - slideRect.top ) / slideRect.height ) : 0.5;
 				card.classList.toggle( 'is-below', yPercent < 0.45 );
-				card.hidden = false;
+				card.classList.add( 'is-open' );
 				btn.setAttribute( 'aria-expanded', 'true' );
 			} );
 
@@ -37,7 +37,7 @@
 			if ( closeBtn ) {
 				closeBtn.addEventListener( 'click', function ( ev ) {
 					ev.stopPropagation();
-					card.hidden = true;
+					card.classList.remove( 'is-open' );
 					btn.setAttribute( 'aria-expanded', 'false' );
 				} );
 			}
@@ -47,7 +47,7 @@
 		} );
 	}
 	function closeAll( root ) {
-		root.querySelectorAll( '.oz-hotspot-card' ).forEach( function ( c ) { c.hidden = true; } );
+		root.querySelectorAll( '.oz-hotspot-card' ).forEach( function ( c ) { c.classList.remove( 'is-open' ); } );
 		root.querySelectorAll( '.oz-hotspot' ).forEach( function ( b ) { b.setAttribute( 'aria-expanded', 'false' ); } );
 	}
 
