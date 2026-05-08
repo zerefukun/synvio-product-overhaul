@@ -165,6 +165,62 @@
 		return ok;
 	}
 
+	/* Kleurstalen-only: when the user moves past the color-picking step,
+	 * render the four selected swatches inside step 1's progress <li> as a
+	 * read-only visual recap. Reverts on going back to step 1. */
+	function isKleurstalenForm( form ) {
+		return !! form.querySelector( 'select[name="kleur1"]' );
+	}
+	function buildSwatchThumbs( form ) {
+		var picks = [];
+		[ 'kleur1', 'kleur2', 'kleur3', 'kleur4' ].forEach( function ( n ) {
+			var sel = form.querySelector( 'select[name="' + n + '"]' );
+			if ( ! sel || ! sel.value ) { return; }
+			picks.push( sel.value );
+		} );
+		if ( picks.length === 0 ) { return null; }
+
+		var wrap = document.createElement( 'div' );
+		wrap.className = 'oz-form__progress-thumbs';
+		picks.forEach( function ( val ) {
+			// Look for a swatch elsewhere on the page that carries this exact
+			// dropdown value. The page's swatch grid is the source of truth for
+			// images, so we just clone what's already there.
+			var src = document.querySelector(
+				'[data-value="' + val.replace( /"/g, '' ) + '"] img'
+			);
+			var fig = document.createElement( 'figure' );
+			fig.className = 'oz-form__progress-thumb';
+			if ( src ) {
+				var img = document.createElement( 'img' );
+				img.src = src.currentSrc || src.src;
+				img.alt = val;
+				img.loading = 'lazy';
+				fig.appendChild( img );
+			} else {
+				// Fallback: a plain chip showing the code, no image.
+				fig.classList.add( 'oz-form__progress-thumb--code' );
+			}
+			var cap = document.createElement( 'figcaption' );
+			cap.textContent = val;
+			fig.appendChild( cap );
+			wrap.appendChild( fig );
+		} );
+		return wrap;
+	}
+	function updateSwatchPreview( form, idx, progress ) {
+		if ( ! isKleurstalenForm( form ) ) { return; }
+		var firstStepLi = progress[ 0 ];
+		if ( ! firstStepLi ) { return; }
+		var existing = firstStepLi.querySelector( '.oz-form__progress-thumbs' );
+		if ( existing ) { existing.remove(); }
+		// Only render thumbs when step 1 is "done" (user moved past it).
+		if ( idx > 0 ) {
+			var thumbs = buildSwatchThumbs( form );
+			if ( thumbs ) { firstStepLi.appendChild( thumbs ); }
+		}
+	}
+
 	function setupSteps( form ) {
 		var steps   = Array.prototype.slice.call( form.querySelectorAll( '.oz-form__step' ) );
 		var progress= Array.prototype.slice.call( form.querySelectorAll( '.oz-form__progress-step' ) );
@@ -193,6 +249,7 @@
 			if ( ! opts || opts.scroll !== false ) {
 				form.scrollIntoView( { behavior: 'smooth', block: 'start' } );
 			}
+			updateSwatchPreview( form, idx, progress );
 			current = idx;
 		}
 

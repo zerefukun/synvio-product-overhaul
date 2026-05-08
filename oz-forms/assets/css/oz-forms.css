@@ -1100,3 +1100,47 @@ html.oz-kleur-lb-open {
 	outline-offset: 3px;
 	border-radius: 2px;
 }
+
+/* ───────── Kleurstalen step-2 progress preview ─────────
+ * When the user moves past step 1, the four picked colors render as
+ * read-only thumbnails inside step 1's progress <li>. Image source is
+ * the page's swatch grid (cloned via JS). No delete affordance: this
+ * is a recap, not an editor. */
+.oz-form__progress-thumbs {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 8px;
+	margin-top: 10px;
+	padding-top: 10px;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.oz-form__progress-thumb {
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+}
+.oz-form__progress-thumb img {
+	display: block;
+	width: 100%;
+	max-width: 64px;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	border-radius: 4px;
+	background: rgba(0, 0, 0, 0.05);
+}
+.oz-form__progress-thumb--code {
+	min-height: 64px;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.04);
+	border-radius: 4px;
+	padding: 6px 4px;
+}
+.oz-form__progress-thumb figcaption {
+	font-size: 11px;
+	line-height: 1.2;
+	text-align: center;
+	color: rgba(0, 0, 0, 0.65);
+	word-break: break-word;
+}
