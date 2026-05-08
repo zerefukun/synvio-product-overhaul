@@ -11,9 +11,21 @@
  * @package OzTheme
  */
 
-$has_hero = is_front_page()
+/* The transparent overlay nav assumes a dark hero image behind it.
+   Pages using the new light hub-style hero (.oz-rp2-ksh-top, sand bg)
+   need the standard solid white nav so the menu stays legible AND so
+   the body picks up the standard top padding (otherwise content is
+   glued under an invisible transparent nav). Detect by sniffing
+   post_content for the hub class — any page that ships the new hero
+   automatically opts out of overlay mode. */
+$oz_post = get_post();
+$oz_has_light_hero = $oz_post && false !== strpos( $oz_post->post_content, 'oz-rp2-ksh-top' );
+
+$has_hero = ! $oz_has_light_hero && (
+	is_front_page()
 	|| is_page_template( 'page-ruimte.php' )
-	|| ( is_single() && has_category( 'stucsoorten' ) );
+	|| ( is_single() && has_category( 'stucsoorten' ) )
+);
 $logo_id    = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 $logo_url   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 
