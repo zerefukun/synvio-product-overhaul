@@ -118,6 +118,21 @@ function oz_fonts_preload() {
 add_action('wp_head', 'oz_fonts_preload', 1);
 
 /**
+ * Preconnect to googletagmanager.com so the TLS + DNS handshake
+ * happens in parallel with HTML parsing rather than after the
+ * deferred GTM bootstrap fires. Saves ~100-200ms on the first
+ * gtm.js request, which then frontloads gtag/js child requests.
+ *
+ * crossorigin needed because GTM scripts ship with CORS headers
+ * and the preconnect connection is reused for those fetches.
+ */
+function oz_preconnect_third_party() {
+    if (is_admin()) return;
+    echo '<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>' . "\n";
+}
+add_action('wp_head', 'oz_preconnect_third_party', 1);
+
+/**
  * Enqueue scroll-reveal animation CSS + JS on all frontend pages.
  * Unified system: watches [data-reveal], [data-reveal-stagger], [data-reveal-img].
  * Adds .oz-visible via IntersectionObserver.
