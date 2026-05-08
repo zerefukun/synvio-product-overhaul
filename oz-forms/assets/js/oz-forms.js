@@ -444,9 +444,23 @@
 		grids.forEach( function ( grid ) {
 			grid.classList.add( 'oz-kleur-grid--pickable' );
 			grid.querySelectorAll( '.oz-kleur-swatch' ).forEach( function ( fig ) {
-				var strong = fig.querySelector( 'strong' );
-				if ( ! strong ) { return; }
-				var code = strong.textContent.trim();
+				/* Two markup variants exist in the wild:
+				   - K&K / velvet pages wrap the caption in <strong>:
+				       <figcaption><strong>Pure white</strong></figcaption>
+				   - The Original kleurstalen page does not:
+				       <figcaption>Stone White 1000</figcaption>
+				   Prefer the data-value attribute (always present on every
+				   swatch in every page), with strong/figcaption as fallback
+				   so existing pages keep working without a content edit. */
+				var code = ( fig.getAttribute( 'data-value' ) || '' ).trim();
+				if ( ! code ) {
+					var strong = fig.querySelector( 'strong' );
+					if ( strong ) { code = strong.textContent.trim(); }
+				}
+				if ( ! code ) {
+					var cap = fig.querySelector( 'figcaption' );
+					if ( cap ) { code = cap.textContent.trim(); }
+				}
 				if ( ! code ) { return; }
 				fig.dataset.kleurCode = code;
 				fig.setAttribute( 'role', 'button' );
