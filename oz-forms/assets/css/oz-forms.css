@@ -331,7 +331,11 @@
 	display: none;
 }
 
+/* Step title + intro must span all 12 columns — without an explicit
+ * grid-column they fall into the first track (~1/12 of the form) and
+ * the intro text breaks word-by-word into a thin column. */
 .oz-form__step-title {
+	grid-column: 1 / -1;
 	font-family: var(--oz-font-heading, Georgia, serif);
 	font-size: 18px;
 	font-weight: 600;
@@ -341,6 +345,7 @@
 }
 
 .oz-form__step-intro {
+	grid-column: 1 / -1;
 	margin: -6px 0 0;
 	color: #555;
 	font-size: 13px;
