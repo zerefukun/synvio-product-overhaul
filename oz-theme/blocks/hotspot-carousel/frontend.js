@@ -86,31 +86,61 @@
 			} );
 		} );
 
+		// Recompute which dots are reachable based on viewport / slide widths.
+		// With 4 slides and 2 visible per view, only dots 1-3 represent unique
+		// scroll positions; dot 4 would land at the same position as dot 3.
+		function recomputeReachableDots() {
+			const trackW = track.clientWidth;
+			const slideW = slides[ 0 ].getBoundingClientRect().width;
+			const gap    = parseFloat( getComputedStyle( track ).columnGap ) || 16;
+			const slidesPerView = Math.max( 1, Math.round( ( trackW + gap ) / ( slideW + gap ) ) );
+			const lastReachable = Math.max( 0, slides.length - slidesPerView );
+			dots.forEach( function ( d, i ) {
+				d.style.display = i > lastReachable ? 'none' : '';
+			} );
+			return lastReachable;
+		}
+
+		// Active slide = the LEFTMOST one whose right edge is past the track
+		// viewport's left edge. Matches what the user perceives as "the slide
+		// you're currently looking at" regardless of how many are partially
+		// visible to the right.
+		function getActiveSlideIdx() {
+			const trackLeft = track.getBoundingClientRect().left;
+			for ( let i = 0; i < slides.length; i++ ) {
+				const r = slides[ i ].getBoundingClientRect();
+				if ( r.right > trackLeft + 10 ) return i;
+			}
+			return 0;
+		}
+
+		let lastReachable = recomputeReachableDots();
+
 		function setActive( index ) {
+			// Clamp to reachable so the last visible page always shows the
+			// correct dot active even if a partially visible slide beyond it
+			// would otherwise be picked.
+			if ( index > lastReachable ) index = lastReachable;
 			dots.forEach( function ( d, i ) {
 				const isActive = i === index;
 				d.classList.toggle( 'is-active', isActive );
 				d.setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
 			} );
 			if ( prevBtn ) prevBtn.disabled = index === 0;
-			if ( nextBtn ) nextBtn.disabled = index === slides.length - 1;
+			if ( nextBtn ) nextBtn.disabled = index >= lastReachable;
 		}
 
-		const io = new IntersectionObserver( function ( entries ) {
-			let best = null;
-			entries.forEach( function ( e ) {
-				if ( ! best || e.intersectionRatio > best.intersectionRatio ) best = e;
-			} );
-			if ( best && best.intersectionRatio > 0.5 ) {
-				const idx = slides.indexOf( best.target );
-				if ( idx >= 0 ) setActive( idx );
-			}
-		}, { root: track, threshold: [ 0.5, 0.75, 1 ] } );
+		setActive( getActiveSlideIdx() );
 
-		slides.forEach( function ( s ) { io.observe( s ); } );
-		setActive( 0 );
+		track.addEventListener( 'scroll', function () {
+			setActive( getActiveSlideIdx() );
+			closeAllCards( root );
+		}, { passive: true } );
 
-		track.addEventListener( 'scroll', function () { closeAllCards( root ); }, { passive: true } );
+		window.addEventListener( 'resize', function () {
+			lastReachable = recomputeReachableDots();
+			setActive( getActiveSlideIdx() );
+		}, { passive: true } );
 	}
 
 	function init( root ) {

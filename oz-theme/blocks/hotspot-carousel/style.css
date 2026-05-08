@@ -52,7 +52,7 @@
 
 .oz-hotspot-carousel__slide {
   flex: 0 0 92%;
-  scroll-snap-align: center;
+  scroll-snap-align: start;
   margin: 0;
 }
 
