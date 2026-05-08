@@ -93,13 +93,20 @@ function oz_design_system_enqueue() {
         filemtime(get_stylesheet_directory() . '/css/fonts.css')
     );
 
-    /* Block styles for Gutenberg content */
-    wp_enqueue_style(
-        'oz-blocks',
-        get_stylesheet_directory_uri() . '/css/oz-blocks.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-blocks.css')
-    );
+    /* Block styles for Gutenberg content.
+       Skip on the homepage: front-page.php is hardcoded PHP and never
+       calls the_content(), so no .wp-block-* selectors render. Loading
+       oz-blocks here was adding ~34 KB of dead CSS to the LiteSpeed
+       combined file that PSI flags as 'unused-css-rules' on the front
+       page. Other templates still get it via the_content(). */
+    if (! is_front_page()) {
+        wp_enqueue_style(
+            'oz-blocks',
+            get_stylesheet_directory_uri() . '/css/oz-blocks.css',
+            ['oz-design-system'],
+            filemtime(get_stylesheet_directory() . '/css/oz-blocks.css')
+        );
+    }
 }
 add_action('wp_enqueue_scripts', 'oz_design_system_enqueue', 5);
 
