@@ -265,6 +265,28 @@
   font-weight: 600;
   margin-bottom: 2px;
 }
+
+/* Hero CTA row on the new light hub-style hero. Needs breathing room
+   above (the bullets sit tight to it otherwise) and a light-bg variant
+   of .oz-hp-btn--outline — the default outline style is white-on-dark,
+   intended for the homepage dark hero. On the sand-coloured kleurstalen
+   hero that turns into nearly-invisible white-on-cream. */
+.oz-rp2-ksh-top-actions {
+  margin: 28px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.oz-rp2-ksh-top-text .oz-hp-btn--outline {
+  border-color: var(--oz-accent, #135350);
+  color: var(--oz-accent, #135350);
+  background: transparent;
+}
+.oz-rp2-ksh-top-text .oz-hp-btn--outline:hover {
+  background: var(--oz-accent, #135350);
+  color: #fff;
+  border-color: var(--oz-accent, #135350);
+}
 .oz-rp2-ksh-top-card {
   background: #fff;
   border: 1px solid var(--oz-border);
