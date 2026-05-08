@@ -360,6 +360,61 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       <?php endif; ?>
 
       <?php
+      // ─── BUNDLE SWATCHER (Beschikbare bundels) ───
+      // Renders for products in the Kleurenpakket category. Shows other bundles
+      // in the same category as small thumbnails for cross-navigation, mirroring
+      // the betonstunter pattern.
+      if (has_term('kleurenpakket', 'product_cat', $product_id)) :
+          $sibling_query = new WP_Query([
+              'post_type'      => 'product',
+              'posts_per_page' => -1,
+              'post__not_in'   => [$product_id],
+              'tax_query'      => [[
+                  'taxonomy' => 'product_cat',
+                  'field'    => 'slug',
+                  'terms'    => 'kleurenpakket',
+              ]],
+              'orderby'        => 'menu_order title',
+              'order'          => 'ASC',
+              'no_found_rows'  => true,
+          ]);
+          // Theme extractor: pulls "Cement" from "...Kant & Klaar: Cement" or full title fallback.
+          $extract_theme = function($title) {
+              return preg_match('/:\s*([^()]+?)\s*(\(|$)/', $title, $m) ? trim($m[1]) : $title;
+          };
+          if ($sibling_query->have_posts()) :
+      ?>
+        <div class="oz-bundle-swatcher">
+          <div class="oz-bundle-swatcher-label">Beschikbare bundels</div>
+          <div class="oz-bundle-swatcher-track">
+            <a href="<?php echo esc_url(get_permalink($product_id)); ?>" class="oz-bundle-swatch selected" aria-current="page">
+              <?php if ($main_image_id) : ?>
+                <img src="<?php echo esc_url(wp_get_attachment_image_url($main_image_id, 'thumbnail')); ?>" alt="">
+              <?php endif; ?>
+              <span class="oz-bundle-swatch-label"><?php echo esc_html($extract_theme($product->get_name())); ?></span>
+            </a>
+            <?php while ($sibling_query->have_posts()) : $sibling_query->the_post();
+              $sib_id        = get_the_ID();
+              $sib_title     = get_the_title();
+              $sib_theme     = $extract_theme($sib_title);
+              $sib_thumb_id  = get_post_thumbnail_id($sib_id);
+              $sib_thumb_url = $sib_thumb_id ? wp_get_attachment_image_url($sib_thumb_id, 'thumbnail') : '';
+            ?>
+              <a href="<?php the_permalink(); ?>" class="oz-bundle-swatch">
+                <?php if ($sib_thumb_url) : ?>
+                  <img src="<?php echo esc_url($sib_thumb_url); ?>" alt="">
+                <?php endif; ?>
+                <span class="oz-bundle-swatch-label"><?php echo esc_html($sib_theme); ?></span>
+              </a>
+            <?php endwhile; wp_reset_postdata(); ?>
+          </div>
+        </div>
+      <?php
+          endif;
+      endif;
+      ?>
+
+      <?php
       // Cross-link: suggest an alternative product line (e.g. "Liever kant & klaar? Bekijk Microcement")
       // Configured per line in class-product-line-config.php → 'cross_link' key
       // Supports single link (base_id + label) or multiple links (links array)
