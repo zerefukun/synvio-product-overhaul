@@ -314,6 +314,15 @@ function oz_defer_non_critical_js($tag, $handle) {
         'wp-consent-api',     // WP Consent API (1 KB)
         'cookiebot-wp-consent-level-api-integration', // Cookiebot integration (0.9 KB)
         'wc-js-cookie',       // js.cookie (1.2 KB)
+        /* The three render-blocking scripts PSI keeps flagging.
+           Verified safe: no page on this site has an inline
+           <script>jQuery(...)</script> that runs before DOM ready,
+           and every WC/jQuery dependent (jquery-migrate, blockui,
+           add-to-cart, woocommerce, oz-scripts) is also deferred,
+           so execution order between them stays correct. */
+        'jquery-core',          // jQuery 3.7.1 (~88 KB) — biggest blocker
+        'gtm4wp-woocommerce',   // GTM4WP WC bridge (~11 KB)
+        'oz-scripts-js',        // TrustIndex lazy-loader (this theme)
     ];
     if (in_array($handle, $defer_handles, true)) {
         if (strpos($tag, 'defer') === false) {
