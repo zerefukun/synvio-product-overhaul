@@ -73,17 +73,53 @@ $wrap = get_block_wrapper_attributes( array(
 							$hurl = get_permalink( $hpid );
 						}
 						if ( ! $hurl ) continue;
+
+						// Try to resolve URL → WC product so we can render a preview card.
+						// Falls back to a plain link if the URL doesn't map to a product
+						// (external link, archived product, etc.).
+						$resolved_pid = $hpid ?: ( function_exists( 'url_to_postid' ) ? url_to_postid( $hurl ) : 0 );
+						$resolved_product = ( $resolved_pid && function_exists( 'wc_get_product' ) ) ? wc_get_product( $resolved_pid ) : null;
 					?>
-						<a class="oz-hotspot"
-						   href="<?php echo esc_url( $hurl ); ?>"
-						   style="left:<?php echo esc_attr( $hx ); ?>%;top:<?php echo esc_attr( $hy ); ?>%;"
-						   data-hotspot-index="<?php echo (int) $j; ?>"
-						   aria-label="<?php echo esc_attr( $hlabel ?: __( 'Bekijk product', 'oz-theme' ) ); ?>">
-							<span class="oz-hotspot__dot" aria-hidden="true"></span>
-							<?php if ( $hlabel ) : ?>
-								<span class="oz-hotspot__tooltip"><?php echo esc_html( $hlabel ); ?></span>
+						<div class="oz-hotspot-wrap" style="left:<?php echo esc_attr( $hx ); ?>%;top:<?php echo esc_attr( $hy ); ?>%;">
+							<button type="button" class="oz-hotspot"
+							        data-hotspot-index="<?php echo (int) $j; ?>"
+							        <?php if ( $resolved_product ) : ?>data-has-card="1"<?php endif; ?>
+							        aria-label="<?php echo esc_attr( $hlabel ?: __( 'Bekijk product', 'oz-theme' ) ); ?>"
+							        aria-expanded="false">
+								<span class="oz-hotspot__dot" aria-hidden="true"></span>
+								<?php if ( $hlabel ) : ?>
+									<span class="oz-hotspot__tooltip"><?php echo esc_html( $hlabel ); ?></span>
+								<?php endif; ?>
+							</button>
+
+							<?php if ( $resolved_product ) :
+								$pimg_id  = $resolved_product->get_image_id();
+								$pimg_url = $pimg_id ? wp_get_attachment_image_url( $pimg_id, 'thumbnail' ) : wc_placeholder_img_src( 'thumbnail' );
+								$pname    = $resolved_product->get_name();
+								$pprice   = $resolved_product->get_price_html();
+								$purl     = get_permalink( $resolved_product->get_id() );
+							?>
+								<div class="oz-hotspot-card" role="dialog" aria-modal="false" aria-label="<?php echo esc_attr( $pname ); ?>" hidden>
+									<button type="button" class="oz-hotspot-card__close" aria-label="<?php esc_attr_e( 'Sluiten', 'oz-theme' ); ?>">
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+									</button>
+									<div class="oz-hotspot-card__image">
+										<img src="<?php echo esc_url( $pimg_url ); ?>" alt="" loading="lazy">
+									</div>
+									<div class="oz-hotspot-card__body">
+										<?php if ( $hlabel ) : ?>
+											<div class="oz-hotspot-card__eyebrow"><?php echo esc_html( $hlabel ); ?></div>
+										<?php endif; ?>
+										<div class="oz-hotspot-card__title"><?php echo esc_html( $pname ); ?></div>
+										<div class="oz-hotspot-card__price"><?php echo wp_kses_post( $pprice ); ?></div>
+										<a class="oz-hotspot-card__cta" href="<?php echo esc_url( $purl ); ?>">
+											<?php esc_html_e( 'Bekijk product', 'oz-theme' ); ?>
+											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+										</a>
+									</div>
+								</div>
 							<?php endif; ?>
-						</a>
+						</div>
 					<?php endforeach; ?>
 				</div>
 				<?php if ( $p_title ) : ?>

@@ -8,10 +8,63 @@
  * No dependencies, ~1KB.
  */
 ( function () {
+	// ─── Hotspot card (popover) ──────────────────────────────────────
+	// Click hotspot button → toggle the sibling .oz-hotspot-card.
+	// Click outside or ESC → close any open card.
+	function initHotspotCards( root ) {
+		const wraps = root.querySelectorAll( '.oz-hotspot-wrap' );
+		wraps.forEach( function ( wrap ) {
+			const btn  = wrap.querySelector( '.oz-hotspot' );
+			const card = wrap.querySelector( '.oz-hotspot-card' );
+			if ( ! btn || ! card ) return; // No card = no resolved product, fall through
+
+			btn.addEventListener( 'click', function ( ev ) {
+				ev.stopPropagation();
+				const isOpen = ! card.hidden;
+				closeAll( root );
+				if ( isOpen ) return;
+				// Decide above/below based on hotspot Y within the slide
+				const slide = wrap.closest( '.oz-hotspot-carousel__slide' );
+				const slideRect = slide ? slide.getBoundingClientRect() : null;
+				const hsRect    = wrap.getBoundingClientRect();
+				const yPercent  = slideRect ? ( ( hsRect.top - slideRect.top ) / slideRect.height ) : 0.5;
+				card.classList.toggle( 'is-below', yPercent < 0.45 );
+				card.hidden = false;
+				btn.setAttribute( 'aria-expanded', 'true' );
+			} );
+
+			const closeBtn = card.querySelector( '.oz-hotspot-card__close' );
+			if ( closeBtn ) {
+				closeBtn.addEventListener( 'click', function ( ev ) {
+					ev.stopPropagation();
+					card.hidden = true;
+					btn.setAttribute( 'aria-expanded', 'false' );
+				} );
+			}
+
+			// Stop clicks inside the card from bubbling to the document handler
+			card.addEventListener( 'click', function ( ev ) { ev.stopPropagation(); } );
+		} );
+	}
+	function closeAll( root ) {
+		root.querySelectorAll( '.oz-hotspot-card' ).forEach( function ( c ) { c.hidden = true; } );
+		root.querySelectorAll( '.oz-hotspot' ).forEach( function ( b ) { b.setAttribute( 'aria-expanded', 'false' ); } );
+	}
+
 	function init( root ) {
 		const viewport = root.querySelector( '.oz-hotspot-carousel__viewport' );
 		const track    = root.querySelector( '.oz-hotspot-carousel__track' );
 		if ( ! track ) return;
+
+		initHotspotCards( root );
+
+		// Close cards on outside click + ESC
+		document.addEventListener( 'click', function ( ev ) {
+			if ( ! root.contains( ev.target ) ) closeAll( root );
+		} );
+		document.addEventListener( 'keydown', function ( ev ) {
+			if ( ev.key === 'Escape' ) closeAll( root );
+		} );
 
 		const slides   = Array.from( track.querySelectorAll( '.oz-hotspot-carousel__slide' ) );
 		const dots     = Array.from( root.querySelectorAll( '.oz-hotspot-carousel__dot' ) );
