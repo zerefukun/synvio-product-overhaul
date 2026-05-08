@@ -57,7 +57,7 @@ $wrap = get_block_wrapper_attributes( array(
 			if ( ! $p_imgUrl ) continue;
 		?>
 			<figure class="oz-hotspot-carousel__slide" data-slide-index="<?php echo (int) $i; ?>">
-				<div class="oz-hotspot-carousel__image-wrap">
+				<div class="oz-hotspot-carousel__image-wrap" data-slide-stage>
 					<img class="oz-hotspot-carousel__image"
 					     src="<?php echo esc_url( $p_imgUrl ); ?>"
 					     alt="<?php echo esc_attr( $p_title ?: __( 'Inspiratie project', 'oz-theme' ) ); ?>"
@@ -86,36 +86,40 @@ $wrap = get_block_wrapper_attributes( array(
 							        <?php if ( $resolved_product ) : ?>data-has-card="1"<?php endif; ?>
 							        aria-label="<?php echo esc_attr( $hlabel ?: __( 'Bekijk product', 'oz-theme' ) ); ?>"
 							        aria-expanded="false">
-								<span class="oz-hotspot__dot" aria-hidden="true"></span>
-								<?php if ( $hlabel ) : ?>
-									<span class="oz-hotspot__tooltip"><?php echo esc_html( $hlabel ); ?></span>
-								<?php endif; ?>
+								<svg class="oz-hotspot__icon" aria-hidden="true" focusable="false" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+									<path d="m46.69 10.34-10.55.07-25.8 25.8 17.45 17.45 25.8-25.8.07-10.55-6.97-6.97z"/>
+									<circle cx="43.95" cy="20.05" r="3.53" fill="currentColor"/>
+									<path d="M14.4 32.15 31.85 49.6"/>
+								</svg>
 							</button>
 
 							<?php if ( $resolved_product ) :
 								$pimg_id  = $resolved_product->get_image_id();
-								$pimg_url = $pimg_id ? wp_get_attachment_image_url( $pimg_id, 'thumbnail' ) : wc_placeholder_img_src( 'thumbnail' );
+								$pimg_url = $pimg_id ? wp_get_attachment_image_url( $pimg_id, 'medium' ) : wc_placeholder_img_src( 'medium' );
 								$pname    = $resolved_product->get_name();
 								$pprice   = $resolved_product->get_price_html();
 								$purl     = get_permalink( $resolved_product->get_id() );
+								// First product category as eyebrow (e.g. "MICROCEMENT")
+								$pcats    = wp_get_post_terms( $resolved_product->get_id(), 'product_cat', array( 'fields' => 'names' ) );
+								$peyebrow = $hlabel ?: ( ! empty( $pcats ) && ! is_wp_error( $pcats ) ? strtoupper( $pcats[0] ) : '' );
 							?>
 								<div class="oz-hotspot-card" role="dialog" aria-modal="false" aria-label="<?php echo esc_attr( $pname ); ?>" hidden>
 									<button type="button" class="oz-hotspot-card__close" aria-label="<?php esc_attr_e( 'Sluiten', 'oz-theme' ); ?>">
-										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
 									</button>
-									<div class="oz-hotspot-card__image">
-										<img src="<?php echo esc_url( $pimg_url ); ?>" alt="" loading="lazy">
-									</div>
+									<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__image-link">
+										<div class="oz-hotspot-card__image">
+											<img src="<?php echo esc_url( $pimg_url ); ?>" alt="<?php echo esc_attr( $pname ); ?>" loading="lazy">
+										</div>
+									</a>
 									<div class="oz-hotspot-card__body">
-										<?php if ( $hlabel ) : ?>
-											<div class="oz-hotspot-card__eyebrow"><?php echo esc_html( $hlabel ); ?></div>
+										<?php if ( $peyebrow ) : ?>
+											<div class="oz-hotspot-card__eyebrow"><?php echo esc_html( $peyebrow ); ?></div>
 										<?php endif; ?>
-										<div class="oz-hotspot-card__title"><?php echo esc_html( $pname ); ?></div>
-										<div class="oz-hotspot-card__price"><?php echo wp_kses_post( $pprice ); ?></div>
-										<a class="oz-hotspot-card__cta" href="<?php echo esc_url( $purl ); ?>">
-											<?php esc_html_e( 'Bekijk product', 'oz-theme' ); ?>
-											<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+										<a href="<?php echo esc_url( $purl ); ?>" class="oz-hotspot-card__title-link">
+											<div class="oz-hotspot-card__title"><?php echo esc_html( $pname ); ?></div>
 										</a>
+										<div class="oz-hotspot-card__price"><?php echo wp_kses_post( $pprice ); ?></div>
 									</div>
 								</div>
 							<?php endif; ?>

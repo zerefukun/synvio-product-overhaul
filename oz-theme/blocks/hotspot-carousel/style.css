@@ -1,13 +1,28 @@
-/* Frontend styles for oz/hotspot-carousel — loaded on both editor and front. */
+/* ────────────────────────────────────────────────────────────────
+   oz/hotspot-carousel — frontend styles
+   Modeled on gulcanhome.eu's hotspot carousel:
+   - Wide slides, fixed pixel height (lifestyle-photo aspect)
+   - Tag-icon hotspot buttons with pulse
+   - Product card popup ALWAYS centered in the slide stage
+     (not anchored to the hotspot — solves clipping)
+   - Pagination dots, no arrows by default
+   ──────────────────────────────────────────────────────────────── */
 
 .oz-hotspot-carousel {
   margin: 0;
   padding: 0;
+  --oz-hsc-img-height: 540px;
+  --oz-hsc-img-height-mobile: 420px;
+  --oz-hsc-radius: 12px;
+  --oz-hsc-card-w: 220px;
+  --oz-hsc-card-w-mobile: 180px;
+  --oz-hsc-accent: var(--oz-accent, #135350);
 }
 
 .oz-hotspot-carousel__header {
   text-align: center;
   margin-bottom: 24px;
+  padding: 0 16px;
 }
 
 .oz-hotspot-carousel__title {
@@ -18,14 +33,12 @@
   color: var(--oz-text-primary, #1a1a1a);
 }
 
-/* Viewport wraps the track so the prev/next buttons can sit on its left/right
-   edges (absolute) without scrolling along with the slides. */
+/* Viewport hosts the track; on the gulcan model we don't need overflow
+   tricks because cards center inside the slide. */
 .oz-hotspot-carousel__viewport {
   position: relative;
 }
 
-/* Horizontal scroll-snap track. Each slide takes ~70% viewport on mobile, ~45%
-   on tablet, ~33% on desktop so 2-3 are visible at once. */
 .oz-hotspot-carousel__track {
   display: flex;
   gap: 16px;
@@ -37,87 +50,33 @@
 }
 .oz-hotspot-carousel__track::-webkit-scrollbar { display: none; }
 
-/* Prev / next buttons — circular, sit on the viewport edges. Hidden on
-   touch devices (no hover surface, swipe is the natural input). */
-.oz-hotspot-carousel__nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--oz-border, #E5E5E3);
-  background: white;
-  color: var(--oz-text-primary, #1a1a1a);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 3;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
-}
-.oz-hotspot-carousel__nav:hover {
-  background: var(--oz-bg-warm, #F5F4F0);
-  transform: translateY(-50%) scale(1.05);
-}
-.oz-hotspot-carousel__nav:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-.oz-hotspot-carousel__nav--prev { left: 4px; }
-.oz-hotspot-carousel__nav--next { right: 4px; }
-
-@media (hover: none) and (pointer: coarse) {
-  .oz-hotspot-carousel__nav { display: none; }
-}
-
-/* Pagination dots */
-.oz-hotspot-carousel__dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 16px;
-}
-.oz-hotspot-carousel__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 0;
-  padding: 0;
-  background: var(--oz-border, #E5E5E3);
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-.oz-hotspot-carousel__dot:hover {
-  background: var(--oz-text-muted, #6B6B6B);
-}
-.oz-hotspot-carousel__dot.is-active {
-  background: var(--oz-accent, #135350);
-  transform: scale(1.3);
-}
-
 .oz-hotspot-carousel__slide {
-  flex: 0 0 70%;
-  scroll-snap-align: start;
+  flex: 0 0 92%;
+  scroll-snap-align: center;
   margin: 0;
 }
 
 @media (min-width: 700px) {
-  .oz-hotspot-carousel__slide { flex-basis: 45%; }
+  .oz-hotspot-carousel__slide { flex-basis: 60%; }
 }
 @media (min-width: 1100px) {
-  .oz-hotspot-carousel__slide { flex-basis: 32%; }
+  .oz-hotspot-carousel__slide { flex-basis: 48%; }
 }
 
+/* Image stage — fixed pixel height like gulcan's section. The hotspot
+   buttons + card popup are absolutely positioned within this stage. */
 .oz-hotspot-carousel__image-wrap {
   position: relative;
-  /* overflow visible so hotspot cards can extend beyond the image bounds.
-     Border-radius is applied to the <img> directly to keep the rounded look. */
-  overflow: visible;
+  width: 100%;
+  height: var(--oz-hsc-img-height);
+  overflow: hidden;
+  border-radius: var(--oz-hsc-radius);
   background: var(--oz-bg-warm, #f5f4f0);
-  aspect-ratio: 4 / 5;
-  border-radius: 8px;
+}
+@media (max-width: 699px) {
+  .oz-hotspot-carousel__image-wrap {
+    height: var(--oz-hsc-img-height-mobile);
+  }
 }
 
 .oz-hotspot-carousel__image {
@@ -125,7 +84,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 8px;
 }
 
 .oz-hotspot-carousel__caption {
@@ -135,170 +93,121 @@
   text-align: center;
 }
 
-/* ── Hotspot wrap ── */
+/* ────────────────────────────────────────────────
+   Hotspot button — tag icon, white pill with pulse
+   ──────────────────────────────────────────────── */
 .oz-hotspot-wrap {
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 2;
 }
 
-/* ── Hotspot dot (now a button, not a link) ── */
 .oz-hotspot {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 0;
-  background: transparent;
-  cursor: pointer;
-  display: block;
-  position: relative;
-}
-
-.oz-hotspot__dot {
-  display: block;
-  width: 100%;
-  height: 100%;
   border-radius: 50%;
   background: white;
-  border: 2px solid var(--oz-accent, #135350);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-  position: relative;
-  transition: transform 0.15s ease;
-}
-
-.oz-hotspot__dot::after {
-  content: "";
-  position: absolute;
-  inset: 6px;
-  border-radius: 50%;
-  background: var(--oz-accent, #135350);
-}
-
-.oz-hotspot:hover .oz-hotspot__dot,
-.oz-hotspot:focus-visible .oz-hotspot__dot {
-  transform: scale(1.15);
-}
-
-/* Pulsing ring to draw attention */
-.oz-hotspot__dot::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid var(--oz-accent, #135350);
-  opacity: 0.6;
-  animation: oz-hotspot-pulse 2s ease-out infinite;
-}
-
-@keyframes oz-hotspot-pulse {
-  0%   { transform: scale(1);   opacity: 0.6; }
-  100% { transform: scale(1.8); opacity: 0; }
-}
-
-/* Tooltip on hover */
-.oz-hotspot__tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--oz-text-primary, #1a1a1a);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.oz-hotspot:hover .oz-hotspot__tooltip,
-.oz-hotspot:focus-visible .oz-hotspot__tooltip {
-  opacity: 1;
-}
-
-/* ──────────────────────────────────────────────
-   Hotspot card — popover shown when hotspot is clicked.
-   Anchored above the dot on desktop, slides up from bottom on mobile.
-   ────────────────────────────────────────────── */
-/* Card is position: fixed so it escapes the carousel track's overflow clipping.
-   JS sets top/left on open based on the hotspot's getBoundingClientRect(). */
-.oz-hotspot-card {
-  display: none;
-  position: fixed;
-  width: 280px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  padding: 12px;
-  z-index: 50;
-  align-items: flex-start;
-  gap: 12px;
-  text-align: left;
-  /* JS positions via top/left; transform centers horizontally */
-  transform: translateX(-50%);
-}
-.oz-hotspot-card.is-open {
-  display: flex;
-  animation: oz-hotspot-card-in 0.18s ease-out both;
-}
-
-/* Arrow pointing down to the hotspot dot */
-.oz-hotspot-card::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 7px solid transparent;
-  border-top-color: white;
-}
-
-@keyframes oz-hotspot-card-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-
-.oz-hotspot-card__close {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  border-radius: 50%;
-  color: var(--oz-text-muted, #6B6B6B);
+  color: var(--oz-hsc-accent);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  transition: transform 0.15s ease, background 0.15s ease;
+  animation: oz-hsc-pulse 2s ease-out infinite;
 }
-.oz-hotspot-card__close:hover {
-  background: var(--oz-bg-warm, #F5F4F0);
-  color: var(--oz-text-primary, #1a1a1a);
+.oz-hotspot:hover,
+.oz-hotspot:focus-visible {
+  transform: scale(1.1);
+  background: #fff;
+  outline: none;
+}
+.oz-hotspot__icon {
+  width: 16px;
+  height: 16px;
 }
 
-.oz-hotspot-card__image {
-  flex: 0 0 70px;
-  width: 70px;
-  height: 70px;
-  border-radius: 6px;
+@keyframes oz-hsc-pulse {
+  0%   { box-shadow: 0 2px 10px rgba(0,0,0,0.18), 0 0 0 0 rgba(255,255,255,0.6); }
+  100% { box-shadow: 0 2px 10px rgba(0,0,0,0.18), 0 0 0 14px rgba(255,255,255,0); }
+}
+
+/* ────────────────────────────────────────────────
+   Product card — vertical layout (image on top),
+   centered inside the image stage. Hidden by default,
+   .is-open shows it with a fade.
+   ──────────────────────────────────────────────── */
+.oz-hotspot-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--oz-hsc-card-w);
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
   overflow: hidden;
-  background: var(--oz-bg-warm, #F5F4F0);
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+  text-align: left;
+}
+.oz-hotspot-card.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+@media (max-width: 699px) {
+  .oz-hotspot-card { width: var(--oz-hsc-card-w-mobile); }
+}
+
+.oz-hotspot-card__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 20;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+.oz-hotspot-card__close:hover { background: rgba(0,0,0,0.75); }
+
+.oz-hotspot-card__image-link {
+  display: block;
+  text-decoration: none;
+}
+.oz-hotspot-card__image {
+  width: 100%;
+  aspect-ratio: 5 / 6;
+  background: var(--oz-bg-warm, #f5f4f0);
+  overflow: hidden;
 }
 .oz-hotspot-card__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+.oz-hotspot-card__image-link:hover img {
+  transform: scale(1.04);
 }
 
 .oz-hotspot-card__body {
-  flex: 1;
-  min-width: 0;
-  padding-right: 18px;
+  padding: 12px;
 }
 
 .oz-hotspot-card__eyebrow {
@@ -307,73 +216,98 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--oz-text-muted, #6B6B6B);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
+.oz-hotspot-card__title-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 .oz-hotspot-card__title {
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--oz-text-primary, #1a1a1a);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+.oz-hotspot-card__title-link:hover .oz-hotspot-card__title {
+  color: var(--oz-hsc-accent);
 }
 
 .oz-hotspot-card__price {
   font-size: 14px;
   font-weight: 700;
   color: var(--oz-text-primary, #1a1a1a);
-  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.oz-hotspot-card__price del {
+  color: var(--oz-text-muted, #6B6B6B);
+  font-weight: 400;
+  font-size: 12px;
+  margin-right: 4px;
+}
+.oz-hotspot-card__price ins {
+  text-decoration: none;
+  color: var(--oz-hsc-accent);
 }
 
-.oz-hotspot-card__cta {
+/* ────────────────────────────────────────────────
+   Prev / next nav (kept but visually de-emphasized
+   per gulcan's "pagination + swipe is enough")
+   ──────────────────────────────────────────────── */
+.oz-hotspot-carousel__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.92);
+  color: var(--oz-text-primary, #1a1a1a);
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--oz-accent, #135350);
-  text-decoration: none;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
-.oz-hotspot-card__cta:hover {
-  text-decoration: underline;
-}
-
-/* Auto-flip card BELOW the hotspot when it sits in the top half of the slide
-   (otherwise the popover would clip outside the image). JS adds .is-below. */
-.oz-hotspot-card.is-below {
-  bottom: auto;
-  top: calc(100% + 14px);
-  animation: oz-hotspot-card-in-below 0.18s ease-out both;
-}
-.oz-hotspot-card.is-below::after {
-  top: auto;
-  bottom: 100%;
-  border-top-color: transparent;
-  border-bottom-color: white;
-}
-@keyframes oz-hotspot-card-in-below {
-  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+.oz-hotspot-carousel__nav:hover { background: white; }
+.oz-hotspot-carousel__nav:disabled { opacity: 0.3; cursor: not-allowed; }
+.oz-hotspot-carousel__nav--prev { left: 8px; }
+.oz-hotspot-carousel__nav--next { right: 8px; }
+@media (hover: none) and (pointer: coarse) {
+  .oz-hotspot-carousel__nav { display: none; }
 }
 
-/* Mobile: card spans the viewport and pins to the bottom regardless of
-   hotspot position — JS-set top/left are overridden here. */
-@media (max-width: 600px) {
-  .oz-hotspot-card.is-open {
-    left: 16px !important;
-    right: 16px;
-    bottom: 16px;
-    top: auto !important;
-    width: auto;
-    transform: none;
-    animation: oz-hotspot-card-in-mobile 0.2s ease-out both;
-  }
-  @keyframes oz-hotspot-card-in-mobile {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+/* Pagination dots — gulcan style: small round, active grows to oval */
+.oz-hotspot-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+.oz-hotspot-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: rgba(50, 16, 4, 0.3);
+  cursor: pointer;
+  transition: width 0.2s ease, background 0.2s ease, border-radius 0.2s ease;
+}
+.oz-hotspot-carousel__dot:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+.oz-hotspot-carousel__dot.is-active {
+  width: 14px;
+  border-radius: 4px;
+  background: var(--oz-hsc-accent);
 }
