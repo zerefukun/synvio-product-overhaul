@@ -295,10 +295,30 @@
 
 .oz-form__step {
 	display: grid;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
 	gap: 12px;
 	border: none;
 	margin: 0;
 	padding: 0;
+}
+
+/* Default: a field claims the whole row. Width modifiers below let pairs
+ * (voornaam/achternaam, postcode/huisnummer) share a row. */
+.oz-form__field {
+	grid-column: span 12;
+}
+.oz-form__field--w-half      { grid-column: span 6; }
+.oz-form__field--w-third     { grid-column: span 4; }
+.oz-form__field--w-two-thirds{ grid-column: span 8; }
+.oz-form__field--w-quarter   { grid-column: span 3; }
+
+@media (max-width: 600px) {
+	.oz-form__field--w-half,
+	.oz-form__field--w-third,
+	.oz-form__field--w-two-thirds,
+	.oz-form__field--w-quarter {
+		grid-column: span 12;
+	}
 }
 
 .oz-form__step[hidden] {

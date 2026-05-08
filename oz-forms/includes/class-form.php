@@ -248,7 +248,18 @@ class Form {
 
 		$label_html = $label !== '' ? '<label for="' . esc_attr( $id ) . '" class="oz-form__label">' . esc_html( $label ) . $req_mark . '</label>' : '';
 
-		return '<div class="oz-form__field oz-form__field--' . esc_attr( $type ) . ' oz-form__field--' . esc_attr( sanitize_html_class( $name ) ) . '">' . $label_html . $control . $help . '<span class="oz-form__error" aria-live="polite"></span></div>';
+		// Optional `width` spec controls column-span on the step grid:
+		// 'half' / 'third' / 'two-thirds' / 'quarter'. Anything else, or
+		// missing, falls back to a full-width row.
+		$width_class = '';
+		if ( ! empty( $spec['width'] ) ) {
+			$allowed = array( 'half', 'third', 'two-thirds', 'quarter' );
+			if ( in_array( $spec['width'], $allowed, true ) ) {
+				$width_class = ' oz-form__field--w-' . $spec['width'];
+			}
+		}
+
+		return '<div class="oz-form__field oz-form__field--' . esc_attr( $type ) . ' oz-form__field--' . esc_attr( sanitize_html_class( $name ) ) . $width_class . '">' . $label_html . $control . $help . '<span class="oz-form__error" aria-live="polite"></span></div>';
 	}
 
 	/**

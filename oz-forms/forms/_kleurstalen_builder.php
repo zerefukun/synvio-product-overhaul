@@ -68,7 +68,7 @@ return function ( array $cfg ) use ( $palettes ) {
 				'title'  => 'Jouw gegevens',
 				'fields' => array(
 					'voornaam', 'achternaam', 'bedrijfsnaam', 'email', 'telefoon',
-					'straatnaam', 'huisnummer', 'postcode', 'woonplaats', 'land',
+					'postcode', 'huisnummer', 'straatnaam', 'woonplaats', 'land',
 					'aanbrengen', 'verwachting', 'gevonden', 'opt_in',
 				),
 			),
@@ -80,16 +80,16 @@ return function ( array $cfg ) use ( $palettes ) {
 			'kleur3' => $kleur_field( 3 ),
 			'kleur4' => $kleur_field( 4 ),
 
-			'voornaam'     => array( 'label' => 'Voornaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw voornaam' ),
-			'achternaam'   => array( 'label' => 'Achternaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw achternaam' ),
+			'voornaam'     => array( 'label' => 'Voornaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw voornaam', 'width' => 'half' ),
+			'achternaam'   => array( 'label' => 'Achternaam', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Uw achternaam', 'width' => 'half' ),
 			'bedrijfsnaam' => array( 'label' => 'Bedrijfsnaam', 'type' => 'text', 'required' => false, 'maxlength' => 120, 'placeholder' => 'Uw bedrijfsnaam (optioneel)' ),
-			'email'        => array( 'label' => 'E-mailadres', 'type' => 'email', 'required' => true, 'maxlength' => 150, 'placeholder' => 'Uw e-mailadres' ),
-			'telefoon'     => array( 'label' => 'Telefoonnummer', 'type' => 'tel', 'required' => false, 'maxlength' => 30, 'placeholder' => 'Uw telefoonnummer (optioneel)' ),
+			'email'        => array( 'label' => 'E-mailadres', 'type' => 'email', 'required' => true, 'maxlength' => 150, 'placeholder' => 'Uw e-mailadres', 'width' => 'half' ),
+			'telefoon'     => array( 'label' => 'Telefoonnummer', 'type' => 'tel', 'required' => false, 'maxlength' => 30, 'placeholder' => 'Uw telefoonnummer (optioneel)', 'width' => 'half' ),
 
-			'straatnaam'   => array( 'label' => 'Straatnaam', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw straatnaam' ),
-			'huisnummer'   => array( 'label' => 'Huisnummer', 'type' => 'text', 'required' => true, 'maxlength' => 20, 'placeholder' => 'Bijv. 12 of 12-A' ),
-			'postcode'     => array( 'label' => 'Postcode', 'type' => 'text', 'required' => true, 'maxlength' => 12, 'placeholder' => 'Bijv. 1234 AB' ),
-			'woonplaats'   => array( 'label' => 'Woonplaats', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw woonplaats' ),
+			'postcode'     => array( 'label' => 'Postcode', 'type' => 'text', 'required' => true, 'maxlength' => 12, 'placeholder' => 'Bijv. 1234 AB', 'width' => 'half' ),
+			'huisnummer'   => array( 'label' => 'Huisnummer', 'type' => 'text', 'required' => true, 'maxlength' => 20, 'placeholder' => 'Bijv. 12 of 12-A', 'width' => 'half' ),
+			'straatnaam'   => array( 'label' => 'Straatnaam', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw straatnaam', 'width' => 'half' ),
+			'woonplaats'   => array( 'label' => 'Woonplaats', 'type' => 'text', 'required' => true, 'maxlength' => 120, 'placeholder' => 'Uw woonplaats', 'width' => 'half' ),
 			'land'         => array( 'label' => 'Land', 'type' => 'text', 'required' => true, 'maxlength' => 80, 'placeholder' => 'Nederland' ),
 
 			'aanbrengen' => array(
