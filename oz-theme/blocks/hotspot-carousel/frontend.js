@@ -129,8 +129,15 @@
 		}, { passive: true } );
 
 		// ── Initial state ────────────────────────────────────────────────
-		recomputePages();
-		syncDots( getCurrentPage() );
+		// Recompute multiple times: once now, again after window 'load' (when
+		// images have loaded and slide widths are final), and once more after
+		// a short delay as a belt-and-suspenders fallback for cases where
+		// fonts / late-loading CSS shift the layout.
+		function refresh() { recomputePages(); syncDots( getCurrentPage() ); }
+		refresh();
+		window.addEventListener( 'load', refresh, { once: true } );
+		setTimeout( refresh, 250 );
+		setTimeout( refresh, 1000 );
 	}
 
 	function init( root ) {
