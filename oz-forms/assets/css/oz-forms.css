@@ -12,6 +12,12 @@
 	container-name: ozform;
 	position: relative;
 	display: grid;
+	/* Same 12-col grid as .oz-form__step so single-step forms (no step
+	 * fieldset wrapper) honour the same span-6 / span-4 width modifiers
+	 * on their fields. Without this, custom-kleur and other one-step
+	 * forms fall back to auto-sized implicit columns and span-6 fields
+	 * end up uneven (one ~640px, the other ~110px). */
+	grid-template-columns: repeat(12, minmax(0, 1fr));
 	gap: 12px;
 	max-width: 640px;
 	margin: 24px auto;
