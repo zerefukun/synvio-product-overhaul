@@ -216,6 +216,16 @@
 		if ( ! firstStepLi ) { return; }
 		var existing = firstStepLi.querySelector( '.oz-form__progress-thumbs' );
 		if ( existing ) { existing.remove(); }
+		// Swap the step label too — "Kies je kleuren" while picking,
+		// "Uw kleuren" once the choice is locked in. Cache the original
+		// once so the revert path doesn't depend on the schema text.
+		var labelEl = firstStepLi.querySelector( '.oz-form__progress-label' );
+		if ( labelEl ) {
+			if ( ! labelEl.dataset.originalLabel ) {
+				labelEl.dataset.originalLabel = labelEl.textContent;
+			}
+			labelEl.textContent = idx > 0 ? 'Uw kleuren' : labelEl.dataset.originalLabel;
+		}
 		// Only render thumbs when step 1 is "done" (user moved past it).
 		if ( idx > 0 ) {
 			var thumbs = buildSwatchThumbs( form );
