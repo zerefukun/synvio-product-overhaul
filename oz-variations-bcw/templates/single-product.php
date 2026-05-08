@@ -361,22 +361,18 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
 
       <?php
       // ─── BUNDLE SWATCHER (Beschikbare bundels) ───
-      // Renders for products in the Kleurenpakket category. Shows other bundles
-      // in the same category as small thumbnails for cross-navigation, mirroring
-      // the betonstunter pattern.
-      if (has_term('kleurenpakket', 'product_cat', $product_id)) :
+      // Renders for themed kleurstalen bundles only (slug pattern
+      // kleurstalen-pakket-*). Shows other themed bundles as thumbnails for
+      // cross-navigation. Excludes the legacy 'kleurenpakket' deposit product.
+      if (strpos($product->get_slug(), 'kleurstalen-pakket-') === 0) :
           $sibling_query = new WP_Query([
-              'post_type'      => 'product',
-              'posts_per_page' => -1,
-              'post__not_in'   => [$product_id],
-              'tax_query'      => [[
-                  'taxonomy' => 'product_cat',
-                  'field'    => 'slug',
-                  'terms'    => 'kleurenpakket',
-              ]],
-              'orderby'        => 'menu_order title',
-              'order'          => 'ASC',
-              'no_found_rows'  => true,
+              'post_type'       => 'product',
+              'posts_per_page'  => -1,
+              'post__not_in'    => [$product_id],
+              'post_name__like' => 'kleurstalen-pakket-',
+              'orderby'         => 'menu_order title',
+              'order'           => 'ASC',
+              'no_found_rows'   => true,
           ]);
           // Theme extractor: pulls "Cement" from "...Kant & Klaar: Cement" or full title fallback.
           $extract_theme = function($title) {
