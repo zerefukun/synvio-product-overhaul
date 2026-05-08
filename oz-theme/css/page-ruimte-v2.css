@@ -270,9 +270,11 @@
    above (the bullets sit tight to it otherwise) and a light-bg variant
    of .oz-hp-btn--outline — the default outline style is white-on-dark,
    intended for the homepage dark hero. On the sand-coloured kleurstalen
-   hero that turns into nearly-invisible white-on-cream. */
-.oz-rp2-ksh-top-actions {
-  margin: 28px 0 0;
+   hero that turns into nearly-invisible white-on-cream.
+   Selector scoped under .oz-rp2-ksh-top-text so it beats the
+   .oz-rp2-ksh-top-text p { margin: 0 0 24px } reset above. */
+.oz-rp2-ksh-top-text .oz-rp2-ksh-top-actions {
+  margin: 36px 0 0;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
