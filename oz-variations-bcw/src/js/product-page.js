@@ -23,7 +23,7 @@
 
 import { P, S, updateState, fmt, fmtDelta, findDefault, _originalP, calculatePrices, validateRal, validateNcs, hasAnyTool, clampToolQty, validateCartState, buildCartPayload } from './state.js';
 import { DOM, cacheDom, show, hide } from './dom.js';
-import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2 } from './tools.js';
+import { setToolSyncCallback, buildToolSectionV2, syncToolSectionV2, buildRuimteDropdown } from './tools.js';
 import { initNavigation, navigateToVariant, swapMainImage, createThumb } from './navigation.js';
 import { setupColorDrawer } from './color-drawer.js';
 import * as analytics from './analytics.js';
