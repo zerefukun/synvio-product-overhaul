@@ -260,6 +260,75 @@ function buildToolModeDropdown(section) {
 }
 
 /**
+ * A/B/C variant C — build a ruimte (room) dropdown that bakes in the
+ * primer + PU choices for each room. The user picks a room from the
+ * dropdown, and we click() the matching primer+PU buttons under the hood.
+ * The primer + PU sections themselves are hidden by CSS (functions.php
+ * inline style) so they don't double-up with the dropdown.
+ *
+ * Idempotent: bails if the dropdown already exists, or if the underlying
+ * primer/PU sections aren't on the page (non-configured-line products).
+ */
+export function buildRuimteDropdown() {
+  if (!document.documentElement.classList.contains('oz-ab-tools-c')) return;
+  if (document.querySelector('.oz-ruimte-dropdown')) return;
+  var primerSection = document.querySelector('.oz-option-group[data-option="primer"]');
+  var puSection     = document.querySelector('.oz-option-group[data-option="pu"]');
+  if (!primerSection || !puSection) return;
+  var rooms = (window.ozProduct && Array.isArray(window.ozProduct.ruimteOptions)) ? window.ozProduct.ruimteOptions : [];
+  if (!rooms.length) return;
+
+  var lineKey = (window.ozProduct && window.ozProduct.productLine) || '';
+  var tooltipText = lineKey === 'lavasteen'
+    ? 'Lavasteen is van zichzelf al waterdicht. De PU laag bepaalt de grip (badkamer = 1 laag voor anti-slip) en de UV-bescherming (lichte ruimtes met groot raam = 2-3 lagen om vergeling te voorkomen).'
+    : 'Kies de ruimte waar je beton ciré aanbrengt. Op basis van slijtage en vocht selecteren we automatisch het juiste aantal PU-lagen.';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'oz-option-group oz-ruimte-dropdown';
+  wrap.setAttribute('data-option', 'ruimte');
+  wrap.innerHTML =
+    '<div class="oz-option-header">Kies je ruimte ' +
+    '<span class="oz-required-star" style="color:#e53e3e">*</span> ' +
+    '<button class="oz-info-btn" type="button" data-info-target="ruimte-info">i</button>' +
+    '</div>' +
+    '<div class="oz-info-tooltip" id="ruimte-info">' + tooltipText + '</div>';
+
+  var select = document.createElement('select');
+  select.className = 'oz-ruimte-select';
+  var placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Maak je keuze...';
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  select.appendChild(placeholder);
+
+  rooms.forEach(function (r, i) {
+    var opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = r.label;
+    opt.dataset.primer = r.primer;
+    opt.dataset.pu = r.pu;
+    select.appendChild(opt);
+  });
+
+  // Picking a room clicks the matching primer + PU buttons. All existing
+  // pricing/state logic stays unchanged — we just drive it from the dropdown.
+  select.addEventListener('change', function () {
+    var idx = parseInt(select.value, 10);
+    if (isNaN(idx)) return;
+    var r = rooms[idx];
+    if (!r) return;
+    var primerBtn = primerSection.querySelector('[data-primer="' + r.primer + '"]');
+    var puBtn     = puSection.querySelector('[data-pu="' + r.pu + '"]');
+    if (primerBtn) primerBtn.click();
+    if (puBtn) puBtn.click();
+  });
+
+  wrap.appendChild(select);
+  primerSection.parentNode.insertBefore(wrap, primerSection);
+}
+
+/**
  * Sync a list of tool/extra item rows to match current state.
  * Generic — works for both extras and individual tools.
  *

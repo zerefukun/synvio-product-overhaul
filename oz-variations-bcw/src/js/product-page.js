@@ -2212,6 +2212,10 @@ function init() {
   // Build tool section DOM (if product has tools)
   buildToolSectionV2("toolSection");
 
+  // A/B/C variant C: build the ruimte dropdown that bakes in primer + PU.
+  // Bails internally for variants A/B and for non-configured-line products.
+  buildRuimteDropdown();
+
   // Collapse swatch grid to 2 rows + add "Bekijk alle" chip / drawer.
   // Cache-safe: pure client-side, clones existing server-rendered links.
   setupColorDrawer();

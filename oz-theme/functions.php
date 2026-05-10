@@ -1708,6 +1708,10 @@ function oz_ab_tools_test_assignment() {
 <style id="oz-ab-tools-style">
 html.oz-ab-tools-b .oz-option-group[data-option="tools"]{display:none !important;}
 html.oz-ab-tools-c .oz-option-group[data-option="tools"] .oz-tool-mode{display:none !important;}
+/* Variant C: hide primer + PU sections — they're baked into the ruimte dropdown
+   that buildRuimteDropdown() injects above the (now-hidden) primer section. */
+html.oz-ab-tools-c .oz-option-group[data-option="primer"],
+html.oz-ab-tools-c .oz-option-group[data-option="pu"]{display:none !important;}
 </style>
 <script id="oz-ab-tools-script">
 (function(){
