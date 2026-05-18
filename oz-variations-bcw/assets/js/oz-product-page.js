@@ -2760,10 +2760,6 @@
           trackAddToCart(calculatePrices(P, S));
           if (S.sheetOpen) closeSheet();
           showCartSuccess(json.data);
-          var replaced = json.data && parseInt(json.data.replaced_count, 10) || 0;
-          if (replaced > 0) {
-            showCartInfo(replaced === 1 ? "Vorige configuratie van dit product vervangen door je nieuwe keuze." : "Vorige configuraties van dit product vervangen door je nieuwe keuze.");
-          }
           document.dispatchEvent(new CustomEvent("oz-added-to-cart"));
           if (typeof jQuery !== "undefined") {
             jQuery(document.body).trigger("wc_fragment_refresh");
@@ -2801,16 +2797,6 @@
         cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
       }
       setTimeout(removeCartMsg, 4e3);
-    }, showCartInfo = function(msg) {
-      removeCartMsg();
-      var el = document.createElement("div");
-      el.className = "oz-cart-msg oz-cart-info";
-      el.textContent = msg;
-      var cartRow = document.querySelector(".oz-cart-row");
-      if (cartRow && cartRow.parentNode) {
-        cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
-      }
-      setTimeout(removeCartMsg, 6e3);
     }, showCartSuccess = function(data) {
       removeCartMsg();
       if (DOM.addToCartBtn) {

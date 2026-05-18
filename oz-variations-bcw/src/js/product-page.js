@@ -2012,16 +2012,6 @@ function submitCart(isRetry) {
         // Show success feedback
         showCartSuccess(json.data);
 
-        // Server replaced an older configuration of the same product.
-        // Tell the user so they understand why the old line is gone — silent
-        // dedup would feel like a bug ("where's my other config?").
-        var replaced = (json.data && parseInt(json.data.replaced_count, 10)) || 0;
-        if (replaced > 0) {
-          showCartInfo(replaced === 1
-            ? 'Vorige configuratie van dit product vervangen door je nieuwe keuze.'
-            : 'Vorige configuraties van dit product vervangen door je nieuwe keuze.');
-        }
-
         // Notify cart drawer to open (custom event for our theme)
         document.dispatchEvent(new CustomEvent('oz-added-to-cart'));
 
@@ -2081,24 +2071,6 @@ function showCartError(msg) {
     cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
   }
   setTimeout(removeCartMsg, 4000);
-}
-
-/**
- * Show informational message below the add-to-cart area. Used to surface
- * silent server actions (like dedup-replacement) so the user understands
- * why the cart looks different than they expect. Auto-hides after 6 s
- * (longer than errors — this is non-blocking informational copy).
- */
-function showCartInfo(msg) {
-  removeCartMsg();
-  var el = document.createElement('div');
-  el.className = 'oz-cart-msg oz-cart-info';
-  el.textContent = msg;
-  var cartRow = document.querySelector('.oz-cart-row');
-  if (cartRow && cartRow.parentNode) {
-    cartRow.parentNode.insertBefore(el, cartRow.nextSibling);
-  }
-  setTimeout(removeCartMsg, 6000);
 }
 
 /**
