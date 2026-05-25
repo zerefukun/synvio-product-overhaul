@@ -253,8 +253,10 @@ class OZ_Analytics_Collector {
             return;
         }
 
-        // 45s lookback — tighter window to match Clarity's session detection
-        $sessions = OZ_Analytics_Store::get_active_sessions(45);
+        // 360s lookback — heartbeat fires every 300s, this gives 60s jitter buffer.
+        // Sessions paused via Page Visibility API will fall out of this window when
+        // their tab is hidden, which matches our intent (only count actively-viewing tabs).
+        $sessions = OZ_Analytics_Store::get_active_sessions(360);
 
         // Optional session filter for viewing one session's journey
         $filter_session = isset($_POST['session_id']) ? sanitize_text_field($_POST['session_id']) : '';
