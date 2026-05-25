@@ -1097,9 +1097,11 @@
     }
 
     /* ============================================
-       HEARTBEAT — Ping server every 30s so the analytics
+       HEARTBEAT — Ping server every 5 min so the analytics
        dashboard can show live active session count.
-       Stops automatically when the tab is closed/navigated away.
+       Pauses when tab is hidden (Page Visibility API), resumes
+       with an immediate ping when the user returns to the tab.
+       Server lookback window is 360s, see ajax_active_sessions().
        ============================================ */
     function sendHeartbeat() {
         if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
@@ -1112,9 +1114,31 @@
         navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
     }
 
-    /* Send first heartbeat immediately, then every 30 seconds */
-    sendHeartbeat();
-    setInterval(sendHeartbeat, 30000);
+    var heartbeatTimer = null;
+
+    function startHeartbeat() {
+        if (heartbeatTimer) return;
+        sendHeartbeat();
+        heartbeatTimer = setInterval(sendHeartbeat, 300000);
+    }
+
+    function stopHeartbeat() {
+        if (!heartbeatTimer) return;
+        clearInterval(heartbeatTimer);
+        heartbeatTimer = null;
+    }
+
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            stopHeartbeat();
+        } else {
+            startHeartbeat();
+        }
+    });
+
+    if (!document.hidden) {
+        startHeartbeat();
+    }
 
     /* ============================================
        VISITOR ID — persistent cookie linking sessions across visits.
