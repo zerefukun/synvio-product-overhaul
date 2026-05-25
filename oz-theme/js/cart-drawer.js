@@ -1113,6 +1113,8 @@
        with an immediate ping when the user returns to the tab.
        Server lookback window is 360s, see ajax_active_sessions().
        ============================================ */
+    var lastHeartbeatTime = 0;
+
     function sendHeartbeat() {
         if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
         // Skip heartbeat for admins — don't pollute live session data
@@ -1122,13 +1124,18 @@
         fd.append('nonce', ozCartDrawer.analyticsNonce);
         fd.append('page_url', window.location.pathname);
         navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
+        lastHeartbeatTime = Date.now();
     }
 
     var heartbeatTimer = null;
 
     function startHeartbeat() {
         if (heartbeatTimer) return;
-        sendHeartbeat();
+        // Skip the on-resume ping if we already sent one in the last 60s.
+        // Prevents alt-tab spam from generating a burst of heartbeats.
+        if (Date.now() - lastHeartbeatTime > 60000) {
+            sendHeartbeat();
+        }
         heartbeatTimer = setInterval(sendHeartbeat, 300000);
     }
 
