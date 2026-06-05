@@ -330,6 +330,13 @@ class OZ_Cart_Manager {
         }
 
         foreach ($cart->get_cart() as $cart_key => $cart_item) {
+            // Race-condition guard: a concurrent AJAX request may have
+            // flagged $cart_item['data'] as null (cart-key removed mid-flight).
+            // See _notes/2026-06-05-cart-race-fatih.md on the bcw server.
+            if (empty($cart_item['data']) || !is_object($cart_item['data'])) {
+                continue;
+            }
+
             $product = $cart_item['data'];
             $addon_total = 0;
 

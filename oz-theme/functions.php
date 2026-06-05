@@ -489,6 +489,17 @@ function oz_cart_drawer_update() {
     }
 
     $cart = WC()->cart;
+
+    // Race-condition guard: cart-item may already be removed by a
+    // concurrent AJAX request (slow mobile, overlapping update_order_review
+    // / get_refreshed_fragments). Calling set_quantity on a missing key
+    // leaves a null in $cart_contents and crashes calculate_totals later
+    // ("Call to get_tax_class() on null"). See _notes/2026-06-05-cart-race-fatih.md.
+    if (!isset($cart->cart_contents[$cart_key])) {
+        wp_send_json_error('Cart item no longer exists', 410);
+        return;
+    }
+
     if ($qty < 1) {
         $cart->remove_cart_item($cart_key);
     } else {
