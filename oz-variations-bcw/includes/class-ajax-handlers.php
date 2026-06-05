@@ -112,8 +112,7 @@ class OZ_Ajax_Handlers {
         if (!$product
             || $product->get_status() !== 'publish'
             || !$product->is_purchasable()
-            || !$product->is_in_stock()
-            || $product->get_catalog_visibility() === 'hidden') {
+            || !$product->is_in_stock()) {
             wp_send_json_error('Product niet gevonden.');
         }
 
