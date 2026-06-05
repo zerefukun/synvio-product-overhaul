@@ -7,6 +7,7 @@ on:
     paths:
       - "oz-variations-bcw/**"
       - "oz-theme/**"
+      - "public/**"
       - ".github/workflows/deploy-bcw.yml"
   workflow_dispatch:
 
@@ -68,6 +69,13 @@ jobs:
             --exclude ".claude" \
             ./oz-theme/ \
             /home/bcw/public_html/wp-content/themes/OzTheme/
+
+      - name: Deploy public root files (llms.txt, robots.txt etc)
+        run: |
+          sudo /usr/bin/rsync -a \
+            --chown=bcw:bcw \
+            ./public/ \
+            /home/bcw/public_html/
 
       - name: Purge nginx FastCGI cache on BCW
         run: sudo /usr/bin/find /var/cache/nginx/bcw -type f -delete
