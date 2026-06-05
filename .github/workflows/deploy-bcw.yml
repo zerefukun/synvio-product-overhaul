@@ -19,33 +19,13 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # Self-hosted runner draait als gh-runner user op de Hetzner server.
+    # Geen SSH meer nodig - runner heeft directe disk-toegang via sudoers entry.
+    runs-on: [self-hosted, linux, bcw]
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Configure SSH access
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
-          BCW_SSH_KEY: ${{ secrets.BCW_SSH_KEY }}
-        run: |
-          set -eu
-
-          : "${BCW_HOST:?Missing secret BCW_HOST}"
-          : "${BCW_USER:?Missing secret BCW_USER}"
-          : "${BCW_SSH_KEY:?Missing secret BCW_SSH_KEY}"
-
-          port="${BCW_PORT:-22}"
-
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$BCW_SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          touch ~/.ssh/known_hosts
-          ssh-keyscan -p "$port" -H "$BCW_HOST" >> ~/.ssh/known_hosts
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -56,71 +36,38 @@ jobs:
         working-directory: oz-variations-bcw
         run: npm ci && npm run build
 
-      - name: Ensure directories exist on BCW
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
+      - name: Ensure target directories
         run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
-            "sudo install -d -o bcw -g bcw -m 750 \
-                /home/bcw/public_html/wp-content/plugins/oz-variations-bcw \
-                /home/bcw/public_html/wp-content/themes/OzTheme"
+          sudo /usr/bin/install -d -o bcw -g bcw -m 750 \
+            /home/bcw/public_html/wp-content/plugins/oz-variations-bcw \
+            /home/bcw/public_html/wp-content/themes/OzTheme
 
       - name: Deploy plugin files to BCW
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
         run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          rsync -az --delete \
-            --rsync-path="sudo rsync" \
+          sudo /usr/bin/rsync -az --delete \
             --chown=bcw:bcw \
             --exclude ".git" \
             --exclude ".github" \
             --exclude ".DS_Store" \
+            --exclude ".claude" \
             --exclude "node_modules" \
             --exclude "src" \
+            --exclude "esbuild.config.mjs" \
             --exclude "package.json" \
             --exclude "package-lock.json" \
-            --exclude "esbuild.config.mjs" \
             --exclude "*.map" \
-            -e "ssh -p $port" \
             ./oz-variations-bcw/ \
-            "${BCW_USER}@${BCW_HOST}:/home/bcw/public_html/wp-content/plugins/oz-variations-bcw/"
+            /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/
 
       - name: Deploy child theme to BCW
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
         run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          rsync -az --delete \
-            --rsync-path="sudo rsync" \
+          sudo /usr/bin/rsync -az --delete \
             --chown=bcw:bcw \
             --exclude ".git" \
             --exclude ".DS_Store" \
-            -e "ssh -p $port" \
+            --exclude ".claude" \
             ./oz-theme/ \
-            "${BCW_USER}@${BCW_HOST}:/home/bcw/public_html/wp-content/themes/OzTheme/"
+            /home/bcw/public_html/wp-content/themes/OzTheme/
 
       - name: Purge nginx FastCGI cache on BCW
-        shell: bash
-        env:
-          BCW_HOST: ${{ secrets.BCW_HOST }}
-          BCW_PORT: ${{ secrets.BCW_PORT }}
-          BCW_USER: ${{ secrets.BCW_USER }}
-        run: |
-          set -eu
-          port="${BCW_PORT:-22}"
-          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
-            "sudo find /var/cache/nginx/bcw -type f -delete"
+        run: sudo /usr/bin/find /var/cache/nginx/bcw -type f -delete
