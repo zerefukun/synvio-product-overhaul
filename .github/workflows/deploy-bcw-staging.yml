@@ -66,8 +66,9 @@ jobs:
           set -eu
           port="${BCW_PORT:-22}"
           ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
-            "mkdir -p /home/betoncire/staging/wp-content/plugins/oz-variations-bcw \
-                      /home/betoncire/staging/wp-content/themes/OzTheme"
+            "sudo install -d -o bcwstaging -g bcwstaging -m 750 \
+                /home/bcwstaging/public_html/wp-content/plugins/oz-variations-bcw \
+                /home/bcwstaging/public_html/wp-content/themes/OzTheme"
 
       - name: Deploy plugin files to staging
         shell: bash
@@ -79,6 +80,8 @@ jobs:
           set -eu
           port="${BCW_PORT:-22}"
           rsync -az --delete \
+            --rsync-path="sudo rsync" \
+            --chown=bcwstaging:bcwstaging \
             --exclude ".git" \
             --exclude ".github" \
             --exclude ".DS_Store" \
@@ -90,7 +93,7 @@ jobs:
             --exclude "*.map" \
             -e "ssh -p $port" \
             ./oz-variations-bcw/ \
-            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/plugins/oz-variations-bcw/"
+            "${BCW_USER}@${BCW_HOST}:/home/bcwstaging/public_html/wp-content/plugins/oz-variations-bcw/"
 
       - name: Deploy child theme to staging
         shell: bash
@@ -102,8 +105,22 @@ jobs:
           set -eu
           port="${BCW_PORT:-22}"
           rsync -az --delete \
+            --rsync-path="sudo rsync" \
+            --chown=bcwstaging:bcwstaging \
             --exclude ".git" \
             --exclude ".DS_Store" \
             -e "ssh -p $port" \
             ./oz-theme/ \
-            "${BCW_USER}@${BCW_HOST}:/home/betoncire/staging/wp-content/themes/OzTheme/"
+            "${BCW_USER}@${BCW_HOST}:/home/bcwstaging/public_html/wp-content/themes/OzTheme/"
+
+      - name: Purge nginx FastCGI cache on staging
+        shell: bash
+        env:
+          BCW_HOST: ${{ secrets.BCW_HOST }}
+          BCW_PORT: ${{ secrets.BCW_PORT }}
+          BCW_USER: ${{ secrets.BCW_USER }}
+        run: |
+          set -eu
+          port="${BCW_PORT:-22}"
+          ssh -p "$port" "${BCW_USER}@${BCW_HOST}" \
+            "sudo find /var/cache/nginx/bcwstaging -type f -delete"
