@@ -16,7 +16,7 @@
  *      (whether they come through us again or hit the origin directly).
  *
  * Exclusions: wp-admin, wp-login, wp-json, wp-cron, and explicit
- * /<lang>/ URLs are left untouched — they already know what language to
+ * /<lang>/ URLs are left untouched - they already know what language to
  * serve and don't need the cookie hint.
  *
  * Deploy: paste into a Cloudflare Worker, attach to routes:
@@ -32,7 +32,7 @@
 // in /wp-content/plugins/oz-variations/includes/translation/class-oz-geoip.php
 // Keep in sync if Patrick's dev adds more languages or countries.
 const COUNTRY_TO_LANG = {
-  // Dutch (default — but still set it so the cookie is present and PHP cache works)
+  // Dutch (default - but still set it so the cookie is present and PHP cache works)
   NL: "nl", BE: "nl", SR: "nl", AW: "nl", CW: "nl",
 
   // English
@@ -101,7 +101,7 @@ const SKIP_PATH_SUFFIXES = [
 ];
 
 // Language URL prefixes already present in URL. If user is already on
-// /en/foo/ they don't need cookie hint — origin sees the prefix and
+// /en/foo/ they don't need cookie hint - origin sees the prefix and
 // routes correctly.
 const KNOWN_LANG_PREFIXES = new Set([
   "en", "de", "fr", "es", "it", "pt", "pl", "tr", "ar", "bg", "uk",
@@ -112,14 +112,14 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // 1. Skip non-cacheable paths — origin handles these directly.
+    // 1. Skip non-cacheable paths - origin handles these directly.
     for (const prefix of SKIP_PATH_PREFIXES) {
       if (path.startsWith(prefix)) {
         return fetch(request);
       }
     }
 
-    // 1b. Skip static asset file extensions — never need language detection.
+    // 1b. Skip static asset file extensions - never need language detection.
     const lowerPath = path.toLowerCase();
     for (const suffix of SKIP_PATH_SUFFIXES) {
       if (lowerPath.endsWith(suffix)) {
@@ -127,13 +127,13 @@ export default {
       }
     }
 
-    // 2. URL already carries a language prefix — origin's own router handles it.
+    // 2. URL already carries a language prefix - origin's own router handles it.
     const firstSeg = path.split("/")[1] || "";
     if (KNOWN_LANG_PREFIXES.has(firstSeg)) {
       return fetch(request);
     }
 
-    // 3. Visitor already has epoxy_lang cookie — pass through unchanged.
+    // 3. Visitor already has epoxy_lang cookie - pass through unchanged.
     const incomingCookies = request.headers.get("cookie") || "";
     if (/(?:^|;\s*)epoxy_lang=[a-z]{2}/i.test(incomingCookies)) {
       return fetch(request);
