@@ -119,6 +119,51 @@ ssh synvio@5.9.62.15 'cd /home/bcw/public_html && sudo -u bcw wp <cmd>'
 ssh synvio@5.9.62.15 'sudo mariadb bcw_wp -e "SELECT ..."'
 ```
 
+## Wat heeft Patrick gewijzigd? (auto-snapshot log)
+
+Sinds 2026-06-05 draait op alle 4 sites een hourly git auto-snapshot van `wp-content`.
+Fatih gebruikt mij (Claude) om hieruit te kijken; geen email-rapport opgezet.
+
+| Site | Cron tijd | Pad | User |
+|---|---|---|---|
+| bcwstaging | xx:05 | `/home/bcwstaging/public_html/wp-content` | bcwstaging |
+| bcw prod | xx:10 | `/home/bcw/public_html/wp-content` | bcw |
+| epoxystone | xx:15 | `/home/epoxystone/public_html/wp-content` | epoxystone |
+| smartdeco | xx:20 | `/home/smartdeco/public_html/wp-content` | smartdeco |
+
+Cron-config: `/etc/cron.d/staging-safety-net`. Script: `/usr/local/sbin/git-autocommit-site.sh <user>`
+(bcwstaging gebruikt aparte oudere `git-autocommit-bcwstaging.sh`).
+
+**Hoe Claude Patrick's werk leest** (use cases die Fatih kan vragen):
+
+```bash
+# "Wat heeft Patrick vandaag gedaan op BCW?"
+ssh synvio@5.9.62.15 \
+  "sudo -u bcw git -C /home/bcw/public_html/wp-content log --since=today --stat"
+
+# "Wat is deze week veranderd op epoxystone?"
+ssh synvio@5.9.62.15 \
+  "sudo -u epoxystone git -C /home/epoxystone/public_html/wp-content log --since='1 week ago' --stat"
+
+# "Toon de complete diff van de laatste auto-snapshot op smartdeco"
+ssh synvio@5.9.62.15 \
+  "sudo -u smartdeco git -C /home/smartdeco/public_html/wp-content show HEAD"
+
+# "Welke regel in dit bestand is door Patrick gewijzigd?"
+ssh synvio@5.9.62.15 \
+  "sudo -u bcw git -C /home/bcw/public_html/wp-content blame <path>"
+
+# "Wanneer is dit bestand voor het eerst toegevoegd?"
+ssh synvio@5.9.62.15 \
+  "sudo -u bcw git -C /home/bcw/public_html/wp-content log --diff-filter=A -- <path>"
+```
+
+**Wat wordt getrackt**: `themes/`, `mu-plugins/`, custom `plugins/oz-*` + `plugins/bcw-*` + `plugins/sd-*` + `plugins/keuzehulp-*`
+
+**Niet getrackt**: `uploads/`, `cache/`, `wflogs/`, `litespeed/`, `*.log`, `*.bak`, `node_modules/`, WP core plugins (WooCommerce/Yoast/etc.)
+
+Errors in script naar `/home/<site>/logs/git-autocommit.log`.
+
 ## Wie kan helpen
 
 - **Fatih** (Synvio Web Solutions, zhouikun@gmail.com) - server, deploy, infra
