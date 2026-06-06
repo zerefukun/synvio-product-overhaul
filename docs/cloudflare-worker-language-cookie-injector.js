@@ -75,13 +75,29 @@ const COUNTRY_TO_LANG = {
 };
 
 // Paths where we DON'T want to inject the cookie (let origin handle natively).
+// Note: this still counts as 1 Worker invocation each. To truly skip Worker,
+// configure these as exclusion Routes in the CF dashboard.
 const SKIP_PATH_PREFIXES = [
   "/wp-admin",
   "/wp-login",
   "/wp-json",
+  "/wp-content",     // static assets (CSS, JS, images, uploads)
+  "/wp-includes",    // core static assets
   "/wp-cron.php",
   "/xmlrpc.php",
   "/feed",
+  "/sitemap",        // sitemap_index.xml + sitemaps (Yoast)
+  "/robots.txt",
+  "/.well-known",    // Let's Encrypt + security.txt
+  "/favicon.ico",
+];
+
+// Path suffixes (file extensions) for which Worker should pass through.
+// Static asset extensions never need language detection.
+const SKIP_PATH_SUFFIXES = [
+  ".css", ".js", ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg",
+  ".woff", ".woff2", ".ttf", ".eot", ".ico", ".pdf", ".xml", ".txt",
+  ".mp4", ".webm", ".mp3", ".zip",
 ];
 
 // Language URL prefixes already present in URL. If user is already on
@@ -99,6 +115,14 @@ export default {
     // 1. Skip non-cacheable paths — origin handles these directly.
     for (const prefix of SKIP_PATH_PREFIXES) {
       if (path.startsWith(prefix)) {
+        return fetch(request);
+      }
+    }
+
+    // 1b. Skip static asset file extensions — never need language detection.
+    const lowerPath = path.toLowerCase();
+    for (const suffix of SKIP_PATH_SUFFIXES) {
+      if (lowerPath.endsWith(suffix)) {
         return fetch(request);
       }
     }
