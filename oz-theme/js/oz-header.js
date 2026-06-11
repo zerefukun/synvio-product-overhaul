@@ -764,3 +764,41 @@
   }
 
 })();
+
+/* == Mega-panel viewport clamp ==============================
+   Panelen centreren onder hun nav-item (left:50% + translateX(-50%)).
+   Items dicht bij een schermrand zouden zo deels buiten beeld vallen
+   (bijv. "Ruimtes" als eerste item links). Deze clamp meet elk paneel
+   en schuift het met margin-left terug zodat het altijd minimaal
+   16px van de viewport-rand blijft. Panelen zijn visibility:hidden
+   (niet display:none), dus meten kan ook als het menu dicht is. */
+(function () {
+  var EDGE = 16;
+
+  function clampMegaPanels() {
+    document.querySelectorAll('.oz-mega__panel').forEach(function (panel) {
+      panel.style.marginLeft = '';
+      var r = panel.getBoundingClientRect();
+      if (!r.width) { return; }
+      var shift = 0;
+      if (r.left < EDGE) {
+        shift = EDGE - r.left;
+      } else if (r.right > window.innerWidth - EDGE) {
+        shift = (window.innerWidth - EDGE) - r.right;
+      }
+      if (shift) { panel.style.marginLeft = shift + 'px'; }
+    });
+  }
+
+  var resizeTimer;
+  window.addEventListener('resize', function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(clampMegaPanels, 150);
+  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', clampMegaPanels);
+  } else {
+    clampMegaPanels();
+  }
+  window.addEventListener('load', clampMegaPanels);
+})();
