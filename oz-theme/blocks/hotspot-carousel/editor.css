@@ -1,0 +1,86 @@
+/* Editor-only styles for oz/hotspot-carousel block. Loaded by Gutenberg via
+   editorStyle in block.json. Frontend uses style.css separately. */
+
+.oz-hotspot-carousel-edit {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.oz-hsc-edit__header {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.oz-hsc-edit__tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.oz-hsc-edit__tab {
+  background: none;
+  border: 0;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: #555;
+}
+
+.oz-hsc-edit__tab:hover { color: #135350; }
+.oz-hsc-edit__tab.is-active {
+  color: #135350;
+  border-bottom-color: #135350;
+  font-weight: 600;
+}
+.oz-hsc-edit__tab--add { color: #888; font-style: italic; }
+
+.oz-hsc-edit__project-meta {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.oz-hsc-edit__project-meta > * { flex: 1; }
+
+.oz-hsc-edit__image-wrap {
+  position: relative;
+  cursor: crosshair;
+  border: 1px dashed #bbb;
+  border-radius: 4px;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.oz-hsc-edit__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.oz-hsc-edit__hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #135350;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.2);
+  pointer-events: none;
+}

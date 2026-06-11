@@ -1,113 +1,113 @@
-<?php /* Template Name: Sitemap */ get_header(); ?>
+<?php
+/**
+ * Template Name: Sitemap
+ *
+ * Design-system-scoped sitemap page. Lists all published pages, posts,
+ * and categories in a two-column border-grid reusing .oz-kb-list.
+ *
+ * @package OzTheme
+ */
 
-<div class="sitemap">
+get_header(); ?>
 
-    <h1 class="title">Sitemap</h1>
+<div class="oz-ruimte oz-sitemap">
 
-    <!-- WordPress Posts Loop -->
+	<!-- Hero -->
+	<section class="oz-ruimte__hero oz-sitemap__hero" data-reveal>
+		<div class="wp-block-cover alignfull">
+			<span aria-hidden="true" class="wp-block-cover__background has-background-dim-60 has-background-dim"></span>
+			<div class="wp-block-cover__inner-container is-layout-flow wp-block-cover-is-layout-flow">
+				<h1 class="wp-block-heading has-white-color has-text-color">Sitemap</h1>
+				<p class="has-white-color has-text-color">Alle pagina's, artikelen en categorieën op één plek. Snel navigeren naar het onderwerp dat je zoekt.</p>
+				<div class="wp-block-buttons is-layout-flex wp-block-buttons-is-layout-flex">
+					<div class="wp-block-button is-style-outline">
+						<a class="wp-block-button__link" href="/sitemap_index.xml">XML sitemap</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-    <div class="sitemap-posts">
+	<!-- Pagina's -->
+	<section class="wp-block-group alignfull oz-section">
+		<div class="oz-container">
+			<h2 class="wp-block-heading has-text-align-center">Pagina's</h2>
+			<?php
+			$wppages = new WP_Query( array(
+				'post_type'      => 'page',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+			) );
+			if ( $wppages->have_posts() ) : ?>
+				<ul class="oz-kb-list">
+					<?php while ( $wppages->have_posts() ) : $wppages->the_post(); ?>
+						<li><a href="<?php the_permalink(); ?>" rel="dofollow"><strong><?php the_title(); ?></strong></a></li>
+					<?php endwhile; wp_reset_postdata(); ?>
+				</ul>
+			<?php endif; ?>
+		</div>
+	</section>
 
-        <h2 class="subtitle">Berichten</h2>
+	<!-- Berichten -->
+	<section class="wp-block-group alignfull oz-section">
+		<div class="oz-container">
+			<h2 class="wp-block-heading has-text-align-center">Berichten</h2>
+			<?php
+			$wpposts = new WP_Query( array(
+				'post_type'      => 'post',
+				'posts_per_page' => -1,
+				'post_status'    => 'publish',
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+			) );
+			if ( $wpposts->have_posts() ) : ?>
+				<ul class="oz-kb-list">
+					<?php while ( $wpposts->have_posts() ) : $wpposts->the_post(); ?>
+						<li><a href="<?php the_permalink(); ?>" rel="dofollow"><strong><?php the_title(); ?></strong></a></li>
+					<?php endwhile; wp_reset_postdata(); ?>
+				</ul>
+			<?php endif; ?>
+		</div>
+	</section>
 
-        <ul>
+	<!-- Categorieën -->
+	<section class="wp-block-group alignfull oz-section">
+		<div class="oz-container">
+			<h2 class="wp-block-heading has-text-align-center">Categorieën</h2>
+			<?php
+			$categories = get_categories( array( 'orderby' => 'name', 'order' => 'ASC' ) );
+			if ( ! empty( $categories ) ) : ?>
+				<ul class="oz-kb-list">
+					<?php foreach ( $categories as $category ) : ?>
+						<li>
+							<a href="<?php echo esc_url( get_category_link( $category->term_id ) ); ?>" rel="dofollow">
+								<strong><?php echo esc_html( $category->name ); ?></strong>
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</div>
+	</section>
 
-            <?php
-                $wpposts = new WP_Query(
-                    array(
-                        'post_type' => 'post', // slug of posts
-                        'posts_per_page' => -1, // -1 shows all posts
-                        'post_status' => 'publish', // only shows published posts
-                        'orderby' => 'title', // orders by post title
-                        'order' => 'ASC' // orders post title alphabetically
-                    )
-                );
-            ?>
+	<!-- XML Sitemap CTA -->
+	<section class="wp-block-group alignfull oz-section oz-sitemap__xml">
+		<div class="oz-container">
+			<div class="oz-sitemap__xml-card">
+				<p class="oz-eyebrow">Voor zoekmachines</p>
+				<h2 class="wp-block-heading">XML Sitemap</h2>
+				<p>De gestructureerde versie voor Google en andere crawlers.</p>
+				<div class="wp-block-buttons">
+					<div class="wp-block-button is-style-outline">
+						<a class="wp-block-button__link wp-element-button" href="/sitemap_index.xml">Open XML sitemap</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-            <?php while ( $wpposts->have_posts() ) : $wpposts->the_post(); ?>
-
-            <li>
-                <a href="<?php echo get_permalink($post->ID); ?>" rel="dofollow" title="<?php the_title(); ?>">
-                    <?php the_title(); ?>
-                </a>
-            </li>
-
-            <?php endwhile; wp_reset_query(); ?>
-
-        </ul>
-
-    </div><!-- sitemap-posts -->
-
-    <!-- WordPress Pages Loop -->
-
-    <div class="sitemap-pages">
-
-        <h2 class="subtitle">Pagina's</h2>
-
-        <ul>
-
-            <?php
-                $wppages = new WP_Query(
-                    array(
-                        'post_type' => 'page', // slug of pages
-                        'posts_per_page' => -1, // -1 shows all pages
-                        'post_status' => 'publish', // only shows published pages
-                        'orderby' => 'title', // orders by page title
-                        'order' => 'ASC' // orders page title alphabetically
-                    )
-                );
-            ?>
-
-            <?php while ( $wppages->have_posts() ) : $wppages->the_post(); ?>
-
-            <li>
-                <a href="<?php echo get_permalink($post->ID); ?>" rel="dofollow" title="<?php the_title(); ?>">
-                    <?php the_title(); ?>
-                </a>
-            </li>
-
-            <?php endwhile; wp_reset_query(); ?>
-
-        </ul>
-
-    </div><!-- sitemap-pages -->
-
-    <!-- WordPress Categories Loop -->
-
-    <div class="sitemap-categories">
-
-        <h2 class="subtitle">Categorieën</h2>
-
-        <ul>
-
-            <?php
-                $categories = get_categories(
-                    array(
-                        'orderby' => 'name', // orders by category name
-                        'order' => 'ASC' // orders categories alphabetically
-                    )
-                );
-
-                foreach ( $categories as $category ) {
-                    echo '<li><a href="' . get_category_link( $category->term_id ) . '" rel="dofollow" title="' . esc_attr( $category->name ) . '">' . $category->name . '</a></li>';
-                }
-            ?>
-
-        </ul>
-
-    </div><!-- sitemap-categories -->    
-    
-    
-
-     <div class="sitemap-pages">
-        <h2 class="subtitle">XML Sitemap</h2>
-       <a href="/sitemap_index.xml">Sitemap XML</a>  
 </div>
-
-
-
-
-
-</div><!-- sitemap -->
 
 <?php get_footer(); ?>
