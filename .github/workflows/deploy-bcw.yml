@@ -65,8 +65,8 @@ jobs:
       # backup terug-rsyncen. (Naast de hourly git-snapshot van wp-content.)
       - name: Pre-deploy backup van live files
         run: |
-          sudo /usr/bin/rsync -a --delete /home/bcw/public_html/wp-content/themes/OzTheme/ /home/bcw/backups/pre-deploy/OzTheme/
-          sudo /usr/bin/rsync -a --delete /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/ /home/bcw/backups/pre-deploy/oz-variations-bcw/
+          sudo /usr/bin/rsync -a --delete --mkpath /home/bcw/public_html/wp-content/themes/OzTheme/ /home/bcw/backups/pre-deploy/OzTheme/
+          sudo /usr/bin/rsync -a --delete --mkpath /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/ /home/bcw/backups/pre-deploy/oz-variations-bcw/
           echo "backup staat in /home/bcw/backups/pre-deploy/"
 
       - name: Setup Node.js
