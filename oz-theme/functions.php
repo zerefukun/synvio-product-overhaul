@@ -63,8 +63,8 @@ function oz_widgets_init() {
         'description'   => 'Widgets below the category navigation on shop pages (e.g. price filter).',
         'before_widget' => '<div id="%1$s" class="oz-sidebar-widget %2$s">',
         'after_widget'  => '</div>',
-        'before_title'  => '<div class="oz-sidebar-widget__title" role="heading" aria-level="3">',
-        'after_title'   => '</div>',
+        'before_title'  => '<h3 class="oz-sidebar-widget__title">',
+        'after_title'   => '</h3>',
     ]);
 }
 add_action('widgets_init', 'oz_widgets_init');
@@ -271,7 +271,7 @@ function oz_clarity_tracking() {
     // Skip admin pages and logged-in admins (don't pollute data with our own sessions)
     if (is_admin() || current_user_can('manage_options')) return;
     ?>
-    <script type="text/plain" data-cookieconsent="statistics">
+    <script type="text/javascript">
     /* Defer Clarity until after window.load + idle time so it does not
        block main thread during LCP measurement. PSI (Lighthouse) was
        reporting NO_LCP partly because analytics scripts ran during the
@@ -664,17 +664,6 @@ function oz_ruimte_enqueue() {
         || is_page_template('sitemap-template.php')
         || ( is_single() && has_category( 'stucsoorten' ) )
         || is_page( 'beton-cire-den-haag' );
-
-    /* Auto-detect: any page whose post_content embeds the homepage product-card
-       layout (oz-hp-pcard) or section wrapper (oz-hp-section) needs this CSS.
-       Covers all city/locatie pages without maintaining a slug whitelist. */
-    if ( ! $needs_ruimte_css && ( is_singular() || is_page() ) ) {
-        $post = get_post();
-        if ( $post && ( strpos( $post->post_content, 'oz-hp-pcard' ) !== false
-                     || strpos( $post->post_content, 'oz-hp-section' ) !== false ) ) {
-            $needs_ruimte_css = true;
-        }
-    }
 
     if ( ! $needs_ruimte_css ) return;
 
@@ -2095,8 +2084,8 @@ function oz_ruimte_trust_html() {
     $post = get_post();
     if ( ! $post ) return '';
 
-    /* Opt-out (conversiepagina's zonder hero) */
-    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) return '';
+    /* Opt-out pagina's (geen hero) krijgen de balk WEL: hij rendert dan
+       direct onder de navigatie, conform het kleurstalen-paginapatroon. */
 
     /* Skip wanneer content al een trust-block heeft (keuken/badkamer hebben
        dit in hun Gutenberg-content). Dubbele balken voorkomen. */
@@ -2151,20 +2140,3 @@ add_filter( 'paginate_links', function( $link ) {
 add_filter( 'get_pagenum_link', function( $link ) {
     return preg_replace( '#/page/1/?(\?|$)#', '/$1', $link );
 }, 99 );
-
-/* === PAGINATED-ARCHIVE-NOINDEX === */
-/* Paginated archives /page/N/ (N>=2) krijgen noindex,follow. Geen SEO-waarde
- * (duplicate content), wel link-equity voor product-discovery. */
-add_filter( 'wpseo_robots', function( $robots ) {
-    if ( is_paged() ) {
-        return 'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
-    }
-    return $robots;
-}, 999 );
-add_filter( 'wpseo_robots_array', function( $robots ) {
-    if ( is_paged() ) {
-        $robots['index']  = 'noindex';
-        $robots['follow'] = 'follow';
-    }
-    return $robots;
-}, 999 );
