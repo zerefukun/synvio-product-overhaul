@@ -82,7 +82,9 @@ $site_name = get_bloginfo( 'name' );
 				<p><a href="https://www.google.com/maps/place/Beton+cire+webshop/" target="_blank" rel="noopener">Laan van 's-Gravenmade 42L</a><br>2495 AJ Den Haag, Nederland</p>
 				<p>Bezoek alleen op afspraak</p>
 				<p>
-					<a href="mailto:info@beton-cire-webshop.nl">info@beton-cire-webshop.nl</a><br>
+					<?php /* antispambot(): entity-encoding tegen scrape-bots, geen JS nodig
+					   (vervangt Cloudflare Email Obfuscation die HTML herschreef). */ ?>
+					<a href="mailto:<?php echo esc_attr( antispambot( 'info@beton-cire-webshop.nl' ) ); ?>"><?php echo antispambot( 'info@beton-cire-webshop.nl' ); ?></a><br>
 					<a href="tel:+31850270090">085 - 027 00 90</a>
 				</p>
 				<p class="oz-footer__legal">KVK: 83646248 &middot; BTW: NL862945811 B01</p>
