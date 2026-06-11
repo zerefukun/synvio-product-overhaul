@@ -66,19 +66,7 @@
        ============================================ */
     function dlPush(eventName, params) {
         window.dataLayer = window.dataLayer || [];
-        /* Stamp A/B test variant on every cart event so the analytics
-           dashboard's per-variant queries can see them. Mirrors the PDP
-           analytics push() helper. Without this, oz_cart_checkout_clicked
-           (and every other cart event) is invisible to variant filters. */
-        var abTools = '';
-        try {
-            var abMatch = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
-            if (abMatch) abTools = abMatch[1];
-        } catch (e) {}
-        var payload = Object.assign({
-            event: eventName,
-            oz_ab_tools_variant: abTools,
-        }, params || {});
+        var payload = Object.assign({ event: eventName }, params || {});
         window.dataLayer.push(payload);  // GA4 concern
         beacon(eventName, payload);       // Server logging concern
     }
@@ -460,16 +448,30 @@
                 '<div class="oz-cart-item-row">' +
                     '<div class="oz-cart-qty">' +
                         '<button class="oz-cart-qty-btn dec' + (item.qty <= 1 ? ' bin' : '') + '" aria-label="' + (item.qty <= 1 ? 'Verwijderen' : 'Minder') + '">' + decContent + '</button>' +
-                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99">' +
+                        '<input type="number" class="oz-cart-qty-input" value="' + item.qty + '" min="1" max="99" aria-label="Aantal">' +
                         '<button class="oz-cart-qty-btn inc" aria-label="Meer">\u002B</button>' +
                     '</div>' +
                     '<div class="oz-cart-item-price">' + fmt(item.line_total) + '</div>' +
+                    (item.qty > 1 ? '<button class="oz-cart-remove-btn" aria-label="Verwijderen">' + binSvg + '</button>' : '') +
                 '</div>' +
             '</div>';
 
         /* Bind events */
         var cartKey = item.key;
         var qtyInput = el.querySelector('.oz-cart-qty-input');
+
+        var removeBtnEl = el.querySelector('.oz-cart-remove-btn');
+        if (removeBtnEl) {
+            removeBtnEl.addEventListener('click', function () {
+                var current = findItem(cartKey);
+                dlPush('oz_cart_item_removed', {
+                    oz_item_name: item.name,
+                    oz_item_price: item.line_total,
+                    oz_item_qty: current ? current.qty : item.qty,
+                });
+                removeItem(cartKey);
+            });
+        }
 
         el.querySelector('.dec').addEventListener('click', function () {
             var current = findItem(cartKey);
@@ -543,6 +545,34 @@
             } else if (!isBin && !decBtn.querySelector('.oz-minus-icon')) {
                 decBtn.innerHTML = '<span class="oz-minus-icon">\u2212</span>';
             }
+        }
+
+        /* manageSeparateBin: keep .oz-cart-remove-btn in sync with qty */
+        var sepBin = el.querySelector('.oz-cart-remove-btn');
+        if (item.qty > 1 && !sepBin) {
+            var newBin = document.createElement('button');
+            newBin.className = 'oz-cart-remove-btn';
+            newBin.setAttribute('aria-label', 'Verwijderen');
+            newBin.innerHTML = '<svg class="oz-bin-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">' +
+                '<path d="M2.545 4.675L3.465 9.72C3.545 10.17 3.94 10.5 4.4 10.5H7.595C8.055 10.5 8.45 10.175 8.53 9.72L9.45 4.675" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                '<path d="M1.515 3.09H10.515" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                '<path d="M3.61 3.09L4.345 1.75C4.43 1.6 4.59 1.505 4.76 1.505H7.24C7.415 1.505 7.575 1.6 7.655 1.75L8.39 3.09" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                '<path d="M7.005 6.5H4.995" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"/>' +
+                '</svg>';
+            var priceDivRef = el.querySelector('.oz-cart-item-price');
+            if (priceDivRef) priceDivRef.parentNode.insertBefore(newBin, priceDivRef);
+            var keyRef = el.dataset.key;
+            newBin.addEventListener('click', function () {
+                var cur = findItem(keyRef);
+                dlPush('oz_cart_item_removed', {
+                    oz_item_name: item.name,
+                    oz_item_price: item.line_total,
+                    oz_item_qty: cur ? cur.qty : item.qty,
+                });
+                removeItem(keyRef);
+            });
+        } else if (item.qty <= 1 && sepBin) {
+            sepBin.remove();
         }
     }
 
@@ -962,13 +992,8 @@
         S.loading = true;
         fetchCart(function () {
             syncUI();
-            /* Move focus into drawer after content loads. preventScroll
-             * keeps the page where the user was: the drawer slides in
-             * with a transform animation, so the close button is briefly
-             * outside the viewport when focus() fires. Without
-             * preventScroll the browser would scroll the page to bring
-             * the focused element into view (jumps to top on FBT add). */
-            if (R.drawerClose) R.drawerClose.focus({ preventScroll: true });
+            /* Move focus into drawer after content loads */
+            if (R.drawerClose) R.drawerClose.focus();
         });
         syncUI();
     }
@@ -984,12 +1009,9 @@
         S.open = false;
         syncUI();
 
-        /* Restore focus to the element that opened the drawer.
-         * preventScroll keeps the page in place if the user scrolled
-         * while the drawer was open (e.g. read product list, then
-         * closed drawer — don't yank them back to the trigger button). */
+        /* Restore focus to the element that opened the drawer */
         if (_triggerEl && typeof _triggerEl.focus === 'function') {
-            _triggerEl.focus({ preventScroll: true });
+            _triggerEl.focus();
             _triggerEl = null;
         }
     }
@@ -1037,6 +1059,16 @@
 
             /* Open our drawer on click (capture phase = fires first) */
             cartAnchors[i].addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                openDrawer('cart_icon');
+            }, true);
+        }
+
+        /* Custom OZ header cart icon (replaces Flatsome header entirely) */
+        var ozCartIcon = document.getElementById('oz-cart-icon');
+        if (ozCartIcon) {
+            ozCartIcon.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 openDrawer('cart_icon');
@@ -1113,8 +1145,6 @@
        with an immediate ping when the user returns to the tab.
        Server lookback window is 360s, see ajax_active_sessions().
        ============================================ */
-    var lastHeartbeatTime = 0;
-
     function sendHeartbeat() {
         if (typeof ozCartDrawer === 'undefined' || !ozCartDrawer.analyticsNonce) return;
         // Skip heartbeat for admins — don't pollute live session data
@@ -1124,18 +1154,13 @@
         fd.append('nonce', ozCartDrawer.analyticsNonce);
         fd.append('page_url', window.location.pathname);
         navigator.sendBeacon(ozCartDrawer.ajaxUrl, fd);
-        lastHeartbeatTime = Date.now();
     }
 
     var heartbeatTimer = null;
 
     function startHeartbeat() {
         if (heartbeatTimer) return;
-        // Skip the on-resume ping if we already sent one in the last 60s.
-        // Prevents alt-tab spam from generating a burst of heartbeats.
-        if (Date.now() - lastHeartbeatTime > 60000) {
-            sendHeartbeat();
-        }
+        sendHeartbeat();
         heartbeatTimer = setInterval(sendHeartbeat, 300000);
     }
 

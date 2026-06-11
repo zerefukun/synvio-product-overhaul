@@ -1,0 +1,892 @@
+/* ================================================================
+   PAGE RUIMTE v2 — minimal additions
+   Reuses everything: oz-hp-section + variants, oz-hp-section-header,
+   oz-hp-eyebrow, oz-hp-heading, oz-hp-faq-*, oz-hp-trust marquee,
+   oz-hp-pcard, design tokens (--oz-*), global h1-h6 typography.
+
+   This file ONLY adds rules for v2-unique components that don't exist
+   on the homepage:
+     - hero offerte-card (S01 overlay panel)
+     - toepassing-card (image-with-overlay link card)
+     - crosslink pill (S09)
+     - deep-separator divider (S12)
+
+   Plus a few small reuse-bridges:
+     - re-bind --charcoal to oz-text-primary so the marquee renders
+     - kill the trust wrapper's padding so the marquee runs edge-to-edge
+   ================================================================ */
+
+/* ── Reuse homepage CSS on ruimte pages — re-bind .oz-hp-scoped tokens
+   The homepage CSS scopes --sand, --charcoal, --teal, --white, --stone,
+   --teal-mist, --max-w, --gap inside .oz-hp. On ruimte pages we don't
+   have that ancestor, so the homepage components (oz-hp-section--sand,
+   oz-hp-trust, oz-hp-pcard) render with undefined backgrounds.
+
+   Re-bind every .oz-hp-* element on ruimte to the global oz-design-system
+   tokens so all variants render correctly. */
+.oz-ruimte [class*="oz-hp-"] {
+  --sand: var(--oz-bg-warm);
+  --charcoal: var(--oz-text-primary);
+  --teal: var(--oz-accent);
+  --teal-mist: var(--oz-accent-light);
+  --stone: var(--oz-border);
+  --white: #fff;
+  --text: var(--oz-text-body);
+  --text-light: var(--oz-text-muted);
+  --max-w: var(--oz-max-w-wide);
+  --gap: var(--oz-gap);
+}
+.oz-ruimte .oz-hp-trust-track {
+  animation: oz-hp-marquee 30s linear infinite;
+}
+
+/* Trust-bar wrapper sits in a full-width wp:group; kill its own padding
+   so only the .oz-hp-trust 14px own padding remains. Gutenberg adds a
+   .wp-block-group__inner-container with the theme's content max-width
+   which would constrain the marquee — break that out so it spans the
+   full viewport. */
+.oz-rp2-trust-wrap.wp-block-group {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.oz-rp2-trust-wrap > .wp-block-group__inner-container {
+  max-width: none !important;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.oz-rp2-trust-wrap .oz-hp-trust { width: 100%; display: block; }
+
+/* ── S01 hero offerte-card — sits inside the existing wp:cover hero
+   alongside the hero text. No staff photo (per Patrick's request). ── */
+.oz-rp2-hero-card {
+  background: rgba(20, 30, 40, .82);
+  backdrop-filter: blur(8px);
+  border-radius: var(--oz-radius-lg);
+  padding: 32px;
+  color: #FFF;
+}
+.oz-rp2-hero-card .oz-rp2-card-eyebrow { color: rgba(255,255,255,.7); margin: 0 0 8px; }
+.oz-rp2-hero-card h3,
+.oz-rp2-hero-card p,
+.oz-rp2-hero-card ol li { color: rgba(255,255,255,.92); }
+.oz-rp2-hero-card ol { padding-left: 20px; margin: 12px 0 20px; }
+.oz-rp2-hero-card .wp-block-button .wp-block-button__link {
+  width: 100%;
+  text-align: center;
+}
+
+/* ── S03 toepassing-cards — image with bottom-gradient overlay ── */
+.oz-rp2-toepassing-card {
+  position: relative;
+  display: block;
+  border-radius: var(--oz-radius);
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  text-decoration: none;
+  color: inherit;
+}
+.oz-rp2-toepassing-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+.oz-rp2-toepassing-card:hover img { transform: scale(1.04); }
+.oz-rp2-toepassing-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, rgba(0,0,0,0) 60%);
+}
+.oz-rp2-toepassing-card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  z-index: 2;
+  color: #FFF;
+}
+.oz-rp2-toepassing-card-content h3 { margin: 0 0 4px; color: #FFF; }
+.oz-rp2-toepassing-card-content p { margin: 0; color: rgba(255,255,255,.92); }
+
+/* ── S05 KLEURPAKKETTEN — horizontal scroll-snap carousel ──
+   Mobile = 1.2 cards visible (swipeable), desktop = 4 cards fit. Native
+   scroll-snap so no JS is required. Each card is a real WooCommerce
+   product link priced at €2,95. */
+.oz-rp2-kpkt-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: var(--oz-gap, 20px);
+  padding: 8px var(--oz-gap, 20px) 24px;
+  max-width: var(--oz-max-w-wide, 1400px);
+  margin: 0 auto;
+  -webkit-overflow-scrolling: touch;
+}
+.oz-rp2-kpkt-track::-webkit-scrollbar { height: 6px; }
+.oz-rp2-kpkt-track::-webkit-scrollbar-thumb {
+  background: var(--oz-border);
+  border-radius: 4px;
+}
+
+.oz-rp2-kpkt-card {
+  flex: 0 0 calc((100% - 60px) / 4);
+  scroll-snap-align: start;
+  background: #fff;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.oz-rp2-kpkt-card:hover {
+  border-color: var(--oz-accent);
+  box-shadow: var(--oz-shadow-md);
+  transform: translateY(-2px);
+}
+
+.oz-rp2-kpkt-card-img {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+}
+.oz-rp2-kpkt-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oz-rp2-kpkt-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.oz-rp2-kpkt-card-body h3 {
+  margin: 0 0 8px;
+  font-size: var(--oz-text-lg);
+}
+.oz-rp2-kpkt-card-body p {
+  margin: 0 0 16px;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.oz-rp2-kpkt-cta {
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .oz-rp2-kpkt-card { flex: 0 0 calc((100% - 40px) / 3); }
+}
+@media (max-width: 800px) {
+  .oz-rp2-kpkt-card { flex: 0 0 calc((100% - 20px) / 2); }
+}
+@media (max-width: 540px) {
+  .oz-rp2-kpkt-card { flex: 0 0 80%; }
+}
+
+/* ── S09 crosslinks — pill tag ── */
+.oz-rp2-crosslink-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #FFF;
+  border: 1px solid var(--oz-border);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--oz-text-primary);
+  transition: border-color .2s, color .2s;
+}
+.oz-rp2-crosslink-pill:hover {
+  border-color: var(--oz-accent);
+  color: var(--oz-accent);
+}
+
+/* ── Kleurstalen-aanvragen HUB page ──
+   No hero. Top = side-by-side intro + Help-card. Below = 6 product
+   line cards in a 3x2 grid. Each card has color-grid img + content +
+   CTA to the per-line swatch picker. */
+.oz-rp2-ksh-top { background: var(--oz-bg-warm); }
+.oz-rp2-ksh-top-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 64px;
+  align-items: start;
+  max-width: var(--oz-max-w);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+.oz-rp2-ksh-top-text h1 {
+  margin: 0 0 16px;
+  font-family: var(--oz-ff-heading);
+  font-size: var(--oz-text-3xl);
+  line-height: 1.2;
+}
+.oz-rp2-ksh-top-text h1 em {
+  color: var(--oz-accent);
+  font-style: italic;
+}
+.oz-rp2-ksh-top-text p {
+  color: var(--oz-text-body);
+  font-size: var(--oz-text-base);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+.oz-rp2-ksh-usps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.oz-rp2-ksh-usps li {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  line-height: 1.4;
+}
+.oz-rp2-ksh-usps li strong {
+  display: block;
+  color: var(--oz-accent);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* Hero CTA row on the new light hub-style hero. Needs breathing room
+   above (the bullets sit tight to it otherwise) and a light-bg variant
+   of .oz-hp-btn--outline — the default outline style is white-on-dark,
+   intended for the homepage dark hero. On the sand-coloured kleurstalen
+   hero that turns into nearly-invisible white-on-cream.
+   Selector scoped under .oz-rp2-ksh-top-text so it beats the
+   .oz-rp2-ksh-top-text p { margin: 0 0 24px } reset above. */
+.oz-rp2-ksh-top-text .oz-rp2-ksh-top-actions {
+  margin: 40px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.oz-rp2-ksh-top-text .oz-hp-btn--outline {
+  border-color: var(--oz-accent, #135350);
+  color: var(--oz-accent, #135350);
+  background: transparent;
+}
+.oz-rp2-ksh-top-text .oz-hp-btn--outline:hover {
+  background: var(--oz-accent, #135350);
+  color: #fff;
+  border-color: var(--oz-accent, #135350);
+}
+.oz-rp2-ksh-top-card {
+  background: #fff;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  padding: 24px;
+  align-self: start;
+}
+.oz-rp2-ksh-top-card-eyebrow {
+  font-weight: 600;
+  font-size: var(--oz-text-base);
+  color: var(--oz-text-primary);
+  margin-bottom: 8px;
+}
+.oz-rp2-ksh-top-card p {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.oz-rp2-ksh-top-card .oz-hp-btn { width: 100%; text-align: center; }
+
+/* 6-card grid */
+.oz-rp2-ksh-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: var(--oz-max-w-wide);
+  margin: 0 auto;
+  padding: 0 var(--oz-gap);
+}
+.oz-rp2-ksh-card {
+  background: #fff;
+  border: 1px solid var(--oz-border);
+  border-radius: var(--oz-radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+.oz-rp2-ksh-card:hover {
+  border-color: var(--oz-accent);
+  box-shadow: var(--oz-shadow-md);
+  transform: translateY(-2px);
+}
+.oz-rp2-ksh-card-img {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--oz-bg-warm);
+}
+.oz-rp2-ksh-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.oz-rp2-ksh-card-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.oz-rp2-ksh-card-body h3 {
+  font-size: var(--oz-text-xl);
+  margin: 0 0 4px;
+  color: var(--oz-text-primary);
+}
+.oz-rp2-ksh-card-subtitle {
+  font-family: var(--oz-ff-heading);
+  font-size: var(--oz-text-lg);
+  color: var(--oz-text-primary);
+  margin-bottom: 12px;
+}
+.oz-rp2-ksh-card-body p {
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+.oz-rp2-ksh-card-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  flex: 1;
+}
+.oz-rp2-ksh-card-bullets li {
+  position: relative;
+  padding: 4px 0 4px 24px;
+  font-size: var(--oz-text-sm);
+  color: var(--oz-text-body);
+}
+.oz-rp2-ksh-card-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid var(--oz-accent);
+}
+.oz-rp2-ksh-card .oz-hp-btn { align-self: flex-start; }
+
+@media (max-width: 1000px) {
+  .oz-rp2-ksh-top-grid { grid-template-columns: 1fr; gap: 32px; }
+  .oz-rp2-ksh-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .oz-rp2-ksh-grid { grid-template-columns: 1fr; }
+}
+
+/* ── S12 separator divider — soft warm bar before the SEO long-form ── */
+.oz-rp2-deep-separator.wp-block-group {
+  text-align: center;
+  padding: 64px 24px;
+  background: var(--oz-bg-warm);
+  border-top: 1px solid var(--oz-border);
+  border-bottom: 1px solid var(--oz-border);
+}
+.oz-rp2-deep-separator h2 {
+  color: var(--oz-text-primary);
+  margin: 0 0 8px;
+  font-size: var(--oz-text-2xl);
+}
+.oz-rp2-deep-separator::after {
+  content: "Onze diepere uitleg, kosten, voordelen en stap-voor-stap aanbreng-handleiding voor wie alles wil weten.";
+  display: block;
+  max-width: 560px;
+  margin: 0 auto;
+  color: var(--oz-text-body);
+  font-size: var(--oz-text-base);
+  line-height: 1.5;
+}
+
+/* ── Tail wp:cover blocks (e.g. "Alles over een Beton cire Badkamer") ──
+   Strategy: split-card layout — image fills the LEFT 50%, content sits
+   on a sand background on the RIGHT 50%. SEO content unchanged, only
+   the visual wrapper is inverted from full-cover to side-by-side.
+   Mirrors the homepage 'Zeker zijn van je kleur?' pattern. ── */
+.oz-ruimte .oz-section--cover {
+  background: transparent !important;
+  padding: 0 var(--oz-gap) !important;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  min-height: 0 !important;
+  background: var(--oz-bg-warm) !important;
+  border-radius: var(--oz-radius);
+  margin: 0 auto;
+  max-width: var(--oz-max-w-wide);
+  padding: 0 !important;
+  overflow: hidden;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover__background {
+  display: none !important;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+  position: relative !important;
+  display: block !important;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 360px;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+}
+.oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+  grid-column: 2;
+  grid-row: 1;
+  max-width: 100%;
+  width: 100%;
+  padding: 48px !important;
+  position: static !important;
+  align-self: center;
+}
+/* Override Gutenberg white-text classes since text is now on sand */
+.oz-ruimte .oz-section--cover .has-white-color,
+.oz-ruimte .oz-section--cover h2,
+.oz-ruimte .oz-section--cover h3 {
+  color: var(--oz-text-primary) !important;
+}
+.oz-ruimte .oz-section--cover p,
+.oz-ruimte .oz-section--cover li {
+  color: var(--oz-text-body) !important;
+}
+.oz-ruimte .oz-section--cover h2 {
+  font-size: var(--oz-text-2xl);
+  margin-bottom: 12px;
+}
+.oz-ruimte .oz-section--cover h3 {
+  font-size: var(--oz-text-lg);
+  margin: 24px 0 8px;
+}
+.oz-ruimte .oz-section--cover p {
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.oz-ruimte .oz-section--cover a {
+  color: var(--oz-accent) !important;
+}
+.oz-ruimte .oz-section--cover ul {
+  padding-left: 0;
+  list-style: none;
+}
+.oz-ruimte .oz-section--cover ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--oz-border);
+}
+.oz-ruimte .oz-section--cover ul li:last-child {
+  border-bottom: 0;
+}
+/* Flatten the inner Gutenberg columns layout if the cover authors
+   used a 2-column grid inside the cover (e.g. heading-left + list-right).
+   With the image now taking column 1, the inner columns just stack
+   vertically inside column 2 of our split. */
+.oz-ruimte .oz-section--cover .wp-block-columns {
+  flex-direction: column !important;
+  gap: 16px !important;
+  margin: 0 !important;
+}
+@media (max-width: 768px) {
+  .oz-ruimte .oz-section--cover .wp-block-cover {
+    grid-template-columns: 1fr;
+  }
+  .oz-ruimte .oz-section--cover .wp-block-cover__image-background {
+    min-height: 240px;
+    aspect-ratio: 16/9;
+    grid-row: 1;
+  }
+  .oz-ruimte .oz-section--cover .wp-block-cover__inner-container {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 32px 24px !important;
+  }
+}
+
+/* ── Mobile / tablet grid responsive overrides ──
+   The migrate script outputs inline-style grids (repeat(4,1fr) etc.)
+   which beat stylesheet rules unless we use !important and target the
+   inline style attribute via the value-substring selector. Use
+   descendant selectors (no `>`) so intermediate Gutenberg wrappers
+   (wp-block-group__inner-container) don't break matching. */
+
+/* 4-card grid (Toepassingen, Inspiratie) → 2-card horizontal carousel on tablet/mobile */
+@media (max-width: 900px) {
+  .oz-ruimte div[style*="repeat(4,1fr)"],
+  .oz-ruimte div[style*="repeat(4, 1fr)"] {
+    display: flex !important;
+    grid-template-columns: none !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px;
+    gap: 12px !important;
+  }
+  .oz-ruimte div[style*="repeat(4,1fr)"] > *,
+  .oz-ruimte div[style*="repeat(4, 1fr)"] > * {
+    flex: 0 0 calc((100% - 12px) / 2) !important;
+    scroll-snap-align: start;
+    width: calc((100% - 12px) / 2);
+  }
+  .oz-ruimte div[style*="repeat(4,1fr)"] > a.oz-rp2-toepassing-card {
+    aspect-ratio: 4/5;
+  }
+}
+@media (max-width: 540px) {
+  .oz-ruimte div[style*="repeat(4,1fr)"] > *,
+  .oz-ruimte div[style*="repeat(4, 1fr)"] > * {
+    flex: 0 0 78% !important;
+    width: 78%;
+  }
+}
+
+/* 2-col grid (Voor/Na, Voordelen, Doe-het-zelf) → 1-col stack on mobile */
+@media (max-width: 800px) {
+  .oz-ruimte div[style*="grid-template-columns:1fr 1fr"],
+  .oz-ruimte div[style*="grid-template-columns: 1fr 1fr"],
+  .oz-ruimte div[style*="repeat(2,1fr)"],
+  .oz-ruimte div[style*="repeat(2, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* 3-col grid (CTA-blok) → 1-col stack on mobile */
+@media (max-width: 800px) {
+  .oz-ruimte div[style*="repeat(3,1fr)"],
+  .oz-ruimte div[style*="repeat(3, 1fr)"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* Hero columns: stack on mobile so offerte-card sits below the H1 instead of next to it */
+@media (max-width: 768px) {
+  .oz-rp2-hero .wp-block-columns {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .oz-rp2-hero .wp-block-column {
+    width: 100% !important;
+    flex-basis: auto !important;
+  }
+  .oz-rp2-hero h1 { font-size: var(--oz-text-2xl) !important; }
+  .oz-rp2-hero-card { padding: 20px !important; }
+}
+
+/* Hero offerte-card mobile cleanup */
+@media (max-width: 768px) {
+  .oz-rp2-hero .wp-block-cover__inner-container { padding: 0 16px !important; }
+  .oz-rp2-hero-card h3 { font-size: var(--oz-text-lg) !important; }
+}
+
+/* Section header padding on mobile (oz-hp-section-header has 0 16px) */
+@media (max-width: 600px) {
+  .oz-ruimte .oz-hp-section .oz-hp-section-header {
+    padding: 0 var(--oz-gap) !important;
+  }
+  .oz-ruimte .oz-hp-section h2 {
+    font-size: var(--oz-text-xl) !important;
+  }
+}
+
+/* Section padding: prevent oz-hp-section's 80px top/bottom from feeling huge on mobile */
+@media (max-width: 600px) {
+  .oz-ruimte .oz-hp-section {
+    padding: 48px 0 !important;
+  }
+}
+
+/* ── Prijs-tabel: proper padding so 4 m² isn't glued to the left border ── */
+.oz-ruimte .oz-section table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.oz-ruimte .oz-section table th,
+.oz-ruimte .oz-section table td {
+  padding: 16px !important;
+  text-align: left;
+  border-bottom: 1px solid var(--oz-border);
+}
+.oz-ruimte .oz-section table th {
+  background: var(--oz-bg-warm);
+  font-weight: 600;
+}
+.oz-ruimte .oz-section table tr:last-child td {
+  border-bottom: 0;
+}
+@media (max-width: 600px) {
+  .oz-ruimte .oz-section table th,
+  .oz-ruimte .oz-section table td {
+    padding: 12px !important;
+    font-size: var(--oz-text-sm);
+  }
+}
+
+
+/* ───────────────────────── S06 Voor/Na slider ─────────────────────────
+   Drag the handle to compare before and after photos. Pure CSS layout,
+   small JS in oz-scripts.js drives the clip-path via CSS variable. */
+.oz-ruimte .oz-rp2-vn-wrap {
+  max-width: 960px;
+  margin: 32px auto 0;
+  padding: 0 var(--oz-gap, 20px);
+}
+.oz-ruimte .oz-rp2-vn-slider {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--oz-bg-warm);
+  user-select: none;
+  touch-action: pan-y;
+  --vn-pos: 50%;
+}
+.oz-ruimte .oz-rp2-vn-slider img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.oz-ruimte .oz-rp2-vn-before-clip {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--vn-pos)) 0 0);
+  -webkit-clip-path: inset(0 calc(100% - var(--vn-pos)) 0 0);
+  pointer-events: none;
+}
+.oz-ruimte .oz-rp2-vn-label {
+  position: absolute;
+  top: 16px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  pointer-events: none;
+  z-index: 2;
+}
+.oz-ruimte .oz-rp2-vn-label-voor {
+  left: 16px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.oz-ruimte .oz-rp2-vn-label-na {
+  right: 16px;
+  background: var(--oz-accent);
+}
+.oz-ruimte .oz-rp2-vn-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--vn-pos);
+  width: 48px;
+  margin-left: -24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  cursor: ew-resize;
+  z-index: 3;
+  color: var(--oz-text-primary);
+  -webkit-tap-highlight-color: transparent;
+}
+.oz-ruimte .oz-rp2-vn-handle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  transform: translateX(-50%);
+}
+.oz-ruimte .oz-rp2-vn-handle svg {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.oz-ruimte .oz-rp2-vn-handle:focus-visible svg {
+  outline: 2px solid var(--oz-accent);
+  outline-offset: 2px;
+}
+.oz-ruimte .oz-rp2-vn-quote {
+  margin: 24px auto 0;
+  max-width: 560px;
+  padding: 0 16px;
+  text-align: center;
+}
+.oz-ruimte .oz-rp2-vn-quote p {
+  font-style: italic;
+  font-size: var(--oz-text-base);
+  margin: 0 0 8px;
+  color: var(--oz-text-primary);
+}
+.oz-ruimte .oz-rp2-vn-quote cite {
+  font-size: var(--oz-text-xs);
+  font-weight: 600;
+  color: var(--oz-text-muted);
+  font-style: normal;
+}
+@media (max-width: 540px) {
+  .oz-ruimte .oz-rp2-vn-slider {
+    aspect-ratio: 4 / 5;
+  }
+  .oz-ruimte .oz-rp2-vn-label {
+    font-size: 11px;
+    padding: 4px 8px;
+    top: 12px;
+  }
+  .oz-ruimte .oz-rp2-vn-label-voor { left: 12px; }
+  .oz-ruimte .oz-rp2-vn-label-na   { right: 12px; }
+}
+
+/* ============================================================
+   Fixed-bottom quicknav voor ruimte-pages.
+   Patroon van .oz-sticky-bar op PDPs (oz-product-page.css):
+   fixed bottom, white-glass blur, slide-in via translateY.
+   Show-on-scroll-up / hide-on-scroll-down — JS in page-ruimte-v2.js.
+   ============================================================ */
+.oz-rp2-bottomnav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-top: 1px solid rgba(229, 229, 227, 0.6);
+  box-shadow:
+    0 -4px 24px rgba(0, 0, 0, 0.06),
+    0 -1px 4px  rgba(0, 0, 0, 0.03);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  transform: translateY(110%);
+  visibility: hidden;
+  transition:
+    transform .35s cubic-bezier(.4, 0, .2, 1),
+    visibility .35s;
+}
+.oz-rp2-bottomnav.is-shown {
+  transform: translateY(0);
+  visibility: visible;
+}
+.oz-rp2-bottomnav-inner {
+  max-width: var(--oz-max-w-wide, 1400px);
+  margin: 0 auto;
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Soft fade aan de randen wanneer er meer pills zijn dan in beeld passen. */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+}
+.oz-rp2-bottomnav-inner::-webkit-scrollbar { display: none; }
+.oz-rp2-bottomnav-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--oz-border, #E5E5E3);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--oz-text-body, #555);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .18s ease-out, background .18s ease-out, border-color .18s ease-out;
+}
+.oz-rp2-bottomnav-pill:hover,
+.oz-rp2-bottomnav-pill:focus-visible {
+  color: var(--oz-accent, #135350);
+  border-color: var(--oz-accent, #135350);
+  outline: none;
+}
+.oz-rp2-bottomnav-pill.is-active {
+  background: var(--oz-accent, #135350);
+  border-color: var(--oz-accent, #135350);
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .oz-rp2-bottomnav-inner { height: 52px; padding: 0 12px; gap: 8px; }
+  .oz-rp2-bottomnav-pill { padding: 8px 16px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oz-rp2-bottomnav { transition: opacity .12s linear; }
+}
+
+/* Anchor-sections op ruimte-pages: scroll-margin zodat de fixed bottom-nav
+   en site-header de target niet half afdekken bij smooth-scroll. */
+[id="producten"], [id="kosten"], [id="inspiratie"],
+[id="faq"], [id="stappen-plan"], [id="reviews"] {
+  scroll-margin-top: 80px;
+}
+html { scroll-behavior: smooth; }
+
+/* Wanneer de bottom-nav rendert: bcw-totop (back-to-top, sitewide uit
+   bcw-cro-prio2) boven de nav-bar plaatsen i.p.v. er onder verdwijnen. */
+body:has(.oz-rp2-bottomnav) .bcw-totop {
+  bottom: calc(56px + 16px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 640px) {
+  body:has(.oz-rp2-bottomnav) .bcw-totop {
+    bottom: calc(52px + 14px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+
+
+
+
+
+
+
+
+/* === 2026-06-10: v9 foto-cap VERWIJDERD — de ruimte-hero foto's gebruiken
+   nu object-fit: cover (center/center) en vullen de geboxte rechterkolom,
+   per expliciete eis. De cover-regels staan in homepage-v2.css onder
+   .oz-ruimte .oz-hp-hero-bg. Het oude clamp-blok (440-760px natural-size,
+   !important) overschreef die regels stilletjes. === */
