@@ -903,3 +903,26 @@ body:has(.oz-rp2-bottomnav) .bcw-totop {
 .oz-rp2-no-hero-spacer + * .oz-section:first-child {
   margin-top: 0;
 }
+
+/* === Kennisbank hero-aside: rustige rechterkolom in de ksh-top grid.
+   Volledige rand + warme tint conform systeem (geen side-stripe). === */
+.oz-rp2-ksh-top-aside {
+  align-self: center;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(19, 83, 80, 0.12);
+  border-radius: 16px;
+  padding: 32px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--oz-text-body, #555);
+}
+.oz-rp2-ksh-top-aside p { margin: 0 0 16px; }
+.oz-rp2-ksh-top-aside p:last-child { margin-bottom: 0; }
+.oz-rp2-ksh-top-aside-cta a {
+  color: var(--oz-accent, #135350);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+@media (max-width: 800px) {
+  .oz-rp2-ksh-top-aside { padding: 24px; }
+}
