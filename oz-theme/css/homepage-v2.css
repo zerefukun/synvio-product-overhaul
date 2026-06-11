@@ -299,18 +299,18 @@
    Gescoped op .oz-ruimte zodat alleen ruimte/stucsoorten/locatie-pages dit
    krijgen; de homepage gebruikt inmiddels bcw-hero-v2 (eigen sectie).
    De no-crop regel hierboven blijft de default voor ongescopete contexten. */
-.oz-ruimte .oz-hp-hero {
-  /* BOXED zoals de homepage-hero (inner max 1600px): de crème-achtergrond
-     blijft full-bleed, de grid-content wordt gecentreerd op 1600px via
-     padding (padding telt niet mee voor de grid-tracks). */
-  padding-left: max(0px, calc((100% - 1600px) / 2));
-  padding-right: max(0px, calc((100% - 1600px) / 2));
-}
 /* FOTO LINKS / TEKST RECHTS — zelfde richting als de homepage-hero.
    Alleen desktop: op mobiel stapelt de hero (foto boven, tekst onder)
-   en zouden geforceerde grid-columns een tweede kolom creëren. */
+   en zouden geforceerde grid-columns een tweede kolom creëren. De boxed
+   padding hoort hier ook: met max(0px,...) zou hij op mobiel de 24px
+   zijpadding van de stack-layout overschrijven naar 0. */
 @media (min-width: 1025px) {
   .oz-ruimte .oz-hp-hero {
+    /* BOXED zoals de homepage-hero (inner max 1600px): de crème-achtergrond
+       blijft full-bleed, de grid-content wordt gecentreerd op 1600px via
+       padding (padding telt niet mee voor de grid-tracks). */
+    padding-left: max(0px, calc((100% - 1600px) / 2));
+    padding-right: max(0px, calc((100% - 1600px) / 2));
     /* Foto-kolom (links) krijgt een vast aandeel zodat object-fit: cover
        iets heeft om te vullen (auto-breedte werkt niet met cover). */
     grid-template-columns: minmax(0, 1.05fr) minmax(280px, 1fr);
