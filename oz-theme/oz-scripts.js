@@ -31,3 +31,31 @@ jQuery(document).ready(function($) {
         }
     }
 });
+
+/* == Shop-sidebar categorie-toggles =========================
+   De walker rendert chevron-knoppen (.oz-cat-nav__toggle) maar
+   had geen handler: subcategorieen waren onbereikbaar. Klik
+   toggelt is-open op het item; de tak van de actieve categorie
+   klapt automatisch open. */
+(function () {
+  var nav = document.querySelector('.oz-cat-nav');
+  if (!nav || nav.dataset.ozToggleInit) { return; }
+  nav.dataset.ozToggleInit = '1';
+
+  /* Click-toggle zit al in archive-product.php (inline) - hier alleen
+     de aanvulling die daar ontbreekt: actieve tak openen + markeren. */
+  var here = window.location.pathname.replace(/\/$/, '');
+  nav.querySelectorAll('.oz-cat-nav__link').forEach(function (a) {
+    var path = a.pathname.replace(/\/$/, '');
+    if (path && (path === here || here.indexOf(path + '/') === 0)) {
+      a.classList.add('is-current');
+      var p = a.closest('.oz-cat-nav__item');
+      while (p) {
+        p.classList.add('is-open');
+        var t = p.querySelector(':scope > .oz-cat-nav__row .oz-cat-nav__toggle');
+        if (t) { t.setAttribute('aria-expanded', 'true'); }
+        p = p.parentElement.closest('.oz-cat-nav__item');
+      }
+    }
+  });
+})();

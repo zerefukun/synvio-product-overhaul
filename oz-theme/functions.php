@@ -309,7 +309,9 @@ function oz_custom_scripts() {
     );
 
     // Add a custom query string to exclude from LiteSpeed Cache
-    wp_add_inline_script('oz-scripts-js', 'var script = document.querySelector("script[src*=\'oz-scripts.js\']"); if(script) { script.src = script.src + "?nocache=" + new Date().getTime(); }', 'before');
+    /* nocache-hack verwijderd (2026-06-11): herschreef de script-src waardoor
+       de browser oz-scripts.js TWEE keer uitvoerde (dubbele event-handlers).
+       De ?ver= parameter van wp_enqueue_script regelt cache-busting al. */
 }
 add_action('wp_enqueue_scripts', 'oz_custom_scripts');
 

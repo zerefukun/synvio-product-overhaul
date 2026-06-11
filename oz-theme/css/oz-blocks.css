@@ -679,6 +679,20 @@
   display: block;
 }
 
+/* Chevron draait mee met de open-state (zelfde motion-tokens). */
+.oz-cat-nav__toggle svg {
+  transition: transform var(--oz-t-fast, 0.2s) var(--oz-ease, ease);
+}
+.oz-cat-nav__item.is-open > .oz-cat-nav__row .oz-cat-nav__toggle svg {
+  transform: rotate(180deg);
+}
+
+/* Actieve categorie in de boom. */
+.oz-cat-nav__link.is-current {
+  color: var(--oz-accent, #135350);
+  font-weight: 600;
+}
+
 .oz-cat-nav__sub .oz-cat-nav__link {
   font-size: 13px;
   padding: 6px 12px;
