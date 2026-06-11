@@ -892,8 +892,14 @@ body:has(.oz-rp2-bottomnav) .bcw-totop {
    !important) overschreef die regels stilletjes. === */
 
 /* === Pagina's zonder template-hero (postmeta _oz_no_template_hero):
-   spacer zodat de eerste content-sectie vrij blijft van de fixed
-   transparante header (zelfde clearance als de hero-padding). === */
+   geen losse spacer-hoogte (gaf een witte band boven de eerste sectie).
+   De warme ksh-top sectie loopt tot tegen de header; haar eigen padding
+   houdt de tekst vrij. Spacer-element blijft bestaan als haakje. === */
 .oz-rp2-no-hero-spacer {
-  height: clamp(88px, 11vh, 120px);
+  height: 0;
+}
+/* Eerste sectie direct laten aansluiten (geen eigen top-marge). */
+.oz-rp2-no-hero-spacer + .oz-section,
+.oz-rp2-no-hero-spacer + * .oz-section:first-child {
+  margin-top: 0;
 }
