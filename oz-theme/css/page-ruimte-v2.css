@@ -890,3 +890,10 @@ body:has(.oz-rp2-bottomnav) .bcw-totop {
    per expliciete eis. De cover-regels staan in homepage-v2.css onder
    .oz-ruimte .oz-hp-hero-bg. Het oude clamp-blok (440-760px natural-size,
    !important) overschreef die regels stilletjes. === */
+
+/* === Pagina's zonder template-hero (postmeta _oz_no_template_hero):
+   spacer zodat de eerste content-sectie vrij blijft van de fixed
+   transparante header (zelfde clearance als de hero-padding). === */
+.oz-rp2-no-hero-spacer {
+  height: clamp(88px, 11vh, 120px);
+}

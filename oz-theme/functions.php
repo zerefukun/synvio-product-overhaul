@@ -1998,6 +1998,14 @@ function oz_render_ruimte_template_hero() {
     $post = get_post();
     if ( ! $post ) return;
 
+    /* Opt-out via postmeta: conversie-pagina's (zoals /kleurstalen-aanvragen/)
+       willen geen generieke template-hero. In plaats daarvan komt er een
+       spacer zodat de content niet onder de fixed header verdwijnt. */
+    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) {
+        echo '<div class="oz-rp2-no-hero-spacer" aria-hidden="true"></div>';
+        return;
+    }
+
     /* Skip wanneer de Gutenberg-content zelf al een .oz-hp-hero blok heeft
        (de 13 'echte' ruimte-pages: Badkamer/Vloer/Keuken/Toilet/etc.). */
     if ( strpos( $post->post_content, 'class="oz-hp-hero"' ) !== false ) return;
@@ -2071,6 +2079,10 @@ function oz_render_ruimte_template_trust() {
     if ( ! is_singular() ) return;
     $post = get_post();
     if ( ! $post ) return;
+
+    /* Zelfde opt-out als de template-hero: zonder hero zou de USP-balk
+       direct onder de header komen te hangen — daar hoort hij niet. */
+    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) return;
 
     /* Skip wanneer content al een trust-block heeft (keuken/badkamer hebben
        dit in hun Gutenberg-content). Dubbele balken voorkomen. */
