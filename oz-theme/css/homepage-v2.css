@@ -299,6 +299,22 @@
    Gescoped op .oz-ruimte zodat alleen ruimte/stucsoorten/locatie-pages dit
    krijgen; de homepage gebruikt inmiddels bcw-hero-v2 (eigen sectie).
    De no-crop regel hierboven blijft de default voor ongescopete contexten. */
+/* Mobiel (stack): foto full-bleed van rand tot rand, alleen de
+   tekstzone krijgt zijpadding. De generieke stack-regel padt de hele
+   sectie (inclusief foto) — hier per zone gescheiden. */
+@media (max-width: 1024px) {
+  .oz-ruimte .oz-hp-hero { padding: 0; }
+  .oz-ruimte .oz-hp-hero-bg {
+    width: 100%;
+    height: auto;
+    /* base-regel capt op 55vw + justify end; mobiel moet rand-tot-rand */
+    max-width: none;
+    max-height: none;
+    justify-self: stretch;
+  }
+  .oz-ruimte .oz-hp-hero-inner { padding: 20px 24px 32px; }
+}
+
 /* FOTO LINKS / TEKST RECHTS — zelfde richting als de homepage-hero.
    Alleen desktop: op mobiel stapelt de hero (foto boven, tekst onder)
    en zouden geforceerde grid-columns een tweede kolom creëren. De boxed
@@ -315,7 +331,21 @@
        iets heeft om te vullen (auto-breedte werkt niet met cover). */
     grid-template-columns: minmax(0, 1.05fr) minmax(280px, 1fr);
   }
-  .oz-ruimte .oz-hp-hero-bg { grid-column: 1; }
+  .oz-ruimte .oz-hp-hero-bg {
+    grid-column: 1;
+    width: 100%;
+    /* height:0 + min-height:100% — de foto telt NIET mee voor de rij-hoogte
+       (anders blaast een portrait-foto de hero op tot z'n intrinsieke hoogte)
+       maar stretcht wel mee tot de hoogte die de tekstkolom bepaalt. */
+    height: 0;
+    min-height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+    object-position: center center;
+    justify-self: stretch;
+    align-self: stretch;
+  }
   .oz-ruimte .oz-hp-hero-inner { grid-column: 2; }
   /* Glass-card op de foto: linksonder, meeschuivend met de geboxte kolom
      (absolute offsets meten vanaf de sectie-rand, niet de content-box). */
@@ -335,20 +365,6 @@
     transform: translateY(-50%) rotate(90deg);
     transform-origin: right center;
   }
-}
-.oz-ruimte .oz-hp-hero-bg {
-  width: 100%;
-  /* height:0 + min-height:100% — de foto telt NIET mee voor de rij-hoogte
-     (anders blaast een portrait-foto de hero op tot z'n intrinsieke hoogte)
-     maar stretcht wel mee tot de hoogte die de tekstkolom bepaalt. */
-  height: 0;
-  min-height: 100%;
-  max-width: none;
-  max-height: none;
-  object-fit: cover;
-  object-position: center center;
-  justify-self: stretch;
-  align-self: stretch;
 }
 
 /* Tekst-zone: linkerkolom, verticaal gecentreerd op de warme achtergrond. */
