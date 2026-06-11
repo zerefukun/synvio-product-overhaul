@@ -30,3 +30,17 @@ Een push die code wijzigt zonder één request te laten falen, zonder één
 DB-rij aan te raken, en die binnen 60 sec aantoonbaar gezond is (smoke-tests
 groen). Alles daarbuiten is geen push maar een migratie — en die heeft een
 draaiboek met backup en GO-moment.
+
+## Noordster
+HAAL 200K OMZET ELKE MAAND. Elke feature, fix en pagina wordt hieraan
+getoetst: draagt het bij aan conversie, vertrouwen of vindbaarheid?
+
+## Werkregels (aanvulling 11 juni)
+- VOLGORDE-REGEL: bij wijzigingen die code + content combineren gaat eerst
+  de code (additief, nog ongebruikt) door de pipeline, daarna pas de content
+  die ernaar verwijst. Nooit andersom - geen seconde ongestylede content.
+- CONTENT-BACKUP-REGEL: elke prod-content-wijziging begint met een
+  automatische kopie van de huidige versie naar de backupmap
+  (/home/bcw/backups/). Geen uitzonderingen, ook niet voor kleine edits.
+- VERSE-BASIS-REGEL: nooit editen/pushen vanaf een lokale kopie die ouder
+  is dan de bron; altijd eerst vers pullen van de omgeving die waarheid is.
