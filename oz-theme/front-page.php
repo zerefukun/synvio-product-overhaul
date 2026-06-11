@@ -48,11 +48,14 @@ $theme = get_stylesheet_directory_uri();
 }
 .bcw-hero-v2__inner {
 	display: grid;
-	grid-template-columns: 7fr 5fr;
+	/* Tekst links, foto rechts — zelfde richting als alle ruimte-pages. */
+	grid-template-columns: 5fr 7fr;
 	max-width: 1600px;
 	margin: 0 auto;
 	min-height: clamp(440px, 56vh, 560px);
 }
+.bcw-hero-v2__photo { order: 2; }
+.bcw-hero-v2__text  { order: 1; }
 .bcw-hero-v2__photo {
 	position: relative;
 	overflow: hidden;
