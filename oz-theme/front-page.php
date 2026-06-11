@@ -106,15 +106,6 @@ $theme = get_stylesheet_directory_uri();
 	gap: 12px;
 	font-weight: 600;
 }
-.bcw-hero-v2__kicker::before {
-	content: "01";
-	color: var(--oz-accent, #135350);
-	font-family: var(--oz-ff-heading, 'DM Serif Display', Georgia, serif);
-	font-style: italic;
-	font-size: 16px;
-	letter-spacing: 0;
-	font-weight: 400;
-}
 .bcw-hero-v2__headline {
 	font-family: var(--oz-ff-heading, 'DM Serif Display', Georgia, serif);
 	font-weight: 400;
@@ -286,7 +277,7 @@ $theme = get_stylesheet_directory_uri();
 	<div class="bcw-hero-v2__text">
 		<div class="bcw-hero-v2__kicker">Beton ciré &middot; doe het zelf</div>
 		<h1 class="bcw-hero-v2__headline">Een wand <em>zonder voegen</em>.<br>Een vloer <em>zonder naden</em>.</h1>
-		<p class="bcw-hero-v2__sub">Voor badkamer, keuken en trap. Kant-en-klaar pakket, <strong>geen aannemer nodig</strong>. Kies uit 50+ kleuren of bezoek de showroom in Den Haag.</p>
+		<p class="bcw-hero-v2__sub">Voor badkamer, vloer, keuken, trap en meubels.<br>Kant-en-klaar pakket. Kies uit 100+ kleuren of bezoek de showroom in Den Haag.</p>
 		<div class="bcw-hero-v2__actions">
 			<a href="/ruimtes/" class="bcw-hero-v2__cta">Bekijk per ruimte <span class="bcw-hero-v2__cta-arrow" aria-hidden="true"></span></a>
 			<a href="/kleurstalen-aanvragen/" class="bcw-hero-v2__cta bcw-hero-v2__cta--stalen-mobile">Gratis stalen aanvragen</a>
@@ -296,7 +287,7 @@ $theme = get_stylesheet_directory_uri();
 			<span>Geen ervaring nodig &mdash; doe het zelf</span>
 		</div>
 		<div class="bcw-hero-v2__meta">
-			<div class="bcw-hero-v2__meta-item"><strong>50+</strong>kleuren op staal</div>
+			<div class="bcw-hero-v2__meta-item"><strong>100+</strong>kleuren op staal</div>
 			<div class="bcw-hero-v2__meta-item"><strong>4,8 / 5</strong>op 480 reviews</div>
 			<div class="bcw-hero-v2__meta-item"><strong>Den Haag</strong>showroom &amp; advies</div>
 		</div>
@@ -466,7 +457,7 @@ $theme = get_stylesheet_directory_uri();
 		<div class="oz-hp-step">
 			<div class="oz-hp-step-num">1</div>
 			<div class="oz-hp-step-title">Kies je kleur</div>
-			<p class="oz-hp-step-desc">Uit 50+ kleuren of bestel gratis kleurstalen om thuis te vergelijken.</p>
+			<p class="oz-hp-step-desc">Uit 100+ kleuren of bestel gratis kleurstalen om thuis te vergelijken.</p>
 		</div>
 		<div class="oz-hp-step">
 			<div class="oz-hp-step-num">2</div>
@@ -710,7 +701,7 @@ $theme = get_stylesheet_directory_uri();
 				<tr><td>Kenmerk</td><td>Echt cement</td><td>Echt cement</td><td>Drukkere tek.</td><td>Drukste tekening</td><td>Parelmoer</td><td>Epoxy slijtvast</td></tr>
 				<tr><td>Hardheid</td><td>Harder</td><td>Harder</td><td>Hard</td><td>Hard</td><td>Decoratief</td><td>Extreem</td></tr>
 				<tr><td>Stappen</td><td>4</td><td>4</td><td>5</td><td>5</td><td>4</td><td>4</td></tr>
-				<tr><td>Kleuren</td><td>50+</td><td>36</td><td>36</td><td>36</td><td>12</td><td>20</td></tr>
+				<tr><td>Kleuren</td><td>100+</td><td>36</td><td>36</td><td>36</td><td>12</td><td>20</td></tr>
 				<tr><td>Emmers</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1</td><td>2</td></tr>
 				<tr><td>Waterdicht</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Tot in kern</td></tr>
 			</tbody>
@@ -767,7 +758,7 @@ $theme = get_stylesheet_directory_uri();
 		</li>
 		<li>
 			<strong>Zelf aanbrengen of laten doen.</strong>
-			Kant-en-klare pakketten (All-In-One, Easyline) zijn DIY-vriendelijk; voor complexe projecten schakel je een professional in.
+			Kant-en-klare pakketten in Beton Cir&eacute;, Microcement of Lavasteen &mdash; DIY-vriendelijk. Complex of liever laten aanbrengen? Schakel een professional in.
 		</li>
 	</ul>
 </section>

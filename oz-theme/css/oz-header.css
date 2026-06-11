@@ -1308,6 +1308,9 @@ body.oz-header-overlay-page {
 
 .oz-mega__heading:hover {
   color: var(--oz-hdr-charcoal);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
 /* Individual link inside a column or flat panel */

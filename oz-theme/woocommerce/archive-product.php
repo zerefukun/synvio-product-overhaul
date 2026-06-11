@@ -27,7 +27,7 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
     <aside class="oz-shop__sidebar" id="shop-sidebar">
         <button class="oz-shop__filter-close" id="filter-close" type="button" aria-label="Filters sluiten">&times;</button>
         <nav class="oz-shop__categories" aria-label="Productcategorieën">
-            <h2 class="oz-shop__sidebar-title">Categorieën</h2>
+            <div class="oz-shop__sidebar-title" role="heading" aria-level="2">Categorieën</div>
             <?php
             if ( has_nav_menu( 'oz-shop-sidebar' ) ) {
                 wp_nav_menu([
@@ -50,7 +50,7 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
             <img src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/img/kleurstalen-sidebar.jpg" alt="Kleurstalen beton cire" class="oz-shop__stalen-img" loading="lazy" width="280" height="160">
             <div class="oz-shop__stalen-body">
                 <span class="oz-eyebrow">Gratis kleurstalen</span>
-                <h3 class="oz-shop__stalen-title">Zeker van je kleur?</h3>
+                <div class="oz-shop__stalen-title" role="heading" aria-level="3">Zeker van je kleur?</div>
                 <p class="oz-shop__stalen-text">Selecteer tot 4 kleuren en wij sturen ze gratis naar je toe.</p>
                 <a href="<?php echo esc_url( home_url( '/kleurstalen-aanvragen/' ) ); ?>" class="oz-btn oz-btn--primary oz-btn--sm">Stalen aanvragen</a>
             </div>
@@ -101,7 +101,7 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 
 <!-- Fixed decorative image for wide desktops (right gutter) -->
 <div class="oz-shop__deco" aria-hidden="true">
-    <img src="<?php echo esc_url( content_url( '/uploads/2024/02/Badkamer-vloer-en-wand-Original-1050-Homebystuart.webp' ) ); ?>" alt="" loading="lazy" width="600" height="800">
+    <img src="<?php echo esc_url( content_url( '/uploads/2024/02/Badkamer-vloer-en-wand-Original-1050-Homebystuart.webp' ) ); ?>" alt="Badkamer met Beton Ciré Original kleur 1050 - Home by Stuart" loading="lazy" width="600" height="800">
 </div>
 
 <?php do_action( 'woocommerce_after_main_content' ); ?>

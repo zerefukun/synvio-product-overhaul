@@ -114,6 +114,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 			</button>
 			<a href="<?php echo esc_url( get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ); ?>" class="oz-header__icon oz-header__desktop-only" aria-label="Mijn account">
 				<svg class="oz-header__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+				<span class="oz-sr-only">Mijn account</span>
 			</a>
 			<a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="oz-header__icon" id="oz-cart-icon" aria-label="Winkelwagen">
 				<svg class="oz-header__svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -147,6 +148,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 			<?php endif; ?>
 			<a href="<?php echo esc_url( get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ); ?>" class="oz-menu-drawer__account" aria-label="Mijn account">
 				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+				<span class="oz-sr-only">Mijn account</span>
 			</a>
 		</div>
 
@@ -208,7 +210,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 						<button type="button" class="oz-menu-drawer__category-link oz-menu-has-children" data-submenu="<?php echo $submenu_index; ?>" aria-expanded="false">
 							<div class="oz-menu-drawer__category-icon">
 								<?php if ( $img_url ) : ?>
-									<img src="<?php echo esc_url( $img_url ); ?>" alt="" width="50" height="50" loading="lazy">
+									<img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $item->title ); ?>" width="50" height="50" loading="lazy">
 								<?php else : ?>
 									<span class="oz-menu-drawer__category-letter"><?php echo esc_html( mb_substr( $item->title, 0, 1 ) ); ?></span>
 								<?php endif; ?>
@@ -222,7 +224,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 						<a href="<?php echo esc_url( $item->url ); ?>" class="oz-menu-drawer__category-link">
 							<div class="oz-menu-drawer__category-icon">
 								<?php if ( $img_url ) : ?>
-									<img src="<?php echo esc_url( $img_url ); ?>" alt="" width="50" height="50" loading="lazy">
+									<img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $item->title ); ?>" width="50" height="50" loading="lazy">
 								<?php else : ?>
 									<span class="oz-menu-drawer__category-letter"><?php echo esc_html( mb_substr( $item->title, 0, 1 ) ); ?></span>
 								<?php endif; ?>
@@ -340,7 +342,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 			<!-- Recent searches (JS populated) -->
 			<div class="oz-search-drawer__section oz-search-drawer__recent" id="oz-search-recent" style="display:none">
 				<div class="oz-search-drawer__section-header">
-					<h3 class="oz-search-drawer__section-title">Recente zoekopdrachten</h3>
+					<div class="oz-search-drawer__section-title" role="heading" aria-level="3">Recente zoekopdrachten</div>
 					<button type="button" class="oz-search-drawer__clear-all" id="oz-search-clear-recent">Wissen</button>
 				</div>
 				<ul class="oz-search-drawer__recent-list" id="oz-search-recent-list"></ul>
@@ -348,7 +350,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 
 			<!-- Quick categories -->
 			<div class="oz-search-drawer__section oz-search-drawer__categories">
-				<h3 class="oz-search-drawer__section-title">Categorieën</h3>
+				<div class="oz-search-drawer__section-title" role="heading" aria-level="3">Categorieën</div>
 				<ul class="oz-search-drawer__categories-list">
 					<li><a href="/ruimtes/" class="oz-search-drawer__category-link">Ruimtes</a></li>
 					<li><a href="/producten/" class="oz-search-drawer__category-link">Producten</a></li>
@@ -361,7 +363,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 
 			<!-- Search results (JS populated) -->
 			<div class="oz-search-drawer__section oz-search-drawer__results" id="oz-search-results" style="display:none">
-				<h3 class="oz-search-drawer__section-title">Top resultaten</h3>
+				<div class="oz-search-drawer__section-title" role="heading" aria-level="3">Top resultaten</div>
 				<div class="oz-search-drawer__results-grid" id="oz-search-results-grid"></div>
 				<a href="#" class="oz-search-drawer__view-all" id="oz-search-view-all">
 					Bekijk alle resultaten
@@ -383,7 +385,7 @@ if ( strpos( $oz_lang_attrs, 'lang=' ) === false ) {
 
 			<!-- Placeholder: popular kleurstalen pakketten (future) -->
 			<div class="oz-search-drawer__section">
-				<h3 class="oz-search-drawer__section-title">Populaire kleurstalen pakketten</h3>
+				<div class="oz-search-drawer__section-title" role="heading" aria-level="3">Populaire kleurstalen pakketten</div>
 				<p class="oz-search-drawer__placeholder-text">Binnenkort beschikbaar</p>
 			</div>
 
