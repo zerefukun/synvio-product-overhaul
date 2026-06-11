@@ -27,6 +27,47 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── GUARDRAIL 1: drift-check ─────────────────────────────────────
+      # Faalt hard als de rsync prod-files zou overschrijven/verwijderen
+      # die NIET uit deze commit-range komen = server-side edits die eerst
+      # reverse-gesynct moeten worden naar de repo (zie GOAL.md).
+      # *.bak* op prod wordt genegeerd (en hieronder ook nooit ge-delete).
+      - name: Drift-check (prod vs commit-range)
+        run: |
+          set -e
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            echo "::warning::Geen geldige before-SHA (eerste push/force) - drift-check overgeslagen"
+            exit 0
+          fi
+          git diff --name-only "$BEFORE" "${{ github.sha }}" | sed 's|^oz-theme/||' | sort > /tmp/changed-in-push.txt
+
+          sudo /usr/bin/rsync -rcn --delete --out-format='%n' \
+            --exclude ".git" --exclude ".DS_Store" --exclude ".claude" \
+            --exclude "*.bak*" --exclude "*.disabled*" \
+            ./oz-theme/ /home/bcw/public_html/wp-content/themes/OzTheme/ \
+            | grep -v '/$' | sort > /tmp/rsync-would-touch.txt || true
+
+          DRIFT=$(comm -23 /tmp/rsync-would-touch.txt /tmp/changed-in-push.txt || true)
+          if [ -n "$DRIFT" ]; then
+            echo "::error::DRIFT GEDETECTEERD - prod heeft server-side wijzigingen die deze push zou overschrijven:"
+            echo "$DRIFT"
+            echo "Fix: reverse-sync prod -> repo (zie GOAL.md), dan opnieuw pushen."
+            exit 1
+          fi
+          echo "Geen drift - alle te wijzigen files komen uit deze commit-range."
+
+      # ── GUARDRAIL 2: pre-deploy backup ───────────────────────────────
+      # Volledige kopie van live theme + plugin voor de rsync; rollback =
+      # backup terug-rsyncen. (Naast de hourly git-snapshot van wp-content.)
+      - name: Pre-deploy backup van live files
+        run: |
+          sudo /usr/bin/rsync -a --delete /home/bcw/public_html/wp-content/themes/OzTheme/ /home/bcw/backups/pre-deploy/OzTheme/
+          sudo /usr/bin/rsync -a --delete /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/ /home/bcw/backups/pre-deploy/oz-variations-bcw/
+          echo "backup staat in /home/bcw/backups/pre-deploy/"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -57,6 +98,7 @@ jobs:
             --exclude "package.json" \
             --exclude "package-lock.json" \
             --exclude "*.map" \
+            --exclude "*.bak*" \
             ./oz-variations-bcw/ \
             /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/
 
@@ -67,6 +109,8 @@ jobs:
             --exclude ".git" \
             --exclude ".DS_Store" \
             --exclude ".claude" \
+            --exclude "*.bak*" \
+            --exclude "*.disabled*" \
             ./oz-theme/ \
             /home/bcw/public_html/wp-content/themes/OzTheme/
 
@@ -79,3 +123,35 @@ jobs:
 
       - name: Purge nginx FastCGI cache on BCW
         run: sudo /usr/bin/find /var/cache/nginx/bcw -type f -delete
+
+      # ── GUARDRAIL 3: smoke-tests ─────────────────────────────────────
+      # Faalt de workflow (rood + mail van GitHub) als prod na de deploy
+      # niet aantoonbaar gezond is. Rollback: backup uit guardrail 2
+      # terug-rsyncen + cache purge.
+      - name: Smoke-tests op prod
+        run: |
+          set -e
+          sleep 3
+          FAIL=0
+          check() {
+            CODE=$(curl -sk -o /tmp/smoke-body.html -w "%{http_code}" "https://beton-cire-webshop.nl$1?smoke=$(date +%s)")
+            if [ "$CODE" != "$2" ]; then
+              echo "::error::FAIL $1 -> $CODE (verwacht $2)"; FAIL=1
+            else
+              echo "OK  $1 -> $CODE"
+            fi
+          }
+          check "/" "200"
+          check "/ruimtes/beton-cire-badkamer/" "200"
+          check "/beton-cire-easyline-all-in-one/" "301"
+          check "/beton-cire-all-in-one/" "200"
+          check "/winkelwagen/" "200"
+          check "/mijn-account/" "200"
+          curl -sk "https://beton-cire-webshop.nl/?smoke=$(date +%s)" > /tmp/smoke-home.html
+          grep -q "googletagmanager" /tmp/smoke-home.html && echo "OK  GTM aanwezig" || { echo "::error::FAIL GTM ontbreekt"; FAIL=1; }
+          grep -qi "kritieke fout\|critical error" /tmp/smoke-home.html && { echo "::error::FAIL PHP critical error op homepage"; FAIL=1; } || echo "OK  geen PHP-fouten"
+          if [ "$FAIL" = "1" ]; then
+            echo "::error::SMOKE-TESTS GEFAALD. Rollback: sudo rsync -a --delete /home/bcw/backups/pre-deploy/OzTheme/ /home/bcw/public_html/wp-content/themes/OzTheme/ && cache purge"
+            exit 1
+          fi
+          echo "Alle smoke-tests groen."
