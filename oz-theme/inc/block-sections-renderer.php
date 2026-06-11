@@ -79,6 +79,11 @@ function oz_render_block_sections( $content ) {
 				echo '<section class="oz-ruimte__hero" data-reveal>';
 				echo $rendered;
 				echo '</section>';
+				/* USP-marquee direct onder de hero (niet via de template-hook,
+				   die zou hem boven de content zetten). */
+				if ( function_exists( 'oz_ruimte_trust_html' ) ) {
+					echo oz_ruimte_trust_html();
+				}
 				$hero_used = true;
 			} else {
 				echo '<section class="oz-section oz-section--cover' . $bg . '" data-reveal>';
@@ -132,6 +137,11 @@ function oz_render_block_sections( $content ) {
 			}
 
 			echo $rendered;
+
+			/* USP-marquee direct onder de in-content hero. */
+			if ( function_exists( 'oz_ruimte_trust_html' ) ) {
+				echo oz_ruimte_trust_html();
+			}
 
 		} else {
 			echo '<section class="oz-section' . $bg . '" data-reveal>';

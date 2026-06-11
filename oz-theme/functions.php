@@ -2075,19 +2075,22 @@ function oz_render_ruimte_template_hero() {
  * is daar — als die wijzigt, hier ook bijwerken).
  */
 add_action( 'oz_ruimte_trust', 'oz_render_ruimte_template_trust' );
-function oz_render_ruimte_template_trust() {
-    if ( ! is_singular() ) return;
+/**
+ * USP-marquee HTML (of lege string als deze pagina hem niet moet tonen).
+ * Gedeeld door de template-hook EN de block-renderer zodat de balk altijd
+ * direct ONDER de hero komt, ook bij in-content heroes.
+ */
+function oz_ruimte_trust_html() {
     $post = get_post();
-    if ( ! $post ) return;
+    if ( ! $post ) return '';
 
-    /* Zelfde opt-out als de template-hero: zonder hero zou de USP-balk
-       direct onder de header komen te hangen — daar hoort hij niet. */
-    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) return;
+    /* Opt-out (conversiepagina's zonder hero) */
+    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) return '';
 
     /* Skip wanneer content al een trust-block heeft (keuken/badkamer hebben
        dit in hun Gutenberg-content). Dubbele balken voorkomen. */
-    if ( strpos( $post->post_content, 'oz-hp-trust' ) !== false ) return;
-    if ( strpos( $post->post_content, 'oz-rp2-trust-wrap' ) !== false ) return;
+    if ( strpos( $post->post_content, 'oz-hp-trust' ) !== false ) return '';
+    if ( strpos( $post->post_content, 'oz-rp2-trust-wrap' ) !== false ) return '';
 
     $usps = array(
         'Voor 14:00 besteld, dezelfde werkdag verzonden',
@@ -2100,20 +2103,29 @@ function oz_render_ruimte_template_trust() {
         'Showroom Den Haag',
         '5000+ kleuren via RAL en NCS',
     );
-    ?>
-    <div class="oz-hp-trust" aria-label="USP balk">
-        <div class="oz-hp-trust-track">
-            <?php
-            /* Duplicate for seamless marquee loop — zelfde patroon als homepage. */
-            for ( $i = 0; $i < 2; $i++ ) {
-                foreach ( $usps as $usp ) {
-                    echo '<span class="oz-hp-trust-item"><span class="oz-hp-trust-dot"></span>' . esc_html( $usp ) . '</span>';
-                }
-            }
-            ?>
-        </div>
-    </div>
-    <?php
+    $items = '';
+    /* Duplicate for seamless marquee loop — zelfde patroon als homepage. */
+    for ( $i = 0; $i < 2; $i++ ) {
+        foreach ( $usps as $usp ) {
+            $items .= '<span class="oz-hp-trust-item"><span class="oz-hp-trust-dot"></span>' . esc_html( $usp ) . '</span>';
+        }
+    }
+    return '<div class="oz-hp-trust" aria-label="USP balk"><div class="oz-hp-trust-track">' . $items . '</div></div>';
+}
+
+function oz_render_ruimte_template_trust() {
+    if ( ! is_singular() ) return;
+    $post = get_post();
+    if ( ! $post ) return;
+
+    /* Pagina's met een in-content hero (oz-hp-hero blok of leidende
+       core/cover): daar rendert block-sections-renderer.php de balk
+       direct NA de hero. Hier renderen zou hem boven de content zetten,
+       verstopt achter de fixed header. */
+    if ( strpos( $post->post_content, 'class="oz-hp-hero"' ) !== false ) return;
+    if ( preg_match( '/^\s*<!--\s*wp:cover/', $post->post_content ) ) return;
+
+    echo oz_ruimte_trust_html();
 }
 
 /* ================================================================
