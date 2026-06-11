@@ -1,0 +1,522 @@
+/* ============================================================
+   OZ ACCOUNT — Mijn account + login/registratie styling.
+   Token-based (oz-design-system.css + homepage-v2.css :root).
+   Laadt NA oz-blocks.css en overschrijft de basis-accountregels
+   daar. Desktop: sidebar links + content rechts. Tablet: nav als
+   horizontale pill-rij. Mobiel: gestapeld.
+   ============================================================ */
+
+.oz-account {
+  padding: 48px 24px 80px;
+}
+
+.oz-account__columns {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* Grid-items mogen nooit breder worden dan hun track: zonder dit rekt de
+   nowrap pill-navigatie (mobiel) de hele kolom op tot voorbij de viewport. */
+.oz-account__columns > * {
+  min-width: 0;
+}
+
+/* ── Navigatie (sidebar) ───────────────────────────────────── */
+.oz-account__nav {
+  position: sticky;
+  top: 96px;
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 8px;
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li a {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: var(--oz-ff-body, 'Raleway', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--oz-text-body, #555);
+  text-decoration: none;
+  transition: background var(--oz-t-fast, 0.2s) var(--oz-ease, ease),
+              color var(--oz-t-fast, 0.2s) var(--oz-ease, ease);
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li a:hover {
+  background: rgba(19, 83, 80, 0.08);
+  color: var(--oz-accent, #135350);
+}
+
+.oz-account__nav .woocommerce-MyAccount-navigation ul li.is-active a {
+  background: var(--oz-btn-product-bg, #135350);
+  color: #fff;
+}
+
+/* Uitloggen onderaan visueel scheiden */
+.oz-account__nav .woocommerce-MyAccount-navigation-link--customer-logout {
+  margin-top: 8px;
+  border-top: 1px solid rgba(19, 83, 80, 0.12);
+  padding-top: 8px;
+}
+.oz-account__nav .woocommerce-MyAccount-navigation-link--customer-logout a {
+  color: var(--oz-text-muted, #767676);
+  font-weight: 400;
+}
+
+/* ── Content-zone ──────────────────────────────────────────── */
+.oz-account__content {
+  font-family: var(--oz-ff-body, 'Raleway', sans-serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--oz-text-body, #555);
+}
+
+.oz-account__content > h2,
+.oz-account__content .woocommerce-order-details__title {
+  font-family: var(--oz-ff-heading, 'DM Serif Display', serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin: 0 0 24px;
+}
+
+.oz-account__content p {
+  margin: 0 0 16px;
+}
+
+.oz-account__content a {
+  color: var(--oz-accent, #135350);
+  text-underline-offset: 3px;
+}
+
+/* ── Dashboard quick-cards (oz_account_dashboard_grid) ─────── */
+.oz-account-greeting {
+  font-family: var(--oz-ff-heading, 'DM Serif Display', serif);
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin: 0 0 12px;
+}
+
+.oz-account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.oz-account-grid a {
+  display: block;
+  padding: 24px;
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background var(--oz-t-fast, 0.2s) var(--oz-ease, ease),
+              transform var(--oz-t-fast, 0.2s) var(--oz-ease, ease);
+}
+
+.oz-account-grid a:hover {
+  background: rgba(19, 83, 80, 0.08);
+  transform: translateY(-2px);
+}
+
+.oz-account-grid .oz-account-grid__title {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin-bottom: 4px;
+}
+
+.oz-account-grid .oz-account-grid__desc {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--oz-text-muted, #767676);
+}
+
+/* ── Tabellen (bestellingen, downloads) ────────────────────── */
+.oz-account__content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.oz-account__content thead th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--oz-text-muted, #767676);
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--oz-accent, #135350);
+}
+
+.oz-account__content tbody td,
+.oz-account__content tbody th {
+  padding: 16px;
+  border-bottom: 1px solid rgba(19, 83, 80, 0.10);
+  vertical-align: middle;
+}
+
+.oz-account__content .woocommerce-orders-table__cell-order-number a {
+  font-weight: 700;
+}
+
+/* knoppen in tabellen + content: product/navigatie-familie (teal) */
+.oz-account__content .woocommerce-button,
+.oz-account__content .button,
+.oz-account__content button[type="submit"],
+.oz-login .button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--oz-btn-product-bg, #135350);
+  color: #fff !important;
+  font-family: var(--oz-ff-body, 'Raleway', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 0;
+  border-radius: var(--oz-radius, 8px);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--oz-t-fast, 0.2s) var(--oz-ease, ease);
+}
+
+.oz-account__content .woocommerce-button:hover,
+.oz-account__content .button:hover,
+.oz-account__content button[type="submit"]:hover,
+.oz-login .button:hover {
+  background: var(--oz-btn-product-bg-hover, #1A6B67);
+}
+
+/* compacte variant in orderrijen */
+.oz-account__content .woocommerce-orders-table .woocommerce-button {
+  padding: 8px 16px;
+  font-size: 13px;
+  margin: 0 4px 4px 0;
+}
+
+/* ── Adressen ──────────────────────────────────────────────── */
+.oz-account__content .woocommerce-Addresses {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.oz-account__content .woocommerce-Address {
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.oz-account__content .woocommerce-Address-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.oz-account__content .woocommerce-Address-title h3 {
+  font-family: var(--oz-ff-heading, 'DM Serif Display', serif);
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin: 0 0 12px;
+}
+
+.oz-account__content .woocommerce-Address-title .edit {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.oz-account__content .woocommerce-Address address {
+  font-style: normal;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+/* ── Formulieren (accountgegevens, adres bewerken, login) ──── */
+.oz-account__content .woocommerce-form-row label,
+.oz-login label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin-bottom: 4px;
+}
+
+.oz-account__content .woocommerce-form-row,
+.oz-login .woocommerce-form-row {
+  margin: 0 0 16px;
+}
+
+.oz-account__content input.oz-input,
+.oz-account__content input[type="text"],
+.oz-account__content input[type="email"],
+.oz-account__content input[type="password"],
+.oz-account__content input[type="tel"],
+.oz-account__content select,
+.oz-login input[type="text"],
+.oz-login input[type="email"],
+.oz-login input[type="password"] {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--oz-ff-body, 'Raleway', sans-serif);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--oz-text-dark, #1A1A1A);
+  background: #fff;
+  border: 1px solid rgba(19, 83, 80, 0.25);
+  border-radius: 8px;
+  transition: border-color var(--oz-t-fast, 0.2s) var(--oz-ease, ease),
+              box-shadow var(--oz-t-fast, 0.2s) var(--oz-ease, ease);
+}
+
+.oz-account__content input:focus,
+.oz-account__content select:focus,
+.oz-login input:focus {
+  outline: none;
+  border-color: var(--oz-accent, #135350);
+  box-shadow: 0 0 0 3px rgba(19, 83, 80, 0.12);
+}
+
+/* wachtwoord-sterkte + hints */
+.oz-account__content .woocommerce-password-strength,
+.oz-account__content .woocommerce-password-hint {
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* fieldset (wachtwoord wijzigen) als eigen blok */
+.oz-account__content fieldset {
+  border: 1px solid rgba(19, 83, 80, 0.12);
+  border-radius: 8px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.oz-account__content fieldset legend {
+  font-family: var(--oz-ff-heading, 'DM Serif Display', serif);
+  font-size: 18px;
+  color: var(--oz-text-dark, #1A1A1A);
+  padding: 0 8px;
+}
+
+/* ── Notices (success / info / error) ──────────────────────── */
+.oz-account .woocommerce-message,
+.oz-account .woocommerce-info,
+.oz-login .woocommerce-message,
+.oz-login .woocommerce-info {
+  background: rgba(19, 83, 80, 0.07);
+  border: 1px solid rgba(19, 83, 80, 0.18);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: var(--oz-text-dark, #1A1A1A);
+  list-style: none;
+}
+
+.oz-account .woocommerce-error,
+.oz-login .woocommerce-error {
+  background: #FDF0EF;
+  border: 1px solid #E8B4AE;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #8A2A21;
+  list-style: none;
+}
+
+.oz-account .woocommerce-error li,
+.oz-login .woocommerce-error li {
+  margin: 0;
+}
+
+/* ── Login / registratie ───────────────────────────────────── */
+.oz-login {
+  padding: 64px 24px 96px;
+}
+
+.oz-login__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.oz-login__card {
+  background: var(--oz-bg-warm, #F5F4F0);
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.oz-login__card h2 {
+  font-family: var(--oz-ff-heading, 'DM Serif Display', serif);
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--oz-text-dark, #1A1A1A);
+  margin: 0 0 24px;
+}
+
+.oz-login__card .lost_password {
+  margin: 16px 0 0;
+  font-size: 13px;
+}
+
+.oz-login .woocommerce-form-login__rememberme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 0 16px;
+}
+
+.oz-login .woocommerce-form-login__rememberme input {
+  width: auto;
+  accent-color: var(--oz-accent, #135350);
+}
+
+/* privacy-tekstje registratie */
+.oz-login .woocommerce-privacy-policy-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--oz-text-muted, #767676);
+  margin: 0 0 16px;
+}
+
+/* ── Tablet (≤1024) ────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .oz-account__columns {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .oz-account__nav {
+    position: static;
+  }
+
+  /* nav als horizontale pill-rij die meescrollt */
+  .oz-account__nav .woocommerce-MyAccount-navigation ul {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px;
+    gap: 8px;
+  }
+  .oz-account__nav .woocommerce-MyAccount-navigation ul::-webkit-scrollbar {
+    display: none;
+  }
+
+  .oz-account__nav .woocommerce-MyAccount-navigation ul li {
+    flex: 0 0 auto;
+  }
+
+  .oz-account__nav .woocommerce-MyAccount-navigation ul li a {
+    white-space: nowrap;
+    padding: 10px 16px;
+    border-radius: 999px;
+  }
+
+  .oz-account__nav .woocommerce-MyAccount-navigation-link--customer-logout {
+    margin-top: 0;
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+/* ── Mobiel (≤800) ─────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .oz-account {
+    padding: 32px 16px 64px;
+  }
+
+  .oz-account-greeting {
+    font-size: 28px;
+  }
+
+  .oz-account-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .oz-account__content .woocommerce-Addresses {
+    grid-template-columns: 1fr;
+  }
+
+  .oz-login {
+    padding: 40px 16px 64px;
+  }
+
+  .oz-login__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .oz-login__card {
+    padding: 24px;
+  }
+
+  /* Orders-tabel: gestapelde rijen (Woo zet data-title attributen) */
+  .oz-account__content .woocommerce-orders-table thead {
+    display: none;
+  }
+
+  .oz-account__content .woocommerce-orders-table tbody tr {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(19, 83, 80, 0.10);
+  }
+
+  .oz-account__content .woocommerce-orders-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    border: 0;
+    padding: 4px 0;
+    text-align: right;
+  }
+
+  .oz-account__content .woocommerce-orders-table tbody td::before {
+    content: attr(data-title);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--oz-text-muted, #767676);
+    text-align: left;
+  }
+
+  .oz-account__content .woocommerce-orders-table tbody td.woocommerce-orders-table__cell-order-actions {
+    justify-content: flex-start;
+  }
+  .oz-account__content .woocommerce-orders-table tbody td.woocommerce-orders-table__cell-order-actions::before {
+    content: none;
+  }
+}

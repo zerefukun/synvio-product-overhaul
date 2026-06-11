@@ -557,6 +557,63 @@ function oz_cart_checkout_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_cart_checkout_enqueue');
 
 /**
+ * Enqueue account/login styles on /mijn-account/ (alle endpoints).
+ * Styles live in oz-account.css en hergebruiken de design-system tokens.
+ */
+function oz_account_enqueue() {
+    if (is_admin()) return;
+    if (!function_exists('is_account_page') || !is_account_page()) return;
+
+    wp_enqueue_style(
+        'oz-account',
+        get_stylesheet_directory_uri() . '/css/oz-account.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-account.css')
+    );
+}
+add_action('wp_enqueue_scripts', 'oz_account_enqueue');
+
+/**
+ * Dashboard quick-cards onder de standaard begroeting op /mijn-account/.
+ * Directe ingangen naar de meest gebruikte account-secties + kleurstalen.
+ */
+function oz_account_dashboard_grid() {
+    $cards = [
+        [
+            'url'   => wc_get_account_endpoint_url('orders'),
+            'title' => 'Bestellingen',
+            'desc'  => 'Bekijk je bestellingen, volg de verzending of download facturen.',
+        ],
+        [
+            'url'   => wc_get_account_endpoint_url('edit-address'),
+            'title' => 'Adressen',
+            'desc'  => 'Beheer je verzend- en factuuradres.',
+        ],
+        [
+            'url'   => wc_get_account_endpoint_url('edit-account'),
+            'title' => 'Accountgegevens',
+            'desc'  => 'Wijzig je naam, e-mailadres of wachtwoord.',
+        ],
+        [
+            'url'   => home_url('/kleurstalen-aanvragen/'),
+            'title' => 'Gratis kleurstalen',
+            'desc'  => 'Twijfel je over een kleur? Vraag tot 4 gratis stalen aan.',
+        ],
+    ];
+    echo '<ul class="oz-account-grid">';
+    foreach ($cards as $c) {
+        printf(
+            '<li><a href="%s"><span class="oz-account-grid__title">%s</span><span class="oz-account-grid__desc">%s</span></a></li>',
+            esc_url($c['url']),
+            esc_html($c['title']),
+            esc_html($c['desc'])
+        );
+    }
+    echo '</ul>';
+}
+add_action('woocommerce_account_dashboard', 'oz_account_dashboard_grid');
+
+/**
  * Enqueue homepage v2 CSS only on the front page.
  * Styles are namespaced with .oz-hp- prefix so they can't bleed into other pages.
  */
