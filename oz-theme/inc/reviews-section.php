@@ -32,6 +32,9 @@ function oz_render_reviews_section( $context = 'home' ) {
 			if ( $dto['rating'] < 4 ) {
 				continue; // homepage/ruimte stay positive; /reviews/ shows all
 			}
+			if ( '' === trim( (string) $dto['text'] ) ) {
+				continue; // sterren-zonder-tekst reviews ogen als lege cards naast volle buren
+			}
 			$dtos[] = $dto;
 			if ( count( $dtos ) >= 6 ) {
 				break;
