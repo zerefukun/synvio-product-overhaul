@@ -83,11 +83,13 @@ if ($has_options) {
     $toepassing_opts = OZ_Product_Line_Config::get_toepassing_options($line_key);
     $pakket_opts     = OZ_Product_Line_Config::get_pakket_options($line_key);
     $option_order    = OZ_Product_Line_Config::get_option_order($line_key);
+    $pu_info         = OZ_Product_Line_Config::get_pu_info($line_key);
     $has_ral_ncs     = !empty($config['ral_ncs']);
     $ral_ncs_only    = !empty($config['ral_ncs_only']);
     $variants        = OZ_Product_Processor::get_variant_display_data($product_id);
 } else {
     $pu_options = $primer_options = $colorfresh_opts = $toepassing_opts = $pakket_opts = false;
+    $pu_info = null;
     $option_order = [];
     $has_ral_ncs = $ral_ncs_only = false;
     $variants = [];
@@ -1068,6 +1070,122 @@ $fmt_price = function($p) { return '€' . number_format($p, 2, ',', '.'); };
       }
   }
   ?>
+
+  <?php /* Aanbreng & afwerking — full-width section below showcase.
+          Stack on the left explains the build-up. Tiers on the right
+          explain how the PU layer count maps to use level (light /
+          standard / wet) and the why behind each. */ ?>
+  <?php if ($has_options && $pu_info && !empty($pu_info['tiers'])) : ?>
+  <section class="oz-pu-explainer-section" id="sectionPuExplainer">
+    <div class="oz-pu-explainer-inner">
+      <header class="oz-pu-explainer-head">
+        <span class="oz-pu-eyebrow">Aanbreng &amp; afwerking</span>
+        <h2 class="oz-pu-explainer-title">Hoe werkt <em>de opbouw?</em></h2>
+        <?php if (!empty($pu_info['intro'])) : ?>
+          <p class="oz-pu-intro"><?php echo wp_kses_post($pu_info['intro']); ?></p>
+        <?php endif; ?>
+        <p class="oz-pu-intro-hint">Klik op een laag voor de details: ondergrond-vereisten, aanbreng-tips en welke keuzes je hebt.</p>
+      </header>
+
+      <div class="oz-pu-explainer-grid">
+        <?php if (!empty($pu_info['stack'])) :
+          /* Stack illustration: each layer is a <details> band so a click
+             expands per-layer guidance (substrate prep, primer purpose,
+             pasta application, PU layer choice). Top -> bottom order. */ ?>
+        <div class="oz-pu-stack-wrap">
+          <div class="oz-pu-stack-aside">
+            <span class="oz-pu-stack-label">Opbouw</span>
+          </div>
+          <div class="oz-pu-stack" aria-label="Opbouw van het oppervlak">
+            <?php foreach (array_reverse($pu_info['stack']) as $i => $layer) :
+              $has_details = !empty($layer['details']);
+              if ($has_details) : ?>
+              <details
+                class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>"
+                name="oz-pu-stack-<?php echo esc_attr($product_id); ?>">
+                <summary class="oz-pu-stack-summary">
+                  <div class="oz-pu-stack-band-text">
+                    <strong><?php echo wp_kses_post($layer['name']); ?></strong>
+                    <?php if (!empty($layer['meta'])) : ?>
+                      <span class="oz-pu-stack-meta"><?php echo wp_kses_post($layer['meta']); ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <span class="oz-pu-stack-toggle" aria-hidden="true"></span>
+                </summary>
+                <div class="oz-pu-stack-details">
+                  <?php echo wp_kses_post($layer['details']); ?>
+                </div>
+              </details>
+              <?php else : ?>
+              <div class="oz-pu-stack-band<?php echo !empty($layer['is_pu']) ? ' is-pu' : ''; ?>">
+                <div class="oz-pu-stack-band-text">
+                  <strong><?php echo wp_kses_post($layer['name']); ?></strong>
+                  <?php if (!empty($layer['meta'])) : ?>
+                    <span class="oz-pu-stack-meta"><?php echo wp_kses_post($layer['meta']); ?></span>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <?php endif;
+            endforeach; ?>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <ol class="oz-pu-tiers">
+          <?php foreach ($pu_info['tiers'] as $tier) :
+            $tier_layers = max(0, min(3, intval($tier['layers'])));
+            $is_recommended = !empty($tier['recommended']);
+            $count_label = $tier_layers === 0
+                ? 'Geen PU'
+                : ($tier_layers === 1 ? '1 laag' : ($tier_layers . ' lagen'));
+            ?>
+            <li class="oz-pu-tier<?php echo $is_recommended ? ' is-recommended' : ''; ?>">
+              <div class="oz-pu-tier-head">
+                <span class="oz-pu-tier-dots" data-layers="<?php echo esc_attr($tier_layers); ?>" aria-hidden="true">
+                  <i></i><i></i><i></i>
+                </span>
+                <span class="oz-pu-tier-count"><?php echo esc_html($count_label); ?></span>
+                <?php if ($is_recommended) : ?>
+                  <span class="oz-pu-tier-badge">Onze advies</span>
+                <?php endif; ?>
+              </div>
+              <h3 class="oz-pu-tier-label"><?php echo wp_kses_post($tier['label']); ?></h3>
+              <?php if (!empty($tier['rooms'])) : ?>
+                <p class="oz-pu-tier-rooms"><?php echo wp_kses_post($tier['rooms']); ?></p>
+              <?php endif; ?>
+              <p class="oz-pu-tier-why"><?php echo wp_kses_post($tier['why']); ?></p>
+            </li>
+          <?php endforeach; ?>
+        </ol>
+      </div>
+
+      <?php if (!empty($pu_info['note'])) : ?>
+        <p class="oz-pu-note"><?php echo wp_kses_post($pu_info['note']); ?></p>
+      <?php endif; ?>
+    </div>
+
+    <?php /* Fallback for older browsers where the native name="" mutex on
+            <details> isn't supported yet. Native browsers run this too but
+            it's a no-op since other bands close before this fires. */ ?>
+    <script>
+    (function () {
+      var bands = document.querySelectorAll('#sectionPuExplainer .oz-pu-stack-band[name]');
+      if (!bands.length) return;
+      bands.forEach(function (band) {
+        band.addEventListener('toggle', function () {
+          if (!band.open) return;
+          var name = band.getAttribute('name');
+          bands.forEach(function (other) {
+            if (other !== band && other.getAttribute('name') === name && other.open) {
+              other.open = false;
+            }
+          });
+        });
+      });
+    })();
+    </script>
+  </section>
+  <?php endif; ?>
 
 </div><!-- .oz-product-page -->
 

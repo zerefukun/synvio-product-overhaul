@@ -129,6 +129,367 @@ class OZ_Product_Line_Config {
     ];
 
     /**
+     * Per-line "Aanbreng & afwerking" copy, rendered on the PDP under the
+     * configurator. Explains the PU mechanism, the layered build-up, and
+     * which tier of PU layers a buyer should pick based on water/wear
+     * exposure (not per room: the rule is the same across rooms with
+     * the same exposure).
+     *
+     * Schema per line:
+     *   intro        => 1-2 sentence opener specific to this product line
+     *   stack        => bottom-up array of layers:
+     *                     [
+     *                       'name'    => string,
+     *                       'meta'    => short subtitle (thickness, etc),
+     *                       'is_pu'   => bool (highlights as the topcoat),
+     *                       'details' => HTML content shown when band is
+     *                                    clicked open. Use <p>, <ul>, <strong>.
+     *                                    Cover ondergrond-soorten, droogtijd,
+     *                                    aanbreng-tips per layer.
+     *                     ]
+     *   tiers        => 3 ordered tiers from light to heavy exposure:
+     *                     [
+     *                       'layers'      => recommended count (0-3),
+     *                       'label'       => tier name (e.g. "Natte cellen"),
+     *                       'rooms'       => which rooms fall in this tier,
+     *                       'why'         => why this many lagen,
+     *                       'recommended' => true on the default-advice tier
+     *                     ]
+     *   note         => optional extra paragraph (e.g. "1 laag included")
+     */
+    /**
+     * Shared layer-detail blurbs reused across product lines. Build the
+     * stack arrays with these helpers so the same "tegels -> stucpaste"
+     * advice does not have to be retyped seven times.
+     */
+    private static function _ondergrond_details() {
+        return '<p>Het oppervlak waarop je aansmeert moet <strong>egaal, schoon, droog en vetvrij</strong> zijn. Onregelmatigheden zie je door de Beton Cir&eacute; afwerking heen. <strong>In de meeste gevallen breng je eerst een egalisatie-laag aan</strong> voordat de Beton Cir&eacute; erop kan.</p>'
+             . '<ul>'
+             . '<li><strong>Tegels:</strong> eerst <em>egalisatie stuc</em> over de tegels om de voegen weg te werken. Zonder egalisatie zie je de voegen door de Beton Cir&eacute; heen omdat het oppervlak niet vlak is. Tegels moeten verder stevig vastzitten.</li>'
+             . '<li><strong>Beton:</strong> schoon, droog en vetvrij. Gladgewreven beton even opschuren voor goede hechting. Vaak een dunne <em>egalisatie</em> nodig voor een vlak resultaat.</li>'
+             . '<li><strong>Stucwerk:</strong> mag direct, mits het stevig vastzit en niet poedert. Losse delen eerst herstellen.</li>'
+             . '<li><strong>Vloer met scheuren:</strong> overweeg een <em>epoxy primer</em> als schraplaag om scheuren te overbruggen voor je verder gaat.</li>'
+             . '<li><strong>Hout / multiplex:</strong> vraag advies. Vaak heb je een hout-specifieke primer en glasvlies nodig om scheuren te voorkomen.</li>'
+             . '</ul>'
+             . '<p>Laatste stap voor de Beton Cir&eacute; pasta: licht opschuren + de bijgeleverde primer aanbrengen.</p>';
+    }
+
+    private static function _primer_details($included = true) {
+        $base = '<p>De primer zorgt voor goede hechting tussen de ondergrond en de Beton Cir&eacute; pasta. ';
+        $base .= $included ? 'Wij leveren de juiste primer mee in elk pakket.' : 'Niet inbegrepen in het basispakket: je kunt deze los kiezen of weglaten.';
+        $base .= '</p>';
+        $base .= '<p><strong>Aanbrengen:</strong> 1 dunne laag met roller of kwast. Reken op <strong>4 uur droogtijd</strong> voor je verder gaat. De primer maakt het oppervlak licht klevend zodat de pasta blijft hangen.</p>';
+        return $base;
+    }
+
+    private static function _pu_details() {
+        return '<p>Een 2-componenten polyurethaan toplaag (A + B component, op gewicht gemengd). Wij leveren standaard de <strong>chemisch resistente PU</strong> mee: ultra mat, na 2 uur droog op wand, na 24 uur op vloer.</p>'
+             . '<p><strong>Aantal lagen per situatie:</strong></p>'
+             . '<ul>'
+             . '<li><strong>1 laag</strong>: woonkamer, slaapkamer of toilet wand. Voldoende voor minimale belasting.</li>'
+             . '<li><strong>2 lagen:</strong> vloer, trap, hal, meubel, aanrechtblad. Onze advies voor woon- en gebruiksruimte.</li>'
+             . '<li><strong>3 lagen:</strong> natte cel waar je <em>daadwerkelijk doucht</em>. Pas vanaf 3 lagen is het oppervlak volledig waterdicht.</li>'
+             . '</ul>'
+             . '<p><strong>Aanbrengtechniek:</strong> nat-in-nat met een 2K nylon roller. Werk per sectie, rol direct na in rechte banen, blijf er dan vanaf. <em>Niet</em> eindeloos blijven rollen, het mat- en transparant droog. <strong>24 uur droogtijd tussen lagen, binnen 48 uur 2e laag aanbrengen.</strong> Volledig uitgehard na 7 dagen.</p>';
+    }
+
+    private static $pu_info = [
+        'original' => [
+            'intro' => 'Beton Cir&eacute; Original is naadloos en mooi op zichzelf, maar zonder PU toplaag is het niet waterdicht en kwetsbaar voor vlekken. De opbouw bestaat uit vier lagen. Klik op elke laag voor de details.',
+            'stack' => [
+                ['name' => 'Ondergrond',                 'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer',                     'meta' => '1 laag, inbegrepen',          'is_pu' => false, 'kind' => 'primer', 'included' => true],
+                ['name' => 'Beton Cir&eacute; Original', 'meta' => '1-2 mm dikte, op kleur',      'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>De Beton Cir&eacute; Original pasta is op kleur gemengd. Wordt in <strong>2 dunne lagen</strong> aangebracht met een spaan, totale dikte 1-2&nbsp;mm.</p>'
+                              .'<ul>'
+                              .'<li><strong>1e laag (grof):</strong> in willekeurige richting uitsmeren. Dit is de basis. <strong>24 uur droogtijd.</strong></li>'
+                              .'<li><strong>2e laag (fijn):</strong> dunner aangebracht. Bepaalt de uiteindelijke tekening en kleur. Eventueel polijsten voor extra glans.</li>'
+                              .'</ul>'
+                              .'<p>Tussen de twee lagen kan je het oppervlak licht opschuren voor een soepelere finish. Original heeft <strong>geen pre-seal</strong> nodig (in tegenstelling tot Easyline en All-in-One).</p>'],
+                ['name' => 'PU toplaag',                 'meta' => 'Chemisch resistente PU, ultra mat',  'is_pu' => true,  'kind' => 'pu'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoorwand',
+                    'why'    => 'Beschermt tegen lichte vlekken bij minimale aanraking en geen waterbelasting. Optioneel.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, keukenwerkblad, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik. Onze aanbeveling voor de meeste situaties.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna, kelder',
+                    'why'    => 'Volledig waterdicht bij aanhoudende en directe waterbelasting. Vereist voor douchewanden en -vloeren.',
+                ],
+            ],
+        ],
+
+        'original-zm' => [
+            'intro' => 'Bij Zelf Mengen &amp; Mixen wordt de pasta op locatie gemengd. De opbouw is identiek aan Original. Klik op elke laag voor de details.',
+            'stack' => [
+                ['name' => 'Ondergrond',        'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer',            'meta' => 'Standaard meegeleverd',              'is_pu' => false, 'kind' => 'primer', 'included' => true],
+                ['name' => 'Beton Cir&eacute;', 'meta' => '1-2 mm op kleur (zelf gemengd)',     'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>De pasta wordt op locatie gemengd uit de pigmenten en bindmiddel die je los krijgt. Resultaat is dezelfde Beton Cir&eacute; finish als Original, maar je hebt zelf controle over de hoeveelheid.</p>'
+                              .'<ul>'
+                              .'<li><strong>Mengen:</strong> volg de instructie strict. Verkeerde verhouding geeft inconsistente kleur of slechte hechting.</li>'
+                              .'<li><strong>2 lagen aanbrengen:</strong> grof + fijn, zoals Original. <strong>24 uur droogtijd</strong> tussen lagen.</li>'
+                              .'<li><strong>Restpasta:</strong> kort houdbaar. Meng alleen wat je in 2 uur kunt aanbrengen.</li>'
+                              .'</ul>'],
+                ['name' => 'PU toplaag',        'meta' => 'Basis PU (verplicht) + optioneel chemisch resistent',  'is_pu' => true,  'kind' => 'pu',
+                  'details' => '<p>Zelf Mengen &amp; Mixen krijgt een ander PU systeem dan Kant-en-Klaar:</p>'
+                              .'<ul>'
+                              .'<li><strong>1e laag (verplicht):</strong> de <em>basis PU coating</em>. Verzegelt het oppervlak. Goed laten drogen voor de volgende laag.</li>'
+                              .'<li><strong>Volgende lagen (optioneel):</strong> de chemisch resistente PU voor extra bescherming bij vloer, natte cel of werkblad.</li>'
+                              .'</ul>'
+                              .'<p><strong>Aantal lagen per situatie:</strong></p>'
+                              .'<ul>'
+                              .'<li><strong>1 laag</strong> (alleen basis): woonkamer of toilet wand, droog gebruik.</li>'
+                              .'<li><strong>2 lagen</strong> (basis + chemisch resistent): vloer, trap, hal, meubel.</li>'
+                              .'<li><strong>3 lagen</strong> (basis + 2x chemisch resistent): douche, badkamer, sauna.</li>'
+                              .'</ul>'
+                              .'<p>Droogtijd: 24 uur ideaal, binnen 48 uur volgende laag aanbrengen.</p>'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer, kantoor, droge wand',
+                    'why'    => 'Voldoende voor minimale slijtage en geen water.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard gebruik',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel',
+                    'why'    => 'Vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, kelder',
+                    'why'    => 'Volledig waterdicht bij directe waterbelasting.',
+                ],
+            ],
+        ],
+
+        'all-in-one' => [
+            'intro' => 'All-in-One is voorgemengd en kant-en-klaar. Het pakket bevat primer, pre-seal en pasta. Klik op elke laag voor de aanbreng-details.',
+            'stack' => [
+                ['name' => 'Ondergrond',        'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer + Pre-seal', 'meta' => 'Inbegrepen in pakket',        'is_pu' => false, 'kind' => 'primer', 'included' => true,
+                  'details' => '<p>Het All-in-One pakket bevat <strong>twee voorbereidende lagen</strong>: primer voor hechting + pre-seal voor egaliteit. Beide zitten in de doos.</p>'
+                              .'<ul>'
+                              .'<li><strong>1. Primer:</strong> 1 dunne laag met roller. <strong>4 uur droogtijd.</strong></li>'
+                              .'<li><strong>2. Pre-seal:</strong> 1 laag bovenop de primer. Sluit de poriën van de ondergrond zodat de pasta gelijkmatig droogt. <strong>4 uur droogtijd.</strong></li>'
+                              .'</ul>'],
+                ['name' => 'All-in-One pasta',  'meta' => '~1 mm dikte, op kleur',       'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>De voorgemengde pasta op kleur. Wordt in <strong>2 lagen</strong> aangebracht met een spaan, totale dikte ongeveer 1&nbsp;mm.</p>'
+                              .'<ul>'
+                              .'<li><strong>1e laag:</strong> uitsmeren in willekeurige richting voor een natuurlijke tekening. <strong>24 uur droogtijd.</strong></li>'
+                              .'<li><strong>2e laag:</strong> dunner, bepaalt de definitieve kleur. Lichter polijsten geeft een rustiger effect.</li>'
+                              .'</ul>'
+                              .'<p>Verbruik: ongeveer 1 kg per m² verdeeld over 2 lagen.</p>'],
+                ['name' => 'PU toplaag',        'meta' => 'Chemisch resistente PU, ultra mat',   'is_pu' => true,  'kind' => 'pu'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoor',
+                    'why'    => 'Voldoende voor minimale slijtage zonder waterbelasting.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel, werkblad',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe en aanhoudende waterbelasting.',
+                ],
+            ],
+        ],
+
+        'easyline' => [
+            'intro' => 'Easyline is ons makkelijkste pakket: primer, pre-seal, RAW + FINE pasta en 1 laag PU zitten erin. Klik op elke laag voor de aanbreng-details.',
+            'stack' => [
+                ['name' => 'Ondergrond',     'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer + Pre-seal', 'meta' => 'Inbegrepen in pakket',           'is_pu' => false, 'kind' => 'primer', 'included' => true,
+                  'details' => '<p>Het Easyline pakket bevat <strong>twee voorbereidende lagen</strong>:</p>'
+                              .'<ul>'
+                              .'<li><strong>1. Primer:</strong> 1 dunne laag met roller voor hechting. <strong>4 uur droogtijd.</strong></li>'
+                              .'<li><strong>2. Pre-seal:</strong> wordt na de pasta aangebracht v&oacute;&oacute;r de PU. Neemt de eerste zuiging weg uit de gedroogde Beton Cir&eacute;, en zorgt voor langere verwerkingstijd van de PU topcoat.</li>'
+                              .'</ul>'],
+                ['name' => 'Easyline pasta', 'meta' => 'RAW + FINE op kleur',                'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>Easyline gebruikt twee specifieke pasta-lagen met aparte namen:</p>'
+                              .'<ul>'
+                              .'<li><strong>RAW (grove laag):</strong> de basis. Aanbrengen met spaan, ruw uitsmeren voor textuur. <strong>24 uur droogtijd.</strong></li>'
+                              .'<li><strong>FINE (fijne laag):</strong> de finish. Dunner aangebracht, bepaalt de uiteindelijke kleur en gladheid.</li>'
+                              .'</ul>'
+                              .'<p>De pasta is <strong>kant-en-klaar gemengd</strong>: geen mengwerk, gewoon openen en aanbrengen.</p>'],
+                ['name' => 'PU toplaag',     'meta' => '1 laag standaard inbegrepen, chemisch resistent', 'is_pu' => true, 'kind' => 'pu'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming (standaard inbegrepen)',
+                    'rooms'  => 'Slaapkamer wand, kantoorwand',
+                    'why'    => 'Standaard PU laag in het pakket. Voldoende voor droge ruimtes zonder slijtage.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, keuken-werkblad, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe waterbelasting.',
+                ],
+            ],
+            'note' => 'Wil je geen PU op je Easyline pakket? Kies dan "Geen PU" en je krijgt &euro;40 korting.',
+        ],
+
+        'microcement' => [
+            'intro' => 'Microcement is een ultradunne afwerklaag (1-2 mm) die over bijna elke ondergrond kan. Klik op elke laag voor de aanbreng-details.',
+            'stack' => [
+                ['name' => 'Ondergrond',        'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer',            'meta' => '1 laag, inbegrepen',    'is_pu' => false, 'kind' => 'primer', 'included' => true],
+                ['name' => 'Microcement pasta', 'meta' => '1-2 mm dikte, op kleur', 'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>Microcement is bewust dun (1-2 mm) zodat het over bijna elke ondergrond kan zonder hoogte op te bouwen. Wordt in <strong>2 lagen</strong> aangebracht.</p>'
+                              .'<ul>'
+                              .'<li><strong>1e laag:</strong> grof uitsmeren met spaan. Microcement vraagt iets meer techniek dan All-in-One: werk in kleine vakken (1-2 m²) tegelijk om aansluitingen te voorkomen. <strong>24 uur droogtijd.</strong></li>'
+                              .'<li><strong>2e laag:</strong> fijner, bepaalt de uiteindelijke tekening. Polijsten optioneel voor subtiele glans.</li>'
+                              .'</ul>'
+                              .'<p>Geschikt voor wanden, vloeren en meubels. <strong>Niet</strong> geschikt over hout dat kan werken (bv. multiplex zonder glasvlies). Microcement heeft <strong>geen pre-seal</strong> nodig.</p>'],
+                ['name' => 'PU toplaag',        'meta' => 'Chemisch resistente PU, ultra mat',  'is_pu' => true,  'kind' => 'pu'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Lichte bescherming',
+                    'rooms'  => 'Slaapkamer wand, kantoor',
+                    'why'    => 'Voldoende voor minimale slijtage zonder waterbelasting.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Standaard woon- en gebruiksruimte',
+                    'rooms'  => 'Woonkamer, hal, vloer, trap, meubel',
+                    'why'    => 'Volledig vlek- en krasvast bij dagelijks gebruik.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Natte cellen',
+                    'rooms'  => 'Badkamer, douche, sauna',
+                    'why'    => 'Volledig waterdicht bij directe en aanhoudende waterbelasting.',
+                ],
+            ],
+        ],
+
+        'metallic' => [
+            'intro' => 'Metallic Velvet is een decoratieve afwerking voor wanden en meubels. Klik op elke laag voor de aanbreng-details.',
+            'stack' => [
+                ['name' => 'Ondergrond',      'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer',          'meta' => 'Optioneel (+&euro;5,99)',        'is_pu' => false, 'kind' => 'primer', 'included' => false],
+                ['name' => 'Metallic Velvet', 'meta' => 'Op kleur, met spatel aangebracht', 'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>Metallic Velvet wordt anders aangebracht dan de andere pastas: het <strong>velvet effect</strong> ontstaat door de spatel-techniek.</p>'
+                              .'<ul>'
+                              .'<li><strong>2 lagen aanbrengen</strong> met een metalen spatel.</li>'
+                              .'<li>Per laag: varieer de richting van je spatel (kruislings, schuin, wisselend). Dit bepaalt het lichtspel en de glans.</li>'
+                              .'<li>Hoe meer richtingen, hoe levendiger de finish.</li>'
+                              .'<li><strong>24 uur droogtijd</strong> tussen lagen.</li>'
+                              .'</ul>'
+                              .'<p>Niet bedoeld voor vloeren of natte cellen. Voor die toepassingen kies je Original of Microcement.</p>'],
+                ['name' => 'PU toplaag',      'meta' => 'Optioneel',                       'is_pu' => true,  'kind' => 'pu'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 0,
+                    'label'  => 'Pure decoratie (standaard)',
+                    'rooms'  => 'Wand woon/slaapkamer zonder aanraking',
+                    'why'    => 'Maximaal velvet glanseffect; geen PU nodig zonder waterbelasting.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 1,
+                    'label'  => 'Wand met aanraking',
+                    'rooms'  => 'Hal, gangwand, kinderwand',
+                    'why'    => 'Maakt het oppervlak afneembaar bij regelmatig contact.',
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Meubel of object',
+                    'rooms'  => 'Tafelblad, kast, decoratief object',
+                    'why'    => 'Krasvast en vlekbestendig bij dagelijks gebruik.',
+                ],
+            ],
+            'note' => 'Voor aanrecht of natte cellen adviseren wij Beton Cir&eacute; Original of Microcement; Metallic Velvet is niet bedoeld voor blijvende waterbelasting.',
+        ],
+
+        'lavasteen' => [
+            'intro' => 'Lavasteen is mineraal-gebonden en van zichzelf al <strong>tot in de kern waterdicht</strong>. Het aantal PU lagen bepaalt hier niet de waterdichtheid (die is er al), maar de <strong>textuur</strong>: van gritty grip in de douche tot glad voor de keuken.',
+            'stack' => [
+                ['name' => 'Ondergrond',      'meta' => 'Voorbewerking verschilt per type',  'is_pu' => false, 'kind' => 'ondergrond'],
+                ['name' => 'Primer',          'meta' => 'Inbegrepen in pakket',               'is_pu' => false, 'kind' => 'primer', 'included' => true],
+                ['name' => 'Lavasteen pasta', 'meta' => 'Mineraal-gebonden, op kleur',        'is_pu' => false, 'kind' => 'pasta',
+                  'details' => '<p>Lavasteen is anders dan de Beton Cir&eacute; pasta-soorten: het bindmiddel is een <strong>2-componenten epoxy</strong> (A + B) die mineraal en pigment vastzet. Resultaat is een industri&euml;le, robuuste afwerking.</p>'
+                              .'<ul>'
+                              .'<li><strong>Mengen:</strong> de twee componenten met een garde mengen vlak voor aanbrengen. Werktijd is beperkt; meng wat je in 1-2 uur kunt verwerken.</li>'
+                              .'<li><strong>2 lagen aanbrengen</strong> met spaan. Totale dikte ongeveer 2-3 mm.</li>'
+                              .'<li>Volledig uitgehard is het oppervlak <strong>tot in de kern waterdicht</strong>. Geen waterdoorlating, ook zonder PU.</li>'
+                              .'</ul>'
+                              .'<p>Geschikt voor zware vloeren, trappen, hal, keuken, badkamer en zelfs buiten (met PU bescherming voor UV).</p>'],
+                ['name' => 'PU toplaag',      'meta' => 'UV-vriendelijke PU, textuur per laag', 'is_pu' => true, 'kind' => 'pu',
+                  'details' => '<p>Lavasteen krijgt een <strong>UV-vriendelijke PU</strong> mee. Anders dan bij Beton Cir&eacute;: hier is PU niet nodig voor waterdichtheid (lavasteen is dat al uit zichzelf). Wat de PU lagen wel be&iuml;nvloeden is de <strong>textuur van het oppervlak</strong>.</p>'
+                              .'<p><strong>Aantal lagen per situatie:</strong></p>'
+                              .'<ul>'
+                              .'<li><strong>1 laag</strong>: laat een licht <em>gritty</em> oppervlak achter dat als anti-slip werkt. Ideaal voor de <strong>badkamer en douchevloer</strong>: meer grip onder de voet.</li>'
+                              .'<li><strong>2 lagen</strong>: voor <strong>buiten gebruik</strong>. Extra UV-bescherming tegen verkleuring en weersinvloeden bij terras of zon-blootgestelde plekken.</li>'
+                              .'<li><strong>3 lagen</strong>: vlakt de structuur verder af tot een <em>gladder</em> oppervlak. Aangewezen voor de <strong>keuken</strong> en plekken die je vaak schoonmaakt: gladder = minder vuil-aanhechting, makkelijker afnemen.</li>'
+                              .'</ul>'
+                              .'<p>Aanbrengen: 2K nylon roller, nat-in-nat, per sectie. <strong>24 uur droogtijd tussen lagen.</strong></p>'],
+            ],
+            'tiers' => [
+                [
+                    'layers' => 1,
+                    'label'  => 'Badkamer en douche (inbegrepen)',
+                    'rooms'  => 'Wand, vloer, badkamer, douche, slaapkamer',
+                    'why'    => 'Gritty textuur die als anti-slip werkt. Meer grip onder je voet in de douche. Lavasteen is al waterdicht uit zichzelf, dus 1 laag is genoeg. Onze advies voor binnen-gebruik en natte cellen.',
+                    'recommended' => true,
+                ],
+                [
+                    'layers' => 2,
+                    'label'  => 'Buiten of UV-belast',
+                    'rooms'  => 'Terras, garage, ruimte met direct zonlicht',
+                    'why'    => 'Maximale UV- en weerbestendigheid. Voorkomt verkleuring bij blootstelling aan zon en weer.',
+                ],
+                [
+                    'layers' => 3,
+                    'label'  => 'Keuken en vaak-schoonmaken',
+                    'rooms'  => 'Keuken vloer en werkblad, horeca, drukke commerci&euml;le ruimtes',
+                    'why'    => 'Vlakt de gritty structuur af tot een gladder oppervlak. Vuil hecht minder, schoonmaken gaat sneller. Aangewezen waar je vaak moet dweilen of vegen.',
+                ],
+            ],
+        ],
+    ];
+
+    /**
      * Product line definitions.
      *
      * Structure per line:
@@ -1199,6 +1560,42 @@ class OZ_Product_Line_Config {
             ];
         }
         return $options;
+    }
+
+    /**
+     * Per-line "Aanbreng & afwerking" copy for the PDP info section.
+     * Returns null when the line has no PU layers (PU info is N/A).
+     *
+     * Stack layers carry a 'kind' field (ondergrond | primer | pasta | pu)
+     * so we can inject shared advice (e.g. the same 'tegels -> stucpaste'
+     * note for ondergrond) without retyping it per line. A line can still
+     * provide its own 'details' HTML to override the default.
+     *
+     * @param string $line_key
+     * @return array|null
+     */
+    public static function get_pu_info($line_key) {
+        if (!isset(self::$pu_info[$line_key])) {
+            return null;
+        }
+        $info = self::$pu_info[$line_key];
+
+        if (!empty($info['stack']) && is_array($info['stack'])) {
+            foreach ($info['stack'] as &$layer) {
+                if (!empty($layer['details'])) continue;
+                $kind = isset($layer['kind']) ? $layer['kind'] : '';
+                if ($kind === 'ondergrond') {
+                    $layer['details'] = self::_ondergrond_details();
+                } elseif ($kind === 'primer') {
+                    $included = !isset($layer['included']) || $layer['included'];
+                    $layer['details'] = self::_primer_details($included);
+                } elseif ($kind === 'pu') {
+                    $layer['details'] = self::_pu_details();
+                }
+            }
+            unset($layer);
+        }
+        return $info;
     }
 
     /**
