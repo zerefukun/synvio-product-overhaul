@@ -919,11 +919,14 @@
         window.ozLoadSwiper(function () {
             if (_swiperInstance) _swiperInstance.destroy(true, true);
 
+            var rvEdge = window.matchMedia('(max-width: 768px)').matches ? 16 : 32;
             _swiperInstance = new Swiper(
                 R.recentlyViewed.querySelector('.oz-recently-viewed-swiper'), {
                 slidesPerView: 2.3,
                 spaceBetween: 12,
                 freeMode: true,
+                slidesOffsetBefore: rvEdge,
+                slidesOffsetAfter: rvEdge,
                 pagination: {
                     el: R.recentlyViewed.querySelector('.oz-recently-viewed-dots'),
                     clickable: true,
