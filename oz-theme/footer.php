@@ -71,13 +71,6 @@ $site_name = get_bloginfo( 'name' );
 				<?php endif; ?>
 			</a>
 			<p class="oz-footer__tagline">Naadloze betonlook. Zelf aangebracht.</p>
-			<p class="oz-footer__trilogy">
-				<a href="/beton-cire-all-in-one/">Beton Ciré All-In-One</a>
-				<span class="oz-footer__trilogy-sep">&middot;</span>
-				<a href="/beton-cire-easyline-kant-en-klaar/">Easyline</a>
-				<span class="oz-footer__trilogy-sep">&middot;</span>
-				<a href="/beton-cire-original/">Beton Ciré Original</a>
-			</p>
 			<div class="oz-footer__contact">
 				<p><a href="https://www.google.com/maps/place/Beton+cire+webshop/" target="_blank" rel="noopener">Laan van 's-Gravenmade 42L</a><br>2495 AJ Den Haag, Nederland</p>
 				<p>Bezoek alleen op afspraak</p>
@@ -166,7 +159,6 @@ $site_name = get_bloginfo( 'name' );
 
 	<!-- Bottom bar -->
 	<div class="oz-footer__bottom">
-		<p class="oz-footer__co2">Ons bedrijf is CO<sub>2</sub> neutraal en we recyclen zo veel mogelijk.</p>
 		<p>&copy; <?php echo date( 'Y' ); ?> <?php echo esc_html( $site_name ); ?>. Alle rechten voorbehouden.</p>
 	</div>
 </footer>
