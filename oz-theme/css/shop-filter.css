@@ -1,0 +1,403 @@
+/**
+ * Shop filter sidebar — productlijn / kleurfamilie / prijs / zoeken.
+ * Enqueued by functions.php only on shop / product-category pages.
+ *
+ * Layout primitives (grid + sticky + mobile drawer) live in oz-blocks.css
+ * under .oz-shop__sidebar; this file styles the form INSIDE the sidebar.
+ */
+
+.oz-shop-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.oz-shop-filter__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--oz-border-light, #EEE);
+}
+
+.oz-shop-filter__title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--oz-text-primary, #2F2F2F);
+    margin: 0;
+}
+
+.oz-shop-filter__close {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--oz-text-muted, #6B6B6B);
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+/* Mobile: show the close button inside the drawer head. */
+@media (max-width: 1023px) {
+    .oz-shop-filter__close {
+        display: block;
+    }
+}
+
+/* ── Group title (Productlijn / Kleurfamilie / Prijs / Zoeken) ── */
+.oz-shop-filter__group {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.oz-shop-filter__group-title {
+    display: block;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--oz-text-muted, #6B6B6B);
+    margin: 0 0 4px;
+    padding: 0;
+}
+
+/* ── Search input ── */
+.oz-shop-filter__search {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.oz-shop-filter__search input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--oz-border-light, #E5E0D8);
+    border-radius: 6px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.15s;
+}
+
+.oz-shop-filter__search input:focus {
+    outline: none;
+    border-color: var(--oz-accent, #135350);
+}
+
+/* ── Checkbox rows (productlijn) ── */
+.oz-shop-filter__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 6px 4px;
+    border-radius: 4px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: var(--oz-text-primary, #2F2F2F);
+    transition: background 0.15s;
+}
+
+.oz-shop-filter__row:hover {
+    background: var(--oz-label-bg, #F7F7F5);
+}
+
+.oz-shop-filter__row input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #C9C5BD;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    background: #fff;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.oz-shop-filter__row input:checked {
+    background: var(--oz-accent, #135350);
+    border-color: var(--oz-accent, #135350);
+}
+
+.oz-shop-filter__row input:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.oz-shop-filter__row.is-checked {
+    font-weight: 600;
+}
+
+/* ── Color swatches (kleurfamilie) ── */
+.oz-shop-filter__swatches {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.oz-shop-filter__swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: var(--oz-text-muted, #6B6B6B);
+    transition: background 0.15s;
+    position: relative;
+}
+
+.oz-shop-filter__swatch:hover {
+    background: var(--oz-label-bg, #F7F7F5);
+}
+
+.oz-shop-filter__swatch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.oz-shop-filter__swatch-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.15s;
+}
+
+.oz-shop-filter__swatch.is-checked .oz-shop-filter__swatch-dot {
+    box-shadow: 0 0 0 2px var(--oz-accent, #135350);
+}
+
+.oz-shop-filter__swatch.is-checked {
+    color: var(--oz-text-primary, #2F2F2F);
+    font-weight: 600;
+}
+
+/* ── Price range ── */
+.oz-shop-filter__price {
+    display: flex;
+    gap: 8px;
+}
+
+.oz-shop-filter__price label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    color: var(--oz-text-muted, #6B6B6B);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.oz-shop-filter__price input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--oz-border-light, #E5E0D8);
+    border-radius: 6px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    text-align: center;
+}
+
+.oz-shop-filter__price input:focus {
+    outline: none;
+    border-color: var(--oz-accent, #135350);
+}
+
+/* ── Apply (noscript fallback) ── */
+.oz-shop-filter__apply {
+    align-self: stretch;
+}
+
+/* ── Reset link ── */
+.oz-shop-filter__bottom {
+    border-top: 1px solid var(--oz-border-light, #EEE);
+    padding-top: 16px;
+}
+
+.oz-shop-filter__reset {
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    color: var(--oz-text-muted, #6B6B6B);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.oz-shop-filter__reset:hover {
+    color: var(--oz-text-primary, #2F2F2F);
+}
+
+/* ── Mobile drawer: sticky header + sticky bottom CTA ── */
+@media (max-width: 1023px) {
+    .oz-shop__sidebar.is-open .oz-shop-filter {
+        padding-bottom: 80px; /* room for the bottom CTA */
+    }
+    .oz-shop-filter__head {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--oz-bg-page, #FAF8F3);
+        padding: 16px 0 12px;
+        margin: -16px 0 0;
+    }
+}
+
+/* ── Sticky bottom CTA inside mobile drawer ──
+   Scoped to mobile + open drawer only. Without these guards the fixed CTA
+   would float over checkboxes at the bottom of the desktop sticky sidebar
+   too, making them unclickable. */
+@media (max-width: 1023px) {
+    .oz-shop__sidebar.is-open .oz-shop-filter__cta {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 300px;
+        padding: 14px 16px;
+        padding-bottom: max(14px, env(safe-area-inset-bottom));
+        background: var(--oz-accent, #135350);
+        color: #fff;
+        border: none;
+        font-family: 'Raleway', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 1001;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .oz-shop__sidebar.is-open .oz-shop-filter__cta:hover {
+        background: #0F4441;
+    }
+}
+
+/* ── Desktop sidebar polish ──
+   The base .oz-shop__sidebar rule in oz-blocks.css ships with a 32px
+   padding-right that made the filter feel claustrophobic against the
+   border-right line, plus an unstyled overflow scrollbar. Override both
+   here, and breathe the kleurstalen banner away from the scroll edge. */
+@media (min-width: 1024px) {
+    .oz-shop__sidebar {
+        padding-right: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--oz-border-light, #E5E0D8) transparent;
+    }
+    .oz-shop__sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .oz-shop__sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .oz-shop__sidebar::-webkit-scrollbar-thumb {
+        background: var(--oz-border-light, #E5E0D8);
+        border-radius: 3px;
+    }
+    .oz-shop__sidebar::-webkit-scrollbar-thumb:hover {
+        background: var(--oz-text-muted, #9A9A95);
+    }
+    /* Pull the stalen banner down a touch and give it air at the very
+       bottom of the scrollable column. */
+    .oz-shop__stalen-banner {
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+}
+
+/* ── AJAX loading state on the products column ──
+   Dim the grid while a filter fetch is in-flight so the user gets feedback
+   without a hard page reload. */
+.oz-shop__main.is-loading ul.products,
+.oz-shop__main.is-loading .woocommerce-pagination,
+.oz-shop__main.is-loading .woocommerce-info {
+    opacity: 0.45;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+}
+
+.oz-shop__main ul.products,
+.oz-shop__main .woocommerce-pagination,
+.oz-shop__main .woocommerce-info {
+    transition: opacity 0.18s ease;
+}
+
+/* ── Active filter chips above results grid ── */
+.oz-shop-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--oz-border-light, #EEE);
+}
+
+.oz-shop-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    background: var(--oz-label-bg, #F7F7F5);
+    border: 1px solid var(--oz-label-border, #E5E0D8);
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--oz-text-primary, #2F2F2F);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.oz-shop-chip:hover {
+    background: #fff;
+    border-color: var(--oz-text-muted, #6B6B6B);
+}
+
+.oz-shop-chip span[aria-hidden="true"] {
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.55;
+}
+
+.oz-shop-chip-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+
+.oz-shop-chip--reset {
+    background: transparent;
+    border: none;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: var(--oz-text-muted, #6B6B6B);
+    padding: 6px 4px;
+}
+
+.oz-shop-chip--reset:hover {
+    background: transparent;
+    color: var(--oz-text-primary, #2F2F2F);
+}

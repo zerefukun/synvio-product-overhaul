@@ -133,9 +133,28 @@ add_action('wp_head', 'oz_fonts_preload', 1);
  * crossorigin needed because GTM scripts ship with CORS headers
  * and the preconnect connection is reused for those fetches.
  */
+/**
+ * Disable the WordPress emoji detector — modern browsers render Unicode
+ * emojis natively (iOS 5+, Android 4.4+). Saves ~3.6KB inline + 10-30ms
+ * parse cost on every page render.
+ */
+remove_action('wp_head', 'print_emoji_detection_script', 7);
+remove_action('admin_print_scripts', 'print_emoji_detection_script');
+remove_action('wp_print_styles', 'print_emoji_styles');
+remove_action('admin_print_styles', 'print_emoji_styles');
+remove_filter('the_content_feed', 'wp_staticize_emoji');
+remove_filter('comment_text_rss', 'wp_staticize_emoji');
+remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+add_filter('tiny_mce_plugins', function($p){ return is_array($p) ? array_diff($p, ['wpemoji']) : $p; });
+add_filter('emoji_svg_url', '__return_false');
+
 function oz_preconnect_third_party() {
     if (is_admin()) return;
     echo '<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>' . "\n";
+    echo '<link rel="preconnect" href="https://consent.cookiebot.com" crossorigin>' . "\n";
+    echo '<link rel="preconnect" href="https://connect.facebook.net" crossorigin>' . "\n";
+    echo '<link rel="dns-prefetch" href="https://cdn.trustindex.io">' . "\n";
+    echo '<link rel="dns-prefetch" href="https://www.facebook.com">' . "\n";
 }
 add_action('wp_head', 'oz_preconnect_third_party', 1);
 
@@ -235,6 +254,7 @@ if (file_exists(get_stylesheet_directory() . '/inc/block-patterns.php')) {
 require_once get_stylesheet_directory() . '/inc/block-sections-renderer.php';
 require_once get_stylesheet_directory() . '/inc/reviews-section.php';
 require_once get_stylesheet_directory() . '/inc/search-suggestions.php';
+require_once get_stylesheet_directory() . '/inc/shop-filter.php';
 
 /**
  * Microsoft Clarity — session recordings, heatmaps, user journey tracking.
@@ -347,6 +367,12 @@ function oz_defer_non_critical_js($tag, $handle) {
         'jquery-core',          // jQuery 3.7.1 (~88 KB) — biggest blocker
         'gtm4wp-woocommerce',   // GTM4WP WC bridge (~11 KB)
         'oz-scripts-js',        // TrustIndex lazy-loader (this theme)
+
+        // Tier 1 perf pass — non-critical handles moved off the parser-blocking path.
+        'oz-cart-drawer',           // ~60 KB unminified — defer (min-swap pending build pipeline)
+        'gtm4wp-ecommerce-generic', // GTM bridge for non-WC blocks (~1.3 KB)
+        'sourcebuster-js',          // WC source attribution (~6 KB)
+        'wc-order-attribution',     // WC attribution glue (~2 KB)
     ];
     if (in_array($handle, $defer_handles, true)) {
         if (strpos($tag, 'defer') === false) {

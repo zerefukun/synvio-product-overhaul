@@ -23,27 +23,9 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 <!-- Sidebar + main content in one grid so breadcrumb/title/grid all align -->
 <div class="oz-shop__layout">
 
-    <!-- Sidebar: curated nav menu -->
+    <!-- Sidebar: faceted shop filter (productlijn / kleurfamilie / zoeken) -->
     <aside class="oz-shop__sidebar" id="shop-sidebar">
-        <button class="oz-shop__filter-close" id="filter-close" type="button" aria-label="Filters sluiten">&times;</button>
-        <nav class="oz-shop__categories" aria-label="Productcategorieën">
-            <div class="oz-shop__sidebar-title" role="heading" aria-level="2">Categorieën</div>
-            <?php
-            if ( has_nav_menu( 'oz-shop-sidebar' ) ) {
-                wp_nav_menu([
-                    'theme_location' => 'oz-shop-sidebar',
-                    'container'      => false,
-                    'menu_class'     => 'oz-cat-nav',
-                    'walker'         => new Oz_Shop_Sidebar_Walker( $current_url ),
-                    'depth'          => 4,
-                ]);
-            } else {
-                echo '<p class="oz-shop__no-menu">Ga naar Weergave &rarr; Menu&rsquo;s en wijs een menu toe aan &ldquo;Shop Sidebar Categories&rdquo;.</p>';
-            }
-            ?>
-        </nav>
-
-        <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
+        <?php oz_shop_filter_render_sidebar(); ?>
 
         <!-- Kleurstalen CTA banner -->
         <div class="oz-shop__stalen-banner">
@@ -70,6 +52,8 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
             <?php do_action( 'woocommerce_archive_description' ); ?>
             <?php if ( is_search() && function_exists( 'oz_render_search_suggestions' ) ) { oz_render_search_suggestions(); } ?>
         </header>
+
+        <?php if ( function_exists( 'oz_shop_filter_render_chips' ) ) { oz_shop_filter_render_chips(); } ?>
 
         <?php if ( woocommerce_product_loop() ) : ?>
 
@@ -108,24 +92,12 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 
 <script>
 (function() {
-    /* Mobile sidebar toggle */
-    var toggle = document.getElementById('filter-toggle');
-    var close  = document.getElementById('filter-close');
-    var sidebar = document.getElementById('shop-sidebar');
-    if (toggle && sidebar) {
-        toggle.addEventListener('click', function() {
-            sidebar.classList.add('is-open');
-            document.body.style.overflow = 'hidden';
-        });
-        if (close) {
-            close.addEventListener('click', function() {
-                sidebar.classList.remove('is-open');
-                document.body.style.overflow = '';
-            });
-        }
-    }
+    /* Filter drawer open/close is owned by shop-filter.js since the sidebar
+       now renders the faceted filter form. Do not duplicate the listeners
+       here or they fire twice and stomp the bottom-CTA lifecycle. */
 
-    /* Category sub-list expand/collapse toggles */
+    /* Category sub-list expand/collapse toggles (legacy curated menu, kept
+       harmless if .oz-cat-nav ever returns) */
     document.querySelectorAll('.oz-cat-nav__toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
             btn.closest('.oz-cat-nav__item').classList.toggle('is-open');
