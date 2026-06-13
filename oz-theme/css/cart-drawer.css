@@ -782,9 +782,10 @@ body.oz-drawer-open {
     background: var(--oz-border-light, #F0EFED);
 }
 
-/* Swiper container — slides bleed to edge padding */
+/* Swiper container — slide offset is applied via slidesOffsetBefore/After
+   in cart-drawer.js so the first/last slide line up with the title padding
+   without container padding fighting Swiper's translate math. */
 .oz-recently-viewed-swiper {
-    padding: 0 32px;
     overflow: hidden;
 }
 
@@ -1050,7 +1051,8 @@ body.oz-drawer-open {
     .oz-shipping-bar { padding: 10px 16px; }
     .oz-drawer-footer { padding: 14px 16px 18px; padding-bottom: max(18px, env(safe-area-inset-bottom)); }
     .oz-cart-skeleton { padding: 16px 16px; }
-    .oz-recently-viewed-swiper { padding: 0 16px; }
+    /* Swiper offset is handled in JS (slidesOffsetBefore/After); container
+       padding would conflict with Swiper's translate math. */
     .oz-recently-viewed-title { padding: 0 16px; }
 
     .oz-cart-item {
