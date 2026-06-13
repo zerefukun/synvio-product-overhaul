@@ -23,27 +23,9 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
 <!-- Sidebar + main content in one grid so breadcrumb/title/grid all align -->
 <div class="oz-shop__layout">
 
-    <!-- Sidebar: curated nav menu -->
+    <!-- Sidebar: faceted shop filter (productlijn / kleurfamilie / prijs / zoeken) -->
     <aside class="oz-shop__sidebar" id="shop-sidebar">
-        <button class="oz-shop__filter-close" id="filter-close" type="button" aria-label="Filters sluiten">&times;</button>
-        <nav class="oz-shop__categories" aria-label="Productcategorieën">
-            <h2 class="oz-shop__sidebar-title">Categorieën</h2>
-            <?php
-            if ( has_nav_menu( 'oz-shop-sidebar' ) ) {
-                wp_nav_menu([
-                    'theme_location' => 'oz-shop-sidebar',
-                    'container'      => false,
-                    'menu_class'     => 'oz-cat-nav',
-                    'walker'         => new Oz_Shop_Sidebar_Walker( $current_url ),
-                    'depth'          => 4,
-                ]);
-            } else {
-                echo '<p class="oz-shop__no-menu">Ga naar Weergave &rarr; Menu&rsquo;s en wijs een menu toe aan &ldquo;Shop Sidebar Categories&rdquo;.</p>';
-            }
-            ?>
-        </nav>
-
-        <?php if ( is_active_sidebar( 'shop-sidebar' ) ) { dynamic_sidebar( 'shop-sidebar' ); } ?>
+        <?php oz_shop_filter_render_sidebar(); ?>
 
         <!-- Kleurstalen CTA banner -->
         <div class="oz-shop__stalen-banner">
@@ -70,6 +52,8 @@ $current_url = trailingslashit( strtok( $_SERVER['REQUEST_URI'], '?' ) );
             <?php do_action( 'woocommerce_archive_description' ); ?>
             <?php if ( is_search() && function_exists( 'oz_render_search_suggestions' ) ) { oz_render_search_suggestions(); } ?>
         </header>
+
+        <?php if ( function_exists( 'oz_shop_filter_render_chips' ) ) { oz_shop_filter_render_chips(); } ?>
 
         <?php if ( woocommerce_product_loop() ) : ?>
 
