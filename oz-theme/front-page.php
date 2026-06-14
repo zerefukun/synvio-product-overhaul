@@ -258,7 +258,7 @@ $theme = get_stylesheet_directory_uri();
   <div class="bcw-hero-v2__inner">
 	<div class="bcw-hero-v2__photo">
 		<img
-			src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-1024x683.avif" ); ?>"
+			src="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.avif" ); ?>"
 			srcset="<?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-768x512.avif" ); ?> 768w, <?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1-1024x683.avif" ); ?> 1024w, <?php echo esc_url( "$up/2026/03/Beton-Badkamer-Placeholder-2-1.avif" ); ?> 1536w"
 			sizes="(max-width: 900px) 100vw, 58vw"
 			alt="Beton Ciré badkamer met naadloze wand en vrijstaand bad — geen voegen, geen tegels"
