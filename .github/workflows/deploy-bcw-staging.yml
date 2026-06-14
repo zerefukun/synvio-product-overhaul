@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: deploy-bcw-staging
-  cancel-in-progress: true
+  cancel-in-progress: false  # queue instead of cancel; same rationale as prod
 
 jobs:
   deploy:

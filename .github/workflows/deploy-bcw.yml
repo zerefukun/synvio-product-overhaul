@@ -16,7 +16,11 @@ permissions:
 
 concurrency:
   group: deploy-bcw-production
-  cancel-in-progress: true
+  # Queue concurrent pushes instead of cancelling the in-flight deploy.
+  # Sequential = safe for filesystem rsyncs + DB writes. Last queued run wins
+  # if multiple pushes arrive while a deploy is running; intermediate queued
+  # runs are silently dropped by GitHub (only one queue slot per group).
+  cancel-in-progress: false
 
 jobs:
   deploy:
