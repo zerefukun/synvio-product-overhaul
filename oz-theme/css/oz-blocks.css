@@ -33,7 +33,7 @@
 
 /* ── Article (single post) ── */
 .oz-article__hero {
-  max-height: 480px;
+  height: 480px;
   overflow: hidden;
 }
 

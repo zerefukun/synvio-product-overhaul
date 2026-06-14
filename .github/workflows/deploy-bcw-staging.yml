@@ -66,6 +66,7 @@ jobs:
             --exclude ".git" \
             --exclude ".DS_Store" \
             --exclude ".claude" \
+            --exclude "*.webp" \
             ./oz-theme/ \
             /home/bcwstaging/public_html/wp-content/themes/OzTheme/
 
