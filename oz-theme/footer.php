@@ -65,7 +65,7 @@ $site_name = get_bloginfo( 'name' );
 				$logo_id  = get_theme_mod( 'site_logo' ) ?: get_theme_mod( 'custom_logo' );
 				$logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 				if ( $logo_url ) : ?>
-					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="140" height="auto" loading="lazy">
+					<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="140" height="140" loading="lazy">
 				<?php else : ?>
 					<span><?php echo esc_html( $site_name ); ?></span>
 				<?php endif; ?>
@@ -78,9 +78,23 @@ $site_name = get_bloginfo( 'name' );
 					<?php /* antispambot(): entity-encoding tegen scrape-bots, geen JS nodig
 					   (vervangt Cloudflare Email Obfuscation die HTML herschreef). */ ?>
 					<a href="mailto:<?php echo esc_attr( antispambot( 'info@beton-cire-webshop.nl' ) ); ?>"><?php echo antispambot( 'info@beton-cire-webshop.nl' ); ?></a><br>
-					<a href="tel:+31850270090">085 - 027 00 90</a>
+					<a href="tel:+31850270090">085 - 027 00 90</a><br><a href="https://wa.me/31648926279" target="_blank" rel="noopener" aria-label="WhatsApp 06 48 92 62 79" title="WhatsApp ons" style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:9999px;background:rgba(37,211,102,0.12);color:#25D366;font-size:12px;font-weight:500;line-height:1;text-decoration:none;margin-top:6px;transition:background-color .15s;" onmouseover="this.style.background=>085 - 027 00 90</a>apos;rgba(37,211,102,0.22)>085 - 027 00 90</a>apos;" onmouseout="this.style.background=>085 - 027 00 90</a>apos;rgba(37,211,102,0.12)>085 - 027 00 90</a>apos;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M20.52 3.449C12.831-3.984.106 1.407.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a11.875 11.875 0 005.667 1.443h.005c10.846 0 16.243-13.083 8.515-20.34zm-8.515 18.297h-.005a9.87 9.87 0 01-5.027-1.378l-.36-.214-3.733.978.996-3.638-.235-.374a9.861 9.861 0 01-1.511-5.27c.001-8.747 10.677-13.119 16.875-6.92 6.18 6.123 1.819 16.815-6.999 16.815zm5.422-7.403c-.296-.149-1.758-.868-2.031-.967-.273-.099-.471-.148-.67.15-.197.297-.767.967-.94 1.165-.173.198-.347.223-.644.074-.297-.148-1.254-.462-2.387-1.473-.883-.787-1.478-1.76-1.651-2.057-.173-.296-.018-.456.13-.604.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>WhatsApp</a>
 				</p>
 				<p class="oz-footer__legal">KVK: 83646248 &middot; BTW: NL862945811 B01</p>
+			<style>
+				.oz-footer__social { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.25rem; }
+				.oz-footer__social-link { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.85); transition: background-color .2s, color .2s, border-color .2s; }
+				.oz-footer__social-link:hover { background: rgba(255,255,255,0.10); color: #fff; border-color: rgba(255,255,255,0.45); }
+				.oz-footer__social-link svg { display: block; }
+			</style>
+			<div class="oz-footer__social" aria-label="Volg ons">
+				<a class="oz-footer__social-link" href="https://www.instagram.com/betoncirewebshop/" target="_blank" rel="noopener" aria-label="Instagram"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+				<a class="oz-footer__social-link" href="https://www.facebook.com/betoncirewebshop/" target="_blank" rel="noopener" aria-label="Facebook"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 22v-8h2.59l.41-3H13V9.13c0-.86.24-1.45 1.49-1.45H16V5c-.29-.04-1.21-.12-2.27-.12-2.24 0-3.78 1.37-3.78 3.88V11H8v3h2v8h3z"/></svg></a>
+				<a class="oz-footer__social-link" href="https://nl.pinterest.com/betoncirewebshop/" target="_blank" rel="noopener" aria-label="Pinterest"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 00-3.65 19.31c-.09-.78-.17-1.99.04-2.85.19-.78 1.21-4.98 1.21-4.98s-.31-.62-.31-1.53c0-1.43.83-2.5 1.87-2.5.88 0 1.31.66 1.31 1.46 0 .89-.57 2.22-.86 3.45-.24 1.03.52 1.87 1.53 1.87 1.84 0 3.25-1.94 3.25-4.74 0-2.48-1.78-4.21-4.33-4.21-2.95 0-4.69 2.21-4.69 4.5 0 .89.34 1.85.77 2.36.09.1.1.19.07.3-.08.32-.25 1.03-.29 1.17-.05.19-.15.23-.34.14-1.28-.6-2.08-2.46-2.08-3.96 0-3.22 2.35-6.18 6.78-6.18 3.56 0 6.32 2.53 6.32 5.92 0 3.53-2.23 6.37-5.32 6.37-1.04 0-2.02-.54-2.36-1.18l-.63 2.43c-.23.89-.85 2-1.27 2.68A10 10 0 1012 2z"/></svg></a>
+				<a class="oz-footer__social-link" href="https://www.youtube.com/@Betoncirewebshop" target="_blank" rel="noopener" aria-label="YouTube"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.5a3 3 0 00-2.1-2.1C19.6 4 12 4 12 4s-7.6 0-9.4.4A3 3 0 00.5 6.5C0 8.3 0 12 0 12s0 3.7.5 5.5a3 3 0 002.1 2.1C4.4 20 12 20 12 20s7.6 0 9.4-.4a3 3 0 002.1-2.1C24 15.7 24 12 24 12s0-3.7-.5-5.5zM9.6 15.5v-7l6.4 3.5-6.4 3.5z"/></svg></a>
+				<a class="oz-footer__social-link" href="https://www.tiktok.com/@betoncirewebshop.nl" target="_blank" rel="noopener" aria-label="TikTok"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005.8 20.1a6.34 6.34 0 0010.86-4.43V8.94a8.16 8.16 0 004.77 1.52V7.01a4.85 4.85 0 01-1.84-.32z"/></svg></a>
+				<a class="oz-footer__social-link" href="https://www.linkedin.com/in/beton-cire-webshop-79916840b/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05a3.74 3.74 0 013.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 11.001-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg></a>
+			</div>
 			</div>
 		</div>
 

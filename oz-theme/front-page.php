@@ -264,9 +264,6 @@ $theme = get_stylesheet_directory_uri();
 			alt="Beton Ciré badkamer met naadloze wand en vrijstaand bad — geen voegen, geen tegels"
 			width="1536" height="1024"
 			loading="eager" fetchpriority="high" decoding="async" data-no-lazy="1">
-		<div class="bcw-hero-v2__photo-meta">
-			Project &middot; Badkamer<strong>Microcement wand, Cream Peony</strong>
-		</div>
 		<div class="oz-hp-hero-glass">
 			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
 			<div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
@@ -770,7 +767,7 @@ $theme = get_stylesheet_directory_uri();
 	<div class="oz-hp-section-header">
 		<div class="oz-hp-eyebrow">Achtergrond</div>
 		<h2 class="oz-hp-heading">Meer weten over <em>Beton Ciré</em></h2>
-		<p class="oz-hp-section-intro">Alles over onze producten, het aanbrengen, prijs en waterdichtheid &mdash; op &eacute;&eacute;n plek.</p>
+		<p class="oz-hp-section-intro">Alles over onze producten, het aanbrengen, prijs en waterdichtheid &mdash;&nbsp;op&nbsp;&eacute;&eacute;n&nbsp;plek.</p>
 	</div>
 	<div class="oz-hp-learn-list" itemscope itemtype="https://schema.org/FAQPage">
 

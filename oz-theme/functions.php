@@ -63,8 +63,8 @@ function oz_widgets_init() {
         'description'   => 'Widgets below the category navigation on shop pages (e.g. price filter).',
         'before_widget' => '<div id="%1$s" class="oz-sidebar-widget %2$s">',
         'after_widget'  => '</div>',
-        'before_title'  => '<div class="oz-sidebar-widget__title" role="heading" aria-level="3">',
-        'after_title'   => '</div>',
+        'before_title'  => '<h3 class="oz-sidebar-widget__title">',
+        'after_title'   => '</h3>',
     ]);
 }
 add_action('widgets_init', 'oz_widgets_init');
@@ -133,28 +133,9 @@ add_action('wp_head', 'oz_fonts_preload', 1);
  * crossorigin needed because GTM scripts ship with CORS headers
  * and the preconnect connection is reused for those fetches.
  */
-/**
- * Disable the WordPress emoji detector — modern browsers render Unicode
- * emojis natively (iOS 5+, Android 4.4+). Saves ~3.6KB inline + 10-30ms
- * parse cost on every page render.
- */
-remove_action('wp_head', 'print_emoji_detection_script', 7);
-remove_action('admin_print_scripts', 'print_emoji_detection_script');
-remove_action('wp_print_styles', 'print_emoji_styles');
-remove_action('admin_print_styles', 'print_emoji_styles');
-remove_filter('the_content_feed', 'wp_staticize_emoji');
-remove_filter('comment_text_rss', 'wp_staticize_emoji');
-remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
-add_filter('tiny_mce_plugins', function($p){ return is_array($p) ? array_diff($p, ['wpemoji']) : $p; });
-add_filter('emoji_svg_url', '__return_false');
-
 function oz_preconnect_third_party() {
     if (is_admin()) return;
     echo '<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>' . "\n";
-    echo '<link rel="preconnect" href="https://consent.cookiebot.com" crossorigin>' . "\n";
-    echo '<link rel="preconnect" href="https://connect.facebook.net" crossorigin>' . "\n";
-    echo '<link rel="dns-prefetch" href="https://cdn.trustindex.io">' . "\n";
-    echo '<link rel="dns-prefetch" href="https://www.facebook.com">' . "\n";
 }
 add_action('wp_head', 'oz_preconnect_third_party', 1);
 
@@ -291,7 +272,7 @@ function oz_clarity_tracking() {
     // Skip admin pages and logged-in admins (don't pollute data with our own sessions)
     if (is_admin() || current_user_can('manage_options')) return;
     ?>
-    <script type="text/plain" data-cookieconsent="statistics">
+    <script type="text/javascript">
     /* Defer Clarity until after window.load + idle time so it does not
        block main thread during LCP measurement. PSI (Lighthouse) was
        reporting NO_LCP partly because analytics scripts ran during the
@@ -329,9 +310,7 @@ function oz_custom_scripts() {
     );
 
     // Add a custom query string to exclude from LiteSpeed Cache
-    /* nocache-hack verwijderd (2026-06-11): herschreef de script-src waardoor
-       de browser oz-scripts.js TWEE keer uitvoerde (dubbele event-handlers).
-       De ?ver= parameter van wp_enqueue_script regelt cache-busting al. */
+    wp_add_inline_script('oz-scripts-js', 'var script = document.querySelector("script[src*=\'oz-scripts.js\']"); if(script) { script.src = script.src + "?nocache=" + new Date().getTime(); }', 'before');
 }
 add_action('wp_enqueue_scripts', 'oz_custom_scripts');
 
@@ -367,12 +346,6 @@ function oz_defer_non_critical_js($tag, $handle) {
         'jquery-core',          // jQuery 3.7.1 (~88 KB) — biggest blocker
         'gtm4wp-woocommerce',   // GTM4WP WC bridge (~11 KB)
         'oz-scripts-js',        // TrustIndex lazy-loader (this theme)
-
-        // Tier 1 perf pass — non-critical handles moved off the parser-blocking path.
-        'oz-cart-drawer',           // ~60 KB unminified — defer (min-swap pending build pipeline)
-        'gtm4wp-ecommerce-generic', // GTM bridge for non-WC blocks (~1.3 KB)
-        'sourcebuster-js',          // WC source attribution (~6 KB)
-        'wc-order-attribution',     // WC attribution glue (~2 KB)
     ];
     if (in_array($handle, $defer_handles, true)) {
         if (strpos($tag, 'defer') === false) {
@@ -585,63 +558,6 @@ function oz_cart_checkout_enqueue() {
 add_action('wp_enqueue_scripts', 'oz_cart_checkout_enqueue');
 
 /**
- * Enqueue account/login styles on /mijn-account/ (alle endpoints).
- * Styles live in oz-account.css en hergebruiken de design-system tokens.
- */
-function oz_account_enqueue() {
-    if (is_admin()) return;
-    if (!function_exists('is_account_page') || !is_account_page()) return;
-
-    wp_enqueue_style(
-        'oz-account',
-        get_stylesheet_directory_uri() . '/css/oz-account.css',
-        ['oz-design-system'],
-        filemtime(get_stylesheet_directory() . '/css/oz-account.css')
-    );
-}
-add_action('wp_enqueue_scripts', 'oz_account_enqueue');
-
-/**
- * Dashboard quick-cards onder de standaard begroeting op /mijn-account/.
- * Directe ingangen naar de meest gebruikte account-secties + kleurstalen.
- */
-function oz_account_dashboard_grid() {
-    $cards = [
-        [
-            'url'   => wc_get_account_endpoint_url('orders'),
-            'title' => 'Bestellingen',
-            'desc'  => 'Bekijk je bestellingen, volg de verzending of download facturen.',
-        ],
-        [
-            'url'   => wc_get_account_endpoint_url('edit-address'),
-            'title' => 'Adressen',
-            'desc'  => 'Beheer je verzend- en factuuradres.',
-        ],
-        [
-            'url'   => wc_get_account_endpoint_url('edit-account'),
-            'title' => 'Accountgegevens',
-            'desc'  => 'Wijzig je naam, e-mailadres of wachtwoord.',
-        ],
-        [
-            'url'   => home_url('/kleurstalen-aanvragen/'),
-            'title' => 'Gratis kleurstalen',
-            'desc'  => 'Twijfel je over een kleur? Vraag tot 4 gratis stalen aan.',
-        ],
-    ];
-    echo '<ul class="oz-account-grid">';
-    foreach ($cards as $c) {
-        printf(
-            '<li><a href="%s"><span class="oz-account-grid__title">%s</span><span class="oz-account-grid__desc">%s</span></a></li>',
-            esc_url($c['url']),
-            esc_html($c['title']),
-            esc_html($c['desc'])
-        );
-    }
-    echo '</ul>';
-}
-add_action('woocommerce_account_dashboard', 'oz_account_dashboard_grid');
-
-/**
  * Enqueue homepage v2 CSS only on the front page.
  * Styles are namespaced with .oz-hp- prefix so they can't bleed into other pages.
  */
@@ -690,19 +606,7 @@ function oz_ruimte_enqueue() {
 
     $needs_ruimte_css = is_page_template('page-ruimte.php')
         || is_page_template('sitemap-template.php')
-        || ( is_single() && has_category( 'stucsoorten' ) )
-        || is_page( 'beton-cire-den-haag' );
-
-    /* Auto-detect: any page whose post_content embeds the homepage product-card
-       layout (oz-hp-pcard) or section wrapper (oz-hp-section) needs this CSS.
-       Covers all city/locatie pages without maintaining a slug whitelist. */
-    if ( ! $needs_ruimte_css && ( is_singular() || is_page() ) ) {
-        $post = get_post();
-        if ( $post && ( strpos( $post->post_content, 'oz-hp-pcard' ) !== false
-                     || strpos( $post->post_content, 'oz-hp-section' ) !== false ) ) {
-            $needs_ruimte_css = true;
-        }
-    }
+        || ( is_single() && has_category( 'stucsoorten' ) );
 
     if ( ! $needs_ruimte_css ) return;
 
@@ -1886,7 +1790,7 @@ add_action( 'init', 'oz_register_theme_blocks' );
  */
 function oz_payment_icons_strip( $variant = 'footer' ) {
     $icons = array(
-        'ideal'          => 'iDEAL | Wero',
+        'ideal'          => 'iDEAL',
         'creditcards'    => 'Creditcard',
         'paypal'         => 'PayPal',
         'applepay'       => 'Apple Pay',
@@ -1894,19 +1798,14 @@ function oz_payment_icons_strip( $variant = 'footer' ) {
         'klarnapaylater' => 'Klarna',
     );
     $base = get_stylesheet_directory_uri() . '/img/payment-icons/';
-    $dir  = get_stylesheet_directory() . '/img/payment-icons/';
     $cls  = 'oz-payment-section oz-payment-section--' . esc_attr( $variant );
     ?>
     <div class="<?php echo $cls; ?>">
       <div class="oz-payment-label">Veilig betalen</div>
       <div class="oz-payment-methods">
-        <?php foreach ( $icons as $slug => $alt ) :
-          $file = $dir . $slug . '.svg';
-          $ver  = file_exists( $file ) ? filemtime( $file ) : '';
-          $src  = $base . $slug . '.svg' . ( $ver ? '?v=' . $ver : '' );
-        ?>
-          <div class="oz-payment-icon oz-payment-icon--<?php echo esc_attr( $slug ); ?>">
-            <img src="<?php echo esc_url( $src ); ?>"
+        <?php foreach ( $icons as $slug => $alt ) : ?>
+          <div class="oz-payment-icon">
+            <img src="<?php echo esc_url( $base . $slug . '.svg' ); ?>"
                  alt="<?php echo esc_attr( $alt ); ?>"
                  width="38" height="24" loading="lazy">
           </div>
@@ -1917,282 +1816,30 @@ function oz_payment_icons_strip( $variant = 'footer' ) {
 }
 
 /**
- * Bottom-nav voor ruimte-template pages.
- *
- * Hookt op do_action('oz_ruimte_quicknav') in page-ruimte.php. Rendert
- * <nav.oz-rp2-bottomnav> met pills, maar alleen voor anchors die feitelijk
- * in de post_content voorkomen — geen dead-link pills.
- *
- * Vervangt de oude R7 quicknav uit oz-ruimte-cro-overrides.php (mu-plugin)
- * en de TOC-injection uit bcw-cro-prio2 — beiden zijn uitgeschakeld.
- *
- * CSS in css/page-ruimte-v2.css, JS in js/page-ruimte-v2.js (beiden worden
- * al enqueued op page-ruimte.php via oz_ruimte_enqueue() hierboven).
+ * Enqueue .oz-hp-pcard styles op kennisbank + keuzehulp blog posts EN op
+ * Keuzehulp-child pages (parent ID 19672). Deze contexts embedden de homepage
+ * 2/3-card product layout. Alleen de homepage stylesheet pair geladen.
  */
-add_action( 'oz_ruimte_quicknav', 'oz_render_ruimte_bottomnav' );
-function oz_render_ruimte_bottomnav() {
-    if ( ! is_singular() ) return;
-    $post = get_post();
-    if ( ! $post ) return;
-    $content = $post->post_content;
+function oz_pcard_blog_enqueue() {
+    if (is_admin()) return;
 
-    /* Anchor → pill-label. Volgorde bepaalt pill-volgorde in de bar. */
-    $pills = [
-        'producten'    => 'Producten',
-        'kosten'       => 'Kosten',
-        'inspiratie'   => 'Inspiratie',
-        'faq'          => 'FAQ',
-        'stappen-plan' => 'Stappenplan',
-        'reviews'      => 'Reviews',
-    ];
+    $is_post    = is_single() && ( has_category( 'kennisbank' ) || has_category( 'keuzehulp' ) );
+    $is_kh_page = is_page()   && wp_get_post_parent_id( get_queried_object_id() ) === 19672;
 
-    $html = '';
-    foreach ( $pills as $anchor => $label ) {
-        if ( strpos( $content, 'id="' . $anchor . '"' ) === false ) continue;
-        $html .= sprintf(
-            '<a class="oz-rp2-bottomnav-pill" href="#%1$s" data-target="%1$s">%2$s</a>',
-            esc_attr( $anchor ),
-            esc_html( $label )
-        );
-    }
-    if ( ! $html ) return;
+    if (! ( $is_post || $is_kh_page )) return;
 
-    echo '<nav class="oz-rp2-bottomnav" aria-label="Pagina-navigatie">'
-       . '<div class="oz-rp2-bottomnav-inner">' . $html . '</div>'
-       . '</nav>';
-}
-
-/**
- * Template hero voor ruimte-pages — rendert een homepage-style .oz-hp-hero
- * wanneer de post_content er geen heeft. Zo krijgen ALLE page-ruimte.php
- * pages dezelfde hero-stijl (zoals jij vroeg), zonder dat de 13 pages die
- * hun hero al in Gutenberg-content hebben dubbel renderen.
- *
- * Data-sources (per page, met fallbacks):
- *   - H1 title         = post_title
- *   - title-tag pill   = postmeta _oz_hero_title_tag  (optioneel)
- *   - subtitle text    = postmeta _oz_hero_sub        (optioneel)
- *   - description text = postmeta _oz_hero_desc       (optioneel)
- *   - hero photo       = featured image (full)        OR homepage default
- *
- * Per-page tunen kan dus zonder code te raken — vul postmeta + featured img
- * in via WP-admin. CSS/JS hergebruikt de bestaande .oz-hp-hero* regels uit
- * homepage-v2.css (al enqueued op page-ruimte.php pages via oz_ruimte_enqueue).
- */
-/**
- * Bepaal hero-watermark + verticale marker tekst voor een ruimte-page.
- *
- * Returns: array( 'label' => 'keuken', 'marker' => 'Ruimte / Beton Cire Keuken' ).
- *
- * Volgorde:
- *  1) Postmeta `_oz_hero_label`  / `_oz_hero_marker` als ingevuld → die wint.
- *  2) Anders auto-derived uit get_the_title():
- *     - Strip merk-prefix ("Beton Cire", "Beton Ciré", "Lavasteen", "Microcement").
- *     - Probeer een bekend ruimte-woord (badkamer/keuken/wand/…) te matchen.
- *     - Fallback: eerste niet-stop-woord uit de stripped title.
- *
- * Beide kunnen leeg blijven — dan worden ze NIET gerenderd (geen lege box).
- */
-function oz_get_ruimte_hero_data( $post = null ) {
-    if ( ! $post ) $post = get_post();
-    if ( ! $post ) return array( 'label' => '', 'marker' => '' );
-
-    $label_override  = trim( (string) get_post_meta( $post->ID, '_oz_hero_label', true ) );
-    $marker_override = trim( (string) get_post_meta( $post->ID, '_oz_hero_marker', true ) );
-
-    $title    = html_entity_decode( get_the_title( $post ), ENT_QUOTES, 'UTF-8' );
-    $stripped = trim( preg_replace( '/^(beton\s*cir[eé]\s*|lavasteen\s+|microcement\s+)/iu', '', $title ) );
-
-    /* Watermark label */
-    if ( $label_override !== '' ) {
-        $label = $label_override;
-    } else {
-        $rooms = array( 'badkamer', 'keuken', 'vloer', 'toilet', 'trap', 'trappen', 'wand',
-                        'woonkamer', 'douchewand', 'inloopdouche', 'douchevloer',
-                        'achterwand', 'showroom' );
-        $label = '';
-        foreach ( $rooms as $w ) {
-            if ( stripos( $stripped, $w ) !== false ) { $label = $w; break; }
-        }
-        if ( $label === '' ) {
-            /* Fallback: eerste betekenisvolle woord (skip Nederlandse stop-words). */
-            $stops = array( 'op', 'over', 'aan', 'in', 'voor', 'de', 'het', 'een', 'met' );
-            $parts = preg_split( '/\s+/', mb_strtolower( $stripped, 'UTF-8' ) );
-            foreach ( $parts as $w ) {
-                if ( $w !== '' && ! in_array( $w, $stops, true ) ) { $label = $w; break; }
-            }
-        }
-        $label = mb_strtolower( $label, 'UTF-8' );
-    }
-
-    /* Verticale marker tekst */
-    $marker = $marker_override !== '' ? $marker_override : ( 'Ruimte / ' . $stripped );
-
-    return array( 'label' => $label, 'marker' => $marker );
-}
-
-add_action( 'oz_ruimte_hero', 'oz_render_ruimte_template_hero' );
-function oz_render_ruimte_template_hero() {
-    if ( ! is_singular() ) return;
-    $post = get_post();
-    if ( ! $post ) return;
-
-    /* Opt-out via postmeta: conversie-pagina's (zoals /kleurstalen-aanvragen/)
-       willen geen generieke template-hero. In plaats daarvan komt er een
-       spacer zodat de content niet onder de fixed header verdwijnt. */
-    if ( get_post_meta( $post->ID, '_oz_no_template_hero', true ) ) {
-        echo '<div class="oz-rp2-no-hero-spacer" aria-hidden="true"></div>';
-        return;
-    }
-
-    /* Skip wanneer de Gutenberg-content zelf al een .oz-hp-hero blok heeft
-       (de 13 'echte' ruimte-pages: Badkamer/Vloer/Keuken/Toilet/etc.). */
-    if ( strpos( $post->post_content, 'class="oz-hp-hero"' ) !== false ) return;
-
-    /* Skip ook wanneer het eerste blok in de content een core/cover is
-       (oude-stijl hero met dark-scrim + H1 erin — alle 14 stucsoorten posts
-       hebben dit patroon). Anders rendert mijn template-hero BOVENop het
-       cover-block en zie je dubbele hero's onder elkaar. */
-    $blocks = parse_blocks( $post->post_content );
-    foreach ( $blocks as $b ) {
-        if ( empty( $b['blockName'] ) ) continue;
-        if ( $b['blockName'] === 'core/cover' ) return;
-        break; /* alleen het EERSTE non-lege block checken */
-    }
-
-    $title     = get_the_title( $post );
-    $title_tag = get_post_meta( $post->ID, '_oz_hero_title_tag', true );
-    $sub       = get_post_meta( $post->ID, '_oz_hero_sub', true );
-    $desc      = get_post_meta( $post->ID, '_oz_hero_desc', true );
-    $hero_data = oz_get_ruimte_hero_data( $post );
-
-    /* Featured image of homepage default als fallback. */
-    $img     = get_the_post_thumbnail_url( $post, 'full' );
-    $img_alt = '';
-    if ( $img ) {
-        $img_alt = get_post_meta( get_post_thumbnail_id( $post ), '_wp_attachment_image_alt', true );
-    } else {
-        $img = home_url( '/wp-content/uploads/2026/03/Beton-Badkamer-Placeholder-2-1.avif' );
-    }
-    if ( ! $img_alt ) $img_alt = $title;
-    ?>
-    <section class="oz-hp-hero" data-hero-label="<?php echo esc_attr( $hero_data['label'] ); ?>">
-        <img class="oz-hp-hero-bg" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" loading="eager" fetchpriority="high" decoding="async">
-        <?php if ( $hero_data['marker'] ) : ?><span class="oz-hp-hero-marker"><?php echo esc_html( $hero_data['marker'] ); ?></span><?php endif; ?>
-        <div class="oz-hp-hero-inner">
-            <div class="oz-hp-hero-text">
-                <span class="oz-hp-hero-eyebrow">Voor 14:00 besteld &middot; dezelfde werkdag verzonden</span>
-                <h1 class="oz-hp-hero-title"><?php echo esc_html( $title ); ?><?php if ( $title_tag ) : ?><span class="oz-hp-hero-title-tag"><?php echo esc_html( $title_tag ); ?></span><?php endif; ?></h1>
-                <?php if ( $sub )  : ?><p class="oz-hp-hero-sub"><?php echo esc_html( $sub ); ?></p><?php endif; ?>
-                <?php if ( $desc ) : ?><p class="oz-hp-hero-desc"><?php echo esc_html( $desc ); ?></p><?php endif; ?>
-                <div class="oz-hp-hero-ctas">
-                    <a href="/producten/" class="oz-hp-btn oz-hp-btn--teal">Bekijk alle producten</a>
-                </div>
-                <div class="oz-hp-hero-badge">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Geen ervaring nodig &mdash; doe het zelf</span>
-                </div>
-            </div>
-            <div class="oz-hp-hero-glass">
-                <div class="oz-hp-eyebrow">Gratis kleurstalen</div>
-                <div class="oz-hp-hero-glass-title">Zeker van je kleur?</div>
-                <p class="oz-hp-hero-glass-desc">Selecteer tot 4 kleuren uit onze lijn. We sturen ze gratis naar je toe.</p>
-                <a href="/kleurstalen-aanvragen/" class="oz-hp-hero-glass-link">Stalen aanvragen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
-            </div>
-        </div>
-    </section>
-    <?php
-}
-
-/**
- * Template USP-marquee voor ruimte-pages — rendert dezelfde oz-hp-trust
- * balk als de homepage (S03) op pages die hem niet zelf in Gutenberg-content
- * hebben. Zo krijgen ALLE page-ruimte.php pages dezelfde trust-balk onder
- * de hero, ongeacht of de hero in-content of template-rendered is.
- *
- * USP-lijst spiegelt front-page.php (single source of truth voor de strings
- * is daar — als die wijzigt, hier ook bijwerken).
- */
-add_action( 'oz_ruimte_trust', 'oz_render_ruimte_template_trust' );
-/**
- * USP-marquee HTML (of lege string als deze pagina hem niet moet tonen).
- * Gedeeld door de template-hook EN de block-renderer zodat de balk altijd
- * direct ONDER de hero komt, ook bij in-content heroes.
- */
-function oz_ruimte_trust_html() {
-    $post = get_post();
-    if ( ! $post ) return '';
-
-    /* Opt-out pagina's (geen hero) krijgen de balk WEL: hij rendert dan
-       direct onder de navigatie, conform het kleurstalen-paginapatroon. */
-
-    /* Skip wanneer content al een trust-block heeft (keuken/badkamer hebben
-       dit in hun Gutenberg-content). Dubbele balken voorkomen. */
-    if ( strpos( $post->post_content, 'oz-hp-trust' ) !== false ) return '';
-    if ( strpos( $post->post_content, 'oz-rp2-trust-wrap' ) !== false ) return '';
-
-    $usps = array(
-        'Voor 14:00 besteld, dezelfde werkdag verzonden',
-        'Geen ervaring nodig',
-        'Complete pakketten',
-        '420.000+ m² door klanten aangebracht',
-        '4.8/5.0 Google Reviews',
-        'Altijd een specialist beschikbaar',
-        'Project ondersteuning',
-        'Showroom Den Haag',
-        '5000+ kleuren via RAL en NCS',
+    wp_enqueue_style(
+        'oz-reviews',
+        get_stylesheet_directory_uri() . '/css/oz-reviews.css',
+        ['oz-design-system'],
+        filemtime(get_stylesheet_directory() . '/css/oz-reviews.css')
     );
-    $items = '';
-    /* Duplicate for seamless marquee loop — zelfde patroon als homepage. */
-    for ( $i = 0; $i < 2; $i++ ) {
-        foreach ( $usps as $usp ) {
-            $items .= '<span class="oz-hp-trust-item"><span class="oz-hp-trust-dot"></span>' . esc_html( $usp ) . '</span>';
-        }
-    }
-    return '<div class="oz-hp-trust" aria-label="USP balk"><div class="oz-hp-trust-track">' . $items . '</div></div>';
+
+    wp_enqueue_style(
+        'oz-homepage-v2',
+        get_stylesheet_directory_uri() . '/css/homepage-v2.css',
+        ['oz-reviews'],
+        filemtime(get_stylesheet_directory() . '/css/homepage-v2.css')
+    );
 }
-
-function oz_render_ruimte_template_trust() {
-    if ( ! is_singular() ) return;
-    $post = get_post();
-    if ( ! $post ) return;
-
-    /* Pagina's met een in-content hero (oz-hp-hero blok of leidende
-       core/cover): daar rendert block-sections-renderer.php de balk
-       direct NA de hero. Hier renderen zou hem boven de content zetten,
-       verstopt achter de fixed header. */
-    if ( strpos( $post->post_content, 'class="oz-hp-hero"' ) !== false ) return;
-    if ( preg_match( '/^\s*<!--\s*wp:cover/', $post->post_content ) ) return;
-
-    echo oz_ruimte_trust_html();
-}
-
-/* ================================================================
-   Strip /page/1/ uit pagination links
-   WordPress + Flatsome genereren /blog/page/1/ en /producten/page/1/
-   die 301 redirecten naar de root URL. Deze filter zet ze direct
-   op de root URL, voorkomt onnodige redirect-hop + SF flags.
-   ================================================================ */
-add_filter( 'paginate_links', function( $link ) {
-    return preg_replace( '#/page/1/?(\?|$)#', '/$1', $link );
-}, 99 );
-add_filter( 'get_pagenum_link', function( $link ) {
-    return preg_replace( '#/page/1/?(\?|$)#', '/$1', $link );
-}, 99 );
-
-/* === PAGINATED-ARCHIVE-NOINDEX === */
-/* Paginated archives /page/N/ (N>=2) krijgen noindex,follow. Geen SEO-waarde
- * (duplicate content), wel link-equity voor product-discovery. */
-add_filter( 'wpseo_robots', function( $robots ) {
-    if ( is_paged() ) {
-        return 'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
-    }
-    return $robots;
-}, 999 );
-add_filter( 'wpseo_robots_array', function( $robots ) {
-    if ( is_paged() ) {
-        $robots['index']  = 'noindex';
-        $robots['follow'] = 'follow';
-    }
-    return $robots;
-}, 999 );
+add_action('wp_enqueue_scripts', 'oz_pcard_blog_enqueue');
