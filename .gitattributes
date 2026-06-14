@@ -1,0 +1,8 @@
+# Patrick edits prod theme files via FTP from Windows, so they have CRLF
+# line endings on prod. Force CRLF on checkout (including the Linux GitHub
+# runner) so drift-check's rsync checksum matches prod and the deploy doesn't
+# rewrite CRLF → LF on every push.
+oz-theme/**/*.php   text eol=crlf
+oz-theme/**/*.css   text eol=crlf
+oz-theme/**/*.js    text eol=crlf
+oz-theme/**/*.html  text eol=crlf
