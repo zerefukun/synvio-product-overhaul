@@ -18,6 +18,127 @@ Sinds we `cancel-in-progress: false` op de workflow hebben gezet (juni 2026) is 
 
 ---
 
+## Server-side flow (Patrick & Iboyla, vanaf de Hetzner box)
+
+Jullie hoeven geen Windows-checkout, geen IDE, geen lokale tooling. Alles vanaf de SSH-sessie waar jullie Claude al draaien.
+
+### Eenmalige check
+Er staat op de server een werkende checkout van deze repo: `/home/bcwstaging/synvio-product-overhaul/`. Group-writable. De SSH-key voor push naar GitHub is al gekoppeld (deploy key met write-access op `zerefukun/synvio-product-overhaul`). Push gaat via SSH-host-alias `github-spo`.
+
+### De basis-flow voor elke wijziging
+
+```bash
+ssh bcwstaging@5.9.62.15
+cd /home/bcwstaging/synvio-product-overhaul
+
+# 1. Altijd eerst pullen — anders krijg je non-fast-forward bij push.
+git pull origin main      # of: git pull origin staging   (afhankelijk van je doel)
+
+# 2. Edit je file(s) in oz-theme/ of oz-variations-bcw/.
+#    LET OP: edit in DEZE checkout, niet in /home/bcw/.../wp-content/themes/OzTheme/
+#    Die laatste is de gedeployde uitkomst — daar editen wordt overschreven door de
+#    volgende deploy (en je werk komt nooit in git).
+
+# 3. Stage bij naam (nooit git add .).
+git add oz-theme/path/to/file.php
+
+# 4. Commit met eigen identity (eenmalig opslaan met --global kan ook).
+git -c user.name="Patrick" -c user.email="patrick@beton-cire-webshop.nl" \
+    commit -m "fix(theme): korte omschrijving"
+
+# 5. Push.
+git push origin main      # → triggert deploy-bcw.yml         → rsync naar prod
+# of:
+git push origin staging   # → triggert deploy-bcw-staging.yml → rsync naar staging
+```
+
+Tussen push en live-resultaat zit ~3 minuten (build + rsync + smoke-tests). Volg de run op:
+https://github.com/zerefukun/synvio-product-overhaul/actions
+
+### Welke branch?
+
+| Branch | Wat het doet | Wanneer kiezen |
+|---|---|---|
+| `main` | Deploy naar **productie** (`beton-cire-webshop.nl`) | Hotfix, productie-tweak, of staging-werk dat klaar is om live te gaan |
+| `staging` | Deploy naar **staging** (`staging.beton-cire-webshop.nl`) | Werk-in-uitvoering dat eerst getest moet worden |
+
+Push **nooit dezelfde commit naar allebei** in één actie. Push naar één branch, controleer, push daarna naar de andere als 't ook nodig is.
+
+### Hotfix (= klein, urgent, direct naar prod)
+
+Dezelfde flow als hierboven, maar je skipt staging. Werk maken, pushen naar `main`, 3 minuten wachten op smoke-tests. Klaar.
+
+Belangrijk bij hotfixes:
+- **Pull eerst altijd** (`git pull origin main`). Als ik of Iboyla net iets gepusht heeft krijg je anders non-fast-forward.
+- **Stage bij naam** — geen `git add .`. Je wil zeker weten dat alleen jouw fix in de commit zit, niet random ongerelateerde wijzigingen die toevallig in de checkout staan.
+- **Stuur een korte WhatsApp** ("ik push een hotfix voor X") als ik of Iboyla mogelijk ook iets aan het pushen is. De queue handelt het wel af maar voorkomt onverwachte resultaten.
+
+### Bij rode workflow (smoke-tests gefaald → site is mogelijk stuk)
+
+Vóór de rsync wordt een complete backup van het theme + plugin op de server gezet. Rollback duurt 10 seconden:
+
+```bash
+ssh bcwstaging@5.9.62.15
+sudo rsync -a --delete /home/bcw/backups/pre-deploy/OzTheme/ /home/bcw/public_html/wp-content/themes/OzTheme/
+sudo rsync -a --delete /home/bcw/backups/pre-deploy/oz-variations-bcw/ /home/bcw/public_html/wp-content/plugins/oz-variations-bcw/
+sudo find /var/cache/nginx/bcw -type f -delete
+```
+
+Site is meteen terug naar de staat van voor je push. Daarna kijken wat er fout ging:
+```bash
+sudo tail -50 /home/bcw/logs/php-error.log
+```
+
+**Let op**: de pre-deploy backup houdt maar **één versie** vast. Elke deploy overschrijft de vorige. Doe je twee slechte deploys snel achter elkaar, dan kun je niet meer met deze rollback terug naar de eerste goede staat. Dan val je terug op de hourly snapshot-branch hieronder.
+
+### Bij drift-check fail (push naar main wordt geweigerd)
+
+Drift-check detecteert files die direct op prod gewijzigd zijn maar niet in de repo staan. Bijvoorbeeld: ik of een ander heeft live een file getweakt en die zit nog niet in `synvio-product-overhaul`.
+
+```bash
+# Pull de gedrifteerde file vanaf prod naar je checkout:
+sudo cp /home/bcw/public_html/wp-content/themes/OzTheme/<file> \
+        /home/bcwstaging/synvio-product-overhaul/oz-theme/<file>
+sudo chown bcwstaging:bcwstaging /home/bcwstaging/synvio-product-overhaul/oz-theme/<file>
+
+cd /home/bcwstaging/synvio-product-overhaul
+git add oz-theme/<file>
+git commit -m "sync: <file> (drift opgevangen)"
+git push origin main
+```
+
+De workflow draait automatisch opnieuw.
+
+### Bij non-fast-forward (push wordt geweigerd)
+
+Iemand anders heeft net naar dezelfde branch gepusht.
+```bash
+git pull --rebase origin main
+git push origin main
+```
+
+**Nooit** `git push --force` op main of staging.
+
+### Welke safety nets draaien automatisch onder je push
+
+- **Pre-deploy backup** (10 seconden rollback, zie hierboven)
+- **6 smoke-tests** (workflow gaat rood bij fail)
+- **Hourly auto-snapshot** in een lokale `staging-snapshots` branch op de server (point-in-time recovery, ook na meerdere slechte deploys)
+- **MariaDB binlog** (7 dagen DB-recovery tot op de seconde)
+- **5 SQL-triggers** (bulk-deletes worden geblokkeerd op 50-500 per minuut)
+- **5 honeypot canaries** (hourly check; alert naar `info@` bij vermissing)
+- **Borg-backup** elk uur naar Hetzner Storage Box
+
+Voor jou betekent dit: een slechte push is 10 seconden terug te draaien. Een ergere fout een uur terug. DB-issues 7 dagen terug. Niets staat op één punt of falen.
+
+### Wanneer NIET hotfixen vanaf de server
+
+- Wijzigingen die meerdere files raken in code waar je niet zeker over bent → eerst naar `staging`-branch, daar testen op `staging.beton-cire-webshop.nl`, daarna pas naar `main`.
+- Wijzigingen die afhankelijkheden in plugins/DB nodig hebben → mij erbij halen.
+- Bij twijfel: WhatsApp.
+
+---
+
 ## In 30 seconden: hoe een prod-push werkt
 
 1. Je pusht naar `main`. Dat triggert GitHub Actions (`deploy-bcw.yml`) op de Hetzner self-hosted runner.
@@ -49,7 +170,9 @@ Meerdere files samen, maar nog steeds binnen één scope.
 - `7910cd1` "PDP: Aanbreng & afwerking PU explainer per product line (port van staging)" — 4 files, 1.378 insertions, 0 deletions
 
 ### Type D — Hotfix direct op main
-Hotfix die nooit door staging hoeft (te klein). Schrijf in een worktree vanaf `origin/main`, één file aanraken, pushen.
+Hotfix die nooit door staging hoeft (te klein). Twee routes mogelijk:
+- **Server-side** (Patrick & Iboyla): direct vanaf de SSH-sessie. Zie de sectie "Server-side flow" hierboven — dat is jullie default.
+- **Windows-worktree** (mijn route): schrijf in een worktree vanaf `origin/main`, één file aanraken, pushen.
 
 ---
 
