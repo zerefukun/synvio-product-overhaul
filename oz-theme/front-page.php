@@ -669,7 +669,7 @@ $theme = get_stylesheet_directory_uri();
 
 		*/ ?>
 		<div class="oz-hp-split-micro" style="padding:0;position:relative;overflow:hidden;">
-			<img src="<?php echo esc_url( "$up/2024/03/Beton-cire-wand-jpg-e1711016471264.webp" ); ?>" alt="" aria-hidden="true" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+			<img src="<?php echo esc_url( "$up/2024/03/Beton-cire-wand-jpg-e1711016471264-v2.webp" ); ?>" alt="" aria-hidden="true" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
 		</div>
 		<div class="oz-hp-split-stalen">
 			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
@@ -692,15 +692,15 @@ $theme = get_stylesheet_directory_uri();
 	<div class="oz-hp-table-wrap">
 		<table class="oz-hp-table">
 			<thead>
-				<tr><th></th><th><a href="/beton-cire-original/">Beton Ciré Original</a></th><th><a href="/microcement/">Microcement</a></th><th><a href="/beton-cire-all-in-one/">Beton Ciré All-In-One</a></th><th><a href="/beton-cire-easyline-kant-en-klaar/">Beton Ciré Easyline</a></th><th><a href="/metallic-velvet/">Metallic Velvet</a></th><th><a href="/lavasteen-gietvloer/">Lavasteen Gietvloer</a></th></tr>
+				<tr><th></th><th><a href="/beton-cire-original/">Beton Ciré Original</a></th><th><a href="/microcement/">Microcement</a></th><th><a href="/beton-cire-all-in-one/">Beton Ciré All-In-One</a></th><th><a href="/metallic-velvet/">Metallic Velvet</a></th><th><a href="/lavasteen-gietvloer/">Lavasteen Gietvloer</a></th></tr>
 			</thead>
 			<tbody>
-				<tr><td>Kenmerk</td><td>Echt cement</td><td>Echt cement</td><td>Drukkere tek.</td><td>Drukste tekening</td><td>Parelmoer</td><td>Epoxy slijtvast</td></tr>
-				<tr><td>Hardheid</td><td>Harder</td><td>Harder</td><td>Hard</td><td>Hard</td><td>Decoratief</td><td>Extreem</td></tr>
-				<tr><td>Stappen</td><td>4</td><td>4</td><td>5</td><td>5</td><td>4</td><td>4</td></tr>
-				<tr><td>Kleuren</td><td>100+</td><td>36</td><td>36</td><td>36</td><td>12</td><td>20</td></tr>
-				<tr><td>Emmers</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1</td><td>2</td></tr>
-				<tr><td>Waterdicht</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Tot in kern</td></tr>
+				<tr><td>Kenmerk</td><td>Echt cement</td><td>Echt cement</td><td>Drukkere tek.</td><td>Parelmoer</td><td>Epoxy slijtvast</td></tr>
+				<tr><td>Hardheid</td><td>Harder</td><td>Harder</td><td>Hard</td><td>Decoratief</td><td>Extreem</td></tr>
+				<tr><td>Stappen</td><td>4</td><td>4</td><td>5</td><td>4</td><td>4</td></tr>
+				<tr><td>Kleuren</td><td>100+</td><td>36</td><td>36</td><td>12</td><td>20</td></tr>
+				<tr><td>Emmers</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td></tr>
+				<tr><td>Waterdicht</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Met PU</td><td>Tot in kern</td></tr>
 			</tbody>
 		</table>
 	</div>

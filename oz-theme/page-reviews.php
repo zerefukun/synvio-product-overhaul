@@ -168,7 +168,7 @@ $rating_str = number_format_i18n( $rating, 1 );
 <section class="oz-hp-section" style="padding:0" data-reveal>
 	<div class="oz-hp-split">
 		<div class="oz-hp-split-micro" style="padding:0;position:relative;overflow:hidden;">
-			<img src="<?php echo esc_url( "$up/2024/03/Beton-cire-wand-jpg-e1711016471264.webp" ); ?>" alt="" aria-hidden="true" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+			<img src="<?php echo esc_url( "$up/2024/03/Beton-cire-wand-jpg-e1711016471264-v2.webp" ); ?>" alt="" aria-hidden="true" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
 		</div>
 		<div class="oz-hp-split-stalen">
 			<div class="oz-hp-eyebrow">Gratis kleurstalen</div>
