@@ -68,7 +68,13 @@ class OZ_Analytics_Reporter {
      * @return array  ['source' => string, 'medium' => string]
      */
     private static function normalize_source($raw_source, $raw_medium) {
-        $source = strtolower($raw_source ?: 'unknown');
+        // Defensief: event_data kan een array bevatten (meerdere UTM-waarden
+        // of geneste source-data); pak dan het eerste scalaire element zodat de
+        // string-functies hieronder niet fatalen (TypeError strtolower op array).
+        if ( is_array( $raw_source ) ) { $raw_source = reset( $raw_source ); }
+        if ( is_array( $raw_medium ) ) { $raw_medium = reset( $raw_medium ); }
+        $source = strtolower( (string) ( $raw_source ?: 'unknown' ) );
+        $raw_medium = (string) $raw_medium;
 
         // Apply aliases (ig → instagram, fb → facebook, etc.)
         if (isset(self::$source_aliases[$source])) {
