@@ -1717,17 +1717,11 @@ html.oz-ab-tools-c .oz-option-group[data-option="pu"]{display:none !important;}
 <script id="oz-ab-tools-script">
 (function(){
     try {
-        var match = document.cookie.match(/(?:^|;\s*)oz_ab_tools=([ABC])/);
-        var v;
-        if (match) {
-            v = match[1];
-        } else {
-            // 33/33/33 split. Bucket boundaries at 1/3 and 2/3.
-            var r = Math.random();
-            v = r < 0.3333 ? 'A' : (r < 0.6666 ? 'B' : 'C');
-            // 30 days = 2592000s. SameSite=Lax so it survives same-site nav.
-            document.cookie = 'oz_ab_tools=' + v + '; max-age=2592000; path=/; SameSite=Lax';
-        }
+        // A/B/C test disabled 2026-06-15: variant B is now the universal default.
+        // Any pre-existing oz_ab_tools=A or =C cookie is overwritten to B on
+        // next pageview so the splitter cannot fall through to A or C.
+        var v = 'B';
+        document.cookie = 'oz_ab_tools=B; max-age=2592000; path=/; SameSite=Lax';
         document.documentElement.classList.add('oz-ab-tools-' + v.toLowerCase());
     } catch (e) {}
 })();
